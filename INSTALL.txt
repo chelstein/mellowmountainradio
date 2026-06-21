@@ -1,0 +1,27 @@
+KAZM / Mellow Mountain Radio - new website
+==========================================
+
+These files are the complete redesigned homepage. Drop them into the
+ROOT of the mellowmountainradio repo (next to your logo files) and commit
+to main. They reference the brand/campaign images already in the repo by
+their existing filenames, so nothing else needs to move.
+
+Files (place at repo root):
+  index.html        the homepage
+  styles.css        all styling (light + dark mode)
+  main.js           nav, live-stream player, now-playing, scroll reveals
+  README.md         project + deploy notes
+  .do/app.yaml      DigitalOcean App Platform static-site spec
+
+Images it expects at the repo root (already present in your repo):
+  Color logo - no background.svg
+  White logo - no background.svg
+  Color logo with background.png
+  80 logo.png                  (neon -> Now Playing card)
+  e8aff12f65abfdf38431d6855983fe1e70e0a28f6e435c96714745029b2d8b7b.png   (vintage 780 -> heritage band)
+
+To preview locally:
+  python3 -m http.server 8000   then open http://localhost:8000
+
+DigitalOcean: create a Static Site app pointed at this repo, source dir "/",
+no build command, or run:  doctl apps create --spec .do/app.yaml
