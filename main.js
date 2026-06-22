@@ -555,3 +555,162 @@
     if (items[current]) items[current].classList.add("is-live");
   }
 })();
+
+/* ============================================================
+   PODCASTS — custom UI + player (AzuraCast public API)
+   Activates only on pages with a [data-podcasts] container.
+   ============================================================ */
+(function () {
+  "use strict";
+  var doc = document;
+  var root = doc.querySelector("[data-podcasts]");
+  if (!root) return;
+
+  var STATION_API = "https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/public/podcasts";
+  var pods = [];
+  var epCache = {};
+
+  var I = {
+    play: '<svg viewBox="0 0 256 256" width="20" height="20" aria-hidden="true"><path d="M232.4 114.5 88.3 26.6a16 16 0 0 0-24.3 13.5v175.8a16 16 0 0 0 24.3 13.5l144.1-87.9a15.9 15.9 0 0 0 0-27z"/></svg>',
+    pause: '<svg viewBox="0 0 256 256" width="20" height="20" aria-hidden="true"><path d="M200 32h-40a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h40a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16Zm-104 0H56a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h40a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16Z"/></svg>',
+    back: '<svg viewBox="0 0 256 256" width="16" height="16" aria-hidden="true"><path d="M224 128a8 8 0 0 1-8 8H59.3l58.4 58.3a8 8 0 0 1-11.4 11.4l-72-72a8 8 0 0 1 0-11.4l72-72a8 8 0 0 1 11.4 11.4L59.3 120H216a8 8 0 0 1 8 8Z"/></svg>',
+    b15: '<svg viewBox="0 0 256 256" width="22" height="22" aria-hidden="true"><path d="M128 64V24L72 80l56 56V96a56 56 0 1 1-56 56 8 8 0 0 0-16 0 72 72 0 1 0 72-72Z"/></svg>',
+    f15: '<svg viewBox="0 0 256 256" width="22" height="22" aria-hidden="true"><path d="M128 64V24l56 56-56 56V96a56 56 0 1 0 56 56 8 8 0 0 1 16 0 72 72 0 1 1-72-72Z"/></svg>',
+    close: '<svg viewBox="0 0 256 256" width="18" height="18" aria-hidden="true"><path d="M205.7 194.3a8 8 0 0 1-11.4 11.4L128 139.3l-66.3 66.4a8 8 0 0 1-11.4-11.4L116.7 128 50.3 61.7a8 8 0 0 1 11.4-11.4L128 116.7l66.3-66.4a8 8 0 0 1 11.4 11.4L139.3 128Z"/></svg>'
+  };
+
+  /* ---- audio + player bar ---- */
+  var audio = new Audio();
+  audio.preload = "metadata";
+  var live = doc.getElementById("stream");
+  if (live) live.addEventListener("play", function () { audio.pause(); });
+
+  var bar = doc.createElement("div");
+  bar.className = "podplayer";
+  bar.setAttribute("aria-live", "polite");
+  bar.innerHTML =
+    '<div class="podplayer-inner">' +
+      '<div class="podplayer-now"><img class="podplayer-art" alt="" /><div style="min-width:0"><div class="podplayer-title"></div><div class="podplayer-pod"></div></div></div>' +
+      '<div class="podplayer-center"><div class="podplayer-controls">' +
+        '<button class="pp-b15" aria-label="Back 15 seconds">' + I.b15 + '</button>' +
+        '<button class="pp-main" aria-label="Play or pause">' + I.play + '</button>' +
+        '<button class="pp-f15" aria-label="Forward 15 seconds">' + I.f15 + '</button>' +
+      '</div><div class="podplayer-seek"><span class="pp-time pp-cur">0:00</span><input class="pp-range" type="range" min="0" max="100" value="0" aria-label="Seek" /><span class="pp-time pp-dur">0:00</span></div></div>' +
+      '<div class="podplayer-actions"><button class="pp-speed" aria-label="Playback speed">1x</button><button class="pp-close" aria-label="Close podcast player">' + I.close + '</button></div>' +
+    '</div>';
+  doc.body.appendChild(bar);
+
+  var elArt = bar.querySelector(".podplayer-art"), elTitle = bar.querySelector(".podplayer-title"), elPod = bar.querySelector(".podplayer-pod");
+  var btnMain = bar.querySelector(".pp-main"), btnB = bar.querySelector(".pp-b15"), btnF = bar.querySelector(".pp-f15");
+  var btnSpeed = bar.querySelector(".pp-speed"), btnClose = bar.querySelector(".pp-close");
+  var range = bar.querySelector(".pp-range"), elCur = bar.querySelector(".pp-cur"), elDur = bar.querySelector(".pp-dur");
+  var seeking = false, speeds = [1, 1.25, 1.5, 2], si = 0;
+  var cur = { eps: null, idx: -1, podTitle: "" };
+
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function fmt(t) { if (!t || isNaN(t) || !isFinite(t)) return "0:00"; t = Math.floor(t); var h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60; return h ? h + ":" + pad(m) + ":" + pad(s) : m + ":" + pad(s); }
+  function setIcon() { btnMain.innerHTML = audio.paused ? I.play : I.pause; }
+
+  btnMain.addEventListener("click", function () { if (audio.paused) audio.play(); else audio.pause(); });
+  btnB.addEventListener("click", function () { audio.currentTime = Math.max(0, audio.currentTime - 15); });
+  btnF.addEventListener("click", function () { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); });
+  btnSpeed.addEventListener("click", function () { si = (si + 1) % speeds.length; audio.playbackRate = speeds[si]; btnSpeed.textContent = speeds[si] + "x"; });
+  btnClose.addEventListener("click", function () { audio.pause(); bar.classList.remove("show"); doc.body.classList.remove("podplaying"); });
+
+  audio.addEventListener("play", function () { if (live) live.pause(); doc.body.classList.add("podplaying"); setIcon(); });
+  audio.addEventListener("pause", setIcon);
+  audio.addEventListener("loadedmetadata", function () { range.max = Math.floor(audio.duration || 0); elDur.textContent = fmt(audio.duration); });
+  audio.addEventListener("timeupdate", function () { if (!seeking) { range.value = Math.floor(audio.currentTime); elCur.textContent = fmt(audio.currentTime); } });
+  audio.addEventListener("ended", function () { playIndex(cur.idx + 1); });
+  range.addEventListener("input", function () { seeking = true; elCur.textContent = fmt(+range.value); });
+  range.addEventListener("change", function () { audio.currentTime = +range.value; seeking = false; });
+
+  function updateMedia(ep) {
+    if (!("mediaSession" in navigator) || !window.MediaMetadata) return;
+    navigator.mediaSession.metadata = new MediaMetadata({ title: ep.title || "Episode", artist: cur.podTitle, album: "Mellow Mountain Radio", artwork: [{ src: ep.art || "", sizes: "512x512", type: "image/jpeg" }] });
+    try {
+      navigator.mediaSession.setActionHandler("play", function () { audio.play(); });
+      navigator.mediaSession.setActionHandler("pause", function () { audio.pause(); });
+      navigator.mediaSession.setActionHandler("seekbackward", function () { audio.currentTime = Math.max(0, audio.currentTime - 15); });
+      navigator.mediaSession.setActionHandler("seekforward", function () { audio.currentTime += 15; });
+      navigator.mediaSession.setActionHandler("nexttrack", function () { playIndex(cur.idx + 1); });
+      navigator.mediaSession.setActionHandler("previoustrack", function () { playIndex(cur.idx - 1); });
+    } catch (e) {}
+  }
+
+  function playIndex(idx) {
+    if (!cur.eps || idx < 0 || idx >= cur.eps.length) return;
+    cur.idx = idx; var ep = cur.eps[idx];
+    audio.src = ep.audio; audio.playbackRate = speeds[si];
+    elArt.src = ep.art || ""; elTitle.textContent = ep.title || "Episode"; elPod.textContent = cur.podTitle;
+    bar.classList.add("show"); updateMedia(ep); audio.play();
+    root.querySelectorAll(".pod-ep").forEach(function (r) { r.classList.toggle("is-active", r.getAttribute("data-idx") === String(idx)); });
+  }
+
+  /* ---- rendering ---- */
+  function esc(s) { return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function fmtDate(ts) { if (!ts) return ""; var d = new Date(ts * 1000); return isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); }
+  function showError() { root.innerHTML = '<p class="embed-note">Podcasts are unavailable right now. Please try again soon.</p>'; }
+
+  function renderGrid() {
+    var h = '<div class="pod-grid">';
+    pods.forEach(function (p) {
+      h += '<button type="button" class="pod-card" data-pod="' + p.id + '">' +
+        '<img class="pod-cover" loading="lazy" alt="' + esc(p.title) + ' cover" src="' + (p.art || "") + '" />' +
+        '<div class="pod-card-body"><span class="pod-author">' + esc(p.author || "Mellow Mountain Radio") + '</span>' +
+        '<h3>' + esc(p.title) + '</h3><p class="pod-desc">' + esc(p.description_short || p.description || "") + '</p>' +
+        '<span class="pod-count">' + (typeof p.episodes === "number" ? p.episodes + " episodes" : "Listen") + '</span></div></button>';
+    });
+    h += '</div>';
+    root.innerHTML = h;
+    root.querySelectorAll(".pod-card").forEach(function (c) { c.addEventListener("click", function () { openPodcast(c.getAttribute("data-pod")); window.scrollTo({ top: root.getBoundingClientRect().top + window.scrollY - 90, behavior: "smooth" }); }); });
+  }
+
+  function backBtn() {
+    var b = root.querySelector(".pod-back");
+    if (b) b.addEventListener("click", renderGrid);
+  }
+
+  function openPodcast(id) {
+    var p = pods.filter(function (x) { return x.id === id; })[0]; if (!p) return;
+    if (epCache[id]) return renderDetail(p, epCache[id]);
+    root.innerHTML = '<button type="button" class="pod-back">' + I.back + ' All podcasts</button><p class="rss-loading">Loading episodes...</p>';
+    backBtn();
+    var url = (p.links && p.links.episodes) || "";
+    fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+      var eps = data.map(function (e) { return { id: e.id, title: e.title, date: e.publish_at, art: e.art || p.art, audio: (e.links && e.links.download) || "" }; })
+        .filter(function (e) { return e.audio; })
+        .sort(function (a, b) { return (b.date || 0) - (a.date || 0); });
+      epCache[id] = eps; renderDetail(p, eps);
+    }).catch(function () {
+      root.innerHTML = '<button type="button" class="pod-back">' + I.back + ' All podcasts</button><p class="embed-note">Could not load episodes.</p>';
+      backBtn();
+    });
+  }
+
+  function renderDetail(p, eps) {
+    var h = '<button type="button" class="pod-back">' + I.back + ' All podcasts</button>' +
+      '<div class="pod-detail-head"><img class="pod-cover" alt="' + esc(p.title) + ' cover" src="' + (p.art || "") + '" />' +
+      '<div class="pod-detail-meta"><span class="pod-author">' + esc(p.author || "Mellow Mountain Radio") + '</span>' +
+      '<h2>' + esc(p.title) + '</h2><p class="pod-desc">' + esc(p.description || p.description_short || "") + '</p>' +
+      '<button type="button" class="btn btn-primary pod-playlatest">' + I.play + ' Play latest episode</button></div></div><div class="pod-eps">';
+    eps.forEach(function (e, i) {
+      h += '<div class="pod-ep" data-idx="' + i + '"><button type="button" class="pod-ep-play" aria-label="Play ' + esc(e.title) + '">' + I.play + '</button>' +
+        '<div class="pod-ep-main"><div class="pod-ep-title">' + esc(e.title) + '</div><div class="pod-ep-date">' + fmtDate(e.date) + '</div></div></div>';
+    });
+    h += '</div>';
+    root.innerHTML = h;
+    cur.eps = eps; cur.podTitle = p.title;
+    backBtn();
+    var pl = root.querySelector(".pod-playlatest");
+    if (pl) pl.addEventListener("click", function () { playIndex(0); });
+    root.querySelectorAll(".pod-ep").forEach(function (row) {
+      row.querySelector(".pod-ep-play").addEventListener("click", function () { playIndex(+row.getAttribute("data-idx")); });
+    });
+  }
+
+  root.innerHTML = '<p class="rss-loading">Loading podcasts...</p>';
+  fetch(STATION_API).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+    .then(function (data) { pods = data.filter(function (p) { return p.is_enabled !== false; }); renderGrid(); })
+    .catch(showError);
+})();
