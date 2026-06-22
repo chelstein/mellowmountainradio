@@ -401,6 +401,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .nowcard-artist { color: var(--accent-soft); font-weight: 600; margin-top: 4px; }
 .nowcard-album { color: rgba(255, 255, 255, .55); font-size: 14px; margin-top: 2px; }
 .nowcard-album:empty { display: none; }
+.nowcard-top-right { display: inline-flex; align-items: center; gap: 12px; }
+.nowcard-listeners { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, .62); white-space: nowrap; }
+.nowcard-listeners:empty { display: none; }
+.player-listeners { color: var(--accent-soft); font-weight: 700; }
+.player-listeners:empty { display: none; }
+.player-listeners:not(:empty)::before { content: "· "; opacity: .65; }
+/* live glow on the album art while streaming */
+body.is-playing .nowcard-art { box-shadow: 0 0 0 1px rgba(207, 118, 105, .4), 0 0 36px -6px rgba(207, 118, 105, .55); }
 .nowcard-play { margin-top: 20px; width: 100%; }
 
 /* =========================================================

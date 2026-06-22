@@ -104,30 +104,52 @@
       b.setAttribute("aria-pressed", String(state));
     });
     setLabel(state ? "Pause" : "Listen Live");
+    if ("mediaSession" in navigator) navigator.mediaSession.playbackState = state ? "playing" : "paused";
+    updateTabTitle();
+  }
+
+  var DEFAULT_TITLE = doc.title;
+  var lastNow = null;
+  function updateTabTitle() {
+    if (playing && lastNow) {
+      document.title = "▶ " + lastNow.artist + " · " + lastNow.title + " | KAZM";
+    } else {
+      document.title = DEFAULT_TITLE;
+    }
+  }
+
+  function togglePlay() {
+    if (!audio) return;
+    if (player) { player.classList.add("show"); doc.body.classList.add("has-player"); }
+    if (playing) { audio.pause(); return; }
+    setLabel("Connecting...");
+    var p = audio.play();
+    if (p && p.catch) p.catch(function () { setLabel("Listen Live"); });
   }
 
   if (audio && listenButtons.length) {
-    listenButtons.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        if (player) { player.classList.add("show"); doc.body.classList.add("has-player"); }
-        if (playing) {
-          audio.pause();
-          return;
-        }
-        setLabel("Connecting...");
-        audio.play().catch(function () {
-          setLabel("Listen Live");
-          // Autoplay blocked or stream unreachable; surface a gentle hint.
-          window.alert("Tap once more to start the live stream.");
-        });
-      });
-    });
+    listenButtons.forEach(function (btn) { btn.addEventListener("click", togglePlay); });
     audio.addEventListener("playing", function () { setPlayingState(true); });
     audio.addEventListener("pause", function () { setPlayingState(false); });
-    audio.addEventListener("error", function () {
-      setPlayingState(false);
-      setLabel("Listen Live");
+    audio.addEventListener("error", function () { setPlayingState(false); setLabel("Listen Live"); });
+
+    // Spacebar toggles the stream (unless typing or focused on a control).
+    doc.addEventListener("keydown", function (e) {
+      var tag = (e.target && e.target.tagName) || "";
+      if ((e.code === "Space" || e.key === " ") && !/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(tag)) {
+        e.preventDefault();
+        togglePlay();
+      }
     });
+
+    // Media Session API: OS lock-screen + media-key control of the live stream.
+    if ("mediaSession" in navigator) {
+      try {
+        navigator.mediaSession.setActionHandler("play", function () { audio.play(); });
+        navigator.mediaSession.setActionHandler("pause", function () { audio.pause(); });
+        navigator.mediaSession.setActionHandler("stop", function () { audio.pause(); });
+      } catch (e) {}
+    }
   }
 
   /* ---------- now playing + recently played (live AzuraCast feed) ----------
@@ -141,6 +163,14 @@
   var artEls = doc.querySelectorAll("[data-now-art]");
   var historyEl = doc.querySelector("[data-history]");
   var LOGO_FALLBACK = "Color%20logo%20-%20no%20background.svg";
+  var listenerEls = doc.querySelectorAll("[data-listeners]");
+
+  function setListeners(n) {
+    listenerEls.forEach(function (el) {
+      if (n && n > 0) { el.textContent = n + " listening"; el.classList.add("show"); }
+      else { el.textContent = ""; el.classList.remove("show"); }
+    });
+  }
 
   function setAll(nodes, text) {
     if (text == null) return;
@@ -238,12 +268,25 @@
         if (song) {
           setAll(trackEls, song.title || "Mellow Mountain Radio");
           setAll(artistEls, song.artist || "106.5 FM & 780 AM");
+          lastNow = { title: song.title || "Mellow Mountain Radio", artist: song.artist || "KAZM" };
+          updateTabTitle();
           fetchArtwork(song.artist, song.title).then(function (meta) {
-            applyNowArt((meta && meta.art) || song.art || null);
+            var artUrl = (meta && meta.art) || song.art || null;
+            applyNowArt(artUrl);
             var album = song.album || (meta && meta.album) || "";
             setAll(albumEls, album ? "from " + album : "");
+            if ("mediaSession" in navigator && window.MediaMetadata) {
+              navigator.mediaSession.metadata = new MediaMetadata({
+                title: lastNow.title,
+                artist: lastNow.artist,
+                album: album || "Mellow Mountain Radio",
+                artwork: [{ src: artUrl || "Color%20logo%20with%20background.png", sizes: "512x512", type: "image/jpeg" }]
+              });
+            }
           });
         }
+        var lc = data && data.listeners ? (data.listeners.current != null ? data.listeners.current : data.listeners.total) : null;
+        setListeners(lc);
         renderHistory(data && data.song_history);
       })
       .catch(function () { /* keep last known values on screen */ });
