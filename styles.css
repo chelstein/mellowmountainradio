@@ -1170,6 +1170,12 @@ body.podplaying .player.show { transform: translateY(180%); }
 @media (max-width: 860px) { .news-desks { grid-template-columns: 1fr; gap: 34px; } }
 
 /* =========================================================
+   CLIENT-SIDE ROUTER PAGE TRANSITION
+   ========================================================= */
+#main { transition: opacity .18s ease; }
+#main.is-leaving { opacity: 0; }
+
+/* =========================================================
    REDUCED MOTION
    ========================================================= */
 @media (prefers-reduced-motion: reduce) {
