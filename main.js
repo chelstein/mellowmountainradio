@@ -208,6 +208,54 @@
     setInterval(fetchNowPlaying, 20000);
   }
 
+  /* ---------- live sports scoreboards (n8n webhooks) ---------- */
+  var SCOREBOARD_BASE = "https://n8n.mellowmountainradio.com/webhook/api/scoreboard/";
+
+  function azGameTime(iso) {
+    if (!iso) return "Time TBD";
+    try {
+      return new Date(iso).toLocaleString("en-US", {
+        timeZone: "America/Phoenix", weekday: "short", month: "short",
+        day: "numeric", hour: "numeric", minute: "2-digit"
+      });
+    } catch (e) { return "Time TBD"; }
+  }
+
+  function loadScoreboard(card) {
+    var sport = card.getAttribute("data-sport");
+    var timeEl = card.querySelector("[data-sb-time]");
+    var awayLogo = card.querySelector("[data-sb-away-logo]");
+    var homeLogo = card.querySelector("[data-sb-home-logo]");
+    var awayEl = card.querySelector("[data-sb-away]");
+    var homeEl = card.querySelector("[data-sb-home]");
+
+    function setLogo(img, url, abbr) {
+      if (!img) return;
+      if (url) {
+        img.onload = function () { img.classList.add("loaded"); };
+        img.onerror = function () { img.style.visibility = "hidden"; };
+        img.src = url;
+        img.alt = (abbr || "") + " logo";
+      } else {
+        img.style.visibility = "hidden";
+      }
+    }
+
+    fetch(SCOREBOARD_BASE + sport, { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(sport + " " + r.status); return r.json(); })
+      .then(function (d) {
+        if (!d || d.error) { if (timeEl) timeEl.textContent = "No game scheduled"; return; }
+        setLogo(awayLogo, d.awayLogo, d.awayAbbr);
+        setLogo(homeLogo, d.homeLogo, d.homeAbbr);
+        if (awayEl) awayEl.textContent = d.awayAbbr || "Away";
+        if (homeEl) homeEl.textContent = d.homeAbbr || "Home";
+        if (timeEl) timeEl.textContent = azGameTime(d.startTime);
+      })
+      .catch(function () { if (timeEl) timeEl.textContent = "Schedule unavailable"; });
+  }
+
+  doc.querySelectorAll(".score-card[data-sport]").forEach(loadScoreboard);
+
   /* ---------- highlight current show ---------- */
   var lineup = doc.querySelector("[data-schedule]");
   if (lineup) {
