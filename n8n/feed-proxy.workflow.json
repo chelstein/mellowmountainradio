@@ -1,0 +1,80 @@
+{
+  "name": "MMR Feed Proxy",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "feed",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1f0c0d2-1111-4a11-9aaa-000000000001",
+      "name": "Feed request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "webhookId": "mmr-feed-proxy"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Allowlist: stable key -> upstream feed URL.\n// The website only ever references the KEY, so feeds can be re-pointed here\n// with no site deploy. Add or change sources in this object.\nconst sources = {\n  'news-local':      'https://rss.app/feeds/waKD0IO27DoomK78.xml',\n  'news-national':   'https://rss.app/feeds/qAIOV2Ax8y6Qx7VS.xml',\n  'news-world':      'https://rss.app/feeds/ULxiZm9ozY2weGgi.xml',\n  'sports-az':       'https://news.google.com/rss/search?q=%28Arizona%20Diamondbacks%29%20OR%20%28Arizona%20Cardinals%29%20OR%20%28Phoenix%20Suns%29%20OR%20%28Arizona%20Wildcats%29%20OR%20%28Arizona%20State%20Sun%20Devils%29%20when%3A7d&hl=en-US&gl=US&ceid=US:en',\n  'sports-national': 'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en'\n};\n\nconst src = ($input.first().json.query || {}).src;\nconst url = sources[src];\nif (!url) {\n  throw new Error('Unknown or missing feed source: ' + JSON.stringify(src));\n}\nreturn [{ json: { src, url } }];"
+      },
+      "id": "a1f0c0d2-2222-4a22-9aaa-000000000002",
+      "name": "Resolve source",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "data"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "id": "a1f0c0d2-3333-4a33-9aaa-000000000003",
+      "name": "Fetch feed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.data }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" },
+              { "name": "Content-Type", "value": "application/rss+xml; charset=utf-8" },
+              { "name": "Cache-Control", "value": "public, max-age=300" }
+            ]
+          }
+        }
+      },
+      "id": "a1f0c0d2-4444-4a44-9aaa-000000000004",
+      "name": "Return feed",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [920, 300]
+    }
+  ],
+  "connections": {
+    "Feed request": { "main": [[{ "node": "Resolve source", "type": "main", "index": 0 }]] },
+    "Resolve source": { "main": [[{ "node": "Fetch feed", "type": "main", "index": 0 }]] },
+    "Fetch feed": { "main": [[{ "node": "Return feed", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "pinData": {},
+  "meta": {}
+}

@@ -425,6 +425,22 @@
     } else { reveals.forEach(function (el) { el.classList.add("in"); }); }
   }
 
+  // ---- Station-owned data layer ------------------------------------
+  // Feeds are addressed by stable KEY, not by third-party URL. Once the
+  // feed-proxy workflow (see n8n/feed-proxy.workflow.json) is imported and
+  // active, every feed is served from our own n8n (CORS-open) and the upstream
+  // source can be re-pointed server-side with no site deploy. Until then,
+  // fetchFeed transparently falls back to direct fetch + allorigins, so the
+  // site works the same before and after the workflow goes live.
+  var FEED_PROXY = "https://n8n.mellowmountainradio.com/webhook/feed"; // ?src=<key>
+  var FEEDS = {
+    "news-local":      "https://rss.app/feeds/waKD0IO27DoomK78.xml",
+    "news-national":   "https://rss.app/feeds/qAIOV2Ax8y6Qx7VS.xml",
+    "news-world":      "https://rss.app/feeds/ULxiZm9ozY2weGgi.xml",
+    "sports-az":       "https://news.google.com/rss/search?q=%28Arizona%20Diamondbacks%29%20OR%20%28Arizona%20Cardinals%29%20OR%20%28Phoenix%20Suns%29%20OR%20%28Arizona%20Wildcats%29%20OR%20%28Arizona%20State%20Sun%20Devils%29%20when%3A7d&hl=en-US&gl=US&ceid=US:en",
+    "sports-national": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en"
+  };
+
   var SCOREBOARD_BASE = "https://n8n.mellowmountainradio.com/webhook/api/scoreboard/";
   function azGameTime(iso) {
     if (!iso) return "Time TBD";
@@ -477,14 +493,26 @@
     }
     return items;
   }
-  function fetchFeed(url) {
-    return fetch(url, { cache: "no-store" })
-      .then(function (r) { if (!r.ok) throw new Error("direct"); return r.text(); })
-      .then(parseFeed)
-      .catch(function () {
-        return fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(url), { cache: "no-store" })
-          .then(function (r) { if (!r.ok) throw new Error("proxy"); return r.text(); }).then(parseFeed);
-      });
+  function fetchText(url) {
+    return fetch(url, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); });
+  }
+  // Try our own n8n proxy first (when keyed), then the source directly, then a
+  // public CORS proxy. Each leg falls through on failure, so the feed renders
+  // from whichever path is reachable.
+  function fetchFeed(url, key) {
+    var legs = [];
+    if (key && FEED_PROXY) legs.push(FEED_PROXY + "?src=" + encodeURIComponent(key));
+    if (url) {
+      legs.push(url);
+      legs.push("https://corsproxy.io/?url=" + encodeURIComponent(url));
+      legs.push("https://api.allorigins.win/raw?url=" + encodeURIComponent(url));
+    }
+    var i = 0;
+    function attempt() {
+      if (i >= legs.length) return Promise.reject(new Error("feed unavailable"));
+      return fetchText(legs[i++]).catch(attempt);
+    }
+    return attempt().then(parseFeed);
   }
   function renderFeed(el, items, limit) {
     if (!items || !items.length) { el.innerHTML = '<p class="embed-note">No stories posted yet.</p>'; return; }
@@ -499,11 +527,12 @@
     el.innerHTML = html;
   }
   function initFeeds() {
-    doc.querySelectorAll("[data-rss]").forEach(function (el) {
-      var url = el.getAttribute("data-rss");
+    doc.querySelectorAll("[data-feed],[data-rss]").forEach(function (el) {
+      var key = el.getAttribute("data-feed");
+      var url = el.getAttribute("data-rss") || (key && FEEDS[key]) || "";
       var limit = parseInt(el.getAttribute("data-rss-limit") || "8", 10);
       el.innerHTML = '<p class="rss-loading">Loading the latest headlines...</p>';
-      fetchFeed(url).then(function (items) { renderFeed(el, items, limit); })
+      fetchFeed(url, key).then(function (items) { renderFeed(el, items, limit); })
         .catch(function () { el.innerHTML = '<p class="embed-note">The news feed is unavailable right now. Tune in for the latest on air.</p>'; });
     });
   }
