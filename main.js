@@ -253,6 +253,7 @@
 
   function azGameTime(iso) {
     if (!iso) return "Time TBD";
+    if (/T\d\d:\d\dZ$/.test(iso)) iso = iso.replace("Z", ":00Z"); // add missing seconds
     try {
       return new Date(iso).toLocaleString("en-US", {
         timeZone: "America/Phoenix", weekday: "short", month: "short",
@@ -284,7 +285,14 @@
     fetch(SCOREBOARD_BASE + sport, { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error(sport + " " + r.status); return r.json(); })
       .then(function (d) {
-        if (!d || d.error) { if (timeEl) timeEl.textContent = "No game scheduled"; return; }
+        var hasGame = d && !d.error && (d.startTime || d.homeLogo || d.awayLogo);
+        if (!hasGame) {
+          card.classList.add("score-card--off");
+          if (timeEl) timeEl.textContent = "No game scheduled";
+          if (awayEl) awayEl.textContent = "";
+          if (homeEl) homeEl.textContent = "";
+          return;
+        }
         setLogo(awayLogo, d.awayLogo, d.awayAbbr);
         setLogo(homeLogo, d.homeLogo, d.homeAbbr);
         if (awayEl) awayEl.textContent = d.awayAbbr || "Away";

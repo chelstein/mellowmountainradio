@@ -570,6 +570,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .score-logo:not(.loaded) { visibility: hidden; }
 .score-abbr { font-family: var(--font-display); font-size: 1.05rem; color: var(--heading); }
 .score-vs { flex: none; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-strong); }
+.score-card--off .score-match { opacity: .45; min-height: 76px; }
+.score-card--off .score-vs { color: var(--muted); }
 
 /* live news / weather audio */
 .news-audio { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 24px; }
