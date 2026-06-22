@@ -941,6 +941,43 @@ body:not(.is-playing) .listen-btn::after {
 }
 
 /* =========================================================
+   EXPLORE HUB (home launchpad)
+   ========================================================= */
+.hub { padding: 96px 0; }
+.hub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.hub-card {
+  position: relative; display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 26px; min-height: 178px; box-shadow: var(--shadow-sm);
+  transition: transform .18s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.hub-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: var(--shadow); }
+.hub-ic {
+  width: 50px; height: 50px; border-radius: var(--r-sm); display: grid; place-items: center;
+  background: var(--navy); color: #fff; margin-bottom: 6px;
+}
+.hub-ic svg { fill: currentColor; }
+.hub-card h3 { font-size: 1.4rem; }
+.hub-card p { color: var(--muted); font-size: 14.5px; }
+.hub-card .hub-go {
+  margin-top: auto; align-self: flex-start; color: var(--accent-strong); font-weight: 700; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.hub-card .hub-go svg { fill: currentColor; transition: transform .2s ease; }
+.hub-card:hover .hub-go svg { transform: translateX(4px); }
+.hub-card--wide { grid-column: span 1; }
+.hub-card--feature {
+  grid-column: span 1; background: radial-gradient(130% 130% at 12% 12%, var(--navy-deep), var(--navy-deeper));
+  color: #fff; border-color: rgba(255,255,255,.12);
+}
+.hub-card--feature h3 { color: #fff; }
+.hub-card--feature p { color: rgba(255,255,255,.72); }
+.hub-card--feature .hub-ic { background: var(--accent-strong); }
+.hub-card--feature .hub-go { color: var(--accent-soft); }
+@media (max-width: 900px) { .hub-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .hub-grid { grid-template-columns: 1fr; } .hub { padding: 64px 0; } }
+
+/* =========================================================
    INNER PAGES
    ========================================================= */
 .nav-current > a, .nav-current > .nav-trigger { color: #fff; }
