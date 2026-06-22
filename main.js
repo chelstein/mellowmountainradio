@@ -138,11 +138,45 @@
   var trackEls = doc.querySelectorAll("[data-now-track]");
   var artistEls = doc.querySelectorAll("[data-now-artist]");
   var albumEls = doc.querySelectorAll("[data-now-album]");
+  var artEls = doc.querySelectorAll("[data-now-art]");
   var historyEl = doc.querySelector("[data-history]");
+  var LOGO_FALLBACK = "Color%20logo%20-%20no%20background.svg";
 
   function setAll(nodes, text) {
     if (text == null) return;
     nodes.forEach(function (n) { n.textContent = text; });
+  }
+
+  /* Album art: Apple Music (iTunes Search) gives the best covers. We cache by
+     artist|title and fall back to the AzuraCast art, then the station logo. */
+  var artCache = {};
+  function fetchArtwork(artist, title) {
+    var key = (artist || "") + "|" + (title || "");
+    if (artCache[key] !== undefined) return Promise.resolve(artCache[key]);
+    var term = ((artist || "") + " " + (title || "")).trim();
+    if (!term) return Promise.resolve(null);
+    return fetch("https://itunes.apple.com/search?term=" + encodeURIComponent(term) + "&entity=song&limit=1")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        var res = d && d.results && d.results[0];
+        var url = res && res.artworkUrl100 ? res.artworkUrl100.replace("100x100", "512x512") : null;
+        artCache[key] = url;
+        return url;
+      })
+      .catch(function () { artCache[key] = null; return null; });
+  }
+
+  function applyNowArt(url) {
+    artEls.forEach(function (img) {
+      if (url) {
+        img.onerror = function () { img.onerror = null; img.src = LOGO_FALLBACK; img.classList.remove("is-art"); };
+        img.src = url;
+        img.classList.add("is-art");
+      } else {
+        img.src = LOGO_FALLBACK;
+        img.classList.remove("is-art");
+      }
+    });
   }
 
   function appleMusicUrl(artist, title) {
@@ -167,7 +201,12 @@
 
       var art = doc.createElement("span");
       art.className = "recent-art";
-      if (song.art) { art.style.backgroundImage = "url('" + song.art + "')"; art.classList.add("has-art"); }
+      (function (artEl, s) {
+        fetchArtwork(s.artist, s.title).then(function (url) {
+          var u = url || s.art;
+          if (u) { artEl.style.backgroundImage = "url('" + u + "')"; artEl.classList.add("has-art"); }
+        });
+      })(art, song);
       var badge = doc.createElement("span");
       badge.className = "recent-apple";
       badge.innerHTML = APPLE_SVG;
@@ -197,6 +236,7 @@
           setAll(trackEls, song.title || "Mellow Mountain Radio");
           setAll(artistEls, song.artist || "106.5 FM & 780 AM");
           if (song.album) setAll(albumEls, "from " + song.album);
+          fetchArtwork(song.artist, song.title).then(function (url) { applyNowArt(url || song.art || null); });
         }
         renderHistory(data && data.song_history);
       })
