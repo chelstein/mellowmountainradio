@@ -1,0 +1,19 @@
+# DigitalOcean App Platform spec - static site, no build step.
+# Create the app once from this file:
+#   doctl apps create --spec .do/app.yaml
+# After that, pushes to the deploy branch redeploy automatically.
+name: mellowmountainradio
+region: nyc
+static_sites:
+  - name: web
+    github:
+      repo: chelstein/mellowmountainradio
+      branch: main
+      deploy_on_push: true
+    # Plain HTML/CSS/JS - nothing to build, serve the repo root as-is.
+    source_dir: /
+    output_dir: /
+    index_document: index.html
+    # Single page for now: send unknown paths back to the homepage.
+    error_document: index.html
+    catchall_document: index.html

@@ -89,6 +89,7 @@
   var audio = doc.getElementById("stream");
   var listenButtons = doc.querySelectorAll("[data-listen]");
   var labels = doc.querySelectorAll("[data-listen-label]");
+  var player = doc.querySelector("[data-player]");
   var playing = false;
 
   function setLabel(text) {
@@ -97,6 +98,7 @@
   function setPlayingState(state) {
     playing = state;
     doc.body.classList.toggle("is-playing", state);
+    if (player) { player.classList.add("show"); doc.body.classList.add("has-player"); }
     listenButtons.forEach(function (b) {
       b.classList.toggle("is-playing", state);
       b.setAttribute("aria-pressed", String(state));
@@ -107,6 +109,7 @@
   if (audio && listenButtons.length) {
     listenButtons.forEach(function (btn) {
       btn.addEventListener("click", function () {
+        if (player) { player.classList.add("show"); doc.body.classList.add("has-player"); }
         if (playing) {
           audio.pause();
           return;
@@ -127,38 +130,82 @@
     });
   }
 
-  /* ---------- now playing ----------
-     Sample data so the card feels alive. To wire real metadata,
-     poll your Live365 (or other) now-playing endpoint and update
-     these three nodes. Example:
-       fetch("https://api.live365.com/station/a56104")
-         .then(r => r.json()).then(updateNowPlaying);
+  /* ---------- now playing + recently played (live AzuraCast feed) ----------
+     One poll powers the Now Playing card, the sticky player bar, and the
+     Recently Played crate. Every recent track links to an Apple Music search.
   ------------------------------------------------------------ */
-  var nowTrack = doc.querySelector("[data-now-track]");
-  var nowArtist = doc.querySelector("[data-now-artist]");
-  var nowAlbum = doc.querySelector("[data-now-album]");
+  var NOWPLAYING_API = "https://streaming.mellowmountainradio.com/api/nowplaying/mellowmountainradio";
+  var trackEls = doc.querySelectorAll("[data-now-track]");
+  var artistEls = doc.querySelectorAll("[data-now-artist]");
+  var albumEls = doc.querySelectorAll("[data-now-album]");
+  var historyEl = doc.querySelector("[data-history]");
 
-  var sampleQueue = [
-    { track: "You Make Loving Fun", artist: "Fleetwood Mac", album: "from Rumours" },
-    { track: "What a Fool Believes", artist: "The Doobie Brothers", album: "from Minute by Minute" },
-    { track: "Peg", artist: "Steely Dan", album: "from Aja" },
-    { track: "Sara Smile", artist: "Hall & Oates", album: "from Daryl Hall & John Oates" },
-    { track: "Dance With Me", artist: "Orleans", album: "from Let There Be Music" }
-  ];
-  var qi = 0;
-
-  function updateNowPlaying(data) {
-    if (!nowTrack) return;
-    nowTrack.textContent = data.track;
-    if (nowArtist) nowArtist.textContent = data.artist;
-    if (nowAlbum) nowAlbum.textContent = data.album || "";
+  function setAll(nodes, text) {
+    if (text == null) return;
+    nodes.forEach(function (n) { n.textContent = text; });
   }
 
-  if (nowTrack) {
-    setInterval(function () {
-      qi = (qi + 1) % sampleQueue.length;
-      updateNowPlaying(sampleQueue[qi]);
-    }, 12000);
+  function appleMusicUrl(artist, title) {
+    var term = ((artist || "") + " " + (title || "")).trim();
+    return "https://music.apple.com/us/search?term=" + encodeURIComponent(term);
+  }
+
+  var APPLE_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M17.05 12.04c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3.01-.79-1.55.02-2.98.9-3.78 2.29-1.61 2.8-.41 6.94 1.16 9.21.77 1.11 1.69 2.36 2.89 2.31 1.16-.05 1.6-.75 3-.75 1.4 0 1.8.75 3.02.72 1.25-.02 2.04-1.13 2.8-2.25.88-1.29 1.24-2.54 1.26-2.6-.03-.01-2.42-.93-2.44-3.69zM14.79 5.3c.64-.78 1.07-1.86.95-2.94-.92.04-2.04.61-2.7 1.39-.59.69-1.11 1.79-.97 2.85 1.03.08 2.08-.52 2.72-1.3z"/></svg>';
+
+  function renderHistory(history) {
+    if (!historyEl || !history || !history.length) return;
+    var frag = doc.createDocumentFragment();
+    history.slice(0, 8).forEach(function (item) {
+      var song = item.song || {};
+      var li = doc.createElement("li");
+      var a = doc.createElement("a");
+      a.className = "recent-card";
+      a.href = appleMusicUrl(song.artist, song.title);
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.setAttribute("aria-label", "Find " + (song.title || "this track") + " by " + (song.artist || "") + " on Apple Music");
+
+      var art = doc.createElement("span");
+      art.className = "recent-art";
+      if (song.art) { art.style.backgroundImage = "url('" + song.art + "')"; art.classList.add("has-art"); }
+      var badge = doc.createElement("span");
+      badge.className = "recent-apple";
+      badge.innerHTML = APPLE_SVG;
+      art.appendChild(badge);
+
+      var meta = doc.createElement("span");
+      meta.className = "recent-meta";
+      var t = doc.createElement("span"); t.className = "recent-title"; t.textContent = song.title || "Unknown";
+      var ar = doc.createElement("span"); ar.className = "recent-artist"; ar.textContent = song.artist || "";
+      meta.appendChild(t); meta.appendChild(ar);
+
+      a.appendChild(art);
+      a.appendChild(meta);
+      li.appendChild(a);
+      frag.appendChild(li);
+    });
+    historyEl.innerHTML = "";
+    historyEl.appendChild(frag);
+  }
+
+  function fetchNowPlaying() {
+    fetch(NOWPLAYING_API, { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("np " + r.status); return r.json(); })
+      .then(function (data) {
+        var song = data && data.now_playing && data.now_playing.song;
+        if (song) {
+          setAll(trackEls, song.title || "Mellow Mountain Radio");
+          setAll(artistEls, song.artist || "106.5 FM & 780 AM");
+          if (song.album) setAll(albumEls, "from " + song.album);
+        }
+        renderHistory(data && data.song_history);
+      })
+      .catch(function () { /* keep last known values on screen */ });
+  }
+
+  if (trackEls.length || historyEl) {
+    fetchNowPlaying();
+    setInterval(fetchNowPlaying, 20000);
   }
 
   /* ---------- highlight current show ---------- */

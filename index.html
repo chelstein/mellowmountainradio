@@ -17,7 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -61,8 +61,8 @@
             <button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Music &amp; More</button>
             <div class="mega" role="menu">
               <a role="menuitem" href="#shows">Shows</a>
-              <a role="menuitem" href="#shows">Podcasts</a>
-              <a role="menuitem" href="#shows">Program Schedule</a>
+              <a role="menuitem" href="https://streaming.mellowmountainradio.com/public/mellowmountainradio/podcasts" target="_blank" rel="noopener">Podcasts</a>
+              <a role="menuitem" href="https://streaming.mellowmountainradio.com/public/mellowmountainradio/schedule" target="_blank" rel="noopener">Program Schedule</a>
               <a role="menuitem" href="#sound">Ticket Tuesday</a>
               <a role="menuitem" href="#sound">Food Fridays</a>
             </div>
@@ -201,6 +201,22 @@
       </div>
     </section>
 
+    <!-- ================= RECENTLY PLAYED ================= -->
+    <section class="recent" aria-labelledby="recent-title">
+      <div class="wrap">
+        <div class="recent-head reveal">
+          <div>
+            <p class="eyebrow eyebrow--light">Fresh off the air</p>
+            <h2 id="recent-title">Recently played</h2>
+          </div>
+          <p class="recent-note">Tap any track to open it in Apple Music.</p>
+        </div>
+        <ol class="recent-list" data-history>
+          <li class="recent-empty">Tuning in the last few songs...</li>
+        </ol>
+      </div>
+    </section>
+
     <!-- ================= PROGRAM SCHEDULE ================= -->
     <section class="schedule" id="shows" aria-labelledby="shows-title">
       <div class="wrap schedule-grid">
@@ -255,6 +271,50 @@
             </span>
           </li>
         </ol>
+      </div>
+    </section>
+
+    <!-- ================= SPECIALTY SHOWS ================= -->
+    <section class="specialty" aria-labelledby="specialty-title">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2 id="specialty-title">Weekend voices and specialty shows</h2>
+          <p class="lead">Local talk and national programs digging into the issues that matter across Northern Arizona and beyond.</p>
+        </div>
+        <ul class="show-list reveal">
+          <li>
+            <span class="show-name">Sedona Life</span>
+            <span class="show-host">Stephen Hanks and guests on the issues facing Northern Arizona.</span>
+          </li>
+          <li>
+            <span class="show-name">The Pet Buzz</span>
+            <span class="show-host">Charlotte Reed and Michael Fleck talk pets with their guests.</span>
+          </li>
+          <li>
+            <span class="show-name">Straight Talk</span>
+            <span class="show-host">Brian Sussman and guests on the political and social issues of the day.</span>
+          </li>
+          <li>
+            <span class="show-name">Unreserved</span>
+            <span class="show-host">Rosanna Deerchild shares stories from Indigenous communities across North America.</span>
+          </li>
+          <li>
+            <span class="show-name">American Indian Living</span>
+            <span class="show-host">Dr. David DeRose on health and life in Indian Country.</span>
+          </li>
+          <li>
+            <span class="show-name">Unscaled Travel Show</span>
+            <span class="show-host">Jeremy Long and guests share the road.</span>
+          </li>
+          <li>
+            <span class="show-name">Democratic Perspective</span>
+            <span class="show-host">The Verde Valley Independent Democrats on the week's issues.</span>
+          </li>
+          <li>
+            <span class="show-name">Coast to Coast AM</span>
+            <span class="show-host">Late night talk on the mysteries of the high desert and beyond.</span>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -495,6 +555,28 @@
       </div>
     </section>
 
+    <!-- ================= COMMUNITY PARTNERS ================= -->
+    <section class="partners" aria-labelledby="partners-title">
+      <div class="wrap">
+        <div class="section-head section-head--center reveal">
+          <h2 id="partners-title">Proudly supported by our community</h2>
+          <p class="lead">The local businesses and partners who keep Mellow Mountain Radio on the air.</p>
+        </div>
+        <ul class="partner-grid reveal">
+          <li class="partner-lead">
+            <img src="Color%20logo%20-%20no%20background.svg" alt="KAZM Mellow Mountain Radio" />
+          </li>
+          <li><a href="https://www.sedonalibrary.org/" target="_blank" rel="noopener">Sedona Public Library</a></li>
+          <li><a href="https://sedonachamber.com/" target="_blank" rel="noopener">Sedona Chamber of Commerce</a></li>
+          <li><a href="https://www.versatileaz.com/" target="_blank" rel="noopener">Versatile Roofing</a></li>
+          <li><a href="https://www.yavapaigas.com/" target="_blank" rel="noopener">Yavapai Bottle Gas</a></li>
+          <li><a href="https://nickswestside.com/" target="_blank" rel="noopener">Nick's Westside</a></li>
+          <li><a href="https://sedonayogafestival.com/" target="_blank" rel="noopener">Sedona Yoga Festival</a></li>
+          <li class="partner-cta"><a href="#advertising">Your business here</a></li>
+        </ul>
+      </div>
+    </section>
+
     <!-- ================= CONTACT ================= -->
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="wrap contact-grid">
@@ -565,11 +647,10 @@
         <img src="White%20logo%20-%20no%20background.svg" alt="KAZM 106.5 FM and 780 AM, Mellow Mountain Radio" class="footer-logo" />
         <p class="footer-tag">The sound of Sedona since 1974. Soft oldies, yacht rock, and the news that matters here.</p>
         <div class="social" aria-label="Social media">
-          <a href="https://facebook.com" aria-label="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.95.93-1.95 1.89v2.25h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07Z"/></svg></a>
-          <a href="https://instagram.com" aria-label="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 3.68A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84Zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4Zm6.41-10.85a1.44 1.44 0 1 0 1.44 1.44 1.44 1.44 0 0 0-1.44-1.44Z"/></svg></a>
-          <a href="https://youtube.com" aria-label="YouTube"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.12-2.13C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.52A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.12 2.13c1.88.52 9.38.52 9.38.52s7.5 0 9.38-.52a3 3 0 0 0 2.12-2.13A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.2 3.6Z"/></svg></a>
-          <a href="https://tiktok.com" aria-label="TikTok"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M16.6 5.82a4.28 4.28 0 0 1-1.06-2.82h-3.3v13.3a2.43 2.43 0 1 1-2.43-2.43c.2 0 .4.03.6.08v-3.36a5.8 5.8 0 0 0-.6-.03 5.79 5.79 0 1 0 5.79 5.79V9.01a7.55 7.55 0 0 0 4.42 1.42V7.07a4.28 4.28 0 0 1-3.42-1.25Z"/></svg></a>
-          <a href="https://x.com" aria-label="X"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M18.9 2H22l-7.1 8.1L23.3 22h-6.6l-5.2-6.8L5.6 22H2.5l7.6-8.7L1 2h6.8l4.7 6.2Zm-1.2 18h1.8L7.4 3.8H5.5Z"/></svg></a>
+          <a href="https://www.facebook.com/profile.php?id=61552335103946" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.95.93-1.95 1.89v2.25h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07Z"/></svg></a>
+          <a href="https://www.instagram.com/mellowmountainradio/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 3.68A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84Zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4Zm6.41-10.85a1.44 1.44 0 1 0 1.44 1.44 1.44 1.44 0 0 0-1.44-1.44Z"/></svg></a>
+          <a href="https://www.youtube.com/channel/UCt3gbxEFSkV8roRdnqBefog" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.12-2.13C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.52A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.12 2.13c1.88.52 9.38.52 9.38.52s7.5 0 9.38-.52a3 3 0 0 0 2.12-2.13A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.2 3.6Z"/></svg></a>
+          <a href="https://twitter.com/mellowmountain1" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M18.9 2H22l-7.1 8.1L23.3 22h-6.6l-5.2-6.8L5.6 22H2.5l7.6-8.7L1 2h6.8l4.7 6.2Zm-1.2 18h1.8L7.4 3.8H5.5Z"/></svg></a>
         </div>
       </div>
 
@@ -597,7 +678,7 @@
         <a href="#advertising">Advertising</a>
         <a href="#contact">Staff</a>
         <a href="#contact">Operational Status</a>
-        <a href="https://shop.mellowmountainradio.com">Merch</a>
+        <a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a>
       </nav>
     </div>
 
@@ -616,8 +697,28 @@
     </div>
   </footer>
 
-  <!-- Live audio stream (Live365). Replace src with your production stream if it changes. -->
+  <!-- Persistent live player -->
+  <div class="player" data-player aria-live="polite">
+    <div class="player-inner wrap">
+      <div class="player-meta">
+        <span class="player-eq eq" data-eq aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="player-onair"><span class="onair-dot" aria-hidden="true"></span> On air</span>
+        <span class="player-track">
+          <span class="player-title" data-now-track>Mellow Mountain Radio</span>
+          <span class="player-artist" data-now-artist>106.5 FM &amp; 780 AM</span>
+        </span>
+      </div>
+      <button class="player-btn" data-listen aria-pressed="false" aria-label="Play or pause the live stream">
+        <svg class="ic-play" viewBox="0 0 256 256" width="22" height="22" aria-hidden="true"><path d="M232.4 114.5 88.3 26.6a16 16 0 0 0-24.3 13.5v175.8a16 16 0 0 0 24.3 13.5l144.1-87.9a15.9 15.9 0 0 0 0-27z"/></svg>
+        <svg class="ic-pause" viewBox="0 0 256 256" width="22" height="22" aria-hidden="true"><path d="M216 48v160a16 16 0 0 1-16 16h-40a16 16 0 0 1-16-16V48a16 16 0 0 1 16-16h40a16 16 0 0 1 16 16ZM96 32H56a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h40a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16Z"/></svg>
+        <span class="player-btn-label" data-listen-label>Listen Live</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Live audio stream. AzuraCast (primary, also powers Now Playing) with Live365 as fallback. -->
   <audio id="stream" preload="none" crossorigin="anonymous">
+    <source src="https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" type="audio/mpeg" />
     <source src="https://streaming.live365.com/a56104" type="audio/mpeg" />
   </audio>
 
