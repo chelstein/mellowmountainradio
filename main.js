@@ -438,6 +438,92 @@
 
   doc.querySelectorAll(".score-card[data-sport]").forEach(loadScoreboard);
 
+  /* ---------- RSS / Atom news feeds ----------
+     Any element with data-rss="<feed url>" is filled with the latest items.
+     Tries the feed directly (same-origin in production), then a CORS proxy.
+  ------------------------------------------------------------ */
+  function stripHtml(str) {
+    if (!str) return "";
+    var d = doc.createElement("div");
+    d.innerHTML = str;
+    return (d.textContent || "").replace(/\s+/g, " ").trim();
+  }
+  function feedText(node, tag) {
+    var el = node.getElementsByTagName(tag)[0];
+    return el ? el.textContent : "";
+  }
+  function feedDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d)) return "";
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+  function parseFeed(text) {
+    var xml = new DOMParser().parseFromString(text, "text/xml");
+    var items = [];
+    var entries = xml.getElementsByTagName("entry");
+    if (entries.length) {
+      for (var i = 0; i < entries.length; i++) {
+        var e = entries[i];
+        var link = "";
+        var links = e.getElementsByTagName("link");
+        if (links.length) link = links[0].getAttribute("href") || "";
+        items.push({
+          title: feedText(e, "title"),
+          link: link,
+          date: feedDate(feedText(e, "updated") || feedText(e, "published")),
+          summary: stripHtml(feedText(e, "summary") || feedText(e, "content"))
+        });
+      }
+    } else {
+      var its = xml.getElementsByTagName("item");
+      for (var j = 0; j < its.length; j++) {
+        var it = its[j];
+        items.push({
+          title: feedText(it, "title"),
+          link: feedText(it, "link"),
+          date: feedDate(feedText(it, "pubDate")),
+          summary: stripHtml(feedText(it, "description"))
+        });
+      }
+    }
+    return items;
+  }
+  function fetchFeed(url) {
+    return fetch(url, { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("direct"); return r.text(); })
+      .then(parseFeed)
+      .catch(function () {
+        return fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(url), { cache: "no-store" })
+          .then(function (r) { if (!r.ok) throw new Error("proxy"); return r.text(); })
+          .then(parseFeed);
+      });
+  }
+  function renderFeed(el, items, limit) {
+    if (!items || !items.length) { el.innerHTML = '<p class="embed-note">No stories posted yet.</p>'; return; }
+    var html = "";
+    items.slice(0, limit).forEach(function (it) {
+      var t = it.title || "Untitled";
+      var open = it.link ? '<a href="' + it.link + '" target="_blank" rel="noopener">' : "<span>";
+      var close = it.link ? "</a>" : "</span>";
+      var sum = it.summary ? it.summary.slice(0, 180) + (it.summary.length > 180 ? "..." : "") : "";
+      html += '<article class="rss-item">' +
+        (it.date ? '<span class="rss-date">' + it.date + "</span>" : "") +
+        "<h3>" + open + t + close + "</h3>" +
+        (sum ? '<p class="rss-summary">' + sum + "</p>" : "") +
+      "</article>";
+    });
+    el.innerHTML = html;
+  }
+  doc.querySelectorAll("[data-rss]").forEach(function (el) {
+    var url = el.getAttribute("data-rss");
+    var limit = parseInt(el.getAttribute("data-rss-limit") || "8", 10);
+    el.innerHTML = '<p class="rss-loading">Loading the latest headlines...</p>';
+    fetchFeed(url)
+      .then(function (items) { renderFeed(el, items, limit); })
+      .catch(function () { el.innerHTML = '<p class="embed-note">The news feed is unavailable right now. Tune in for the latest on air.</p>'; });
+  });
+
   /* ---------- heritage logo rotator (1974 -> today) ---------- */
   var rotator = doc.querySelector("[data-logo-rotator]");
   if (rotator) {
