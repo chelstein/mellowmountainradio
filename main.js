@@ -296,6 +296,24 @@
 
   doc.querySelectorAll(".score-card[data-sport]").forEach(loadScoreboard);
 
+  /* ---------- heritage logo rotator (1974 -> today) ---------- */
+  var rotator = doc.querySelector("[data-logo-rotator]");
+  if (rotator) {
+    var logos = rotator.querySelectorAll(".heritage-logo");
+    var eraLabel = rotator.querySelector("[data-era-label]");
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (logos.length > 1 && !reduceMotion) {
+      var li = 0;
+      logos.forEach(function (l, i) { if (l.classList.contains("is-active")) li = i; });
+      setInterval(function () {
+        logos[li].classList.remove("is-active");
+        li = (li + 1) % logos.length;
+        logos[li].classList.add("is-active");
+        if (eraLabel) eraLabel.textContent = logos[li].getAttribute("data-era") || "";
+      }, 3200);
+    }
+  }
+
   /* ---------- highlight current show ---------- */
   var lineup = doc.querySelector("[data-schedule]");
   if (lineup) {
