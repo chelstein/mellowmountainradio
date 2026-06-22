@@ -159,11 +159,14 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         var res = d && d.results && d.results[0];
-        var url = res && res.artworkUrl100 ? res.artworkUrl100.replace("100x100", "512x512") : null;
-        artCache[key] = url;
-        return url;
+        var meta = {
+          art: res && res.artworkUrl100 ? res.artworkUrl100.replace("100x100", "512x512") : null,
+          album: res && res.collectionName ? res.collectionName : null
+        };
+        artCache[key] = meta;
+        return meta;
       })
-      .catch(function () { artCache[key] = null; return null; });
+      .catch(function () { artCache[key] = { art: null, album: null }; return artCache[key]; });
   }
 
   function applyNowArt(url) {
@@ -202,8 +205,8 @@
       var art = doc.createElement("span");
       art.className = "recent-art";
       (function (artEl, s) {
-        fetchArtwork(s.artist, s.title).then(function (url) {
-          var u = url || s.art;
+        fetchArtwork(s.artist, s.title).then(function (meta) {
+          var u = (meta && meta.art) || s.art;
           if (u) { artEl.style.backgroundImage = "url('" + u + "')"; artEl.classList.add("has-art"); }
         });
       })(art, song);
@@ -235,8 +238,11 @@
         if (song) {
           setAll(trackEls, song.title || "Mellow Mountain Radio");
           setAll(artistEls, song.artist || "106.5 FM & 780 AM");
-          if (song.album) setAll(albumEls, "from " + song.album);
-          fetchArtwork(song.artist, song.title).then(function (url) { applyNowArt(url || song.art || null); });
+          fetchArtwork(song.artist, song.title).then(function (meta) {
+            applyNowArt((meta && meta.art) || song.art || null);
+            var album = song.album || (meta && meta.album) || "";
+            setAll(albumEls, album ? "from " + album : "");
+          });
         }
         renderHistory(data && data.song_history);
       })

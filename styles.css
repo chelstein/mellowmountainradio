@@ -400,6 +400,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .nowcard-track { font-family: var(--font-display); font-size: 1.5rem; font-weight: 400; color: #fff; line-height: 1.15; }
 .nowcard-artist { color: var(--accent-soft); font-weight: 600; margin-top: 4px; }
 .nowcard-album { color: rgba(255, 255, 255, .55); font-size: 14px; margin-top: 2px; }
+.nowcard-album:empty { display: none; }
 .nowcard-play { margin-top: 20px; width: 100%; }
 
 /* =========================================================
