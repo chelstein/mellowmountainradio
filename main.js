@@ -1109,10 +1109,10 @@
             '<div class="film-front-meta">' + (dShort ? '<span class="film-date">' + esc(dShort) + '</span>' : '') + '<h3>' + esc(e.title) + '</h3></div>' +
           '</div>' +
           '<div class="film-back">' +
-            '<span class="film-tag">Screening</span>' +
             '<h3>' + esc(e.title) + '</h3>' +
             (when ? '<p class="film-when">' + esc(when) + '</p>' : '') +
             (place ? '<p class="film-venue">' + esc(place) + '</p>' : '') +
+            (e.summary ? '<p class="film-summary">' + esc(e.summary) + '</p>' : '') +
             (e.url ? '<a class="btn btn-primary" href="' + esc(e.url) + '" target="_blank" rel="noopener">Details &amp; tickets</a>' : '') +
           '</div>' +
         '</div>' +

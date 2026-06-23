@@ -11,6 +11,11 @@ function decode(s) {
     .replace(/&([a-z0-9#]+);/gi, function (m, k) { return ENT[k] != null ? ENT[k] : m; })
     .replace(/\s+/g, " ").trim();
 }
+function summarize(html) {
+  var t = decode(String(html || "").replace(/<[^>]+>/g, " "));
+  if (t.length > 220) t = t.slice(0, 217).replace(/\s+\S*$/, "") + "…";
+  return t;
+}
 
 async function siff() {
   const today = new Date().toISOString().slice(0, 10);
@@ -30,7 +35,8 @@ async function siff() {
       venue: decode(e.venue && e.venue.venue) || "",
       city: decode(e.venue && e.venue.city) || "Sedona",
       url: e.url || "",
-      image: (e.image && (e.image.url || e.image)) || ""
+      image: (e.image && (e.image.url || e.image)) || "",
+      summary: summarize(e.excerpt)
     };
   }).filter(function (x) { return x.title && x.date; });
 }
