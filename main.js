@@ -910,7 +910,11 @@
     "Earth, Wind & Fire", "Lionel Richie", "The Commodores", "Three Dog Night",
     "Bachman-Turner Overdrive", ".38 Special", "Lynyrd Skynyrd", "The Marshall Tucker Band",
     "Firefall", "Ambrosia", "Pablo Cruise", "Player", "Al Stewart", "Poco", "Orleans",
-    "The Guess Who", "Dave Mason", "Gino Vannelli", "Robbie Dupree"
+    "The Guess Who", "Dave Mason", "Gino Vannelli", "Robbie Dupree",
+    "Jim Messina", "Loggins & Messina", "England Dan & John Ford Coley", "Stephen Bishop",
+    "Rupert Holmes", "Gerry Rafferty", "Atlanta Rhythm Section", "Looking Glass",
+    "David Gates", "Climax Blues Band", "Nicolette Larson", "Rita Coolidge",
+    "Kim Carnes", "Maria Muldaur", "Carole King", "Linda Ronstadt"
   ];
   // Southwest / Four Corners footprint: searched by geo radius, then state-gated.
   var SW_STATES = { AZ: 1, NM: 1, NV: 1, CA: 1, UT: 1, CO: 1 };
@@ -1052,7 +1056,7 @@
     }).join("");
   }
 
-  var CONCERT_CACHE = "mmr_concerts_v4", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
+  var CONCERT_CACHE = "mmr_concerts_v5", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
   function initConcerts() {
     var box = doc.querySelector("[data-concerts]"), fbox = doc.querySelector("[data-festivals]");
     if (!box && !fbox) return;
