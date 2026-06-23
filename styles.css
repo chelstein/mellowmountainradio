@@ -701,6 +701,24 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .champ-name { font-family: var(--font-display); font-size: 1.25rem; color: var(--heading); line-height: 1.15; margin-top: 3px; }
 .champ-score { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
 
+/* ---- concerts ---- */
+.concert-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); margin-top: 8px; }
+.concert { display: flex; align-items: center; gap: 20px; padding: 18px 6px; border-bottom: 1px solid var(--line); transition: background .15s ease; }
+.concert:hover { background: var(--surface-2); }
+.concert-date { flex: none; width: 58px; text-align: center; display: flex; flex-direction: column; line-height: 1; }
+.cd-mo { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-strong); }
+.cd-day { font-family: var(--font-display); font-size: 1.9rem; color: var(--heading); margin-top: 3px; }
+.concert-info { flex: 1; min-width: 0; }
+.concert-info h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--heading); line-height: 1.12; }
+.concert-venue { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.concert-btn { flex: none; padding: 10px 22px; font-size: 14px; }
+@media (max-width: 600px) {
+  .concert { flex-wrap: wrap; gap: 12px 16px; }
+  .concert-date { width: 46px; }
+  .concert-info { flex: 1 1 60%; }
+  .concert-btn { width: 100%; justify-content: center; }
+}
+
 /* live news / weather audio */
 .news-audio { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 24px; }
 .audio-card {
