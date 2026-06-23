@@ -458,6 +458,18 @@
     { label: "Big 12",  league: "football/college-football", id: 12,   abbr: "ARIZ", foot: "Arizona Wildcats on the call" },
     { label: "Big Sky", league: "football/college-football", id: 2464, abbr: "NAU",  foot: "NAU Lumberjacks, Flagstaff's team" }
   ];
+  var COLLEGE_BB_TEAMS = [
+    { label: "Big 12",  league: "basketball/mens-college-basketball", id: 9,    abbr: "ASU",  foot: "Sun Devils hoops on KAZM" },
+    { label: "Big 12",  league: "basketball/mens-college-basketball", id: 12,   abbr: "ARIZ", foot: "Wildcats basketball, McKale magic" },
+    { label: "Big Sky", league: "basketball/mens-college-basketball", id: 2464, abbr: "NAU",  foot: "Lumberjacks hoops from Flagstaff" }
+  ];
+  // Division standings (level=3 nests conference -> division). title is for the header.
+  var ESPN_STD = "https://site.api.espn.com/apis/v2/sports/";
+  var STANDINGS = [
+    { league: "baseball/mlb",   abbr: "ARI", title: "NL West" },
+    { league: "football/nfl",   abbr: "ARI", title: "NFC West" },
+    { league: "basketball/nba", abbr: "PHX", title: "Pacific" }
+  ];
   var sbTimer = null;
 
   function azDateTime(iso) {
@@ -514,7 +526,22 @@
     }
     return head + '<ul class="g-teams">' + teamRow(away, as > hs) + teamRow(home, hs > as) + '</ul>' + sit;
   }
-  function renderTeamCard(cfg, team, comp) {
+  // compact "next 5" chip strip from a team schedule
+  function azChip(ev, cfg) {
+    var c = ev.competitions[0]; if (!c) return "";
+    var me = (c.competitors || []).filter(function (x) { return x.team.abbreviation === cfg.abbr; })[0];
+    var opp = (c.competitors || []).filter(function (x) { return x !== me; })[0];
+    if (!me || !opp) return "";
+    var d = new Date(ev.date).toLocaleDateString("en-US", { timeZone: "America/Phoenix", month: "numeric", day: "numeric" });
+    return '<span class="g-chip"><b>' + esc(d) + '</b><span>' + (me.homeAway === "home" ? "vs " : "@ ") + esc(opp.team.abbreviation) + '</span></span>';
+  }
+  function buildStrip(events, cfg) {
+    var now = Date.now();
+    var fut = (events || []).filter(function (e) { return new Date(e.date).getTime() > now; }).slice(0, 5);
+    if (fut.length < 2) return "";
+    return '<div class="g-strip" aria-label="Next games">' + fut.map(function (e) { return azChip(e, cfg); }).join("") + '</div>';
+  }
+  function renderTeamCard(cfg, team, comp, strip) {
     var rec = team && team.record && team.record.items && team.record.items[0] && team.record.items[0].summary;
     var meta = [rec, team && team.standingSummary].filter(Boolean).join(" · ");
     var live = !!(comp && comp.status && comp.status.type && comp.status.type.state === "in");
@@ -524,16 +551,18 @@
           (meta ? '<p class="team-meta">' + esc(meta) + '</p>' : '') + '</div>' +
         '<span class="team-league">' + esc(cfg.label) + '</span></header>' +
       '<div class="team-game">' + gameModule(comp) + '</div>' +
+      (strip || "") +
       '<footer class="team-foot">' + esc(cfg.foot) + '</footer></article>';
   }
   function loadAzTeam(cfg) {
     var teamP = fetch(ESPN + cfg.league + "/teams/" + cfg.id, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { return d.team; });
     var sbP = fetch(ESPN + cfg.league + "/scoreboard", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { return d.events || []; }).catch(function () { return []; });
-    return Promise.all([teamP, sbP]).then(function (res) {
-      var team = res[0], events = res[1];
+    var schedP = fetch(ESPN + cfg.league + "/teams/" + cfg.id + "/schedule", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { return d.events || []; }).catch(function () { return []; });
+    return Promise.all([teamP, sbP, schedP]).then(function (res) {
+      var team = res[0], events = res[1], sched = res[2];
       var ev = events.filter(function (e) { return (e.competitions[0].competitors || []).some(function (c) { return c.team.abbreviation === cfg.abbr; }); })[0];
       var comp = ev ? ev.competitions[0] : (team && team.nextEvent && team.nextEvent[0] && team.nextEvent[0].competitions[0]) || null;
-      return renderTeamCard(cfg, team, comp);
+      return renderTeamCard(cfg, team, comp, buildStrip(sched, cfg));
     }).catch(function () {
       return '<article class="team-card"><header class="team-card-head"><div class="team-id"><h3>' + esc(cfg.label) + '</h3></div>' +
         '<span class="team-league">' + esc(cfg.label) + '</span></header><div class="team-game"><div class="g-state g-state--off">Scores unavailable</div></div>' +
@@ -561,6 +590,46 @@
     }).catch(function () { return renderTeamCard(cfg, null, null); });
   }
 
+  // ---- Division standings tables (ESPN level=3) ----
+  function statVal(entry, name) {
+    var s = (entry.stats || []).filter(function (x) { return x.name === name || x.type === name; })[0];
+    return s ? (s.displayValue != null ? s.displayValue : s.value) : "";
+  }
+  function findDivision(node, abbr) {
+    if (!node) return null;
+    var ents = (node.standings && node.standings.entries) || [];
+    if (ents.length && !(node.children && node.children.length) && ents.some(function (e) { return e.team.abbreviation === abbr; })) return node;
+    var kids = node.children || [];
+    for (var i = 0; i < kids.length; i++) { var f = findDivision(kids[i], abbr); if (f) return f; }
+    return null;
+  }
+  function loadStanding(cfg) {
+    return fetch(ESPN_STD + cfg.league + "/standings?level=3", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var div = findDivision(j, cfg.abbr);
+        var ents = ((div && div.standings && div.standings.entries) || []).slice()
+          .sort(function (a, b) { return (parseFloat(statVal(b, "winPercent")) || 0) - (parseFloat(statVal(a, "winPercent")) || 0); });
+        var rows = ents.map(function (e) {
+          var gb = statVal(e, "gamesBehind");
+          return '<tr' + (e.team.abbreviation === cfg.abbr ? ' class="is-az"' : '') + '>' +
+            '<td class="st-team">' + logoImg(e.team, "st-logo") + '<span>' + esc(e.team.abbreviation) + '</span></td>' +
+            '<td>' + esc(statVal(e, "wins")) + '</td><td>' + esc(statVal(e, "losses")) + '</td>' +
+            '<td>' + esc(!gb || gb === "0" ? "—" : gb) + '</td></tr>';
+        }).join("");
+        return '<div class="standings-card"><h3>' + esc(cfg.title) + '</h3>' +
+          '<table class="standings-table"><thead><tr><th>Team</th><th>W</th><th>L</th><th>GB</th></tr></thead><tbody>' +
+          (rows || '<tr><td colspan="4">Standings unavailable</td></tr>') + '</tbody></table></div>';
+      })
+      .catch(function () { return '<div class="standings-card"><h3>' + esc(cfg.title) + '</h3><p class="embed-note">Standings unavailable.</p></div>'; });
+  }
+  function initStandings() {
+    var box = doc.querySelector("[data-standings]");
+    if (!box) return;
+    if (!box.children.length) box.innerHTML = '<p class="rss-loading">Loading standings&hellip;</p>';
+    Promise.all(STANDINGS.map(loadStanding)).then(function (cards) { if (box.isConnected) box.innerHTML = cards.join(""); });
+  }
+
   function renderGrid(grid, configs, loader) {
     if (!grid || !grid.isConnected) return Promise.resolve(false);
     return Promise.all(configs.map(loader)).then(function (cards) {
@@ -573,12 +642,19 @@
     if (sbTimer) { clearInterval(sbTimer); sbTimer = null; }
     var pro = doc.querySelector("[data-az-scores]");
     var college = doc.querySelector("[data-college-scores]");
-    if (!pro && !college) return;
+    var collegeBb = doc.querySelector("[data-college-bb-scores]");
+    initStandings();
+    if (!pro && !college && !collegeBb) return;
     if (pro && !pro.children.length) pro.innerHTML = '<p class="rss-loading">Loading Arizona scores&hellip;</p>';
     if (college && !college.children.length) college.innerHTML = '<p class="rss-loading">Loading Arizona college&hellip;</p>';
+    if (collegeBb && !collegeBb.children.length) collegeBb.innerHTML = '<p class="rss-loading">Loading Arizona college&hellip;</p>';
     function cycle() {
-      Promise.all([renderGrid(pro, AZ_TEAMS, loadAzTeam), renderGrid(college, COLLEGE_TEAMS, loadCollegeTeam)]).then(function (live) {
-        if ((live[0] || live[1]) && !sbTimer) sbTimer = setInterval(cycle, 30000);
+      Promise.all([
+        renderGrid(pro, AZ_TEAMS, loadAzTeam),
+        renderGrid(college, COLLEGE_TEAMS, loadCollegeTeam),
+        renderGrid(collegeBb, COLLEGE_BB_TEAMS, loadCollegeTeam)
+      ]).then(function (live) {
+        if ((live[0] || live[1] || live[2]) && !sbTimer) sbTimer = setInterval(cycle, 30000);
       });
     }
     cycle();
