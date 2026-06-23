@@ -703,69 +703,54 @@
       });
     }).catch(function () { return eventErr("Golf majors"); });
   }
-  function countdownCard(title, badge, days, label, noteHtml, foot) {
-    return '<article class="event-card"><header class="event-head"><h3>' + esc(title) + '</h3><span class="ev-badge">' + esc(badge) + '</span></header>' +
-      '<div class="count"><span class="count-num">' + (days > 0 ? days : 0) + '</span><span class="count-lbl">' + esc(label) + '</span></div>' +
-      '<p class="ev-note">' + noteHtml + '</p><footer class="event-foot">' + esc(foot) + '</footer></article>';
-  }
-  var ncaaChampCache = {};
-  function ncaaChamp(year) {
-    if (ncaaChampCache[year] !== undefined) return Promise.resolve(ncaaChampCache[year]);
-    return fetch(ESPN + "basketball/mens-college-basketball/scoreboard?dates=" + year + "0401-" + year + "0410&groups=100&limit=200", { cache: "no-store" })
-      .then(function (r) { return r.json(); }).then(function (j) {
-        var champ = (j.events || []).filter(function (ev) { var n = (ev.competitions[0].notes || [])[0]; return n && (n.headline || "").indexOf("National Championship") >= 0; })[0];
-        var team = null;
-        if (champ) { var w = (champ.competitions[0].competitors || []).filter(function (x) { return x.winner; })[0]; if (w) team = w.team; }
-        ncaaChampCache[year] = team; return team;
-      }).catch(function () { return null; });
-  }
-  function loadMarchMadness() {
-    var now = new Date(), y = now.getFullYear(), tip = Date.UTC(y, 2, 17);
-    if (now.getTime() > tip + 25 * 86400000) tip = Date.UTC(y + 1, 2, 17);
-    var days = Math.ceil((tip - now.getTime()) / 86400000);
-    var champYear = (now.getMonth() > 3 || (now.getMonth() === 3 && now.getDate() > 10)) ? y : y - 1;
-    return ncaaChamp(champYear).then(function (team) {
-      var note = team ? (logoImg(team, "mm-logo") + '<b>' + esc(team.displayName) + '</b> cut down the nets in ' + champYear + '.') : "68 teams, one bracket.";
-      return countdownCard("March Madness", "NCAA", days, "days to tip-off", note, "Bracket coverage on 780");
-    });
-  }
-  // generic: winner team of a postseason game whose notes headline matches `re`
+  // generic: reigning champion (winner + score) of a postseason game whose notes
+  // headline matches `re`. 100% real, fetched from ESPN.
   function champGame(path, range, groups, re) {
     return fetch(ESPN + path + "/scoreboard?dates=" + range + (groups ? "&groups=" + groups : "") + "&limit=200", { cache: "no-store" })
       .then(function (r) { return r.json(); }).then(function (j) {
         var ev = (j.events || []).filter(function (e) { var n = (e.competitions[0].notes || [])[0]; return n && re.test(n.headline || ""); })[0];
         if (!ev) return null;
-        var w = (ev.competitions[0].competitors || []).filter(function (x) { return x.winner; })[0];
-        return w ? w.team : null;
+        var cs = ev.competitions[0].competitors || [];
+        var w = cs.filter(function (x) { return x.winner; })[0], l = cs.filter(function (x) { return !x.winner; })[0];
+        return w ? { team: w.team, score: compScore(w), opp: l && l.team, oppScore: l && compScore(l) } : null;
       }).catch(function () { return null; });
   }
-  var cfpCache = {};
-  function loadCFP() {
-    var now = new Date(), y = now.getFullYear(), tip = Date.UTC(y, 0, 19);
-    if (now.getTime() > tip + 2 * 86400000) tip = Date.UTC(y + 1, 0, 19);
-    var days = Math.ceil((tip - now.getTime()) / 86400000);
-    var cy = (now.getMonth() === 0 && now.getDate() < 22) ? y - 1 : y;
-    var p = cfpCache[cy] !== undefined ? Promise.resolve(cfpCache[cy])
-      : champGame("football/college-football", cy + "0101-" + cy + "0131", 80, /National Championship/i).then(function (t) { cfpCache[cy] = t; return t; });
-    return p.then(function (t) {
-      var note = t ? (logoImg(t, "mm-logo") + '<b>' + esc(t.displayName) + '</b> won the national title in ' + cy + '.') : "Twelve teams, one trophy.";
-      return countdownCard("College Football Playoff", "CFP", days, "days to the title game", note, "The Playoff, called on 780");
-    });
+  var champCache = {};
+  function getChamp(key, fn) {
+    if (champCache[key] !== undefined) return Promise.resolve(champCache[key]);
+    return fn().then(function (d) { champCache[key] = d; return d; });
   }
-  var sbCache = {};
+  function championCard(title, badge, year, foot, d) {
+    var body = d
+      ? '<div class="champ">' + logoImg(d.team, "champ-logo") +
+          '<div class="champ-meta"><span class="champ-label">' + year + ' Champions</span>' +
+          '<span class="champ-name">' + esc(d.team.displayName) + '</span>' +
+          ((d.opp && d.score != null) ? '<span class="champ-score">def. ' + esc(d.opp.abbreviation) + ' ' + esc(d.score) + '–' + esc(d.oppScore) + '</span>' : "") +
+        '</div></div>'
+      : '<p class="ev-note">A new champion is crowned each season.</p>';
+    return '<article class="event-card"><header class="event-head"><h3>' + esc(title) + '</h3><span class="ev-badge">' + esc(badge) + '</span></header>' +
+      body + '<footer class="event-foot">' + esc(foot) + '</footer></article>';
+  }
+  function loadMarchMadness() {
+    var now = new Date(), y = now.getFullYear();
+    var cy = (now.getMonth() > 3 || (now.getMonth() === 3 && now.getDate() > 10)) ? y : y - 1;
+    return getChamp("mm" + cy, function () { return champGame("basketball/mens-college-basketball", cy + "0401-" + cy + "0410", 100, /National Championship/i); })
+      .then(function (d) { return championCard("March Madness", "NCAA", cy, "Bracket coverage on 780", d); });
+  }
+  function loadCFP() {
+    var now = new Date(), y = now.getFullYear();
+    var cy = (now.getMonth() === 0 && now.getDate() < 22) ? y - 1 : y;
+    return getChamp("cfp" + cy, function () { return champGame("football/college-football", cy + "0101-" + cy + "0131", 80, /National Championship/i); })
+      .then(function (d) { return championCard("College Football Playoff", "CFP", cy, "The Playoff, called on 780", d); });
+  }
   function loadSuperBowl() {
-    var now = new Date(), y = now.getFullYear(), tip = Date.UTC(y, 1, 8);
-    if (now.getTime() > tip + 2 * 86400000) tip = Date.UTC(y + 1, 1, 8);
-    var days = Math.ceil((tip - now.getTime()) / 86400000);
+    var now = new Date(), y = now.getFullYear();
     var cy = (now.getMonth() === 0 || (now.getMonth() === 1 && now.getDate() < 12)) ? y - 1 : y;
-    var p = sbCache[cy] !== undefined ? Promise.resolve(sbCache[cy])
-      : champGame("football/nfl", cy + "0201-" + cy + "0215", null, /Super Bowl/i).then(function (t) { sbCache[cy] = t; return t; });
-    return p.then(function (t) {
-      var note = t ? (logoImg(t, "mm-logo") + '<b>' + esc(t.displayName) + '</b> won the last Super Bowl.') : "The road to the Lombardi Trophy.";
-      return countdownCard("Super Bowl", "NFL", days, "days to the big game", note, "NFL playoffs & the big game on 780");
-    });
+    return getChamp("sb" + cy, function () { return champGame("football/nfl", cy + "0201-" + cy + "0215", null, /Super Bowl/i); })
+      .then(function (d) { return championCard("Super Bowl", "NFL", cy, "NFL playoffs & the big game on 780", d); });
   }
   function olympicsCard() {
+    // Only the officially-confirmed Summer 2028 opening date drives the countdown.
     var now = Date.now();
     var games = [{ type: "Summer", host: "Los Angeles 2028", d: Date.UTC(2028, 6, 14) }, { type: "Winter", host: "French Alps 2030", d: Date.UTC(2030, 1, 1) }];
     var up = games.filter(function (g) { return g.d > now; }).sort(function (a, b) { return a.d - b.d; });
