@@ -441,36 +441,104 @@
     "sports-national": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en"
   };
 
-  var SCOREBOARD_BASE = "https://n8n.mellowmountainradio.com/webhook/api/scoreboard/";
-  function azGameTime(iso) {
-    if (!iso) return "Time TBD";
-    if (/T\d\d:\d\dZ$/.test(iso)) iso = iso.replace("Z", ":00Z");
+  // ---- Live Arizona scoreboards (ESPN public API, CORS-open) --------
+  // One call per team for record + division standing + next/live game, plus the
+  // league scoreboard for accurate live scores. No proxy needed (ESPN sends
+  // Access-Control-Allow-Origin: *). Auto-refreshes while a game is in progress.
+  var ESPN = "https://site.api.espn.com/apis/site/v2/sports/";
+  var AZ_TEAMS = [
+    { label: "MLB", league: "baseball/mlb",   id: 29, abbr: "ARI", foot: "Diamondbacks baseball, live on 780 AM" },
+    { label: "NFL", league: "football/nfl",   id: 22, abbr: "ARI", foot: "Cardinals football, Red Sea all day" },
+    { label: "NBA", league: "basketball/nba", id: 21, abbr: "PHX", foot: "Suns basketball, tip-off coverage" }
+  ];
+  var sbTimer = null;
+
+  function azDateTime(iso) {
+    if (!iso) return "";
     try { return new Date(iso).toLocaleString("en-US", { timeZone: "America/Phoenix", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); }
-    catch (e) { return "Time TBD"; }
+    catch (e) { return ""; }
   }
-  function loadScoreboard(card) {
-    var sport = card.getAttribute("data-sport");
-    var timeEl = card.querySelector("[data-sb-time]");
-    var awayLogo = card.querySelector("[data-sb-away-logo]"), homeLogo = card.querySelector("[data-sb-home-logo]");
-    var awayEl = card.querySelector("[data-sb-away]"), homeEl = card.querySelector("[data-sb-home]");
-    function setLogo(img, url, abbr) {
-      if (!img) return;
-      if (url) { img.onload = function () { img.classList.add("loaded"); }; img.onerror = function () { img.style.visibility = "hidden"; }; img.src = url; img.alt = (abbr || "") + " logo"; }
-      else { img.style.visibility = "hidden"; }
+  function esc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
+  function compScore(c) { if (!c || c.score == null) return null; return typeof c.score === "object" ? (c.score.displayValue || c.score.value) : String(c.score); }
+  function teamLogo(t) { return (t && (t.logo || (t.logos && t.logos[0] && t.logos[0].href))) || ""; }
+  function logoImg(t, cls) { return '<img class="' + cls + '" src="' + esc(teamLogo(t)) + '" alt="" onerror="this.style.visibility=\'hidden\'" />'; }
+
+  function teamRow(c, lead) {
+    var sc = compScore(c);
+    return '<li class="g-row' + (lead ? " is-lead" : "") + '">' + logoImg(c.team, "g-logo") +
+      '<span class="g-abbr">' + esc(c.team.abbreviation || "") + '</span>' +
+      (sc != null ? '<span class="g-score">' + esc(sc) + '</span>' : '') + '</li>';
+  }
+  function gameModule(comp) {
+    if (!comp) return '<div class="g-state g-state--off">Off the schedule</div><p class="g-note">We carry every game on 780 AM &mdash; check back when the next one is set.</p>';
+    var st = (comp.status && comp.status.type) || {};
+    var state = st.state, detail = st.shortDetail || "";
+    var cs = comp.competitors || [];
+    var home = cs.filter(function (c) { return c.homeAway === "home"; })[0] || cs[0];
+    var away = cs.filter(function (c) { return c.homeAway === "away"; })[0] || cs[1];
+    if (!home || !away) return '<div class="g-state">' + esc(detail) + '</div>';
+    if (state === "pre") {
+      return '<div class="g-state">' + esc(azDateTime(comp.date) || detail) + '</div>' +
+        '<div class="g-matchup">' + logoImg(away.team, "g-mlogo") + '<span>' + esc(away.team.abbreviation) + '</span>' +
+          '<em>at</em>' + logoImg(home.team, "g-mlogo") + '<span>' + esc(home.team.abbreviation) + '</span></div>' +
+        (comp.venue && comp.venue.fullName ? '<p class="g-note">' + esc(comp.venue.fullName) + '</p>' : '');
     }
-    fetch(SCOREBOARD_BASE + sport, { cache: "no-store" })
-      .then(function (r) { if (!r.ok) throw new Error(sport + " " + r.status); return r.json(); })
-      .then(function (d) {
-        var hasGame = d && !d.error && (d.startTime || d.homeLogo || d.awayLogo);
-        if (!hasGame) { card.classList.add("score-card--off"); if (timeEl) timeEl.textContent = "No game scheduled"; if (awayEl) awayEl.textContent = ""; if (homeEl) homeEl.textContent = ""; return; }
-        setLogo(awayLogo, d.awayLogo, d.awayAbbr); setLogo(homeLogo, d.homeLogo, d.homeAbbr);
-        if (awayEl) awayEl.textContent = d.awayAbbr || "Away";
-        if (homeEl) homeEl.textContent = d.homeAbbr || "Home";
-        if (timeEl) timeEl.textContent = azGameTime(d.startTime);
-      })
-      .catch(function () { if (timeEl) timeEl.textContent = "Schedule unavailable"; });
+    var live = state === "in";
+    var hs = parseFloat(compScore(home)), as = parseFloat(compScore(away));
+    var head = live
+      ? '<div class="g-state g-state--live"><span class="g-live-dot"></span> Live &middot; ' + esc(detail) + '</div>'
+      : '<div class="g-state g-state--final">' + esc(detail || "Final") + '</div>';
+    var sit = "";
+    if (live && comp.situation) {
+      var s = comp.situation, bits = [];
+      if (s.downDistanceText) bits.push(s.downDistanceText);
+      if (s.outs != null) bits.push(s.outs + (s.outs === 1 ? " out" : " outs"));
+      if (s.balls != null && s.strikes != null) bits.push(s.balls + "-" + s.strikes);
+      if (bits.length) sit = '<p class="g-note">' + esc(bits.join(" · ")) + '</p>';
+    }
+    return head + '<ul class="g-teams">' + teamRow(away, as > hs) + teamRow(home, hs > as) + '</ul>' + sit;
   }
-  function initScoreboards() { doc.querySelectorAll(".score-card[data-sport]").forEach(loadScoreboard); }
+  function renderTeamCard(cfg, team, comp) {
+    var rec = team && team.record && team.record.items && team.record.items[0] && team.record.items[0].summary;
+    var meta = [rec, team && team.standingSummary].filter(Boolean).join(" · ");
+    var live = !!(comp && comp.status && comp.status.type && comp.status.type.state === "in");
+    return '<article class="team-card' + (live ? " team-card--live" : "") + '">' +
+      '<header class="team-card-head">' + logoImg(team, "team-logo") +
+        '<div class="team-id"><h3>' + esc((team && team.displayName) || cfg.label) + '</h3>' +
+          (meta ? '<p class="team-meta">' + esc(meta) + '</p>' : '') + '</div>' +
+        '<span class="team-league">' + esc(cfg.label) + '</span></header>' +
+      '<div class="team-game">' + gameModule(comp) + '</div>' +
+      '<footer class="team-foot">' + esc(cfg.foot) + '</footer></article>';
+  }
+  function loadAzTeam(cfg) {
+    var teamP = fetch(ESPN + cfg.league + "/teams/" + cfg.id, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { return d.team; });
+    var sbP = fetch(ESPN + cfg.league + "/scoreboard", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { return d.events || []; }).catch(function () { return []; });
+    return Promise.all([teamP, sbP]).then(function (res) {
+      var team = res[0], events = res[1];
+      var ev = events.filter(function (e) { return (e.competitions[0].competitors || []).some(function (c) { return c.team.abbreviation === cfg.abbr; }); })[0];
+      var comp = ev ? ev.competitions[0] : (team && team.nextEvent && team.nextEvent[0] && team.nextEvent[0].competitions[0]) || null;
+      return renderTeamCard(cfg, team, comp);
+    }).catch(function () {
+      return '<article class="team-card"><header class="team-card-head"><div class="team-id"><h3>' + esc(cfg.label) + '</h3></div>' +
+        '<span class="team-league">' + esc(cfg.label) + '</span></header><div class="team-game"><div class="g-state g-state--off">Scores unavailable</div></div>' +
+        '<footer class="team-foot">' + esc(cfg.foot) + '</footer></article>';
+    });
+  }
+  function initScoreboards() {
+    var grid = doc.querySelector("[data-az-scores]");
+    if (sbTimer) { clearInterval(sbTimer); sbTimer = null; }
+    if (!grid) return;
+    if (!grid.children.length) grid.innerHTML = '<p class="rss-loading">Loading Arizona scores&hellip;</p>';
+    function render() {
+      if (!grid.isConnected) { if (sbTimer) { clearInterval(sbTimer); sbTimer = null; } return; }
+      Promise.all(AZ_TEAMS.map(loadAzTeam)).then(function (cards) {
+        if (!grid.isConnected) return;
+        grid.innerHTML = cards.join("");
+        if (grid.querySelector(".team-card--live") && !sbTimer) sbTimer = setInterval(render, 30000);
+      });
+    }
+    render();
+  }
 
   function stripHtml(str) { if (!str) return ""; var d = doc.createElement("div"); d.innerHTML = str; return (d.textContent || "").replace(/\s+/g, " ").trim(); }
   function feedText(node, tag) { var el = node.getElementsByTagName(tag)[0]; return el ? el.textContent : ""; }
