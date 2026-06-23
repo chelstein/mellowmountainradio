@@ -902,10 +902,15 @@
   // developer.ticketmaster.com -> My Apps -> Consumer Key
   var TM_KEY = "H39V0X17gyaXgi9T85ChGhGWsk3gTPdr";
   var CONCERT_ARTISTS = [
-    "Steely Dan", "The Doobie Brothers", "Chicago", "Toto", "Boz Scaggs",
-    "Michael McDonald", "Christopher Cross", "Kenny Loggins", "Steve Winwood",
-    "Stevie Nicks", "James Taylor", "Jackson Browne", "America", "Little River Band",
-    "Air Supply", "Hall & Oates", "Fleetwood Mac", "The Beach Boys"
+    "Eagles", "Don Henley", "Joe Walsh", "Fleetwood Mac", "Stevie Nicks", "Lindsey Buckingham",
+    "Steely Dan", "The Doobie Brothers", "Michael McDonald", "Chicago", "Toto", "Boz Scaggs",
+    "Christopher Cross", "Kenny Loggins", "Steve Winwood", "Hall & Oates", "Daryl Hall", "John Oates",
+    "James Taylor", "Jackson Browne", "Graham Nash", "Stephen Stills", "Bonnie Raitt",
+    "America", "Little River Band", "Air Supply", "The Beach Boys", "Seals & Crofts",
+    "Earth, Wind & Fire", "Lionel Richie", "The Commodores", "Three Dog Night",
+    "Bachman-Turner Overdrive", ".38 Special", "Lynyrd Skynyrd", "The Marshall Tucker Band",
+    "Firefall", "Ambrosia", "Pablo Cruise", "Player", "Al Stewart", "Poco", "Orleans",
+    "The Guess Who", "Dave Mason", "Gino Vannelli", "Robbie Dupree"
   ];
   // Southwest / Four Corners footprint: searched by geo radius, then state-gated.
   var SW_STATES = { AZ: 1, NM: 1, NV: 1, CA: 1, UT: 1, CO: 1 };
@@ -960,7 +965,7 @@
   }
   function renderConcerts(box, items) {
     if (!items.length) { box.innerHTML = '<p class="embed-note">No upcoming shows listed right now &mdash; we\'ll keep watching the wire.</p>'; return; }
-    box.innerHTML = items.slice(0, 40).map(function (e) {
+    box.innerHTML = items.slice(0, 60).map(function (e) {
       var d = new Date(e.date + "T" + (e.time || "20:00:00"));
       var mo = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short" });
       var day = isNaN(d) ? "" : d.getDate();
@@ -1047,7 +1052,7 @@
     }).join("");
   }
 
-  var CONCERT_CACHE = "mmr_concerts_v3", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
+  var CONCERT_CACHE = "mmr_concerts_v4", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
   function initConcerts() {
     var box = doc.querySelector("[data-concerts]"), fbox = doc.querySelector("[data-festivals]");
     if (!box && !fbox) return;
