@@ -688,6 +688,7 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .major-row--next .maj-name { font-weight: 700; }
 .maj-champ { color: var(--accent-strong) !important; font-family: var(--font-display); font-weight: 400; }
 .ev-note b { color: var(--heading); font-weight: 700; }
+.ev-note .mm-logo { display: inline-block; width: 18px; height: 18px; object-fit: contain; vertical-align: -4px; margin-right: 5px; }
 /* countdown cards */
 .count { text-align: center; padding: 18px 0 8px; }
 .count-num { display: block; font-family: var(--font-display); font-size: 3.1rem; line-height: 1; color: var(--accent-strong); font-variant-numeric: tabular-nums; }
