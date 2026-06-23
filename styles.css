@@ -717,6 +717,18 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 @media (max-width: 900px) { .festival-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .festival-grid { grid-template-columns: 1fr; } }
 
+/* ---- movie showtimes ---- */
+.showing-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); margin-top: 8px; }
+.showing { display: flex; align-items: center; gap: 18px; padding: 14px 6px; border-bottom: 1px solid var(--line); transition: background .15s ease; }
+.showing:hover { background: var(--surface-2); }
+.showing-poster { flex: none; width: 54px; height: 80px; object-fit: cover; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--line-soft); background: var(--navy); }
+@media (max-width: 640px) {
+  .showing { flex-wrap: wrap; gap: 12px 14px; }
+  .showing-poster { width: 46px; height: 68px; }
+  .showing .concert-info { flex: 1 1 50%; }
+  .showing .concert-btn { width: 100%; justify-content: center; }
+}
+
 /* ---- concerts ---- */
 .concert-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); margin-top: 8px; }
 .concert { display: flex; align-items: center; gap: 18px; padding: 16px 6px; border-bottom: 1px solid var(--line); transition: background .15s ease; }

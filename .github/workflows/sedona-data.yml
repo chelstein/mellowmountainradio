@@ -1,0 +1,40 @@
+name: Update Sedona data
+
+# Free server-side relay: GitHub's runners fetch sources that don't send CORS
+# (Sedona Film Festival, Sedona Public Library) and commit JSON the static site
+# reads same-origin. Runs on a schedule and on demand.
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sedona-data
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Fetch showtimes (Sedona Film Festival)
+        run: node scripts/fetch-showtimes.mjs
+        continue-on-error: true
+      - name: Commit changes if any
+        run: |
+          git config user.name "mmr-data-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add showtimes.json library-events.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Update Sedona data [skip ci]"
+            git push
+          fi
