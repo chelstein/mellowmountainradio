@@ -900,20 +900,24 @@
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
   // developer.ticketmaster.com -> My Apps -> Consumer Key
-  var TM_KEY = "";
+  var TM_KEY = "H39V0X17gyaXgi9T85ChGhGWsk3gTPdr";
   var CONCERT_ARTISTS = [
     "Steely Dan", "The Doobie Brothers", "Chicago", "Toto", "Boz Scaggs",
     "Michael McDonald", "Christopher Cross", "Kenny Loggins", "Steve Winwood",
     "Stevie Nicks", "James Taylor", "Jackson Browne", "America", "Little River Band",
     "Air Supply", "Hall & Oates", "Fleetwood Mac", "The Beach Boys"
   ];
+  // Southwest / Four Corners footprint: searched by geo radius, then state-gated.
+  var SW_STATES = { AZ: 1, NM: 1, NV: 1, CA: 1, UT: 1, CO: 1 };
   function tmMatch(e, artist) {
     var a = artist.toLowerCase(), atts = (e._embedded && e._embedded.attractions) || [];
-    return atts.some(function (x) { return (x.name || "").toLowerCase() === a; }) || (e.name || "").toLowerCase().indexOf(a) >= 0;
+    // exact attraction match keeps tribute bands out; fall back to name only if no attractions
+    if (atts.length) return atts.some(function (x) { return (x.name || "").toLowerCase() === a; });
+    return (e.name || "").toLowerCase().indexOf(a) >= 0;
   }
   function fetchArtistShows(artist) {
     var url = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=" + TM_KEY +
-      "&classificationName=Music&sort=date,asc&size=6&keyword=" + encodeURIComponent(artist);
+      "&classificationName=Music&latlong=36.0,-110.5&radius=550&unit=miles&sort=date,asc&size=20&keyword=" + encodeURIComponent(artist);
     return fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       var evs = (d && d._embedded && d._embedded.events) || [];
       return evs.filter(function (e) { return tmMatch(e, artist); }).map(function (e) {
@@ -921,7 +925,7 @@
         var st = (e.dates && e.dates.start) || {};
         return { id: e.id, artist: artist, date: st.localDate || "", time: st.localTime || "",
           venue: v.name || "", city: (v.city && v.city.name) || "", state: (v.state && v.state.stateCode) || "", url: e.url || "" };
-      });
+      }).filter(function (x) { return SW_STATES[x.state]; });
     }).catch(function () { return []; });
   }
   function renderConcerts(box, items) {
@@ -938,16 +942,23 @@
         '</article>';
     }).join("");
   }
+  var CONCERT_CACHE = "mmr_concerts_v1", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
   function initConcerts() {
     var box = doc.querySelector("[data-concerts]");
     if (!box) return;
     if (!TM_KEY) { box.innerHTML = '<p class="embed-note">Concert listings are tuning in shortly.</p>'; return; }
+    try {
+      var hit = JSON.parse(localStorage.getItem(CONCERT_CACHE) || "null");
+      if (hit && hit.items && (Date.now() - hit.t) < CONCERT_TTL) { renderConcerts(box, hit.items); return; }
+    } catch (e) {}
     box.innerHTML = '<p class="rss-loading">Finding shows on the mellow side of the dial&hellip;</p>';
     Promise.all(CONCERT_ARTISTS.map(fetchArtistShows)).then(function (lists) {
       var all = [], seen = {};
       lists.forEach(function (l) { l.forEach(function (e) { all.push(e); }); });
       all.sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); });
-      renderConcerts(box, all.filter(function (e) { if (seen[e.id]) return false; seen[e.id] = 1; return true; }));
+      var items = all.filter(function (e) { if (seen[e.id]) return false; seen[e.id] = 1; return true; });
+      try { localStorage.setItem(CONCERT_CACHE, JSON.stringify({ t: Date.now(), items: items })); } catch (e) {}
+      renderConcerts(box, items);
     }).catch(function () { box.innerHTML = '<p class="embed-note">Concert listings are unavailable right now.</p>'; });
   }
 
