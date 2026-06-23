@@ -194,13 +194,15 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @keyframes ping { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(2.6); opacity: 0; } }
 
 .eq { display: inline-flex; align-items: flex-end; gap: 3px; height: 18px; }
-.eq i { width: 3px; height: 6px; background: var(--accent-soft); border-radius: 2px; }
-.is-playing .eq i { animation: eq .9s ease-in-out infinite; }
-.eq i:nth-child(1) { animation-delay: -.2s; }
-.eq i:nth-child(2) { animation-delay: -.5s; }
-.eq i:nth-child(3) { animation-delay: -.1s; }
-.eq i:nth-child(4) { animation-delay: -.7s; }
-@keyframes eq { 0%, 100% { height: 5px; } 50% { height: 17px; } }
+.eq i { width: 3px; height: 5px; background: var(--accent-soft); border-radius: 2px; }
+.is-playing .eq i { animation: eq 1s ease-in-out infinite; }
+/* desynced durations + delays per bar => organic, non-repeating motion */
+.eq i:nth-child(1) { animation-duration: .82s; animation-delay: -.20s; }
+.eq i:nth-child(2) { animation-duration: 1.18s; animation-delay: -.55s; }
+.eq i:nth-child(3) { animation-duration: .66s; animation-delay: -.10s; }
+.eq i:nth-child(4) { animation-duration: 1.36s; animation-delay: -.70s; }
+.eq i:nth-child(5) { animation-duration: .94s; animation-delay: -.38s; }
+@keyframes eq { 0%, 100% { height: 4px; } 50% { height: 17px; } }
 
 /* =========================================================
    HEADER / NAV
@@ -335,6 +337,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
 }
+/* the broadcast waves breathe outward while we're on air */
+body.is-playing .hero-waves { animation: wave-breathe 4.4s ease-in-out infinite; }
+@keyframes wave-breathe {
+  0%, 100% { transform: translateY(-50%) scale(1);     opacity: .5; }
+  50%      { transform: translateY(-50%) scale(1.045); opacity: .66; }
+}
 
 .hero-inner {
   width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 24px;
@@ -407,8 +415,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .player-listeners { color: var(--accent-soft); font-weight: 700; }
 .player-listeners:empty { display: none; }
 .player-listeners:not(:empty)::before { content: "· "; opacity: .65; }
-/* live glow on the album art while streaming */
-body.is-playing .nowcard-art { box-shadow: 0 0 0 1px rgba(207, 118, 105, .4), 0 0 36px -6px rgba(207, 118, 105, .55); }
+/* live glow on the album art while streaming, gently pulsing */
+body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
+@keyframes now-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(207, 118, 105, .35), 0 0 26px -8px rgba(207, 118, 105, .45); }
+  50%      { box-shadow: 0 0 0 1px rgba(207, 118, 105, .55), 0 0 46px -4px rgba(207, 118, 105, .72); }
+}
 .nowcard-play { margin-top: 20px; width: 100%; }
 
 /* =========================================================

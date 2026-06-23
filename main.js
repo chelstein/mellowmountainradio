@@ -71,7 +71,7 @@
     '<div class="player" data-player aria-live="polite"><div class="player-inner wrap">' +
       '<div class="player-meta">' +
         '<img class="player-art" data-now-art src="Color%20logo%20-%20no%20background.svg" alt="" aria-hidden="true" />' +
-        '<span class="player-eq eq" data-eq aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
+        '<span class="player-eq eq" data-eq aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' +
         '<span class="player-onair"><span class="onair-dot" aria-hidden="true"></span> On air <span class="player-listeners" data-listeners></span></span>' +
         '<span class="player-track"><span class="player-title" data-now-track>Mellow Mountain Radio</span><span class="player-artist" data-now-artist>106.5 FM &amp; 780 AM</span></span>' +
       '</div>' +
