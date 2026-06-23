@@ -915,6 +915,11 @@
     if (atts.length) return atts.some(function (x) { return (x.name || "").toLowerCase() === a; });
     return (e.name || "").toLowerCase().indexOf(a) >= 0;
   }
+  function pickImage(imgs) {
+    imgs = imgs || [];
+    var w = imgs.filter(function (i) { return i.ratio === "16_9" && i.width >= 600; }).sort(function (a, b) { return a.width - b.width; })[0];
+    return ((w || imgs.filter(function (i) { return i.ratio === "16_9"; })[0] || imgs[0]) || {}).url || "";
+  }
   function fetchArtistShows(artist) {
     var url = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=" + TM_KEY +
       "&classificationName=Music&latlong=36.0,-110.5&radius=550&unit=miles&sort=date,asc&size=20&keyword=" + encodeURIComponent(artist);
@@ -923,10 +928,35 @@
       return evs.filter(function (e) { return tmMatch(e, artist); }).map(function (e) {
         var v = (e._embedded && e._embedded.venues && e._embedded.venues[0]) || {};
         var st = (e.dates && e.dates.start) || {};
-        return { id: e.id, artist: artist, date: st.localDate || "", time: st.localTime || "",
-          venue: v.name || "", city: (v.city && v.city.name) || "", state: (v.state && v.state.stateCode) || "", url: e.url || "" };
+        var pr = (e.priceRanges && e.priceRanges[0]) || null;
+        var others = ((e._embedded && e._embedded.attractions) || []).map(function (a) { return a.name; })
+          .filter(function (n) { return n && n.toLowerCase() !== artist.toLowerCase(); });
+        return {
+          id: e.id, artist: artist, date: st.localDate || "", time: st.localTime || "",
+          venue: v.name || "", city: (v.city && v.city.name) || "", state: (v.state && v.state.stateCode) || "",
+          url: e.url || "", img: pickImage(e.images),
+          price: pr ? Math.round(pr.min) : null,
+          status: (e.dates && e.dates.status && e.dates.status.code) || "",
+          saleStart: (e.sales && e.sales.public && e.sales.public.startDateTime) || "",
+          lineup: others.slice(0, 2)
+        };
       }).filter(function (x) { return SW_STATES[x.state]; });
     }).catch(function () { return []; });
+  }
+  function concertWhen(date, time) {
+    var d = new Date(date + "T" + (time || "20:00:00"));
+    if (isNaN(d)) return "";
+    var day = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+    return time ? day + " · " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : day;
+  }
+  function concertStatus(e) {
+    var s = (e.status || "").toLowerCase();
+    if (s === "onsale") return '<span class="cstat cstat--on">On sale</span>';
+    if (e.saleStart && new Date(e.saleStart).getTime() > Date.now())
+      return '<span class="cstat cstat--soon">On sale ' + esc(new Date(e.saleStart).toLocaleDateString("en-US", { month: "short", day: "numeric" })) + '</span>';
+    if (s === "offsale") return '<span class="cstat">Off sale</span>';
+    if (s) return '<span class="cstat cstat--alert">' + esc(s.charAt(0).toUpperCase() + s.slice(1)) + '</span>';
+    return "";
   }
   function renderConcerts(box, items) {
     if (!items.length) { box.innerHTML = '<p class="embed-note">No upcoming shows listed right now &mdash; we\'ll keep watching the wire.</p>'; return; }
@@ -935,14 +965,21 @@
       var mo = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short" });
       var day = isNaN(d) ? "" : d.getDate();
       var place = [e.venue, [e.city, e.state].filter(Boolean).join(", ")].filter(Boolean).join(" · ");
+      var btnLabel = (!e.status || (e.status || "").toLowerCase() === "onsale") ? "Tickets" : "Details";
       return '<article class="concert">' +
         '<div class="concert-date"><span class="cd-mo">' + esc(mo) + '</span><span class="cd-day">' + esc(day) + '</span></div>' +
-        '<div class="concert-info"><h3>' + esc(e.artist) + '</h3>' + (place ? '<p class="concert-venue">' + esc(place) + '</p>' : '') + '</div>' +
-        (e.url ? '<a class="btn btn-primary concert-btn" href="' + esc(e.url) + '" target="_blank" rel="noopener">Tickets</a>' : '') +
+        (e.img ? '<img class="concert-thumb" src="' + esc(e.img) + '" alt="" loading="lazy" onerror="this.remove()" />' : '') +
+        '<div class="concert-info"><h3>' + esc(e.artist) + '</h3>' +
+          (e.lineup && e.lineup.length ? '<p class="concert-lineup">with ' + esc(e.lineup.join(", ")) + '</p>' : '') +
+          (place ? '<p class="concert-venue">' + esc(place) + '</p>' : '') +
+          (concertWhen(e.date, e.time) ? '<p class="concert-when">' + esc(concertWhen(e.date, e.time)) + '</p>' : '') +
+        '</div>' +
+        '<div class="concert-meta">' + (e.price ? '<span class="concert-price">From $' + e.price + '</span>' : '') + concertStatus(e) + '</div>' +
+        (e.url ? '<a class="btn btn-primary concert-btn" href="' + esc(e.url) + '" target="_blank" rel="noopener">' + btnLabel + '</a>' : '') +
         '</article>';
     }).join("");
   }
-  var CONCERT_CACHE = "mmr_concerts_v1", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
+  var CONCERT_CACHE = "mmr_concerts_v2", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
   function initConcerts() {
     var box = doc.querySelector("[data-concerts]");
     if (!box) return;

@@ -703,19 +703,30 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 
 /* ---- concerts ---- */
 .concert-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); margin-top: 8px; }
-.concert { display: flex; align-items: center; gap: 20px; padding: 18px 6px; border-bottom: 1px solid var(--line); transition: background .15s ease; }
+.concert { display: flex; align-items: center; gap: 18px; padding: 16px 6px; border-bottom: 1px solid var(--line); transition: background .15s ease; }
 .concert:hover { background: var(--surface-2); }
-.concert-date { flex: none; width: 58px; text-align: center; display: flex; flex-direction: column; line-height: 1; }
+.concert-date { flex: none; width: 52px; text-align: center; display: flex; flex-direction: column; line-height: 1; }
 .cd-mo { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-strong); }
-.cd-day { font-family: var(--font-display); font-size: 1.9rem; color: var(--heading); margin-top: 3px; }
+.cd-day { font-family: var(--font-display); font-size: 1.85rem; color: var(--heading); margin-top: 3px; }
+.concert-thumb { flex: none; width: 100px; height: 66px; object-fit: cover; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--line-soft); }
 .concert-info { flex: 1; min-width: 0; }
-.concert-info h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--heading); line-height: 1.12; }
-.concert-venue { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.concert-info h3 { font-family: var(--font-display); font-size: 1.28rem; color: var(--heading); line-height: 1.12; }
+.concert-lineup { color: var(--accent-strong); font-size: 13px; font-weight: 600; margin-top: 2px; }
+.concert-venue { color: var(--ink); font-size: 14px; margin-top: 4px; }
+.concert-when { color: var(--muted); font-size: 13px; margin-top: 3px; }
+.concert-meta { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; text-align: right; }
+.concert-price { font-family: var(--font-display); font-size: 1.1rem; color: var(--heading); }
+.cstat { font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: var(--pill); color: var(--muted); background: var(--surface-2); white-space: nowrap; }
+.cstat--on { color: #3a7d54; background: rgba(58, 125, 84, .13); }
+.cstat--soon { color: var(--accent-strong); background: color-mix(in srgb, var(--accent) 13%, transparent); }
+.cstat--alert { color: var(--accent-deep); background: rgba(154, 68, 61, .13); }
 .concert-btn { flex: none; padding: 10px 22px; font-size: 14px; }
-@media (max-width: 600px) {
-  .concert { flex-wrap: wrap; gap: 12px 16px; }
-  .concert-date { width: 46px; }
-  .concert-info { flex: 1 1 60%; }
+@media (max-width: 640px) {
+  .concert { flex-wrap: wrap; gap: 12px 14px; }
+  .concert-date { width: 44px; }
+  .concert-thumb { width: 76px; height: 50px; }
+  .concert-info { flex: 1 1 50%; }
+  .concert-meta { flex-direction: row; align-items: center; gap: 10px; text-align: left; }
   .concert-btn { width: 100%; justify-content: center; }
 }
 
