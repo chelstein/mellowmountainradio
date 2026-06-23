@@ -631,6 +631,28 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .g-note { margin-top: 9px; font-size: 12.5px; color: var(--muted); }
 .team-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
 
+/* ---- next-5 schedule strip ---- */
+.g-strip { display: flex; gap: 6px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.g-strip::-webkit-scrollbar { display: none; }
+.g-chip { flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 9px; border-radius: var(--r-sm); background: var(--surface-2); border: 1px solid var(--line-soft); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.g-chip b { color: var(--heading); font-family: var(--font-display); font-weight: 400; font-size: 13px; }
+.g-chip span { font-weight: 700; letter-spacing: .02em; }
+
+/* ---- division standings tables ---- */
+.standings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.standings-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+.standings-card h3 { font-family: var(--font-display); font-size: 1.05rem; color: var(--accent-strong); letter-spacing: .04em; margin-bottom: 10px; }
+.standings-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.standings-table th { text-align: right; font-weight: 700; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 4px; border-bottom: 1px solid var(--line); }
+.standings-table th:first-child { text-align: left; }
+.standings-table td { text-align: right; padding: 7px 4px; color: var(--ink); border-bottom: 1px solid var(--line-soft); font-variant-numeric: tabular-nums; }
+.standings-table tr:last-child td { border-bottom: 0; }
+.st-team { display: flex; align-items: center; gap: 8px; text-align: left; font-weight: 600; color: var(--heading); }
+.st-logo { width: 20px; height: 20px; object-fit: contain; flex: none; }
+.standings-table .is-az td { background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--heading); font-weight: 800; }
+.standings-table .is-az td:first-child { border-radius: 6px 0 0 6px; }
+.standings-table .is-az td:last-child { border-radius: 0 6px 6px 0; }
+
 /* live news / weather audio */
 .news-audio { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 24px; }
 .audio-card {
@@ -959,7 +981,7 @@ body:not(.is-playing) .listen-btn::after {
   }
   .primary-nav.open .mega.open { display: grid; }
   .listen-ways { grid-template-columns: 1fr 1fr; gap: 24px; }
-  .score-grid, .adv-grid { grid-template-columns: 1fr; }
+  .score-grid, .adv-grid, .standings-grid { grid-template-columns: 1fr; }
   .partner-grid { grid-template-columns: 1fr 1fr; }
 }
 
