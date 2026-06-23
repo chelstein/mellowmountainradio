@@ -29,7 +29,7 @@
           '<a role="menuitem" href="sports.html#mlb">MLB &middot; Diamondbacks</a><a role="menuitem" href="sports.html#nba">NBA &middot; Suns</a><a role="menuitem" href="sports.html#nfl">NFL &middot; Cardinals</a><a role="menuitem" href="sports.html#college">College &middot; ASU, U of A, NAU</a><a role="menuitem" href="sports.html#ufc">UFC</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="music"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Music &amp; More</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
+          '<a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html">All Adventures</a>' +
@@ -57,7 +57,7 @@
           '<a href="https://twitter.com/mellowmountain1" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M18.9 2H22l-7.1 8.1L23.3 22h-6.6l-5.2-6.8L5.6 22H2.5l7.6-8.7L1 2h6.8l4.7 6.2Zm-1.2 18h1.8L7.4 3.8H5.5Z"/></svg></a>' +
         '</div>' +
       '</div>' +
-      '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
+      '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
       '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#weather">Traffic &amp; Weather</a><a href="events.html">Events</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
@@ -895,10 +895,67 @@
     if (items[current]) items[current].classList.add("is-live");
   }
 
+  /* =========================================================
+     CONCERTS (Ticketmaster Discovery API, direct)
+     ========================================================= */
+  // Paste your free Ticketmaster "Consumer Key" here to go live:
+  // developer.ticketmaster.com -> My Apps -> Consumer Key
+  var TM_KEY = "";
+  var CONCERT_ARTISTS = [
+    "Steely Dan", "The Doobie Brothers", "Chicago", "Toto", "Boz Scaggs",
+    "Michael McDonald", "Christopher Cross", "Kenny Loggins", "Steve Winwood",
+    "Stevie Nicks", "James Taylor", "Jackson Browne", "America", "Little River Band",
+    "Air Supply", "Hall & Oates", "Fleetwood Mac", "The Beach Boys"
+  ];
+  function tmMatch(e, artist) {
+    var a = artist.toLowerCase(), atts = (e._embedded && e._embedded.attractions) || [];
+    return atts.some(function (x) { return (x.name || "").toLowerCase() === a; }) || (e.name || "").toLowerCase().indexOf(a) >= 0;
+  }
+  function fetchArtistShows(artist) {
+    var url = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=" + TM_KEY +
+      "&classificationName=Music&sort=date,asc&size=6&keyword=" + encodeURIComponent(artist);
+    return fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      var evs = (d && d._embedded && d._embedded.events) || [];
+      return evs.filter(function (e) { return tmMatch(e, artist); }).map(function (e) {
+        var v = (e._embedded && e._embedded.venues && e._embedded.venues[0]) || {};
+        var st = (e.dates && e.dates.start) || {};
+        return { id: e.id, artist: artist, date: st.localDate || "", time: st.localTime || "",
+          venue: v.name || "", city: (v.city && v.city.name) || "", state: (v.state && v.state.stateCode) || "", url: e.url || "" };
+      });
+    }).catch(function () { return []; });
+  }
+  function renderConcerts(box, items) {
+    if (!items.length) { box.innerHTML = '<p class="embed-note">No upcoming shows listed right now &mdash; we\'ll keep watching the wire.</p>'; return; }
+    box.innerHTML = items.slice(0, 40).map(function (e) {
+      var d = new Date(e.date + "T" + (e.time || "20:00:00"));
+      var mo = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short" });
+      var day = isNaN(d) ? "" : d.getDate();
+      var place = [e.venue, [e.city, e.state].filter(Boolean).join(", ")].filter(Boolean).join(" · ");
+      return '<article class="concert">' +
+        '<div class="concert-date"><span class="cd-mo">' + esc(mo) + '</span><span class="cd-day">' + esc(day) + '</span></div>' +
+        '<div class="concert-info"><h3>' + esc(e.artist) + '</h3>' + (place ? '<p class="concert-venue">' + esc(place) + '</p>' : '') + '</div>' +
+        (e.url ? '<a class="btn btn-primary concert-btn" href="' + esc(e.url) + '" target="_blank" rel="noopener">Tickets</a>' : '') +
+        '</article>';
+    }).join("");
+  }
+  function initConcerts() {
+    var box = doc.querySelector("[data-concerts]");
+    if (!box) return;
+    if (!TM_KEY) { box.innerHTML = '<p class="embed-note">Concert listings are tuning in shortly.</p>'; return; }
+    box.innerHTML = '<p class="rss-loading">Finding shows on the mellow side of the dial&hellip;</p>';
+    Promise.all(CONCERT_ARTISTS.map(fetchArtistShows)).then(function (lists) {
+      var all = [], seen = {};
+      lists.forEach(function (l) { l.forEach(function (e) { all.push(e); }); });
+      all.sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); });
+      renderConcerts(box, all.filter(function (e) { if (seen[e.id]) return false; seen[e.id] = 1; return true; }));
+    }).catch(function () { box.innerHTML = '<p class="embed-note">Concert listings are unavailable right now.</p>'; });
+  }
+
   function initPage() {
     initReveal();
     initScoreboards();
     initFeeds();
+    initConcerts();
     initHeritage();
     initSchedule();
     renderPodcasts();
