@@ -40,17 +40,14 @@ function parseStart(block) {
     blocks.forEach(function (b) {
       const s = parseStart(b); if (!s || s.date < today) return;
       const title = icalText(field(b, "SUMMARY")); if (!title) return;
-      const category = icalText(field(b, "CATEGORIES"));
-      if (/private event|staff/i.test(category)) return; // internal/non-public
+      const rawCat = icalText(field(b, "CATEGORIES"));
+      if (/private|staff|commercial|library business/i.test(rawCat)) return; // internal / non-public
+      const category = (rawCat.split(",")[0] || "Event").trim()
+        .replace(/\s+(Program|Meeting|Event)$/i, "")
+        .replace(/^Library[\s-]+Community$/i, "Community")
+        .trim() || "Event";
       if (seen[title]) return; seen[title] = 1; // next occurrence of each distinct event
-      events.push({
-        title: title,
-        date: s.date,
-        time: s.time,
-        location: icalText(field(b, "LOCATION")),
-        category: category.replace(/\s+(Program|Meeting)$/i, ""),
-        url: field(b, "URL")
-      });
+      events.push({ title: title, date: s.date, time: s.time, location: icalText(field(b, "LOCATION")), category: category, url: field(b, "URL") });
     });
     events.sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); });
     out.events = events.slice(0, 50);

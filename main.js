@@ -1131,23 +1131,53 @@
   /* =========================================================
      LIBRARY EVENTS (Community Library Sedona via library-events.json)
      ========================================================= */
+  function libCatClass(cat) {
+    var c = (cat || "").toLowerCase();
+    if (/youth|teen|kid|story|steam|camp/.test(c)) return "cat-youth";
+    if (/exhibit|art|display|gallery/.test(c)) return "cat-art";
+    if (/nonprofit|community|civic/.test(c)) return "cat-comm";
+    if (/library|book|author|read|writ|lang|conversation/.test(c)) return "cat-book";
+    return "cat-default";
+  }
   function renderLibrary(box, items) {
     if (!items.length) { box.innerHTML = '<p class="embed-note">No upcoming events posted right now &mdash; check back soon.</p>'; return; }
-    box.innerHTML = items.slice(0, 50).map(function (e) {
+    items = items.slice(0, 60);
+    var cats = [], seen = {};
+    items.forEach(function (e) { var c = e.category || "Other"; if (!seen[c]) { seen[c] = 1; cats.push(c); } });
+    cats.sort();
+    var chips = '<button class="chip is-active" data-filter="all">All <span>' + items.length + '</span></button>' +
+      cats.map(function (c) {
+        var n = items.filter(function (e) { return (e.category || "Other") === c; }).length;
+        return '<button class="chip ' + libCatClass(c) + '" data-filter="' + esc(c) + '">' + esc(c) + ' <span>' + n + '</span></button>';
+      }).join("");
+    var cards = items.map(function (e) {
       var d = new Date(e.date + "T" + (e.time || "09:00") + ":00");
-      var mo = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short" });
-      var day = isNaN(d) ? "" : d.getDate();
-      var when = isNaN(d) ? "" : d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) + (e.time ? " · " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : " · All day");
-      return '<article class="showing libev">' +
-        '<div class="concert-date"><span class="cd-mo">' + esc(mo) + '</span><span class="cd-day">' + esc(day) + '</span></div>' +
-        '<div class="concert-info"><h3>' + esc(e.title) + '</h3>' +
-          (e.location ? '<p class="concert-venue">' + esc(e.location) + '</p>' : '') +
-          (when ? '<p class="concert-when">' + esc(when) + '</p>' : '') +
-        '</div>' +
-        (e.category ? '<span class="lib-cat">' + esc(e.category) + '</span>' : '') +
-        (e.url ? '<a class="btn btn-primary concert-btn" href="' + esc(e.url) + '" target="_blank" rel="noopener">Details</a>' : '') +
-        '</article>';
+      var dow = isNaN(d) ? "" : d.toLocaleDateString("en-US", { weekday: "short" });
+      var dnum = isNaN(d) ? "" : d.getDate();
+      var mon = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short" });
+      var t = e.time ? d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "All day";
+      var meta = [dow, t, e.location].filter(Boolean).join(" · ");
+      var cat = e.category || "Other";
+      return '<article class="lev ' + libCatClass(cat) + '" data-cat="' + esc(cat) + '">' +
+        '<div class="lev-badge"><span class="lev-dnum">' + esc(dnum) + '</span><span class="lev-mon">' + esc(mon) + '</span></div>' +
+        '<div class="lev-body"><span class="lev-cat">' + esc(cat) + '</span>' +
+          '<h3>' + esc(e.title) + '</h3>' +
+          (meta ? '<p class="lev-meta">' + esc(meta) + '</p>' : '') +
+          (e.url ? '<a class="lev-link" href="' + esc(e.url) + '" target="_blank" rel="noopener">Details &#8594;</a>' : '') +
+        '</div></article>';
     }).join("");
+    box.innerHTML = '<div class="lev-filters">' + chips + '</div><div class="lev-grid">' + cards + '</div>';
+    var chipEls = box.querySelectorAll(".chip"), grid = box.querySelector(".lev-grid");
+    chipEls.forEach(function (ch) {
+      ch.addEventListener("click", function () {
+        chipEls.forEach(function (x) { x.classList.remove("is-active"); });
+        ch.classList.add("is-active");
+        var f = ch.getAttribute("data-filter");
+        grid.querySelectorAll(".lev").forEach(function (card) {
+          card.style.display = (f === "all" || card.getAttribute("data-cat") === f) ? "" : "none";
+        });
+      });
+    });
   }
   function initLibrary() {
     var box = doc.querySelector("[data-library]");

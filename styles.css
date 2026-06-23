@@ -717,10 +717,35 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 @media (max-width: 900px) { .festival-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .festival-grid { grid-template-columns: 1fr; } }
 
-/* ---- library events ---- */
-.lib-cat { flex: none; align-self: center; font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--accent-strong); background: color-mix(in srgb, var(--accent) 12%, transparent); padding: 3px 9px; border-radius: var(--pill); white-space: nowrap; }
-.libev .concert-info h3 { font-size: 1.18rem; }
-@media (max-width: 640px) { .lib-cat { order: 3; align-self: flex-start; } }
+/* ---- library events (filterable, color-coded card grid) ---- */
+.lev-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
+.chip { font-family: var(--font-body); font-size: 13px; font-weight: 700; color: var(--heading); background: var(--surface); border: 1px solid var(--line); padding: 7px 14px; border-radius: var(--pill); cursor: pointer; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+.chip span { opacity: .5; font-weight: 800; margin-left: 3px; }
+.chip:hover { border-color: var(--accent); }
+.chip.is-active { background: var(--accent-strong); color: #fff; border-color: var(--accent-strong); }
+.chip.is-active span { opacity: .85; }
+.lev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+.lev { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
+.lev:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.lev-badge { flex: none; width: 56px; height: 62px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; line-height: 1; background: var(--navy); }
+.lev-dnum { font-family: var(--font-display); font-size: 1.7rem; }
+.lev-mon { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; opacity: .85; margin-top: 3px; }
+.lev-body { min-width: 0; flex: 1; display: flex; flex-direction: column; }
+.lev-cat { align-self: flex-start; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.lev-body h3 { font-family: var(--font-display); font-size: 1.12rem; color: var(--heading); line-height: 1.18; }
+.lev-meta { color: var(--muted); font-size: 12.5px; margin-top: 6px; line-height: 1.4; }
+.lev-link { margin-top: 11px; align-self: flex-start; font-weight: 700; font-size: 13px; color: var(--accent-strong); }
+.lev-link:hover { color: var(--accent-deep); }
+.cat-youth .lev-badge { background: #bd8a32; } .cat-youth .lev-cat { color: #a8761f; }
+.cat-art .lev-badge { background: var(--accent-strong); } .cat-art .lev-cat { color: var(--accent-strong); }
+.cat-comm .lev-badge { background: #5f8a6a; } .cat-comm .lev-cat { color: #4d7457; }
+.cat-book .lev-badge { background: #3a5a8c; } .cat-book .lev-cat { color: #3a5a8c; }
+.cat-default .lev-badge { background: var(--navy); }
+.chip.cat-youth.is-active { background: #bd8a32; border-color: #bd8a32; color: #fff; }
+.chip.cat-art.is-active { background: var(--accent-strong); border-color: var(--accent-strong); }
+.chip.cat-comm.is-active { background: #5f8a6a; border-color: #5f8a6a; color: #fff; }
+.chip.cat-book.is-active { background: #3a5a8c; border-color: #3a5a8c; color: #fff; }
+@media (max-width: 600px) { .lev-grid { grid-template-columns: 1fr; } }
 
 /* ---- movie showtimes ---- */
 .showing-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); margin-top: 8px; }

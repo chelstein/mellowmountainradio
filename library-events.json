@@ -1,5 +1,5 @@
 {
- "updated": "2026-06-23T21:36:39.180Z",
+ "updated": "2026-06-23T21:49:11.527Z",
  "source": "Community Library Sedona",
  "events": [
   {
@@ -95,7 +95,7 @@
    "date": "2026-06-24",
    "time": "16:00",
    "location": "Green Room",
-   "category": "Library Program, Nonprofit",
+   "category": "Library",
    "url": "https://communitylibrarysedona.libcal.com/event/16134625"
   },
   {
@@ -151,7 +151,7 @@
    "date": "2026-06-26",
    "time": "11:00",
    "location": "Lobby Event",
-   "category": "Library-Community Event",
+   "category": "Community",
    "url": "https://communitylibrarysedona.libcal.com/event/16202169"
   },
   {
@@ -263,7 +263,7 @@
    "date": "2026-07-01",
    "time": "10:00",
    "location": "Outreach",
-   "category": "Library-Community Event",
+   "category": "Community",
    "url": "https://communitylibrarysedona.libcal.com/event/16329601"
   },
   {
@@ -323,14 +323,6 @@
    "url": "https://communitylibrarysedona.libcal.com/event/16385047"
   },
   {
-   "title": "LIBRARY CLOSED - JULY 4",
-   "date": "2026-07-04",
-   "time": "",
-   "location": "",
-   "category": "Library Business",
-   "url": "https://communitylibrarysedona.libcal.com/event/15626913"
-  },
-  {
    "title": "Face Painting Class with Ms. Gioia",
    "date": "2026-07-06",
    "time": "14:00",
@@ -353,14 +345,6 @@
    "location": "Community Room",
    "category": "Library",
    "url": "https://communitylibrarysedona.libcal.com/event/11322363"
-  },
-  {
-   "title": "Donor Relations",
-   "date": "2026-07-07",
-   "time": "09:00",
-   "location": "Green Room",
-   "category": "Library Business",
-   "url": "https://communitylibrarysedona.libcal.com/event/13117359"
   },
   {
    "title": "Sit & Stitch",
@@ -395,12 +379,28 @@
    "url": "https://communitylibrarysedona.libcal.com/event/14279898"
   },
   {
-   "title": "YAVAPAI TITLE AGENCY",
-   "date": "2026-07-08",
-   "time": "09:00",
+   "title": "Senior Support Group with Verde Valley Care Givers",
+   "date": "2026-07-09",
+   "time": "11:00",
+   "location": "Green Room",
+   "category": "Library",
+   "url": "https://communitylibrarysedona.libcal.com/event/16380357"
+  },
+  {
+   "title": "Veterans History Project - Coffee With A Veteran",
+   "date": "2026-07-10",
+   "time": "10:00",
    "location": "Community Room",
-   "category": "Commercial Event",
-   "url": "https://communitylibrarysedona.libcal.com/event/15529018"
+   "category": "Library",
+   "url": "https://communitylibrarysedona.libcal.com/event/12343183"
+  },
+  {
+   "title": "Sedona Sister Cities Polish Committee Meeting",
+   "date": "2026-07-10",
+   "time": "12:00",
+   "location": "Green Room",
+   "category": "Nonprofit",
+   "url": "https://communitylibrarysedona.libcal.com/event/16574580"
   }
  ]
 }
