@@ -714,19 +714,55 @@
     return fetch(ESPN + "basketball/mens-college-basketball/scoreboard?dates=" + year + "0401-" + year + "0410&groups=100&limit=200", { cache: "no-store" })
       .then(function (r) { return r.json(); }).then(function (j) {
         var champ = (j.events || []).filter(function (ev) { var n = (ev.competitions[0].notes || [])[0]; return n && (n.headline || "").indexOf("National Championship") >= 0; })[0];
-        var name = "";
-        if (champ) { var w = (champ.competitions[0].competitors || []).filter(function (x) { return x.winner; })[0]; if (w) name = w.team.displayName; }
-        ncaaChampCache[year] = name; return name;
-      }).catch(function () { return ""; });
+        var team = null;
+        if (champ) { var w = (champ.competitions[0].competitors || []).filter(function (x) { return x.winner; })[0]; if (w) team = w.team; }
+        ncaaChampCache[year] = team; return team;
+      }).catch(function () { return null; });
   }
   function loadMarchMadness() {
     var now = new Date(), y = now.getFullYear(), tip = Date.UTC(y, 2, 17);
     if (now.getTime() > tip + 25 * 86400000) tip = Date.UTC(y + 1, 2, 17);
     var days = Math.ceil((tip - now.getTime()) / 86400000);
     var champYear = (now.getMonth() > 3 || (now.getMonth() === 3 && now.getDate() > 10)) ? y : y - 1;
-    return ncaaChamp(champYear).then(function (champ) {
-      var note = champ ? ('<b>' + esc(champ) + '</b> cut down the nets in ' + champYear + '.') : "68 teams, one bracket.";
+    return ncaaChamp(champYear).then(function (team) {
+      var note = team ? (logoImg(team, "mm-logo") + '<b>' + esc(team.displayName) + '</b> cut down the nets in ' + champYear + '.') : "68 teams, one bracket.";
       return countdownCard("March Madness", "NCAA", days, "days to tip-off", note, "Bracket coverage on 780");
+    });
+  }
+  // generic: winner team of a postseason game whose notes headline matches `re`
+  function champGame(path, range, groups, re) {
+    return fetch(ESPN + path + "/scoreboard?dates=" + range + (groups ? "&groups=" + groups : "") + "&limit=200", { cache: "no-store" })
+      .then(function (r) { return r.json(); }).then(function (j) {
+        var ev = (j.events || []).filter(function (e) { var n = (e.competitions[0].notes || [])[0]; return n && re.test(n.headline || ""); })[0];
+        if (!ev) return null;
+        var w = (ev.competitions[0].competitors || []).filter(function (x) { return x.winner; })[0];
+        return w ? w.team : null;
+      }).catch(function () { return null; });
+  }
+  var cfpCache = {};
+  function loadCFP() {
+    var now = new Date(), y = now.getFullYear(), tip = Date.UTC(y, 0, 19);
+    if (now.getTime() > tip + 2 * 86400000) tip = Date.UTC(y + 1, 0, 19);
+    var days = Math.ceil((tip - now.getTime()) / 86400000);
+    var cy = (now.getMonth() === 0 && now.getDate() < 22) ? y - 1 : y;
+    var p = cfpCache[cy] !== undefined ? Promise.resolve(cfpCache[cy])
+      : champGame("football/college-football", cy + "0101-" + cy + "0131", 80, /National Championship/i).then(function (t) { cfpCache[cy] = t; return t; });
+    return p.then(function (t) {
+      var note = t ? (logoImg(t, "mm-logo") + '<b>' + esc(t.displayName) + '</b> won the national title in ' + cy + '.') : "Twelve teams, one trophy.";
+      return countdownCard("College Football Playoff", "CFP", days, "days to the title game", note, "The Playoff, called on 780");
+    });
+  }
+  var sbCache = {};
+  function loadSuperBowl() {
+    var now = new Date(), y = now.getFullYear(), tip = Date.UTC(y, 1, 8);
+    if (now.getTime() > tip + 2 * 86400000) tip = Date.UTC(y + 1, 1, 8);
+    var days = Math.ceil((tip - now.getTime()) / 86400000);
+    var cy = (now.getMonth() === 0 || (now.getMonth() === 1 && now.getDate() < 12)) ? y - 1 : y;
+    var p = sbCache[cy] !== undefined ? Promise.resolve(sbCache[cy])
+      : champGame("football/nfl", cy + "0201-" + cy + "0215", null, /Super Bowl/i).then(function (t) { sbCache[cy] = t; return t; });
+    return p.then(function (t) {
+      var note = t ? (logoImg(t, "mm-logo") + '<b>' + esc(t.displayName) + '</b> won the last Super Bowl.') : "The road to the Lombardi Trophy.";
+      return countdownCard("Super Bowl", "NFL", days, "days to the big game", note, "NFL playoffs & the big game on 780");
     });
   }
   function olympicsCard() {
@@ -742,7 +778,7 @@
   }
   function renderEventsGrid(grid) {
     if (!grid || !grid.isConnected) return Promise.resolve(false);
-    return Promise.all([loadWorldCup(), loadGolfMajors(), loadMarchMadness(), Promise.resolve(olympicsCard())]).then(function (cards) {
+    return Promise.all([loadWorldCup(), loadGolfMajors(), loadCFP(), loadSuperBowl(), loadMarchMadness(), Promise.resolve(olympicsCard())]).then(function (cards) {
       if (!grid.isConnected) return false;
       grid.innerHTML = cards.join("");
       return !!grid.querySelector(".event-card--live");
