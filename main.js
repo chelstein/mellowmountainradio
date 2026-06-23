@@ -1097,18 +1097,25 @@
     if (!items.length) { box.innerHTML = '<p class="embed-note">No screenings posted right now &mdash; check back soon.</p>'; return; }
     box.innerHTML = items.slice(0, 60).map(function (e) {
       var d = new Date(e.date + "T" + (e.time || "19:00") + ":00");
-      var mo = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short" });
-      var day = isNaN(d) ? "" : d.getDate();
-      var when = isNaN(d) ? "" : d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) + (e.time ? " · " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "");
+      var dShort = isNaN(d) ? "" : d.toLocaleDateString("en-US", { month: "short", day: "numeric" }).toUpperCase();
+      var when = isNaN(d) ? "" : d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) + (e.time ? " · " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "");
       var place = [e.venue, e.city].filter(Boolean).join(" · ");
-      return '<article class="showing">' +
-        '<div class="concert-date"><span class="cd-mo">' + esc(mo) + '</span><span class="cd-day">' + esc(day) + '</span></div>' +
-        (e.image ? '<img class="showing-poster" src="' + esc(e.image) + '" alt="" loading="lazy" onerror="this.remove()" />' : '') +
-        '<div class="concert-info"><h3>' + esc(e.title) + '</h3>' +
-          (place ? '<p class="concert-venue">' + esc(place) + '</p>' : '') +
-          (when ? '<p class="concert-when">' + esc(when) + '</p>' : '') +
+      var img = !!e.image;
+      return '<article class="film-card' + (img ? "" : " film-card--noimg") + '" tabindex="0" aria-label="' + esc(e.title) + '">' +
+        '<div class="film-inner">' +
+          '<div class="film-front">' +
+            (img ? '<img class="film-poster" src="' + esc(e.image) + '" alt="" loading="lazy" onerror="this.closest(\'.film-card\').classList.add(\'film-card--noimg\')" />' : '') +
+            '<span class="film-flip" aria-hidden="true">&#8635;</span>' +
+            '<div class="film-front-meta">' + (dShort ? '<span class="film-date">' + esc(dShort) + '</span>' : '') + '<h3>' + esc(e.title) + '</h3></div>' +
+          '</div>' +
+          '<div class="film-back">' +
+            '<span class="film-tag">Screening</span>' +
+            '<h3>' + esc(e.title) + '</h3>' +
+            (when ? '<p class="film-when">' + esc(when) + '</p>' : '') +
+            (place ? '<p class="film-venue">' + esc(place) + '</p>' : '') +
+            (e.url ? '<a class="btn btn-primary" href="' + esc(e.url) + '" target="_blank" rel="noopener">Details &amp; tickets</a>' : '') +
+          '</div>' +
         '</div>' +
-        (e.url ? '<a class="btn btn-primary concert-btn" href="' + esc(e.url) + '" target="_blank" rel="noopener">Details</a>' : '') +
         '</article>';
     }).join("");
   }

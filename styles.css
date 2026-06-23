@@ -734,6 +734,30 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
   .showing .concert-btn { width: 100%; justify-content: center; }
 }
 
+/* ---- movie flip cards ---- */
+.film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(186px, 1fr)); gap: 22px; }
+.film-card { perspective: 1300px; aspect-ratio: 2 / 3; cursor: pointer; border-radius: var(--r); outline: none; }
+.film-inner { position: relative; width: 100%; height: 100%; transition: transform .65s cubic-bezier(.2, .7, .2, 1); transform-style: preserve-3d; }
+.film-card:hover .film-inner, .film-card:focus-within .film-inner { transform: rotateY(180deg); }
+.film-front, .film-back { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-sm); }
+.film-front { background: linear-gradient(155deg, #2a3566, var(--navy-deeper)); }
+.film-poster { width: 100%; height: 100%; object-fit: cover; }
+.film-flip { position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: rgba(19, 36, 65, .55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); color: #fff; font-size: 15px; opacity: .85; }
+.film-front-meta { position: absolute; left: 0; right: 0; bottom: 0; padding: 36px 14px 14px; background: linear-gradient(transparent, rgba(19, 36, 65, .55) 45%, rgba(19, 36, 65, .96)); }
+.film-front-meta h3 { color: #fff; font-family: var(--font-display); font-size: 1.02rem; line-height: 1.16; }
+.film-date { display: block; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-soft); margin-bottom: 5px; }
+.film-card--noimg .film-poster { display: none; }
+.film-card--noimg .film-front-meta { inset: 0; padding: 22px; display: flex; flex-direction: column; justify-content: center; text-align: center; background: none; }
+.film-card--noimg .film-front-meta h3 { font-size: 1.3rem; }
+.film-back { transform: rotateY(180deg); background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; padding: 18px; }
+.film-tag { align-self: flex-start; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-strong); background: color-mix(in srgb, var(--accent) 12%, transparent); padding: 3px 9px; border-radius: var(--pill); margin-bottom: 10px; }
+.film-back h3 { font-family: var(--font-display); font-size: 1.12rem; color: var(--heading); line-height: 1.16; }
+.film-when { color: var(--accent-strong); font-weight: 700; font-size: 13px; margin-top: 9px; }
+.film-venue { color: var(--muted); font-size: 12.5px; margin-top: 4px; line-height: 1.4; }
+.film-back .btn { margin-top: auto; justify-content: center; padding: 10px; font-size: 14px; }
+.film-card:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
+@media (prefers-reduced-motion: reduce) { .film-inner { transition: none; } }
+
 /* ---- concerts ---- */
 .concert-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); margin-top: 8px; }
 .concert { display: flex; align-items: center; gap: 18px; padding: 16px 6px; border-bottom: 1px solid var(--line); transition: background .15s ease; }
