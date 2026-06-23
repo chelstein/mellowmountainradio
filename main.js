@@ -630,6 +630,87 @@
     Promise.all(STANDINGS.map(loadStanding)).then(function (cards) { if (box.isConnected) box.innerHTML = cards.join(""); });
   }
 
+  // ---- Marquee events: World Cup, golf majors, March Madness, Olympics ----
+  function timeAZ(iso) { try { return new Date(iso).toLocaleTimeString("en-US", { timeZone: "America/Phoenix", hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } }
+  function monthRange(s, e) {
+    try {
+      var ds = new Date(s), de = new Date(e), o = { timeZone: "UTC", month: "short" };
+      var m1 = ds.toLocaleDateString("en-US", o), m2 = de.toLocaleDateString("en-US", o);
+      return m1 + " " + ds.getUTCDate() + "–" + (m1 === m2 ? "" : m2 + " ") + de.getUTCDate();
+    } catch (x) { return ""; }
+  }
+  function eventErr(title) { return '<article class="event-card"><header class="event-head"><h3>' + esc(title) + '</h3></header><p class="ev-note">Unavailable right now.</p></article>'; }
+
+  function wcMatch(comp) {
+    var st = (comp.status && comp.status.type) || {};
+    var live = st.state === "in", post = st.state === "post";
+    var cs = comp.competitors || [];
+    var home = cs.filter(function (c) { return c.homeAway === "home"; })[0] || cs[0];
+    var away = cs.filter(function (c) { return c.homeAway === "away"; })[0] || cs[1];
+    if (!home || !away) return "";
+    var top = (live || post) ? (esc(compScore(away)) + "–" + esc(compScore(home))) : esc(timeAZ(comp.date));
+    var sub = live ? esc(st.shortDetail || "Live") : (post ? "Full time" : "Kickoff");
+    return '<li class="wc-match' + (live ? " is-live" : "") + '">' +
+      '<span class="wc-side">' + logoImg(away.team, "wc-flag") + '<b>' + esc(away.team.abbreviation) + '</b></span>' +
+      '<span class="wc-mid"><b>' + top + '</b><i' + (live ? ' class="is-live"' : '') + '>' + sub + '</i></span>' +
+      '<span class="wc-side wc-side--r"><b>' + esc(home.team.abbreviation) + '</b>' + logoImg(home.team, "wc-flag") + '</span></li>';
+  }
+  function loadWorldCup() {
+    return fetch(ESPN + "soccer/fifa.world/scoreboard", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+      var evs = d.events || [];
+      var live = evs.some(function (e) { var t = e.competitions[0].status; return t && t.type && t.type.state === "in"; });
+      var rows = evs.slice(0, 5).map(function (e) { return wcMatch(e.competitions[0]); }).join("");
+      var badge = live ? '<span class="ev-live"><span class="g-live-dot"></span>Live</span>' : '<span class="ev-badge">Today</span>';
+      return '<article class="event-card' + (live ? " event-card--live" : "") + '"><header class="event-head"><h3>FIFA World Cup</h3>' + badge + '</header>' +
+        '<ul class="wc-list">' + (rows || '<li class="ev-note">No matches today &mdash; back tomorrow.</li>') + '</ul>' +
+        '<footer class="event-foot">Every match, called on KAZM</footer></article>';
+    }).catch(function () { return eventErr("FIFA World Cup"); });
+  }
+  function loadGolfMajors() {
+    return fetch(ESPN + "golf/pga/scoreboard", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+      var cal = (d.leagues && d.leagues[0] && d.leagues[0].calendar) || [];
+      var names = ["Masters", "PGA Championship", "U.S. Open", "The Open"], now = Date.now();
+      var rows = cal.filter(function (c) { return names.some(function (m) { return (c.label || c.value || "").indexOf(m) >= 0; }); })
+        .map(function (c) {
+          var s = new Date(c.startDate).getTime(), e = new Date(c.endDate).getTime() + 86400000;
+          var state = now > e ? "done" : (now >= s ? "live" : "next");
+          var badge = state === "live" ? '<span class="ev-live"><span class="g-live-dot"></span>Live</span>'
+            : '<span class="maj-tag maj-' + state + '">' + (state === "done" ? "Final" : "Next") + '</span>';
+          return '<li class="major-row major-row--' + state + '"><span class="maj-name">' + esc((c.label || c.value).replace(" Tournament", "")) + '</span>' +
+            '<span class="maj-date">' + esc(monthRange(c.startDate, c.endDate)) + '</span>' + badge + '</li>';
+        }).join("");
+      var live = rows.indexOf("ev-live") >= 0;
+      return '<article class="event-card' + (live ? " event-card--live" : "") + '"><header class="event-head"><h3>Golf majors</h3><span class="ev-badge">' + new Date().getFullYear() + '</span></header>' +
+        '<ul class="major-list">' + (rows || '<li class="ev-note">Schedule pending.</li>') + '</ul><footer class="event-foot">The four that crown the greats</footer></article>';
+    }).catch(function () { return eventErr("Golf majors"); });
+  }
+  function countdownCard(title, badge, days, label, note, foot) {
+    return '<article class="event-card"><header class="event-head"><h3>' + esc(title) + '</h3><span class="ev-badge">' + esc(badge) + '</span></header>' +
+      '<div class="count"><span class="count-num">' + (days > 0 ? days : 0) + '</span><span class="count-lbl">' + esc(label) + '</span></div>' +
+      '<p class="ev-note">' + esc(note) + '</p><footer class="event-foot">' + esc(foot) + '</footer></article>';
+  }
+  function marchMadnessCard() {
+    var now = new Date(), y = now.getFullYear(), tip = Date.UTC(y, 2, 17);
+    if (now.getTime() > tip + 25 * 86400000) tip = Date.UTC(y + 1, 2, 17);
+    var days = Math.ceil((tip - now.getTime()) / 86400000);
+    return countdownCard("March Madness", "NCAA", days, "days to tip-off", "68 teams, one bracket — live scores here when the Big Dance returns.", "Bracket coverage on 780");
+  }
+  function olympicsCard() {
+    var now = Date.now();
+    var games = [{ n: "Summer · Los Angeles 2028", d: Date.UTC(2028, 6, 14) }, { n: "Winter · French Alps 2030", d: Date.UTC(2030, 1, 1) }];
+    var next = games.filter(function (g) { return g.d > now; }).sort(function (a, b) { return a.d - b.d; })[0];
+    var days = next ? Math.ceil((next.d - now) / 86400000) : 0;
+    return countdownCard("Olympics", "Next Games", days, "days to the next Games", next ? next.n : "", "Team USA on the dial");
+  }
+  function renderEventsGrid(grid) {
+    if (!grid || !grid.isConnected) return Promise.resolve(false);
+    return Promise.all([loadWorldCup(), loadGolfMajors(), Promise.resolve(marchMadnessCard()), Promise.resolve(olympicsCard())]).then(function (cards) {
+      if (!grid.isConnected) return false;
+      grid.innerHTML = cards.join("");
+      return !!grid.querySelector(".event-card--live");
+    });
+  }
+
   function renderGrid(grid, configs, loader) {
     if (!grid || !grid.isConnected) return Promise.resolve(false);
     return Promise.all(configs.map(loader)).then(function (cards) {
@@ -643,18 +724,21 @@
     var pro = doc.querySelector("[data-az-scores]");
     var college = doc.querySelector("[data-college-scores]");
     var collegeBb = doc.querySelector("[data-college-bb-scores]");
+    var events = doc.querySelector("[data-events]");
     initStandings();
-    if (!pro && !college && !collegeBb) return;
+    if (!pro && !college && !collegeBb && !events) return;
     if (pro && !pro.children.length) pro.innerHTML = '<p class="rss-loading">Loading Arizona scores&hellip;</p>';
     if (college && !college.children.length) college.innerHTML = '<p class="rss-loading">Loading Arizona college&hellip;</p>';
     if (collegeBb && !collegeBb.children.length) collegeBb.innerHTML = '<p class="rss-loading">Loading Arizona college&hellip;</p>';
+    if (events && !events.children.length) events.innerHTML = '<p class="rss-loading">Loading marquee events&hellip;</p>';
     function cycle() {
       Promise.all([
         renderGrid(pro, AZ_TEAMS, loadAzTeam),
         renderGrid(college, COLLEGE_TEAMS, loadCollegeTeam),
-        renderGrid(collegeBb, COLLEGE_BB_TEAMS, loadCollegeTeam)
+        renderGrid(collegeBb, COLLEGE_BB_TEAMS, loadCollegeTeam),
+        renderEventsGrid(events)
       ]).then(function (live) {
-        if ((live[0] || live[1] || live[2]) && !sbTimer) sbTimer = setInterval(cycle, 30000);
+        if ((live[0] || live[1] || live[2] || live[3]) && !sbTimer) sbTimer = setInterval(cycle, 30000);
       });
     }
     cycle();
