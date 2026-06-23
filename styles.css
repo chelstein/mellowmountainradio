@@ -686,6 +686,8 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .maj-next { color: var(--accent-strong); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .major-row--done .maj-name { color: var(--muted); }
 .major-row--next .maj-name { font-weight: 700; }
+.maj-champ { color: var(--accent-strong) !important; font-family: var(--font-display); font-weight: 400; }
+.ev-note b { color: var(--heading); font-weight: 700; }
 /* countdown cards */
 .count { text-align: center; padding: 18px 0 8px; }
 .count-num { display: block; font-family: var(--font-display); font-size: 3.1rem; line-height: 1; color: var(--accent-strong); font-variant-numeric: tabular-nums; }
