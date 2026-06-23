@@ -666,45 +666,83 @@
         '<footer class="event-foot">Every match, called on KAZM</footer></article>';
     }).catch(function () { return eventErr("FIFA World Cup"); });
   }
+  var golfWinnerCache = {};
+  function golfWinner(yyyymmdd) {
+    if (golfWinnerCache[yyyymmdd] !== undefined) return Promise.resolve(golfWinnerCache[yyyymmdd]);
+    return fetch(ESPN + "golf/pga/scoreboard?dates=" + yyyymmdd, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
+      var ev = (j.events || [])[0], comps = (ev && ev.competitions && ev.competitions[0].competitors) || [];
+      var w = comps[0], name = (w && w.athlete && w.athlete.displayName) || "";
+      golfWinnerCache[yyyymmdd] = name; return name;
+    }).catch(function () { return ""; });
+  }
+  function majorRow(state, name, detail, isChamp) {
+    var badge = state === "live" ? '<span class="ev-live"><span class="g-live-dot"></span>Live</span>'
+      : '<span class="maj-tag maj-' + state + '">' + (state === "done" ? "Final" : "Next") + '</span>';
+    return '<li class="major-row major-row--' + state + '"><span class="maj-name">' + esc(name) + '</span>' +
+      '<span class="maj-date' + (isChamp ? " maj-champ" : "") + '">' + esc(detail) + '</span>' + badge + '</li>';
+  }
   function loadGolfMajors() {
     return fetch(ESPN + "golf/pga/scoreboard", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       var cal = (d.leagues && d.leagues[0] && d.leagues[0].calendar) || [];
       var names = ["Masters", "PGA Championship", "U.S. Open", "The Open"], now = Date.now();
-      var rows = cal.filter(function (c) { return names.some(function (m) { return (c.label || c.value || "").indexOf(m) >= 0; }); })
-        .map(function (c) {
-          var s = new Date(c.startDate).getTime(), e = new Date(c.endDate).getTime() + 86400000;
-          var state = now > e ? "done" : (now >= s ? "live" : "next");
-          var badge = state === "live" ? '<span class="ev-live"><span class="g-live-dot"></span>Live</span>'
-            : '<span class="maj-tag maj-' + state + '">' + (state === "done" ? "Final" : "Next") + '</span>';
-          return '<li class="major-row major-row--' + state + '"><span class="maj-name">' + esc((c.label || c.value).replace(" Tournament", "")) + '</span>' +
-            '<span class="maj-date">' + esc(monthRange(c.startDate, c.endDate)) + '</span>' + badge + '</li>';
-        }).join("");
-      var live = rows.indexOf("ev-live") >= 0;
-      return '<article class="event-card' + (live ? " event-card--live" : "") + '"><header class="event-head"><h3>Golf majors</h3><span class="ev-badge">' + new Date().getFullYear() + '</span></header>' +
-        '<ul class="major-list">' + (rows || '<li class="ev-note">Schedule pending.</li>') + '</ul><footer class="event-foot">The four that crown the greats</footer></article>';
+      var majors = cal.filter(function (c) { return names.some(function (m) { return (c.label || c.value || "").indexOf(m) >= 0; }); });
+      return Promise.all(majors.map(function (c) {
+        var s = new Date(c.startDate).getTime(), e = new Date(c.endDate).getTime() + 86400000;
+        var state = now > e ? "done" : (now >= s ? "live" : "next");
+        var name = (c.label || c.value).replace(" Tournament", "");
+        if (state === "done") {
+          return golfWinner(c.endDate.slice(0, 10).replace(/-/g, "")).then(function (w) {
+            return majorRow(state, name, w || monthRange(c.startDate, c.endDate), !!w);
+          });
+        }
+        return Promise.resolve(majorRow(state, name, monthRange(c.startDate, c.endDate), false));
+      })).then(function (rowArr) {
+        var rows = rowArr.join(""), live = rows.indexOf("ev-live") >= 0;
+        return '<article class="event-card' + (live ? " event-card--live" : "") + '"><header class="event-head"><h3>Golf majors</h3><span class="ev-badge">' + new Date().getFullYear() + '</span></header>' +
+          '<ul class="major-list">' + (rows || '<li class="ev-note">Schedule pending.</li>') + '</ul><footer class="event-foot">The four that crown the greats</footer></article>';
+      });
     }).catch(function () { return eventErr("Golf majors"); });
   }
-  function countdownCard(title, badge, days, label, note, foot) {
+  function countdownCard(title, badge, days, label, noteHtml, foot) {
     return '<article class="event-card"><header class="event-head"><h3>' + esc(title) + '</h3><span class="ev-badge">' + esc(badge) + '</span></header>' +
       '<div class="count"><span class="count-num">' + (days > 0 ? days : 0) + '</span><span class="count-lbl">' + esc(label) + '</span></div>' +
-      '<p class="ev-note">' + esc(note) + '</p><footer class="event-foot">' + esc(foot) + '</footer></article>';
+      '<p class="ev-note">' + noteHtml + '</p><footer class="event-foot">' + esc(foot) + '</footer></article>';
   }
-  function marchMadnessCard() {
+  var ncaaChampCache = {};
+  function ncaaChamp(year) {
+    if (ncaaChampCache[year] !== undefined) return Promise.resolve(ncaaChampCache[year]);
+    return fetch(ESPN + "basketball/mens-college-basketball/scoreboard?dates=" + year + "0401-" + year + "0410&groups=100&limit=200", { cache: "no-store" })
+      .then(function (r) { return r.json(); }).then(function (j) {
+        var champ = (j.events || []).filter(function (ev) { var n = (ev.competitions[0].notes || [])[0]; return n && (n.headline || "").indexOf("National Championship") >= 0; })[0];
+        var name = "";
+        if (champ) { var w = (champ.competitions[0].competitors || []).filter(function (x) { return x.winner; })[0]; if (w) name = w.team.displayName; }
+        ncaaChampCache[year] = name; return name;
+      }).catch(function () { return ""; });
+  }
+  function loadMarchMadness() {
     var now = new Date(), y = now.getFullYear(), tip = Date.UTC(y, 2, 17);
     if (now.getTime() > tip + 25 * 86400000) tip = Date.UTC(y + 1, 2, 17);
     var days = Math.ceil((tip - now.getTime()) / 86400000);
-    return countdownCard("March Madness", "NCAA", days, "days to tip-off", "68 teams, one bracket — live scores here when the Big Dance returns.", "Bracket coverage on 780");
+    var champYear = (now.getMonth() > 3 || (now.getMonth() === 3 && now.getDate() > 10)) ? y : y - 1;
+    return ncaaChamp(champYear).then(function (champ) {
+      var note = champ ? ('<b>' + esc(champ) + '</b> cut down the nets in ' + champYear + '.') : "68 teams, one bracket.";
+      return countdownCard("March Madness", "NCAA", days, "days to tip-off", note, "Bracket coverage on 780");
+    });
   }
   function olympicsCard() {
     var now = Date.now();
-    var games = [{ n: "Summer · Los Angeles 2028", d: Date.UTC(2028, 6, 14) }, { n: "Winter · French Alps 2030", d: Date.UTC(2030, 1, 1) }];
-    var next = games.filter(function (g) { return g.d > now; }).sort(function (a, b) { return a.d - b.d; })[0];
+    var games = [{ type: "Summer", host: "Los Angeles 2028", d: Date.UTC(2028, 6, 14) }, { type: "Winter", host: "French Alps 2030", d: Date.UTC(2030, 1, 1) }];
+    var up = games.filter(function (g) { return g.d > now; }).sort(function (a, b) { return a.d - b.d; });
+    var next = up[0], then = up[1];
     var days = next ? Math.ceil((next.d - now) / 86400000) : 0;
-    return countdownCard("Olympics", "Next Games", days, "days to the next Games", next ? next.n : "", "Team USA on the dial");
+    var note = next ? ('<b>' + esc(next.host) + '</b>' + (then ? " &middot; then the " + esc(then.type) + " Games, " + esc(then.host) : "")) : "";
+    return '<article class="event-card"><header class="event-head"><h3>Olympics</h3><span class="ev-badge">Next: ' + esc(next ? next.type : "") + '</span></header>' +
+      '<div class="count"><span class="count-num">' + days + '</span><span class="count-lbl">days to the ' + esc(next ? next.type : "") + ' Games</span></div>' +
+      '<p class="ev-note">' + note + '</p><footer class="event-foot">Team USA on the dial</footer></article>';
   }
   function renderEventsGrid(grid) {
     if (!grid || !grid.isConnected) return Promise.resolve(false);
-    return Promise.all([loadWorldCup(), loadGolfMajors(), Promise.resolve(marchMadnessCard()), Promise.resolve(olympicsCard())]).then(function (cards) {
+    return Promise.all([loadWorldCup(), loadGolfMajors(), loadMarchMadness(), Promise.resolve(olympicsCard())]).then(function (cards) {
       if (!grid.isConnected) return false;
       grid.innerHTML = cards.join("");
       return !!grid.querySelector(".event-card--live");
