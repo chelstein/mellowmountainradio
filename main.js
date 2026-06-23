@@ -451,12 +451,26 @@
     { label: "NFL", league: "football/nfl",   id: 22, abbr: "ARI", foot: "Cardinals football, Red Sea all day" },
     { label: "NBA", league: "basketball/nba", id: 21, abbr: "PHX", foot: "Suns basketball, tip-off coverage" }
   ];
+  // Arizona college football (ESPN ids). nextEvent is null deep in the offseason,
+  // so the loader also pulls the published season schedule to surface the next game.
+  var COLLEGE_TEAMS = [
+    { label: "Big 12",  league: "football/college-football", id: 9,    abbr: "ASU",  foot: "Sun Devils football on KAZM" },
+    { label: "Big 12",  league: "football/college-football", id: 12,   abbr: "ARIZ", foot: "Arizona Wildcats on the call" },
+    { label: "Big Sky", league: "football/college-football", id: 2464, abbr: "NAU",  foot: "NAU Lumberjacks, Flagstaff's team" }
+  ];
   var sbTimer = null;
 
   function azDateTime(iso) {
     if (!iso) return "";
     try { return new Date(iso).toLocaleString("en-US", { timeZone: "America/Phoenix", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); }
     catch (e) { return ""; }
+  }
+  function gameDate(iso) {
+    if (!iso) return "";
+    try { var d = new Date(iso), o = { timeZone: "America/Phoenix", month: "short", day: "numeric" };
+      if (d.getFullYear() !== new Date().getFullYear()) o.year = "numeric";
+      return d.toLocaleDateString("en-US", o);
+    } catch (e) { return ""; }
   }
   function esc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
   function compScore(c) { if (!c || c.score == null) return null; return typeof c.score === "object" ? (c.score.displayValue || c.score.value) : String(c.score); }
@@ -495,6 +509,8 @@
       if (s.outs != null) bits.push(s.outs + (s.outs === 1 ? " out" : " outs"));
       if (s.balls != null && s.strikes != null) bits.push(s.balls + "-" + s.strikes);
       if (bits.length) sit = '<p class="g-note">' + esc(bits.join(" · ")) + '</p>';
+    } else if (!live && comp.date) {
+      sit = '<p class="g-note">' + esc(gameDate(comp.date)) + '</p>';
     }
     return head + '<ul class="g-teams">' + teamRow(away, as > hs) + teamRow(home, hs > as) + '</ul>' + sit;
   }
@@ -524,20 +540,48 @@
         '<footer class="team-foot">' + esc(cfg.foot) + '</footer></article>';
     });
   }
+  // Pick the next upcoming game from a schedule (or the most recent completed one).
+  function nextFromEvents(evs) {
+    var now = Date.now();
+    var future = (evs || []).filter(function (e) { return new Date(e.date).getTime() > now; })
+      .sort(function (a, b) { return new Date(a.date) - new Date(b.date); });
+    if (future[0]) return future[0].competitions[0];
+    var past = (evs || []).filter(function (e) { var c = e.competitions[0]; return c && c.status && c.status.type && c.status.type.state === "post"; });
+    return past.length ? past[past.length - 1].competitions[0] : null;
+  }
+  function loadCollegeTeam(cfg) {
+    var base = ESPN + cfg.league + "/teams/" + cfg.id;
+    var year = new Date().getFullYear();
+    var teamP = fetch(base, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { return d.team; });
+    var schedP = fetch(base + "/schedule?season=" + year + "&seasontype=2", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { return d.events || []; }).catch(function () { return []; });
+    return Promise.all([teamP, schedP]).then(function (res) {
+      var team = res[0], evs = res[1];
+      var live = team && team.nextEvent && team.nextEvent[0] && team.nextEvent[0].competitions[0];
+      return renderTeamCard(cfg, team, live || nextFromEvents(evs));
+    }).catch(function () { return renderTeamCard(cfg, null, null); });
+  }
+
+  function renderGrid(grid, configs, loader) {
+    if (!grid || !grid.isConnected) return Promise.resolve(false);
+    return Promise.all(configs.map(loader)).then(function (cards) {
+      if (!grid.isConnected) return false;
+      grid.innerHTML = cards.join("");
+      return !!grid.querySelector(".team-card--live");
+    });
+  }
   function initScoreboards() {
-    var grid = doc.querySelector("[data-az-scores]");
     if (sbTimer) { clearInterval(sbTimer); sbTimer = null; }
-    if (!grid) return;
-    if (!grid.children.length) grid.innerHTML = '<p class="rss-loading">Loading Arizona scores&hellip;</p>';
-    function render() {
-      if (!grid.isConnected) { if (sbTimer) { clearInterval(sbTimer); sbTimer = null; } return; }
-      Promise.all(AZ_TEAMS.map(loadAzTeam)).then(function (cards) {
-        if (!grid.isConnected) return;
-        grid.innerHTML = cards.join("");
-        if (grid.querySelector(".team-card--live") && !sbTimer) sbTimer = setInterval(render, 30000);
+    var pro = doc.querySelector("[data-az-scores]");
+    var college = doc.querySelector("[data-college-scores]");
+    if (!pro && !college) return;
+    if (pro && !pro.children.length) pro.innerHTML = '<p class="rss-loading">Loading Arizona scores&hellip;</p>';
+    if (college && !college.children.length) college.innerHTML = '<p class="rss-loading">Loading Arizona college&hellip;</p>';
+    function cycle() {
+      Promise.all([renderGrid(pro, AZ_TEAMS, loadAzTeam), renderGrid(college, COLLEGE_TEAMS, loadCollegeTeam)]).then(function (live) {
+        if ((live[0] || live[1]) && !sbTimer) sbTimer = setInterval(cycle, 30000);
       });
     }
-    render();
+    cycle();
   }
 
   function stripHtml(str) { if (!str) return ""; var d = doc.createElement("div"); d.innerHTML = str; return (d.textContent || "").replace(/\s+/g, " ").trim(); }
