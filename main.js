@@ -1024,19 +1024,27 @@
     box.innerHTML = hero + '<div class="wx-days">' + days + '</div>' +
       '<p class="wx-credit">Live conditions for Sedona &middot; data by Open-Meteo</p>';
   }
+  function renderWeatherMini(el, cur) {
+    var w = wxInfo(cur.weather_code, cur.is_day);
+    el.innerHTML = '<span class="wx-chip-ic">' + w.icon + '</span>' +
+      '<span class="wx-chip-temp">' + Math.round(cur.temperature_2m) + '°</span>' +
+      '<span class="wx-chip-meta"><span class="wx-chip-cond">' + esc(w.label) + '</span>' +
+      '<span class="wx-chip-place">Sedona now</span></span>';
+    el.classList.add("is-ready");
+  }
   function initWeather() {
-    var box = doc.querySelector("[data-weather]");
-    if (!box) return;
-    box.innerHTML = '<p class="rss-loading">Reading the sky over Sedona&hellip;</p>';
+    var box = doc.querySelector("[data-weather]"), mini = doc.querySelector("[data-weather-mini]");
+    if (!box && !mini) return;
+    if (box) box.innerHTML = '<p class="rss-loading">Reading the sky over Sedona&hellip;</p>';
     var url = "https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610" +
       "&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,is_day,apparent_temperature" +
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
       "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/Phoenix&forecast_days=7";
     fetch(url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (!box.isConnected) return;
-      if (!d || !d.current || !d.daily) { box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; return; }
-      renderWeather(box, d.current, d.daily);
-    }).catch(function () { box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; });
+      if (!d || !d.current || !d.daily) { if (box) box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; return; }
+      if (box && box.isConnected) renderWeather(box, d.current, d.daily);
+      if (mini && mini.isConnected) renderWeatherMini(mini, d.current);
+    }).catch(function () { if (box) box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; });
   }
 
   /* =========================================================
