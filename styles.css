@@ -556,10 +556,9 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .marquee--logos .marquee-track { gap: 60px; padding-right: 60px; align-items: center; }
 .band-logo {
   flex: none; height: 50px; width: auto; max-width: 170px; object-fit: contain;
-  filter: brightness(0) invert(1); opacity: .82; transition: opacity .2s ease;
+  opacity: .95; transition: opacity .2s ease;
 }
 .marquee--logos:hover .band-logo { opacity: 1; }
-.band-logo--color { filter: none; opacity: 1; }
 .marquee-track span.band-logo--text {
   flex: none; filter: none; font-family: var(--font-display); font-weight: 400;
   font-size: 2rem; line-height: 1; color: rgba(255, 255, 255, .9); white-space: nowrap;
