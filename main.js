@@ -1008,44 +1008,56 @@
     var o = { month: "short", day: "numeric" };
     return ds.toLocaleDateString("en-US", o) + " – " + de.toLocaleDateString("en-US", o) + ", " + de.getFullYear();
   }
+  function festCard(f) {
+    var loc = [f.city, f.state].filter(Boolean).join(", ");
+    var banner = f.img
+      ? '<img class="fest-img" src="' + esc(f.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'" />'
+      : (f.marquee ? '<div class="fest-img fest-img--name"><span>' + esc(f.name) + '</span></div>' : "");
+    var tag = f.marquee ? '<span class="fest-az fest-marquee">Bucket list</span>'
+      : (f.state === "AZ" ? '<span class="fest-az">Arizona</span>'
+        : (f.genre && f.genre !== "Undefined" && f.genre !== "Other" ? '<span class="fest-genre">' + esc(f.genre) + '</span>' : ""));
+    var when = f.marquee ? esc(f.when || "Annual") : esc(festDateRange(f.start, f.end));
+    return '<article class="fest-card' + (f.marquee ? " fest-card--marquee" : "") + '">' + banner +
+      '<div class="fest-body">' + tag +
+        '<h3>' + esc(f.name) + '</h3>' +
+        '<p class="fest-when">' + when + '</p>' +
+        (loc ? '<p class="fest-loc">' + esc(loc) + '</p>' : '') +
+        (f.url ? '<a class="btn btn-primary fest-btn" href="' + esc(f.url) + '" target="_blank" rel="noopener">' + (f.marquee ? "Tickets &amp; info" : "Tickets &amp; lineup") + '</a>' : '') +
+      '</div></article>';
+  }
   function renderFestivals(box, fests) {
-    if (!fests.length) { box.innerHTML = '<p class="embed-note">No festivals on the calendar right now &mdash; we\'ll surface them as they\'re announced.</p>'; return; }
-    box.innerHTML = fests.map(function (f) {
-      var loc = [f.city, f.state].filter(Boolean).join(", ");
-      var banner = f.img
-        ? '<img class="fest-img" src="' + esc(f.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'" />'
-        : (f.marquee ? '<div class="fest-img fest-img--name"><span>' + esc(f.name) + '</span></div>' : "");
-      var tag = f.marquee ? '<span class="fest-az fest-marquee">Bucket list</span>'
-        : (f.state === "AZ" ? '<span class="fest-az">Arizona</span>'
-          : (f.genre && f.genre !== "Undefined" && f.genre !== "Other" ? '<span class="fest-genre">' + esc(f.genre) + '</span>' : ""));
-      var when = f.marquee ? esc(f.when || "Annual") : esc(festDateRange(f.start, f.end));
-      return '<article class="fest-card' + (f.marquee ? " fest-card--marquee" : "") + '">' + banner +
-        '<div class="fest-body">' + tag +
-          '<h3>' + esc(f.name) + '</h3>' +
-          '<p class="fest-when">' + when + '</p>' +
-          (loc ? '<p class="fest-loc">' + esc(loc) + '</p>' : '') +
-          (f.url ? '<a class="btn btn-primary fest-btn" href="' + esc(f.url) + '" target="_blank" rel="noopener">' + (f.marquee ? "Tickets &amp; info" : "Tickets &amp; lineup") + '</a>' : '') +
-        '</div></article>';
-    }).join("");
+    // Southwest dated festivals first; the bucket-list legends tuck into a
+    // collapsible section below so they don't crowd the regional listings.
+    var sw = fests.filter(function (f) { return !f.marquee; });
+    var bucket = fests.filter(function (f) { return f.marquee; });
+    var html = sw.length
+      ? '<div class="festival-grid">' + sw.map(festCard).join("") + '</div>'
+      : '<p class="embed-note">No Southwest festivals on the calendar right now &mdash; we\'ll surface them as they\'re announced.</p>';
+    if (bucket.length) {
+      html += '<details class="fest-bucket">' +
+        '<summary><span class="fest-bucket-head"><span class="fest-bucket-title">Bucket-list festivals</span>' +
+        '<span class="fest-bucket-sub">' + bucket.length + ' legendary events worth the trip &mdash; worldwide</span></span>' +
+        '<span class="fest-bucket-chev" aria-hidden="true"></span></summary>' +
+        '<div class="festival-grid fest-bucket-grid">' + bucket.map(festCard).join("") + '</div>' +
+        '</details>';
+    }
+    box.innerHTML = html;
   }
 
-  var CONCERT_CACHE = "mmr_concerts_v6", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
-  function initConcerts() {
-    var box = doc.querySelector("[data-concerts]"), fbox = doc.querySelector("[data-festivals]");
-    if (!box && !fbox) return;
-    // Festivals: independent + cheap (served from festivals.json by the CI relay)
-    if (fbox) {
-      if (!fbox.children.length) fbox.innerHTML = '<p class="rss-loading">Scanning the festival circuit&hellip;</p>';
-      loadFestivals().then(function (f) { if (fbox.isConnected) renderFestivals(fbox, f); });
-    }
-    // Concert shows: live Ticketmaster (direct), cached 6h to ease the API quota
-    if (!box) return;
+  var CONCERT_CACHE = "mmr_concerts_v7", CONCERT_TTL = 6 * 3600 * 1000; // 6h browser cache (eases API quota)
+  // Concerts are built server-side too (scripts/fetch-concerts.mjs via CI) so the
+  // full list is reliable instead of depending on a throttled per-visitor call.
+  function loadConcertsJson() {
+    return fetch("concerts.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { return (d && d.concerts) || []; }).catch(function () { return []; });
+  }
+  // Fallback: fetch live from Ticketmaster in-browser if the relay file is missing.
+  function liveConcerts(box) {
     if (!TM_KEY) { box.innerHTML = '<p class="embed-note">Concert listings are tuning in shortly.</p>'; return; }
     try {
       var hit = JSON.parse(localStorage.getItem(CONCERT_CACHE) || "null");
-      if (hit && hit.items && (Date.now() - hit.t) < CONCERT_TTL) { renderConcerts(box, hit.items); return; }
+      if (hit && hit.items && hit.items.length && (Date.now() - hit.t) < CONCERT_TTL) { renderConcerts(box, hit.items); return; }
     } catch (e) {}
-    box.innerHTML = '<p class="rss-loading">Finding shows on the mellow side of the dial&hellip;</p>';
     Promise.all(CONCERT_ARTISTS.map(fetchArtistShows)).then(function (lists) {
       var all = [], seen = {};
       lists.forEach(function (l) { l.forEach(function (e) { all.push(e); }); });
@@ -1054,6 +1066,22 @@
       try { localStorage.setItem(CONCERT_CACHE, JSON.stringify({ t: Date.now(), items: items })); } catch (e) {}
       renderConcerts(box, items);
     }).catch(function () { box.innerHTML = '<p class="embed-note">Concert listings are unavailable right now.</p>'; });
+  }
+  function initConcerts() {
+    var box = doc.querySelector("[data-concerts]"), fbox = doc.querySelector("[data-festivals]");
+    if (!box && !fbox) return;
+    // Festivals: independent + cheap (served from festivals.json by the CI relay)
+    if (fbox) {
+      if (!fbox.children.length) fbox.innerHTML = '<p class="rss-loading">Scanning the festival circuit&hellip;</p>';
+      loadFestivals().then(function (f) { if (fbox.isConnected) renderFestivals(fbox, f); });
+    }
+    if (!box) return;
+    box.innerHTML = '<p class="rss-loading">Finding shows on the mellow side of the dial&hellip;</p>';
+    loadConcertsJson().then(function (items) {
+      if (!box.isConnected) return;
+      if (items.length) { renderConcerts(box, items); return; }
+      liveConcerts(box); // relay file not there yet — fall back to live
+    });
   }
 
   /* =========================================================

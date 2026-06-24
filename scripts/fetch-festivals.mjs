@@ -135,7 +135,9 @@ async function search(term, national) {
     marquee.push({ name: m.name, city: m.city, state: m.state, when: m.when, url: m.url, img: img, marquee: true });
     await sleep(200);
   }
-  const list = marquee.concat(live);
+  // Southwest dated festivals first; bucket-list legends after (the page tucks
+  // them into a collapsible section).
+  const list = live.concat(marquee);
   fs.writeFileSync("festivals.json", JSON.stringify({ updated: new Date().toISOString(), festivals: list }, null, 1));
   console.log("festivals:", list.length);
   list.forEach(function (f) { console.log("  •", f.name, "|", f.start, "|", f.city + "," + f.state); });
