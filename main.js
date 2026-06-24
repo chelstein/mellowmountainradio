@@ -979,6 +979,67 @@
   }
 
   /* =========================================================
+     WEATHER — live Sedona forecast (Open-Meteo, no key, CORS-open)
+     ========================================================= */
+  function wxInfo(code, isDay) {
+    var m = {
+      0: ["Clear", "☀️", "🌑"], 1: ["Mostly clear", "🌤️", "🌑"],
+      2: ["Partly cloudy", "⛅", "☁️"], 3: ["Overcast", "☁️", "☁️"],
+      45: ["Fog", "🌫️"], 48: ["Rime fog", "🌫️"],
+      51: ["Light drizzle", "🌦️"], 53: ["Drizzle", "🌦️"], 55: ["Heavy drizzle", "🌧️"],
+      56: ["Freezing drizzle", "🌧️"], 57: ["Freezing drizzle", "🌧️"],
+      61: ["Light rain", "🌦️"], 63: ["Rain", "🌧️"], 65: ["Heavy rain", "🌧️"],
+      66: ["Freezing rain", "🌧️"], 67: ["Freezing rain", "🌧️"],
+      71: ["Light snow", "🌨️"], 73: ["Snow", "🌨️"], 75: ["Heavy snow", "❄️"], 77: ["Snow grains", "🌨️"],
+      80: ["Rain showers", "🌦️"], 81: ["Rain showers", "🌧️"], 82: ["Heavy showers", "⛈️"],
+      85: ["Snow showers", "🌨️"], 86: ["Snow showers", "❄️"],
+      95: ["Thunderstorm", "⛈️"], 96: ["Thunderstorm", "⛈️"], 99: ["Thunderstorm", "⛈️"]
+    };
+    var e = m[code] || ["—", "🌡️"];
+    return { label: e[0], icon: (isDay === 0 && e[2]) ? e[2] : e[1] };
+  }
+  function renderWeather(box, cur, daily) {
+    var now = wxInfo(cur.weather_code, cur.is_day);
+    var hero = '<div class="wx-now">' +
+      '<div class="wx-now-main"><span class="wx-now-ic">' + now.icon + '</span>' +
+        '<span class="wx-now-block"><span class="wx-now-temp">' + Math.round(cur.temperature_2m) + '°</span>' +
+        '<span class="wx-now-cond">' + esc(now.label) + '</span></span></div>' +
+      '<div class="wx-now-meta"><span class="wx-place">Sedona, AZ</span>' +
+        '<span>Feels like ' + Math.round(cur.apparent_temperature) + '°</span>' +
+        '<span>Humidity ' + cur.relative_humidity_2m + '%</span>' +
+        '<span>Wind ' + Math.round(cur.wind_speed_10m) + ' mph</span></div></div>';
+    var days = daily.time.map(function (t, i) {
+      var d = new Date(t + "T12:00:00");
+      var name = i === 0 ? "Today" : d.toLocaleDateString("en-US", { weekday: "short" });
+      var w = wxInfo(daily.weather_code[i], 1);
+      var p = daily.precipitation_probability_max[i];
+      return '<div class="wx-day">' +
+        '<span class="wx-day-name">' + esc(name) + '</span>' +
+        '<span class="wx-day-ic">' + w.icon + '</span>' +
+        '<span class="wx-day-precip' + (p != null && p >= 20 ? '' : ' wx-day-precip--none') + '">💧 ' + (p != null ? p : 0) + '%</span>' +
+        '<span class="wx-day-temps"><span class="wx-day-hi">' + Math.round(daily.temperature_2m_max[i]) + '°</span>' +
+        '<span class="wx-day-lo">' + Math.round(daily.temperature_2m_min[i]) + '°</span></span>' +
+        '</div>';
+    }).join("");
+    box.innerHTML = hero + '<div class="wx-days">' + days + '</div>' +
+      '<p class="wx-credit">Live conditions for Sedona &middot; data by Open-Meteo</p>';
+  }
+  function initWeather() {
+    var box = doc.querySelector("[data-weather]");
+    if (!box) return;
+    box.innerHTML = '<p class="rss-loading">Reading the sky over Sedona&hellip;</p>';
+    var url = "https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610" +
+      "&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,is_day,apparent_temperature" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+      "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/Phoenix&forecast_days=7";
+    fetch(url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!box.isConnected) return;
+      if (!d || !d.current || !d.daily) { box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; return; }
+      renderWeather(box, d.current, d.daily);
+    }).catch(function () { box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; });
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -1268,6 +1329,7 @@
     initLibrary();
     initHeritage();
     initSchedule();
+    initWeather();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
