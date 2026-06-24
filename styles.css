@@ -1318,15 +1318,20 @@ body:not(.is-playing) .listen-btn::after {
 .field textarea { min-height: 130px; resize: vertical; }
 
 /* staff */
-.staff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 22px; }
+.staff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px 22px; }
 .staff-card { text-align: center; }
 .staff-photo {
   width: 100%; aspect-ratio: 1; border-radius: var(--r); object-fit: cover;
   background: linear-gradient(150deg, var(--navy-deep), var(--accent-strong));
-  display: grid; place-items: center; color: #fff; font-family: var(--font-display); font-size: 2.4rem;
+  display: grid; place-items: center; color: #fff; font-family: var(--font-display);
+  font-size: 2.6rem; letter-spacing: .04em; box-shadow: var(--shadow-sm);
 }
-.staff-card h3 { margin-top: 14px; font-size: 1.2rem; }
-.staff-card p { color: var(--muted); font-size: 14px; }
+/* gentle hue variation so the monogram avatars don't read as identical tiles */
+.staff-card:nth-child(3n+2) .staff-photo { background: linear-gradient(150deg, var(--accent-deep), #bd8a32); }
+.staff-card:nth-child(3n) .staff-photo { background: linear-gradient(150deg, #2a5d63, var(--accent-strong)); }
+.staff-card h3 { margin-top: 16px; font-size: 1.22rem; }
+.staff-role { color: var(--accent-strong); font-weight: 700; font-size: 13px; letter-spacing: .01em; margin-top: 4px; }
+.staff-bio { color: var(--muted); font-size: 14px; line-height: 1.5; margin-top: 9px; }
 
 .page-section .section-head { margin-bottom: 36px; }
 .two-col { display: grid; grid-template-columns: 1.1fr .9fr; gap: 50px; align-items: start; }
