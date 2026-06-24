@@ -254,6 +254,7 @@
       setAll("[data-now-track]", song.title || "Mellow Mountain Radio");
       setAll("[data-now-artist]", song.artist || "106.5 FM & 780 AM");
       lastNow = { title: song.title || "Mellow Mountain Radio", artist: song.artist || "KAZM" };
+      highlightOnAir(song.artist);
       updateTabTitle();
       fetchArtwork(song.artist, song.title).then(function (meta) {
         var artUrl = (meta && meta.art) || song.art || null;
@@ -902,6 +903,82 @@
   }
 
   /* =========================================================
+     IN ROTATION — living artist logo wall (+ live "on air" glow)
+     ========================================================= */
+  var LP = "https://r2.theaudiodb.com/images/media/artist/logo/";
+  var ROTATION = [
+    { n: "The Doobie Brothers", l: LP + "the-doobie-brothers-4f1b3aaa5a769.png" },
+    { n: "Steely Dan", l: LP + "tswxry1363971284.png" },
+    { n: "Fleetwood Mac", l: LP + "s3iyxy1759266801.png" },
+    { n: "Stevie Nicks", l: LP + "fl8s651713719616.png" },
+    { n: "Hall & Oates", l: LP + "hall--oates-56f32c7928fad.png" },
+    { n: "Eagles", l: LP + "upttst1522004690.png" },
+    { n: "Journey", l: LP + "xtyqxu1536183132.png" },
+    { n: "Chicago", l: LP + "chicago-4f4b8acccae16.png" },
+    { n: "The Allman Brothers Band", l: LP + "rxpuxw1366209764.png" },
+    { n: "Grateful Dead", l: LP + "xrsusr1366778972.png" },
+    { n: "Bee Gees", l: LP + "awqd7o1710722890.png" },
+    { n: "Orleans", l: null },
+    { n: "Boz Scaggs", l: LP + "supuyx1365179899.png" },
+    { n: "Bobby Caldwell", l: null },
+    { n: "Christopher Cross", l: LP + "vswrxv1445956180.png" },
+    { n: "Toto", l: LP + "sypvyx1489314073.png" },
+    { n: "America", l: LP + "xvttpq1359113304.png" },
+    { n: "Michael Jackson", l: LP + "ruvuxr1471431869.png" },
+    { n: "Player", l: LP + "player-5653f025d267b.png" },
+    { n: "Ambrosia", l: LP + "ambrosia-4f982a87d9b77.png" },
+    { n: "Pablo Cruise", l: null },
+    { n: "Little River Band", l: LP + "ysxvvx1474032528.png" }
+  ];
+  function rotNorm(s) { return (s || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "").replace(/^the/, ""); }
+  function rotItem(a) {
+    var inner = a.l
+      ? '<img class="band-logo" src="' + a.l + '" alt="" loading="lazy" />'
+      : '<span class="band-logo band-logo--text">' + esc(a.n) + '</span>';
+    return '<a class="rwall-item" data-artist="' + esc(a.n) + '" href="https://music.apple.com/us/search?term=' + encodeURIComponent(a.n) + '" target="_blank" rel="noopener" aria-label="Listen to ' + esc(a.n) + '">' +
+      inner +
+      '<span class="rwall-name">' + esc(a.n) + '</span>' +
+      '<span class="rwall-tag"><span class="rwall-dot"></span>On air now</span>' +
+      '</a>';
+  }
+  function renderRotationWall() {
+    var wrap = doc.querySelector("[data-rotation]");
+    if (!wrap || wrap.getAttribute("data-built")) return;
+    var half = Math.ceil(ROTATION.length / 2);
+    var rows = [ROTATION.slice(0, half), ROTATION.slice(half)];
+    wrap.innerHTML = rows.map(function (list, i) {
+      var items = list.map(rotItem).join("");
+      return '<div class="rwall-row rwall-row--' + (i === 0 ? "l" : "r") + '">' +
+        '<div class="rwall-track">' + items + '</div>' +
+        '<div class="rwall-track" aria-hidden="true">' + items + '</div>' +
+        '</div>';
+    }).join("");
+    wrap.setAttribute("data-built", "1");
+    // graceful fallback: if a logo image fails, swap in the artist name
+    wrap.querySelectorAll("img.band-logo").forEach(function (img) {
+      img.addEventListener("error", function () {
+        var link = img.closest(".rwall-item"), span = doc.createElement("span");
+        span.className = "band-logo band-logo--text";
+        span.textContent = link ? link.getAttribute("data-artist") : "";
+        img.replaceWith(span);
+      });
+    });
+    if (lastNow && lastNow.artist) highlightOnAir(lastNow.artist);
+  }
+  function highlightOnAir(artist) {
+    var wrap = doc.querySelector("[data-rotation]");
+    if (!wrap) return;
+    var cur = rotNorm(artist), any = false;
+    wrap.querySelectorAll(".rwall-item").forEach(function (el) {
+      var nm = rotNorm(el.getAttribute("data-artist"));
+      var on = cur.length > 2 && nm.length > 2 && (cur === nm || cur.indexOf(nm) >= 0 || nm.indexOf(cur) >= 0);
+      el.classList.toggle("is-onair", on);
+      if (on) any = true;
+    });
+    wrap.classList.toggle("rwall-live", any);
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -1191,6 +1268,7 @@
     initLibrary();
     initHeritage();
     initSchedule();
+    renderRotationWall();
     renderPodcasts();
     syncListenUI();
     renderNow(lastNowData);
