@@ -30,11 +30,14 @@ jobs:
       - name: Fetch events (Community Library Sedona)
         run: node scripts/fetch-library.mjs
         continue-on-error: true
+      - name: Fetch festivals (Southwest)
+        run: node scripts/fetch-festivals.mjs
+        continue-on-error: true
       - name: Commit changes if any
         run: |
           git config user.name "mmr-data-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add showtimes.json library-events.json 2>/dev/null || true
+          git add showtimes.json library-events.json festivals.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No changes."
           else
