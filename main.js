@@ -1022,7 +1022,7 @@
         '</div>';
     }).join("");
     box.innerHTML = hero + '<div class="wx-days">' + days + '</div>' +
-      '<p class="wx-credit">Live conditions for Sedona &middot; data by Open-Meteo</p>';
+      '<p class="wx-credit">Live conditions for Sedona &middot; data by Open-Meteo &middot; Cathedral Rock photo via Wikimedia Commons</p>';
   }
   function renderWeatherMini(el, cur) {
     var w = wxInfo(cur.weather_code, cur.is_day);

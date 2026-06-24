@@ -1010,9 +1010,15 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
    WEATHER (live Sedona forecast)
    ========================================================= */
 .wx-now {
+  position: relative; overflow: hidden;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 28px;
-  background: linear-gradient(135deg, var(--navy), var(--accent-deep)); color: #fff;
-  border-radius: var(--r); padding: 26px 32px; box-shadow: var(--shadow-sm);
+  color: #fff; border-radius: var(--r); padding: 28px 32px; box-shadow: var(--shadow-sm);
+  background-color: var(--navy);
+  background-image:
+    linear-gradient(110deg, rgba(15, 23, 42, .9) 0%, rgba(15, 23, 42, .62) 52%, rgba(15, 23, 42, .5) 100%),
+    url("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Cathedral_Rock_-_Sedona_AZ-1.jpg/1920px-Cathedral_Rock_-_Sedona_AZ-1.jpg");
+  background-size: cover; background-position: center 40%;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .45);
 }
 .wx-now-main { display: flex; align-items: center; gap: 18px; }
 .wx-now-ic { font-size: 3.4rem; line-height: 1; }
