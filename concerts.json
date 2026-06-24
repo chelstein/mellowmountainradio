@@ -1,5 +1,5 @@
 {
- "updated": "2026-06-24T14:37:52.625Z",
+ "updated": "2026-06-24T19:50:53.323Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -858,6 +858,24 @@
    "saleStart": "2025-12-12T17:00:00Z",
    "lineup": [
     "Club Level Seating: Ball Arena"
+   ]
+  },
+  {
+   "id": "vvG10Z_uQ-OUd8",
+   "artist": "Stevie Nicks",
+   "date": "2026-08-29",
+   "time": "12:00:00",
+   "venue": "Great Park",
+   "city": "Irvine",
+   "state": "CA",
+   "url": "https://on.fgtix.com/trk/MAdnc",
+   "img": "https://s1.ticketm.net/dam/a/930/a1d4b858-adff-4606-85a9-0d943a175930_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-06-24T19:00:00Z",
+   "lineup": [
+    "Daisy Chain Fields",
+    "Olivia Rodrigo"
    ]
   },
   {
