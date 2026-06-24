@@ -1,5 +1,5 @@
 {
- "updated": "2026-06-24T00:59:22.833Z",
+ "updated": "2026-06-24T01:08:36.905Z",
  "festivals": [
   {
    "name": "Coachella",
@@ -7,14 +7,16 @@
    "state": "CA",
    "when": "Two weekends each April",
    "url": "https://www.coachella.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Coachella18W1-18_%2842058161311%29.jpg/3840px-Coachella18W1-18_%2842058161311%29.jpg",
    "marquee": true
   },
   {
-   "name": "Stagecoach",
-   "city": "Indio",
-   "state": "CA",
-   "when": "Late April",
-   "url": "https://www.stagecoachfestival.com",
+   "name": "Glastonbury Festival",
+   "city": "Somerset",
+   "state": "England",
+   "when": "Late June",
+   "url": "https://www.glastonburyfestivals.co.uk",
+   "img": "https://upload.wikimedia.org/wikipedia/en/9/9b/Glastologo.png",
    "marquee": true
   },
   {
@@ -23,14 +25,52 @@
    "state": "NV",
    "when": "Late August",
    "url": "https://burningman.org",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Temple_du_Burning_Man_2016.jpg",
    "marquee": true
   },
   {
-   "name": "Life is Beautiful",
-   "city": "Las Vegas",
-   "state": "NV",
-   "when": "Late September",
-   "url": "https://www.lifeisbeautiful.com",
+   "name": "Tomorrowland",
+   "city": "Boom",
+   "state": "Belgium",
+   "when": "Two weekends each July",
+   "url": "https://www.tomorrowland.com",
+   "img": "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/Tomorrowland_festival_logo.svg/250px-Tomorrowland_festival_logo.svg.png",
+   "marquee": true
+  },
+  {
+   "name": "New Orleans Jazz & Heritage Festival",
+   "city": "New Orleans",
+   "state": "LA",
+   "when": "Late April – early May",
+   "url": "https://www.nojazzfest.com",
+   "img": "https://upload.wikimedia.org/wikipedia/en/a/af/NOJazzFestLogo.png",
+   "marquee": true
+  },
+  {
+   "name": "Lollapalooza",
+   "city": "Chicago",
+   "state": "IL",
+   "when": "Early August",
+   "url": "https://www.lollapalooza.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Miley_Cyrus_no_palco_do_Lollapalooza_Brasil_2022.jpg",
+   "marquee": true
+  },
+  {
+   "name": "Bonnaroo",
+   "city": "Manchester",
+   "state": "TN",
+   "when": "Mid-June",
+   "url": "https://www.bonnaroo.com",
+   "img": "https://upload.wikimedia.org/wikipedia/en/2/2d/BonnarooDay.JPG",
+   "marquee": true
+  },
+  {
+   "name": "Newport Folk Festival",
+   "city": "Newport",
+   "state": "RI",
+   "when": "Late July",
+   "url": "https://www.newportfolk.org",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/My_Morning_Jacket%2C_2015.jpg/3840px-My_Morning_Jacket%2C_2015.jpg",
    "marquee": true
   },
   {
@@ -39,6 +79,61 @@
    "state": "TX",
    "when": "Two weekends each October",
    "url": "https://www.aclfestival.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Austin_City_Limits_Music_Festival_2012.jpg",
+   "marquee": true
+  },
+  {
+   "name": "Rock in Rio",
+   "city": "Rio de Janeiro",
+   "state": "Brazil",
+   "when": "September (biennial)",
+   "url": "https://rockinrio.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Rock_in_Rio_-_Madrid_2012.jpg",
+   "marquee": true
+  },
+  {
+   "name": "Roskilde Festival",
+   "city": "Roskilde",
+   "state": "Denmark",
+   "when": "Late June – early July",
+   "url": "https://www.roskilde-festival.dk",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg/3840px-Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg",
+   "marquee": true
+  },
+  {
+   "name": "Fuji Rock Festival",
+   "city": "Naeba",
+   "state": "Japan",
+   "when": "Late July",
+   "url": "https://www.fujirockfestival.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/d/d5/FujiGreenStage.jpg",
+   "marquee": true
+  },
+  {
+   "name": "Montreux Jazz Festival",
+   "city": "Montreux",
+   "state": "Switzerland",
+   "when": "Early July",
+   "url": "https://www.montreuxjazzfestival.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Montreux_Jazz_2M2C_juillet_2023.jpg",
+   "marquee": true
+  },
+  {
+   "name": "Primavera Sound",
+   "city": "Barcelona",
+   "state": "Spain",
+   "when": "Late May – early June",
+   "url": "https://www.primaverasound.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Primavera_Sound_main_stages_area_2.jpg/3840px-Primavera_Sound_main_stages_area_2.jpg",
+   "marquee": true
+  },
+  {
+   "name": "Stagecoach",
+   "city": "Indio",
+   "state": "CA",
+   "when": "Late April",
+   "url": "https://www.stagecoachfestival.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Stagecoach_2011_entrance.jpg",
    "marquee": true
   },
   {
@@ -47,6 +142,7 @@
    "state": "TX",
    "when": "Mid-March",
    "url": "https://www.sxsw.com",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SXSW_Center_%2854987238776%29.jpg/3840px-SXSW_Center_%2854987238776%29.jpg",
    "marquee": true
   },
   {

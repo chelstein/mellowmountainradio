@@ -20,17 +20,49 @@ const CURATED = [
 ];
 const KEYWORDS = ["festival", "fest"];
 
-// Iconic festivals that aren't on Ticketmaster (own lottery / AXS / badge system).
-// Real, recurring events — shown with official ticket links + typical season,
-// not fabricated dates. Marked marquee:true so the card links out for info.
+// Bucket-list festivals — the legendary, once-in-a-lifetime "whoa" events around
+// the world. Most aren't on Ticketmaster (own lottery / AXS / badge / overseas
+// box office), so they're shown with official links + typical season (no
+// fabricated dates) and a real lead image pulled from Wikipedia at build time.
 const MARQUEE = [
-  { name: "Coachella", city: "Indio", state: "CA", when: "Two weekends each April", url: "https://www.coachella.com" },
-  { name: "Stagecoach", city: "Indio", state: "CA", when: "Late April", url: "https://www.stagecoachfestival.com" },
-  { name: "Burning Man", city: "Black Rock City", state: "NV", when: "Late August", url: "https://burningman.org" },
-  { name: "Life is Beautiful", city: "Las Vegas", state: "NV", when: "Late September", url: "https://www.lifeisbeautiful.com" },
-  { name: "Austin City Limits", city: "Austin", state: "TX", when: "Two weekends each October", url: "https://www.aclfestival.com" },
-  { name: "SXSW", city: "Austin", state: "TX", when: "Mid-March", url: "https://www.sxsw.com" }
+  { name: "Coachella", city: "Indio", state: "CA", when: "Two weekends each April", url: "https://www.coachella.com", wiki: "Coachella" },
+  { name: "Glastonbury Festival", city: "Somerset", state: "England", when: "Late June", url: "https://www.glastonburyfestivals.co.uk", wiki: "Glastonbury Festival" },
+  { name: "Burning Man", city: "Black Rock City", state: "NV", when: "Late August", url: "https://burningman.org", wiki: "Burning Man" },
+  { name: "Tomorrowland", city: "Boom", state: "Belgium", when: "Two weekends each July", url: "https://www.tomorrowland.com", wiki: "Tomorrowland (festival)" },
+  { name: "New Orleans Jazz & Heritage Festival", city: "New Orleans", state: "LA", when: "Late April – early May", url: "https://www.nojazzfest.com", wiki: "New Orleans Jazz & Heritage Festival" },
+  { name: "Lollapalooza", city: "Chicago", state: "IL", when: "Early August", url: "https://www.lollapalooza.com", wiki: "Lollapalooza" },
+  { name: "Bonnaroo", city: "Manchester", state: "TN", when: "Mid-June", url: "https://www.bonnaroo.com", wiki: "Bonnaroo Music and Arts Festival" },
+  { name: "Newport Folk Festival", city: "Newport", state: "RI", when: "Late July", url: "https://www.newportfolk.org", wiki: "Newport Folk Festival" },
+  { name: "Austin City Limits", city: "Austin", state: "TX", when: "Two weekends each October", url: "https://www.aclfestival.com", wiki: "Austin City Limits Music Festival" },
+  { name: "Rock in Rio", city: "Rio de Janeiro", state: "Brazil", when: "September (biennial)", url: "https://rockinrio.com", wiki: "Rock in Rio" },
+  { name: "Roskilde Festival", city: "Roskilde", state: "Denmark", when: "Late June – early July", url: "https://www.roskilde-festival.dk", wiki: "Roskilde Festival" },
+  { name: "Fuji Rock Festival", city: "Naeba", state: "Japan", when: "Late July", url: "https://www.fujirockfestival.com", wiki: "Fuji Rock Festival" },
+  { name: "Montreux Jazz Festival", city: "Montreux", state: "Switzerland", when: "Early July", url: "https://www.montreuxjazzfestival.com", wiki: "Montreux Jazz Festival" },
+  { name: "Primavera Sound", city: "Barcelona", state: "Spain", when: "Late May – early June", url: "https://www.primaverasound.com", wiki: "Primavera Sound" },
+  { name: "Stagecoach", city: "Indio", state: "CA", when: "Late April", url: "https://www.stagecoachfestival.com", wiki: "Stagecoach Festival" },
+  { name: "SXSW", city: "Austin", state: "TX", when: "Mid-March", url: "https://www.sxsw.com", wiki: "South by Southwest" }
 ];
+
+const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+
+// Real lead image for a festival from the Wikipedia REST summary endpoint.
+// Retries a few times — the endpoint rate-limits rapid sequential requests.
+async function wikiImage(title) {
+  if (!title) return "";
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const r = await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(title),
+        { headers: { "User-Agent": "MMR/1.0 festivals (chuck@mellowmountainradio.com)" } });
+      if (r.ok) {
+        const j = await r.json();
+        const img = (j.originalimage && j.originalimage.source) || (j.thumbnail && j.thumbnail.source) || "";
+        if (img) return img;
+      }
+    } catch (e) { /* retry */ }
+    await sleep(400 * (attempt + 1));
+  }
+  return "";
+}
 
 function pickImage(imgs) {
   imgs = imgs || [];
@@ -97,7 +129,12 @@ async function search(term, national) {
   const live = all2.sort(function (a, b) {
     return (b.yacht ? 1 : 0) - (a.yacht ? 1 : 0) || (a.state === "AZ" ? 0 : 1) - (b.state === "AZ" ? 0 : 1) || (a.start || "").localeCompare(b.start || "");
   });
-  const marquee = MARQUEE.map(function (m) { return { name: m.name, city: m.city, state: m.state, when: m.when, url: m.url, marquee: true }; });
+  const marquee = [];
+  for (const m of MARQUEE) {
+    const img = await wikiImage(m.wiki);
+    marquee.push({ name: m.name, city: m.city, state: m.state, when: m.when, url: m.url, img: img, marquee: true });
+    await sleep(200);
+  }
   const list = marquee.concat(live);
   fs.writeFileSync("festivals.json", JSON.stringify({ updated: new Date().toISOString(), festivals: list }, null, 1));
   console.log("festivals:", list.length);

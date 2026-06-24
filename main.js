@@ -889,9 +889,15 @@
     var lineup = doc.querySelector("[data-schedule]");
     if (!lineup) return;
     var items = lineup.querySelectorAll("li");
-    var starts = [6, 10, 15, 18, 22];
-    var hour = new Date().getHours(), current = 0;
-    for (var i = 0; i < starts.length; i++) { if (hour >= starts[i]) current = i; }
+    // Real KAZM day-parts: 6a Mellow, 12p Midday, 3p Three Pack, 4p Sports,
+    // 10p Coast to Coast (runs to 2a), 2a Overnight (runs to 6a).
+    var hour = new Date().getHours(), current;
+    if (hour >= 6 && hour < 12) current = 0;
+    else if (hour >= 12 && hour < 15) current = 1;
+    else if (hour >= 15 && hour < 16) current = 2;
+    else if (hour >= 16 && hour < 22) current = 3;
+    else if (hour >= 22 || hour < 2) current = 4;
+    else current = 5;
     if (items[current]) items[current].classList.add("is-live");
   }
 
