@@ -1,6 +1,65 @@
 {
- "updated": "2026-06-24T00:48:41.396Z",
+ "updated": "2026-06-24T00:59:22.833Z",
  "festivals": [
+  {
+   "name": "Coachella",
+   "city": "Indio",
+   "state": "CA",
+   "when": "Two weekends each April",
+   "url": "https://www.coachella.com",
+   "marquee": true
+  },
+  {
+   "name": "Stagecoach",
+   "city": "Indio",
+   "state": "CA",
+   "when": "Late April",
+   "url": "https://www.stagecoachfestival.com",
+   "marquee": true
+  },
+  {
+   "name": "Burning Man",
+   "city": "Black Rock City",
+   "state": "NV",
+   "when": "Late August",
+   "url": "https://burningman.org",
+   "marquee": true
+  },
+  {
+   "name": "Life is Beautiful",
+   "city": "Las Vegas",
+   "state": "NV",
+   "when": "Late September",
+   "url": "https://www.lifeisbeautiful.com",
+   "marquee": true
+  },
+  {
+   "name": "Austin City Limits",
+   "city": "Austin",
+   "state": "TX",
+   "when": "Two weekends each October",
+   "url": "https://www.aclfestival.com",
+   "marquee": true
+  },
+  {
+   "name": "SXSW",
+   "city": "Austin",
+   "state": "TX",
+   "when": "Mid-March",
+   "url": "https://www.sxsw.com",
+   "marquee": true
+  },
+  {
+   "name": "Portland Yacht Rock Festival",
+   "city": "Portland",
+   "state": "ME",
+   "url": "https://www.ticketmaster.com/portland-yacht-rock-festival-2026-portland-maine-09-04-2026/event/01006488A956D630",
+   "img": "https://s1.ticketm.net/dam/c/ab4/6367448e-7474-4650-bd2d-02a8f7166ab4_106161_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Yacht Rock",
+   "start": "2026-09-04",
+   "end": "2026-09-04",
+   "yacht": true
+  },
   {
    "name": "Goldrush Music Festival",
    "city": "Chandler",

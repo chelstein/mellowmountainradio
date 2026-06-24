@@ -714,6 +714,10 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .fest-when { color: var(--accent-strong); font-weight: 700; font-size: 14px; margin-top: 7px; }
 .fest-loc { color: var(--muted); font-size: 13px; margin-top: 3px; }
 .fest-btn { margin-top: 16px; align-self: flex-start; padding: 10px 20px; font-size: 14px; }
+.fest-img--name { display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; background: linear-gradient(135deg, var(--navy), var(--accent-deep)); }
+.fest-img--name span { font-family: var(--font-display); color: #fff; font-size: 1.45rem; line-height: 1.12; }
+.fest-marquee { background: #bd8a32; }
+.fest-card--marquee { border-color: color-mix(in srgb, #bd8a32 45%, var(--line)); }
 @media (max-width: 900px) { .festival-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .festival-grid { grid-template-columns: 1fr; } }
 

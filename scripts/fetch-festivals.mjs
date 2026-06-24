@@ -20,6 +20,18 @@ const CURATED = [
 ];
 const KEYWORDS = ["festival", "fest"];
 
+// Iconic festivals that aren't on Ticketmaster (own lottery / AXS / badge system).
+// Real, recurring events — shown with official ticket links + typical season,
+// not fabricated dates. Marked marquee:true so the card links out for info.
+const MARQUEE = [
+  { name: "Coachella", city: "Indio", state: "CA", when: "Two weekends each April", url: "https://www.coachella.com" },
+  { name: "Stagecoach", city: "Indio", state: "CA", when: "Late April", url: "https://www.stagecoachfestival.com" },
+  { name: "Burning Man", city: "Black Rock City", state: "NV", when: "Late August", url: "https://burningman.org" },
+  { name: "Life is Beautiful", city: "Las Vegas", state: "NV", when: "Late September", url: "https://www.lifeisbeautiful.com" },
+  { name: "Austin City Limits", city: "Austin", state: "TX", when: "Two weekends each October", url: "https://www.aclfestival.com" },
+  { name: "SXSW", city: "Austin", state: "TX", when: "Mid-March", url: "https://www.sxsw.com" }
+];
+
 function pickImage(imgs) {
   imgs = imgs || [];
   const w = imgs.filter(function (i) { return i.ratio === "16_9" && i.width >= 600; }).sort(function (a, b) { return a.width - b.width; })[0];
@@ -33,9 +45,9 @@ function clean(n) {
     .replace(/\s+feat\.?\s+.*$/i, "").replace(/\s+presents:.*$/i, "")
     .replace(/\b20\d{2}\b/g, "").replace(/\s*[-–:]\s*$/, "").replace(/\s{2,}/g, " ").trim();
 }
-async function search(term) {
+async function search(term, national) {
   const url = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=" + KEY +
-    "&segmentName=Music&sort=date,asc&size=40" + GEO + "&keyword=" + encodeURIComponent(term);
+    "&segmentName=Music&sort=date,asc&size=40" + (national ? "" : GEO) + "&keyword=" + encodeURIComponent(term);
   try { const j = await (await fetch(url, { headers: { "User-Agent": "MMR/1.0" } })).json(); return (j._embedded && j._embedded.events) || []; }
   catch (e) { return []; }
 }
@@ -64,8 +76,29 @@ async function search(term) {
       if (!fests[key].img) fests[key].img = pickImage(e.images);
     }
   });
-  const list = Object.keys(fests).map(function (k) { return fests[k]; })
-    .sort(function (a, b) { return (a.state === "AZ" ? 0 : 1) - (b.state === "AZ" ? 0 : 1) || (a.start || "").localeCompare(b.start || ""); });
+
+  // Nationwide yacht-rock festivals & cruises — on-brand, region-agnostic.
+  const yacht = {};
+  for (const t of ["yacht rock festival", "yacht rock cruise", "sail rock festival"]) {
+    (await search(t, true)).forEach(function (e) { yacht[e.id] = e; });
+  }
+  Object.keys(yacht).forEach(function (id) {
+    const e = yacht[id], nm = e.name || "";
+    if (!/yacht rock|sail rock/i.test(nm) || !/\b(fest|festival|cruise)\b/i.test(nm)) return;
+    const v = (e._embedded && e._embedded.venues && e._embedded.venues[0]) || {};
+    const key = festKey(nm); if (!key || fests[key]) return;
+    const date = (e.dates && e.dates.start && e.dates.start.localDate) || "";
+    fests[key] = { name: clean(nm), city: v.city && v.city.name, state: v.state && v.state.stateCode,
+      url: e.url || "", img: pickImage(e.images), genre: "Yacht Rock", start: date, end: date, yacht: true };
+  });
+
+  const all2 = Object.keys(fests).map(function (k) { return fests[k]; });
+  // yacht-rock festivals first (on-brand), then AZ, then the rest by date
+  const live = all2.sort(function (a, b) {
+    return (b.yacht ? 1 : 0) - (a.yacht ? 1 : 0) || (a.state === "AZ" ? 0 : 1) - (b.state === "AZ" ? 0 : 1) || (a.start || "").localeCompare(b.start || "");
+  });
+  const marquee = MARQUEE.map(function (m) { return { name: m.name, city: m.city, state: m.state, when: m.when, url: m.url, marquee: true }; });
+  const list = marquee.concat(live);
   fs.writeFileSync("festivals.json", JSON.stringify({ updated: new Date().toISOString(), festivals: list }, null, 1));
   console.log("festivals:", list.length);
   list.forEach(function (f) { console.log("  •", f.name, "|", f.start, "|", f.city + "," + f.state); });

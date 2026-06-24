@@ -1006,14 +1006,19 @@
     if (!fests.length) { box.innerHTML = '<p class="embed-note">No festivals on the calendar right now &mdash; we\'ll surface them as they\'re announced.</p>'; return; }
     box.innerHTML = fests.map(function (f) {
       var loc = [f.city, f.state].filter(Boolean).join(", ");
-      return '<article class="fest-card">' +
-        (f.img ? '<img class="fest-img" src="' + esc(f.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'" />' : '') +
-        '<div class="fest-body">' +
-          (f.state === "AZ" ? '<span class="fest-az">Arizona</span>' : (f.genre && f.genre !== "Undefined" && f.genre !== "Other" ? '<span class="fest-genre">' + esc(f.genre) + '</span>' : '')) +
+      var banner = f.img
+        ? '<img class="fest-img" src="' + esc(f.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'" />'
+        : (f.marquee ? '<div class="fest-img fest-img--name"><span>' + esc(f.name) + '</span></div>' : "");
+      var tag = f.marquee ? '<span class="fest-az fest-marquee">Bucket list</span>'
+        : (f.state === "AZ" ? '<span class="fest-az">Arizona</span>'
+          : (f.genre && f.genre !== "Undefined" && f.genre !== "Other" ? '<span class="fest-genre">' + esc(f.genre) + '</span>' : ""));
+      var when = f.marquee ? esc(f.when || "Annual") : esc(festDateRange(f.start, f.end));
+      return '<article class="fest-card' + (f.marquee ? " fest-card--marquee" : "") + '">' + banner +
+        '<div class="fest-body">' + tag +
           '<h3>' + esc(f.name) + '</h3>' +
-          '<p class="fest-when">' + esc(festDateRange(f.start, f.end)) + '</p>' +
+          '<p class="fest-when">' + when + '</p>' +
           (loc ? '<p class="fest-loc">' + esc(loc) + '</p>' : '') +
-          (f.url ? '<a class="btn btn-primary fest-btn" href="' + esc(f.url) + '" target="_blank" rel="noopener">Tickets &amp; lineup</a>' : '') +
+          (f.url ? '<a class="btn btn-primary fest-btn" href="' + esc(f.url) + '" target="_blank" rel="noopener">' + (f.marquee ? "Tickets &amp; info" : "Tickets &amp; lineup") + '</a>' : '') +
         '</div></article>';
     }).join("");
   }
