@@ -1,9 +1,296 @@
 {
- "updated": "2026-06-24T19:50:20.349Z",
+ "updated": "2026-06-25T03:52:57.699Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
- "showings": []
+ "showings": [
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: National Treasure",
+   "date": "2026-06-25",
+   "time": "19:30",
+   "venue": "Basecamp Sedona Beer Company",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-national-treasure/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/National-Treasure-poster.jpg",
+   "summary": "“National Treasure” is a 2004 adventure heist film. Historian and code-breaker Ben Gates (Nicolas Cage) has been searching his whole life for a rumored Freemason treasure dating back to the creation of the United States."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Pressure",
+   "date": "2026-06-26",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/pressure/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Pressure-poster.jpg",
+   "summary": "In the tense 72 hours before D-Day, and the fate of the free world hanging in the balance, “Pressure” follows General Dwight D. Eisenhower (Brendan Fraser) and Captain James Stagg (Andrew Scott) as they face an…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Ethan Bloom",
+   "date": "2026-06-26",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/ethan-bloom/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Ethan-Bloom-poster.jpg",
+   "summary": "Thirteen-year-old Ethan (Hank Greenspan) is supposed to be preparing for his bar mitzvah — but despite his Jewish family, Ethan is convinced his spiritual calling is with the Catholic church, where he secretly finds…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "The Pianist’s Choice",
+   "date": "2026-06-26",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-pianists-choice/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/The-Pianists-Choice-poster.jpg",
+   "summary": "Set against the backdrop of World War II, “The Pianist’s Choice” is a sumptuous historical romance that intertwines love, music, and moral courage in the face of darkness."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Mahler in New York",
+   "date": "2026-06-26",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/mahler-in-new-york/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Mahler-in-New-York-poster.jpg",
+   "summary": "“Mahler in New York” brings Mahler’s final years vividly to life, weaving together archival recordings, contemporary interviews, intimate musical performances, and evocative footage of Manhattan."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "A Nice Indian Boy",
+   "date": "2026-06-27",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/a-nice-indian-boy/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/A-Nice-Indian-Boy-poster.jpg",
+   "summary": "The evening will feature a special screening of the acclaimed film “A Nice Indian Boy” — a heartfelt and humorous story that explores identity, family, and love through a culturally rich lens. Following the…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: De-Lovely",
+   "date": "2026-06-29",
+   "time": "19:30",
+   "venue": "Village of Oak Creek Association Park",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-de-lovely/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/De-Lovely-poster.jpg",
+   "summary": "“De-Lovely” (2004) is a biographical musical that chronicles the life of famed American composer Cole Porter. At the staging of a musical production based on his life story, songwriter Cole Porter (Kevin Kline)…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Moonstruck",
+   "date": "2026-06-30",
+   "time": "19:30",
+   "venue": "Tlaquepaque Arts & Shopping Village",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-moonstruck/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Moonstruck-poster.jpg",
+   "summary": "“Moonstruck” is a beloved 1987 romantic comedy. It was nominated for six Academy Awards, including Best Picture. It won three Oscars for Best Screenplay, Best Actress (Cher) and Best Supporting Actress (Olympia Dukakis)."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Notting Hill",
+   "date": "2026-07-01",
+   "time": "19:30",
+   "venue": "The Wilde Resort and Spa",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-notting-hill/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Notting-Hill-poster.jpg",
+   "summary": "“Notting Hill” (1999) follows William Thacker (Hugh Grant), a modest British travel bookstore owner, whose quiet life is thrown into romantic turmoil when Anna Scott (Julia Roberts), a glamorous and world-famous…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Stand By Me",
+   "date": "2026-07-02",
+   "time": "19:30",
+   "venue": "Basecamp Sedona Beer Company",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-stand-by-me/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Stand-By-Me-poster.jpg",
+   "summary": "“Stand by Me” is a classic coming-of-age film directed by Rob Reiner and adapted from Stephen King’s novella, The Body. In 1959 Oregon, four twelve-year-old boys — Gordie, Chris, Teddy, and Vern — embark on a two-day…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Tuner",
+   "date": "2026-07-03",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/tuner/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/TUNER-poster.jpg",
+   "summary": "A gifted piano tuner’s meticulous skills for tuning pianos lead him to discover an unexpected aptitude for cracking safes, turning his life upside down in “Tuner” — Academy Award-winning director Daniel Roher’s first…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "The Soundman",
+   "date": "2026-07-03",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-soundman/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/The-Soundman-poster.jpg",
+   "summary": "“The Soundman” is a moving love story about passion, imagination, and the pursuit of humanity during dark times. Set against the marvelous world of 1940s Belgian radio, their voices rise above the rumble of…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Eleanor the Great",
+   "date": "2026-07-03",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/eleanor-the-great/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Eleanor-the-Great-poster.jpg",
+   "summary": "“Eleanor the Great” features a bravura performance from June Squibb in the title role of the spirited 94-year-old who tells a tale that takes on a dangerous life of its own."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Elena’s War",
+   "date": "2026-07-03",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/elenas-war/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Elenas-War-poster.jpg",
+   "summary": "A stirring portrait of rebellion, resilience, and the cost of speaking truth to power, “Elena’s War” celebrates the indomitable spirit of a woman who refused to remain silent and dared to stand alone against tyranny…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Yankee Doodle Dandy",
+   "date": "2026-07-06",
+   "time": "19:30",
+   "venue": "Village of Oak Creek Association Park",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-yankee-doodle-dandy/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Yankee-Doodle-Dandy-poster.jpg",
+   "summary": "“Yankee Doodle Dandy” (1942) is a biographical musical starring James Cagney as George M. Cohan, the legendary “father of American musical comedy” — known for patriotic songs like Yankee Doodle Dandy, You’re a Grand…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Flagstaff Premiere: Trailblazers",
+   "date": "2026-07-08",
+   "time": "19:00",
+   "venue": "Theatrikos Theatre Company",
+   "city": "Flagstaff",
+   "url": "https://sedonafilmfestival.com/event/flagstaff-premiere-trailblazers/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Trailblazers-poster.jpg",
+   "summary": "In 1982, brothers Troy and Gil Gillenwater decided to walk across the state of Arizona. Without GPS, mobile phones, or continuous trails, they cobbled together an 810-mile adventure that took over two months and two…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Love Actually",
+   "date": "2026-07-08",
+   "time": "19:30",
+   "venue": "The Wilde Resort and Spa",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-love-actually/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Love-Actually-poster.jpg",
+   "summary": "“Love Actually” is a 2003 romantic comedy that weaves together ten separate, interconnected love stories in the weeks leading up to Christmas in London. These intertwined journeys examine the complexities of the one…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Surround Sound Classical Blast!",
+   "date": "2026-07-09",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/surround-sound-classical-blast/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Surround-Sound-CLASSICAL-July-2026-poster.jpg",
+   "summary": "You will be blown away by this audio/visual 5.1 Surround Sound Music Experience in Sedona’s best sound system, the Mary D. Fisher Theater. This special Audio/Video Surround Sound Experience will feature Holst, Brahms…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Three Amigos!",
+   "date": "2026-07-09",
+   "time": "19:30",
+   "venue": "Basecamp Sedona Beer Company",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-three-amigos/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Three-Amigos-poster.jpg",
+   "summary": "In the 1986 comedy classic “Three Amigos!”, three out-of-work silent film actors — Lucky Day (Steve Martin), Dusty Bottoms (Chevy Chase), and Ned Nederlander (Martin Short) — are accidentally recruited to a Mexican…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Monument",
+   "date": "2026-07-10",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/monument/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Monument-poster.jpg",
+   "summary": "Set in the final year of Israel’s occupation of southern Lebanon, “Monument” tells the true story of acclaimed Israeli architects Amnon Rechter (Joe Mazzello) and his father, Yacov Rechter (Jon Voight), as their most…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "In the Living Room Music Series: Steve Estes",
+   "date": "2026-07-13",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/in-the-living-room-music-series-steve-estes/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/In-the-Living-Room-Steve-Estes-poster.jpg",
+   "summary": "This month, Shondra welcomes the incredibly talented guitarist Steve Estes. With a sound that bridges the gap between classic roots and rock, Steve’s performance is set to be a highlight of the season. It’s an…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "In the Living Room Music Series: <br> Tommy Acosta and Chicky Brooklyn",
+   "date": "2026-07-27",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/in-the-living-room-music-series-tommy-acosta-and-chicky-brooklyn/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/In-the-Living-Room-Tommy-Acosta-poster.jpg",
+   "summary": "This month, Shondra welcomes the songwriting duo of Tommy Acosta and his musical partner, Chicky Brooklyn. Fans know them as the engine behind the popular band Green Light, but for this special night, they are…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "WHAM! 10 Days in China",
+   "date": "2026-07-28",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/wham-10-days-in-china/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/WHAM-poster.jpg",
+   "summary": "In 1985, WHAM! crossed cultural divides as the first Western pop act in China. Previously unseen, beautifully restored archive footage reveals this landmark meeting of pop, politics and history."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Rita Lim: Make It With You … Yesterday Once More",
+   "date": "2026-09-10",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/rita-lim-make-it-with-you-yesterday-once-more/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Rita-Lim-poster.jpg",
+   "summary": "Award-winning recording artist Rita Lim makes her Sedona debut with “Make It With You … Yesterday Once More” — a captivating new concert celebrating the timeless music of Bread, The Carpenters & More."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Trailblazers",
+   "date": "2026-10-14",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/trailblazers/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Trailblazers-poster.jpg",
+   "summary": "In 1982, brothers Troy and Gil Gillenwater decided to walk across the state of Arizona. Without GPS, mobile phones, or continuous trails, they cobbled together an 810-mile adventure that took over two months and two…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Psychic Standup Comedy Night with Karen Rontowski",
+   "date": "2027-01-23",
+   "time": "18:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
+   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
+  }
+ ]
 }
