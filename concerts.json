@@ -1,5 +1,5 @@
 {
- "updated": "2026-06-26T19:53:27.767Z",
+ "updated": "2026-06-27T03:43:00.827Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -86,21 +86,6 @@
    "lineup": [
     "Styx"
    ]
-  },
-  {
-   "id": "1Ae0Z_aGklPle2q",
-   "artist": "Fleetwood Mac",
-   "date": "2026-09-05",
-   "time": "21:00:00",
-   "venue": "Thunderbird Lounge",
-   "city": "Phoenix",
-   "state": "AZ",
-   "url": "https://www.ticketweb.com/event/fleetwood-mac-vs-abba-disco-thunderbird-lounge-tickets/14882373?REFERRAL_ID=tmfeed",
-   "img": "https://s1.ticketm.net/dam/c/4f2/0109888a-61b5-4525-8432-b026ef04f4f2_105631_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-04-26T16:15:00Z",
-   "lineup": []
   },
   {
    "id": "Z7r9jZ1A70_qf",
@@ -191,7 +176,7 @@
    "url": "https://www.ticketweb.com/event/the-marshall-tucker-band-with-the-amphitheater-at-philip-s-tickets/14174664",
    "img": "https://s1.ticketm.net/dam/a/78a/ddb6d0f7-14ce-48d3-b418-16a46790f78a_1828291_RETINA_PORTRAIT_16_9.jpg",
    "price": 39,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-04-10T16:00:00Z",
    "lineup": []
   },
