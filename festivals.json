@@ -1,5 +1,5 @@
 {
- "updated": "2026-06-28T04:06:44.094Z",
+ "updated": "2026-06-28T08:57:06.749Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -29,28 +29,8 @@
    "url": "https://on.fgtix.com/trk/R4TZ",
    "img": "https://s1.ticketm.net/dam/a/4eb/61342857-ec20-45c0-8948-40fea2f814eb_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
-   "start": "2026-06-27",
+   "start": "2026-06-28",
    "end": "2026-06-28"
-  },
-  {
-   "name": "Freestyle Festival",
-   "city": "Ontario",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/freestyle-festival-feat-lisa-lisa-stevie-ontario-california-06-27-2026/event/0900646AA2709FE3",
-   "img": "https://s1.ticketm.net/dam/a/cfd/63ca795a-47c4-4b4d-8bda-5c6341c94cfd_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "R&B",
-   "start": "2026-06-27",
-   "end": "2026-06-27"
-  },
-  {
-   "name": "Dum Dum Fest",
-   "city": "Los Angeles",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/dum-dum-fest-2026-feat-past-los-angeles-california-06-27-2026/event/090064534EE97E19",
-   "img": "https://s1.ticketm.net/dam/a/e04/920d44d3-33dd-481e-8f9d-b4e84a81be04_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Rock",
-   "start": "2026-06-27",
-   "end": "2026-06-27"
   },
   {
    "name": "Y2K Fest - Indie Edition",
@@ -161,6 +141,16 @@
    "genre": "Other",
    "start": "2026-08-08",
    "end": "2026-08-08"
+  },
+  {
+   "name": "Django Festival All-Stars",
+   "city": "Boulder",
+   "state": "CO",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-Not",
+   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Other",
+   "start": "2026-08-13",
+   "end": "2026-08-13"
   },
   {
    "name": "Just Like Heaven Festival",
