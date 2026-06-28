@@ -1,5 +1,5 @@
 {
- "updated": "2026-06-27T19:25:03.830Z",
+ "updated": "2026-06-28T04:06:44.094Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -130,7 +130,7 @@
    "img": "https://s1.ticketm.net/dam/a/39e/558aec03-b280-47f7-ae66-f5d7f013c39e_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
    "start": "2026-08-07",
-   "end": "2026-08-07"
+   "end": "2026-08-08"
   },
   {
    "name": "Up in the Sky Music Festival",
@@ -140,7 +140,27 @@
    "img": "https://s1.ticketm.net/dam/a/c1e/be96988a-ac41-4b67-a5e1-dfc3921f8c1e_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
    "start": "2026-08-07",
-   "end": "2026-08-07"
+   "end": "2026-08-08"
+  },
+  {
+   "name": "Tacos and Tequila Festival (21 and Over)",
+   "city": "Colorado Springs",
+   "state": "CO",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7xZGx",
+   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Other",
+   "start": "2026-08-08",
+   "end": "2026-08-08"
+  },
+  {
+   "name": "29th Santa Barbara Mariachi Festival",
+   "city": "Santa Barbara",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A70oxa",
+   "img": "https://s1.ticketm.net/dam/c/548/5fefbd1c-973b-4b0e-9b2e-d78e4ce37548_106111_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Other",
+   "start": "2026-08-08",
+   "end": "2026-08-08"
   },
   {
    "name": "Just Like Heaven Festival",

@@ -1,22 +1,11 @@
 {
- "updated": "2026-06-27T19:24:51.075Z",
+ "updated": "2026-06-28T04:06:29.151Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "A Nice Indian Boy",
-   "date": "2026-06-27",
-   "time": "19:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/a-nice-indian-boy/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/A-Nice-Indian-Boy-poster.jpg",
-   "summary": "The evening will feature a special screening of the acclaimed film “A Nice Indian Boy” — a heartfelt and humorous story that explores identity, family, and love through a culturally rich lens. Following the…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Outdoor Film: De-Lovely",
@@ -247,6 +236,17 @@
    "url": "https://sedonafilmfestival.com/event/outdoor-film-the-proposal/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/The-Proposal-poster.jpg",
    "summary": "In the 2009 romantic comedy “The Proposal”, strict Canadian book editor Margaret Tate (Sandra Bullock) forces her long-suffering assistant, Andrew Paxton (Ryan Reynolds), to marry her to avoid being deported to her…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Field of Dreams",
+   "date": "2026-07-16",
+   "time": "19:30",
+   "venue": "Basecamp Sedona Beer Company",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-field-of-dreams/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Field-of-Dreams-poster.jpg",
+   "summary": "“Field of Dreams” is a 1989 fantasy sports drama about an Iowa farmer who hears a mysterious voice urging him to build a baseball diamond in his cornfield. The field attracts the ghosts of legendary baseball players,…"
   },
   {
    "source": "Sedona Film Festival",
