@@ -1073,6 +1073,93 @@
   }
 
   /* =========================================================
+     ADVENTURES — live hiking / biking / ski conditions (Open-Meteo)
+     ========================================================= */
+  function advErr() { return '<p class="embed-note">Live conditions are unavailable right now.</p>'; }
+  function advStat(k, v) { return '<div class="adv-stat"><span class="adv-stat-k">' + esc(k) + '</span><span class="adv-stat-v">' + esc(v) + '</span></div>'; }
+  function advTime(iso) { return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).replace(" ", "").toLowerCase(); }
+  function trailDry(daily) {
+    var p = daily.precipitation_sum || [], recent = p.reduce(function (a, b) { return a + (b || 0); }, 0);
+    if (recent >= 0.25) return { k: "wet", surface: "Wet — let it dry", tip: "Red-rock dirt holds water; riding or hiking it wet leaves ruts that last all season. Give the trails a day to firm up." };
+    if (recent > 0.03) return { k: "tacky", surface: "Tacky in spots", tip: "A little recent moisture — most trails are good, but shaded and low sections may still be soft." };
+    return { k: "dry", surface: "Dry & firm", tip: "" };
+  }
+  function renderHike(box, d, fire) {
+    var c = d.current, day = d.daily, w = wxInfo(c.weather_code, c.is_day), i = day.sunrise.length - 1;
+    var temp = Math.round(c.temperature_2m), uv = Math.round((day.uv_index_max || [])[i] || 0), dry = trailDry(day);
+    var hot = temp >= 95, title = hot ? "Hot — hike at sunrise" : (temp <= 40 ? "Cold up high — layer up" : "Good hiking weather");
+    var uvWord = uv >= 8 ? "very high" : uv >= 6 ? "high" : uv >= 3 ? "moderate" : "low";
+    var fireV = fire && fire.level ? (fire.stage === 0 ? "None" : fire.level) : "Check";
+    var tip = (hot ? "It's hot and exposed out there — start at first light, carry more water than you think, and be off the open rock by midday. " : "") +
+      "Daylight runs " + advTime(day.sunrise[i]) + "–" + advTime(day.sunset[i]) + "; turn back with time to spare." + (dry.tip ? " " + dry.tip : "");
+    box.innerHTML =
+      '<div class="adv-live-head"><span class="adv-live-ic">' + w.icon + '</span>' +
+        '<span class="adv-live-block"><span class="adv-live-title">' + esc(title) + '</span>' +
+        '<span class="adv-live-sub">' + temp + '° and ' + esc(w.label.toLowerCase()) + ' in Sedona right now</span></span></div>' +
+      '<div class="adv-stats">' + advStat("Trails", dry.surface) +
+        advStat("Daylight", advTime(day.sunrise[i]) + " – " + advTime(day.sunset[i])) +
+        advStat("UV index", uv + " · " + uvWord) + advStat("Fire", fireV) + '</div>' +
+      '<p class="adv-tip">' + esc(tip) + '</p>';
+  }
+  function renderBike(box, d) {
+    var c = d.current, day = d.daily, w = wxInfo(c.weather_code, c.is_day), dry = trailDry(day), temp = Math.round(c.temperature_2m);
+    var title = dry.k === "wet" ? "Hold off — trails are wet" : dry.k === "tacky" ? "Mostly good — a few soft spots" : "Prime — dry and fast";
+    var best = temp >= 90 ? "Before ~9am or near sunset" : "Most of the day — cooler up high";
+    var tip = (dry.tip || "No recent rain, so the slickrock and dirt are firm and fast.") +
+      (temp >= 90 ? " In this heat, ride early, carry plenty of water, and respect the exposure on the rock." : "");
+    box.innerHTML =
+      '<div class="adv-live-head adv-live-head--' + dry.k + '"><span class="adv-live-ic">🚵</span>' +
+        '<span class="adv-live-block"><span class="adv-live-title">' + esc(title) + '</span>' +
+        '<span class="adv-live-sub">' + temp + '° · ' + esc(w.label.toLowerCase()) + ' in Sedona</span></span></div>' +
+      '<div class="adv-stats">' + advStat("Trail surface", dry.surface) + advStat("Temp", temp + "°") +
+        advStat("Best window", best) + '</div>' +
+      '<p class="adv-tip">' + esc(tip) + '</p>';
+  }
+  function renderSki(box, d) {
+    var c = d.current, depthIn = Math.round((c.snow_depth || 0) * 39.3701);
+    var newSnow = Math.round((d.daily.snowfall_sum || []).reduce(function (a, b) { return a + (b || 0); }, 0));
+    var temp = Math.round(c.temperature_2m), month = new Date().getMonth(), inSeason = (month >= 10 || month <= 3), skiable = depthIn >= 4;
+    var title, tip;
+    if (skiable) { title = "Snow on the mountain"; tip = "There's a measurable base up top. Lifts and grooming change daily — check Snowbowl's official report before heading up, and carry chains for the drive north."; }
+    else if (inSeason) { title = "Thin — waiting on snow"; tip = "Not enough base to ski right now. Snowbowl needs a good storm cycle; keep an eye on the forecast and the official report."; }
+    else { title = "Off-season"; tip = "The lifts spin again with winter snow, usually by mid-November. Through summer and fall the Arizona Gondola runs for scenic rides to 11,500 ft."; }
+    box.innerHTML =
+      '<div class="adv-live-head"><span class="adv-live-ic">' + (skiable ? "⛷️" : "🏔️") + '</span>' +
+        '<span class="adv-live-block"><span class="adv-live-title">' + esc(title) + '</span>' +
+        '<span class="adv-live-sub">Arizona Snowbowl · summit area</span></span></div>' +
+      '<div class="adv-stats">' + advStat("Snow depth", depthIn > 0 ? depthIn + '"' : "None") +
+        advStat("New (7 days)", newSnow + '"') + advStat("Summit temp", temp + "°") +
+        advStat("Season", inSeason ? "Nov–Apr" : "Off-season") + '</div>' +
+      '<p class="adv-tip">' + esc(tip) + ' <a class="adv-link" href="https://www.snowbowl.ski/" target="_blank" rel="noopener">Official Snowbowl report &rarr;</a></p>';
+  }
+  function initAdventures() {
+    var hike = doc.querySelector("[data-adv-hike]"), bike = doc.querySelector("[data-adv-bike]"), ski = doc.querySelector("[data-adv-ski]");
+    if (!hike && !bike && !ski) return;
+    [hike, bike, ski].forEach(function (b) { if (b) b.innerHTML = '<p class="rss-loading">Checking conditions&hellip;</p>'; });
+    if (hike || bike) {
+      var u = "https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610" +
+        "&current=temperature_2m,weather_code,is_day,apparent_temperature&daily=sunrise,sunset,precipitation_sum,uv_index_max" +
+        "&past_days=2&forecast_days=1&temperature_unit=fahrenheit&precipitation_unit=inch&timezone=America/Phoenix";
+      var fp = fetch("fire.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+      Promise.all([fetch(u, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }), fp]).then(function (res) {
+        var d = res[0];
+        if (!d || !d.current) { if (hike) hike.innerHTML = advErr(); if (bike) bike.innerHTML = advErr(); return; }
+        if (hike && hike.isConnected) renderHike(hike, d, res[1]);
+        if (bike && bike.isConnected) renderBike(bike, d);
+      }).catch(function () { if (hike) hike.innerHTML = advErr(); if (bike) bike.innerHTML = advErr(); });
+    }
+    if (ski) {
+      var su = "https://api.open-meteo.com/v1/forecast?latitude=35.3306&longitude=-111.7110" +
+        "&current=temperature_2m,weather_code,snow_depth&daily=snowfall_sum&past_days=7&forecast_days=1" +
+        "&temperature_unit=fahrenheit&snowfall_unit=inch&timezone=America/Phoenix&elevation=2804";
+      fetch(su, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (!d || !d.current) { ski.innerHTML = advErr(); return; }
+        if (ski.isConnected) renderSki(ski, d);
+      }).catch(function () { ski.innerHTML = advErr(); });
+    }
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -1364,6 +1451,7 @@
     initSchedule();
     initWeather();
     initFire();
+    initAdventures();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();

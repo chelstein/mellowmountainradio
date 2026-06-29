@@ -1093,6 +1093,56 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 @keyframes flame { 0%, 100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.12) rotate(2deg); } }
 @media (prefers-reduced-motion: reduce) { .fire-ic, .fire-chip-ic { animation: none !important; } }
 @media (max-width: 560px) { .fire-card { flex-wrap: wrap; gap: 10px 14px; } .fire-cta { width: 100%; } }
+
+/* =========================================================
+   ADVENTURES (hiking / biking / ski — live conditions + trails)
+   ========================================================= */
+.adv-live { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 24px; box-shadow: var(--shadow-sm); margin-bottom: 26px; }
+.adv-live-head { display: flex; align-items: center; gap: 14px; }
+.adv-live-ic { font-size: 2.2rem; line-height: 1; flex: none; }
+.adv-live-block { display: flex; flex-direction: column; }
+.adv-live-title { font-family: var(--font-display); font-size: 1.42rem; color: var(--heading); line-height: 1.1; }
+.adv-live-sub { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.adv-live-head--wet .adv-live-title { color: #a01818; }
+.adv-live-head--dry .adv-live-title { color: #1b6e3a; }
+.adv-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+.adv-stat { background: var(--bg-2, #f4f1ec); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.adv-stat-k { display: block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.adv-stat-v { display: block; font-family: var(--font-display); font-size: 1.12rem; color: var(--heading); margin-top: 3px; }
+.adv-tip { margin-top: 16px; color: var(--ink); font-size: 14px; line-height: 1.55; }
+.adv-link { color: var(--accent-strong); font-weight: 700; white-space: nowrap; }
+
+.trail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.trail-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
+.trail-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.trail-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.trail-diff { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: var(--pill); color: #fff; }
+.trail-diff--easy { background: #2e7d32; }
+.trail-diff--mod { background: #1f6fb2; }
+.trail-diff--hard { background: #c0392b; }
+.trail-diff--exp { background: #222; }
+.trail-dist { color: var(--muted); font-size: 13px; font-weight: 600; }
+.trail-card h3 { font-family: var(--font-display); font-size: 1.26rem; color: var(--heading); margin-top: 12px; }
+.trail-card p { color: var(--muted); font-size: 14px; margin-top: 6px; line-height: 1.5; }
+
+/* Mellow Meter — how chill (vs intense) a trail is */
+.mellow-meter { display: flex; align-items: center; gap: 9px; margin-top: 11px; }
+.mm-k { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+.mm { display: inline-flex; gap: 4px; }
+.mm i { width: 17px; height: 6px; border-radius: 3px; background: var(--line); }
+.mm[data-level="1"] i:nth-child(-n+1),
+.mm[data-level="2"] i:nth-child(-n+2),
+.mm[data-level="3"] i:nth-child(-n+3),
+.mm[data-level="4"] i:nth-child(-n+4),
+.mm[data-level="5"] i:nth-child(-n+5) { background: linear-gradient(90deg, #5fa888, #3f9d8f); }
+
+.snowbowl-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-top: 4px; }
+.snowbowl-fact { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; text-align: center; box-shadow: var(--shadow-sm); }
+.snowbowl-fact b { display: block; font-family: var(--font-display); font-size: 1.3rem; color: var(--heading); }
+.snowbowl-fact span { color: var(--muted); font-size: 13px; }
+@media (max-width: 860px) { .trail-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px) { .adv-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .trail-grid { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .wx-days { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 600px) { .wx-now { padding: 22px; } .wx-now-meta { text-align: left; } }
 @media (max-width: 460px) { .wx-days { grid-template-columns: repeat(3, 1fr); } }
