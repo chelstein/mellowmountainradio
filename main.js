@@ -933,11 +933,10 @@
   function rotNorm(s) { return (s || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "").replace(/^the/, ""); }
   function rotItem(a) {
     var inner = a.l
-      ? '<img class="band-logo" src="' + a.l + '" alt="" loading="lazy" />'
-      : '<span class="band-logo band-logo--text">' + esc(a.n) + '</span>';
-    return '<a class="rwall-item" data-artist="' + esc(a.n) + '" href="https://music.apple.com/us/search?term=' + encodeURIComponent(a.n) + '" target="_blank" rel="noopener" aria-label="Listen to ' + esc(a.n) + '">' +
+      ? '<img class="band-logo" src="' + a.l + '" alt="' + esc(a.n) + '" loading="lazy" />'
+      : '<span class="band-logo--text">' + esc(a.n) + '</span>';
+    return '<a class="rwall-item' + (a.l ? '' : ' rwall-item--text') + '" data-artist="' + esc(a.n) + '" href="https://music.apple.com/us/search?term=' + encodeURIComponent(a.n) + '" target="_blank" rel="noopener" aria-label="Listen to ' + esc(a.n) + '">' +
       inner +
-      '<span class="rwall-name">' + esc(a.n) + '</span>' +
       '<span class="rwall-tag"><span class="rwall-dot"></span>On air now</span>' +
       '</a>';
   }

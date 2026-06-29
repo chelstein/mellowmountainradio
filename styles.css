@@ -560,35 +560,32 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
-.rwall-track { display: flex; align-items: center; gap: 26px; flex: none; padding-right: 26px; }
-.rwall-row--l .rwall-track { animation: marquee 54s linear infinite; }
-.rwall-row--r .rwall-track { animation: marquee-rev 64s linear infinite; }
+.rwall-track { display: flex; align-items: center; gap: 16px; flex: none; padding-right: 16px; }
+.rwall-row--l .rwall-track { animation: marquee 58s linear infinite; }
+.rwall-row--r .rwall-track { animation: marquee-rev 68s linear infinite; }
 .rwall:hover .rwall-track { animation-play-state: paused; }
 
+/* uniform tiles so every logo reads at a consistent size on the navy */
 .rwall-item {
   position: relative; flex: none; display: flex; align-items: center; justify-content: center;
-  height: 86px; padding: 0 20px; border-radius: 16px; text-decoration: none;
-  transition: transform .25s ease, background .25s ease, box-shadow .25s ease;
+  width: 192px; height: 96px; padding: 14px 22px; border-radius: 16px; text-decoration: none;
+  background: rgba(255, 255, 255, .055); border: 1px solid rgba(255, 255, 255, .08);
+  transition: transform .25s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
-.rwall-item:hover { transform: translateY(-4px); background: rgba(255, 255, 255, .05); }
+.rwall-item:hover {
+  transform: translateY(-5px); background: rgba(255, 255, 255, .1);
+  border-color: rgba(255, 255, 255, .2); box-shadow: 0 14px 30px rgba(0, 0, 0, .32);
+}
 .band-logo {
-  flex: none; height: 52px; width: auto; max-width: 184px; object-fit: contain;
-  opacity: .9; transition: opacity .25s ease, transform .25s ease, filter .25s ease;
+  max-height: 58px; max-width: 150px; width: auto; height: auto; object-fit: contain;
+  opacity: .96; transition: opacity .25s ease, transform .25s ease;
 }
-.rwall-item:hover .band-logo { opacity: 1; transform: scale(1.06); filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .5)); }
+.rwall-item:hover .band-logo { opacity: 1; transform: scale(1.07); }
 .band-logo--text {
-  flex: none; font-family: var(--font-display); font-weight: 400; font-size: 1.9rem; line-height: 1;
-  color: rgba(255, 255, 255, .88); white-space: nowrap; transition: color .25s ease;
+  font-family: var(--font-display); font-weight: 400; font-size: 1.25rem; line-height: 1.12;
+  color: rgba(255, 255, 255, .92); text-align: center; transition: color .25s ease;
 }
 .rwall-item:hover .band-logo--text { color: #fff; }
-
-.rwall-name {
-  position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%) translateY(6px);
-  font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-  color: var(--accent-soft); white-space: nowrap; opacity: 0; pointer-events: none;
-  transition: opacity .25s ease, transform .25s ease;
-}
-.rwall-item:hover .rwall-name { opacity: .92; transform: translateX(-50%) translateY(0); }
 
 /* live "on air now" state, driven by the stream's now-playing feed */
 .rwall-tag {
@@ -601,20 +598,20 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 }
 .rwall-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: onair-pulse 1.4s ease-in-out infinite; }
 .rwall-item.is-onair {
-  background: rgba(255, 255, 255, .06);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 0 36px color-mix(in srgb, var(--accent) 38%, transparent);
+  background: rgba(255, 255, 255, .1);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 0 40px color-mix(in srgb, var(--accent) 42%, transparent);
 }
-.rwall-item.is-onair .band-logo { opacity: 1; transform: scale(1.05); }
+.rwall-item.is-onair .band-logo { opacity: 1; transform: scale(1.06); }
 .rwall-item.is-onair .rwall-tag { opacity: 1; transform: translateX(-50%) scale(1); }
-.rwall-item.is-onair .rwall-name { opacity: 0; }
 @keyframes onair-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .3; transform: scale(.6); } }
 
 @media (prefers-reduced-motion: reduce) { .rwall-track { animation-duration: 160s; } }
 @media (max-width: 600px) {
-  .rwall-item { height: 64px; padding: 0 13px; }
-  .band-logo { height: 38px; max-width: 132px; }
-  .band-logo--text { font-size: 1.4rem; }
-  .rwall-track { gap: 18px; padding-right: 18px; }
+  .rwall-item { width: 144px; height: 76px; padding: 12px 16px; }
+  .band-logo { max-height: 44px; max-width: 112px; }
+  .band-logo--text { font-size: 1.05rem; }
+  .rwall-track { gap: 12px; padding-right: 12px; }
 }
 
 .rotation-grid {
