@@ -1048,6 +1048,32 @@
   }
 
   /* =========================================================
+     FIRE RESTRICTIONS — current Coconino NF stage (CI relay -> fire.json)
+     ========================================================= */
+  function fireClass(stage) { return stage === 0 ? "s0" : stage === 1 ? "s1" : stage === 2 ? "s2" : stage >= 3 ? "s3" : "unk"; }
+  function fireLabel(d) { return d.stage === 0 ? "No fire restrictions" : (d.level || "Fire restrictions") + " fire restrictions"; }
+  function initFire() {
+    var card = doc.querySelector("[data-fire]"), mini = doc.querySelector("[data-fire-mini]");
+    if (!card && !mini) return;
+    fetch("fire.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || d.stage == null) { if (card) card.style.display = "none"; if (mini) mini.style.display = "none"; return; }
+      var cls = fireClass(d.stage), emoji = d.stage === 0 ? "🌲" : "🔥", label = fireLabel(d);
+      if (card && card.isConnected) {
+        var sub = [d.agency, d.effective ? "in effect since " + d.effective : "", d.order ? "Order " + d.order : ""].filter(Boolean).join(" · ");
+        card.innerHTML = '<a class="fire-card fire-card--' + cls + '" href="' + esc(d.source || "#") + '" target="_blank" rel="noopener">' +
+          '<span class="fire-ic" aria-hidden="true">' + emoji + '</span>' +
+          '<span class="fire-body"><span class="fire-level">' + esc(label) + '</span>' +
+          '<span class="fire-sub">' + esc(sub) + '</span></span>' +
+          '<span class="fire-cta">Official details &rarr;</span></a>';
+      }
+      if (mini && mini.isConnected) {
+        mini.className = "fire-chip fire-chip--" + cls + " is-ready";
+        mini.innerHTML = '<span class="fire-chip-ic" aria-hidden="true">' + emoji + '</span><span>' + esc(label) + '</span>';
+      }
+    }).catch(function () { if (card) card.style.display = "none"; if (mini) mini.style.display = "none"; });
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -1338,6 +1364,7 @@
     initHeritage();
     initSchedule();
     initWeather();
+    initFire();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();

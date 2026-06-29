@@ -1040,9 +1040,12 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .wx-day-lo { color: var(--muted); font-size: 13px; }
 .wx-credit { color: var(--muted); font-size: 12px; margin-top: 12px; text-align: center; }
 
+/* hero status chips (weather + fire) */
+.hero-status { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 24px; }
+
 /* compact hero weather chip */
 .wx-chip {
-  display: inline-flex; align-items: center; gap: 11px; margin-top: 24px;
+  display: inline-flex; align-items: center; gap: 11px;
   padding: 9px 18px 9px 14px; border-radius: var(--pill); text-decoration: none; color: #fff;
   background: rgba(255, 255, 255, .09); border: 1px solid rgba(255, 255, 255, .18);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
@@ -1056,6 +1059,43 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .wx-chip-meta { display: flex; flex-direction: column; line-height: 1.18; }
 .wx-chip-cond { font-size: 13px; font-weight: 600; }
 .wx-chip-place { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: rgba(255, 255, 255, .68); }
+
+/* compact hero fire-restriction chip */
+.fire-chip {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px;
+  border-radius: var(--pill); font-size: 13px; font-weight: 700; text-decoration: none;
+  border: 1px solid transparent; opacity: 0; transform: translateY(6px);
+  transition: opacity .35s ease, transform .35s ease, background .2s ease;
+}
+.fire-chip.is-ready { opacity: 1; transform: none; }
+.fire-chip-ic { font-size: 1.05rem; line-height: 1; }
+.fire-chip--s0 { background: rgba(46, 125, 50, .2); border-color: rgba(46, 125, 50, .5); color: #c4ead0; }
+.fire-chip--s1 { background: rgba(232, 135, 12, .2); border-color: rgba(232, 135, 12, .55); color: #ffd9a8; }
+.fire-chip--s2 { background: rgba(214, 51, 51, .22); border-color: rgba(214, 51, 51, .6); color: #ffcdcd; }
+.fire-chip--s3 { background: rgba(122, 19, 19, .85); border-color: #b33; color: #fff; }
+.fire-chip--s1 .fire-chip-ic, .fire-chip--s2 .fire-chip-ic, .fire-chip--s3 .fire-chip-ic { animation: flame 1.8s ease-in-out infinite; }
+
+/* prominent fire-restriction banner (news weather page) */
+.fire { margin-bottom: 22px; }
+.fire-card {
+  display: flex; align-items: center; gap: 16px; padding: 16px 22px; border-radius: var(--r);
+  text-decoration: none; border: 1px solid; box-shadow: var(--shadow-sm);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.fire-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.fire-ic { font-size: 2.1rem; line-height: 1; flex: none; }
+.fire-body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.fire-level { font-family: var(--font-display); font-size: 1.3rem; line-height: 1.1; }
+.fire-sub { font-size: 13px; margin-top: 3px; opacity: .9; }
+.fire-cta { font-weight: 800; font-size: 13px; white-space: nowrap; flex: none; }
+.fire-card--s0 { background: color-mix(in srgb, #2e7d32 12%, var(--surface)); border-color: color-mix(in srgb, #2e7d32 42%, var(--line)); color: #1b5e20; }
+.fire-card--s1 { background: color-mix(in srgb, #e8870c 14%, var(--surface)); border-color: color-mix(in srgb, #e8870c 48%, var(--line)); color: #8a4600; }
+.fire-card--s2 { background: color-mix(in srgb, #d63333 14%, var(--surface)); border-color: color-mix(in srgb, #d63333 48%, var(--line)); color: #9a1818; }
+.fire-card--s3 { background: #7a1313; border-color: #7a1313; color: #fff; }
+.fire-card--s1 .fire-ic, .fire-card--s2 .fire-ic, .fire-card--s3 .fire-ic { animation: flame 1.8s ease-in-out infinite; }
+@keyframes flame { 0%, 100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.12) rotate(2deg); } }
+@media (prefers-reduced-motion: reduce) { .fire-ic, .fire-chip-ic { animation: none !important; } }
+@media (max-width: 560px) { .fire-card { flex-wrap: wrap; gap: 10px 14px; } .fire-cta { width: 100%; } }
 @media (max-width: 760px) { .wx-days { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 600px) { .wx-now { padding: 22px; } .wx-now-meta { text-align: left; } }
 @media (max-width: 460px) { .wx-days { grid-template-columns: repeat(3, 1fr); } }
