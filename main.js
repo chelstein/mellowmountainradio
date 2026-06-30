@@ -1506,7 +1506,6 @@
     initFire();
     initAdventures();
     initTraffic();
-    initTrafficMini();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
