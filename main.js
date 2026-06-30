@@ -1183,8 +1183,8 @@
     loadLeaflet(function (L) {
       if (!L || !el.isConnected) { if (el.isConnected) el.innerHTML = '<p class="embed-note">The traffic map is unavailable right now.</p>'; return; }
       var map = L.map(el, { scrollWheelZoom: false, zoomControl: true, attributionControl: true }).setView([34.8675, -111.794], 14);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "&copy; OpenStreetMap" }).addTo(map);
-      var traffic = L.tileLayer(TRAFFIC_TILE, { maxZoom: 18, opacity: .85, attribution: "Traffic &copy; ADOT AZ511" }).addTo(map);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { maxZoom: 19, subdomains: "abcd", attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(map);
+      var traffic = L.tileLayer(TRAFFIC_TILE, { maxZoom: 19, opacity: 1, attribution: "Traffic &copy; ADOT AZ511" }).addTo(map);
       // ADOT tiles cache ~60s; nudge a redraw each minute to keep it live
       setInterval(function () { if (el.isConnected) traffic.setUrl(TRAFFIC_TILE + "&t=" + Date.now()); }, 60000);
       // re-measure once layout settles

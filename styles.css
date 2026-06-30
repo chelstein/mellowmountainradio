@@ -1147,21 +1147,42 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 /* =========================================================
    TRAFFIC (live ADOT heat map)
    ========================================================= */
-.traffic-map {
-  height: 460px; width: 100%; border-radius: var(--r); overflow: hidden;
-  border: 1px solid var(--line); box-shadow: var(--shadow-sm); background: var(--bg-2, #eee);
-  z-index: 0;
+.traffic-frame {
+  position: relative; border-radius: 20px; overflow: hidden; isolation: isolate;
+  background: var(--navy-deep, #16213e);
+  box-shadow: 0 22px 60px -18px rgba(15, 23, 42, .55), inset 0 0 0 1px rgba(255, 255, 255, .06);
 }
-.traffic-map .leaflet-tile-pane { mix-blend-mode: normal; }
-.traffic-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 14px; }
-.tl-item { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--ink); }
-.tl-sw { width: 22px; height: 7px; border-radius: 4px; display: inline-block; }
-.tl-green { background: #2ecc71; }
-.tl-yellow { background: #f4c20d; }
-.tl-red { background: #e74c3c; }
-.tl-dark { background: #7a1313; }
-.tl-refresh { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 600; }
-@media (max-width: 600px) { .traffic-map { height: 340px; } .tl-refresh { margin-left: 0; width: 100%; } }
+.traffic-map { height: 500px; width: 100%; z-index: 0; background: #1d2540; }
+.tl-green { background: #2ee06a; }
+.tl-yellow { background: #f6c915; }
+.tl-red { background: #ff4d4d; }
+.tl-dark { background: #b3261e; }
+
+/* pulsing LIVE badge */
+.traffic-live {
+  position: absolute; top: 14px; left: 14px; z-index: 1000;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff;
+  background: rgba(15, 23, 42, .72); padding: 7px 13px 7px 11px; border-radius: var(--pill);
+  border: 1px solid rgba(255, 255, 255, .14); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.traffic-live i { width: 9px; height: 9px; border-radius: 50%; background: #ff4d4d; box-shadow: 0 0 0 0 rgba(255, 77, 77, .7); animation: live-pulse 1.8s ease-out infinite; }
+@keyframes live-pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, .65); } 70% { box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
+
+/* frosted floating legend */
+.traffic-legend2 {
+  position: absolute; bottom: 14px; left: 14px; z-index: 1000;
+  display: flex; flex-direction: column; gap: 7px;
+  background: rgba(15, 23, 42, .72); border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 14px; padding: 12px 14px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.traffic-legend2 span { display: inline-flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, .92); }
+.traffic-legend2 i { width: 20px; height: 6px; border-radius: 3px; flex: none; }
+@media (max-width: 600px) {
+  .traffic-map { height: 380px; }
+  .traffic-legend2 { flex-direction: row; flex-wrap: wrap; gap: 6px 12px; max-width: calc(100% - 28px); padding: 9px 11px; }
+  .traffic-legend2 span { font-size: 11px; }
+}
 
 /* compact homepage traffic preview */
 .traffic-mini-wrap { position: relative; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
