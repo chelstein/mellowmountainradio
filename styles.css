@@ -1143,6 +1143,25 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 @media (max-width: 860px) { .trail-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 700px) { .adv-stats { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .trail-grid { grid-template-columns: 1fr; } }
+
+/* =========================================================
+   TRAFFIC (live ADOT heat map)
+   ========================================================= */
+.traffic-map {
+  height: 460px; width: 100%; border-radius: var(--r); overflow: hidden;
+  border: 1px solid var(--line); box-shadow: var(--shadow-sm); background: var(--bg-2, #eee);
+  z-index: 0;
+}
+.traffic-map .leaflet-tile-pane { mix-blend-mode: normal; }
+.traffic-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 14px; }
+.tl-item { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.tl-sw { width: 22px; height: 7px; border-radius: 4px; display: inline-block; }
+.tl-green { background: #2ecc71; }
+.tl-yellow { background: #f4c20d; }
+.tl-red { background: #e74c3c; }
+.tl-dark { background: #7a1313; }
+.tl-refresh { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 600; }
+@media (max-width: 600px) { .traffic-map { height: 340px; } .tl-refresh { margin-left: 0; width: 100%; } }
 @media (max-width: 760px) { .wx-days { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 600px) { .wx-now { padding: 22px; } .wx-now-meta { text-align: left; } }
 @media (max-width: 460px) { .wx-days { grid-template-columns: repeat(3, 1fr); } }

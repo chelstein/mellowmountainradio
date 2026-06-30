@@ -23,7 +23,7 @@
       '<nav class="primary-nav" aria-label="Primary"><ul class="nav-list">' +
         '<li data-nav="home"><a href="index.html">Home</a></li>' +
         '<li class="has-menu" data-nav="news"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">News</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="news.html#local">Local News</a><a role="menuitem" href="news.html#national">National News</a><a role="menuitem" href="news.html#world">World News</a><a role="menuitem" href="news.html#weather">Traffic &amp; Weather</a>' +
+          '<a role="menuitem" href="news.html#local">Local News</a><a role="menuitem" href="news.html#national">National News</a><a role="menuitem" href="news.html#world">World News</a><a role="menuitem" href="news.html#traffic">Traffic &amp; Weather</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="sports"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Sports</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="sports.html#mlb">MLB &middot; Diamondbacks</a><a role="menuitem" href="sports.html#nba">NBA &middot; Suns</a><a role="menuitem" href="sports.html#nfl">NFL &middot; Cardinals</a><a role="menuitem" href="sports.html#college">College &middot; ASU, U of A, NAU</a><a role="menuitem" href="sports.html#ufc">UFC</a>' +
@@ -58,7 +58,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#weather">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
     '<div class="wrap footer-bottom">' +
@@ -1160,6 +1160,39 @@
   }
 
   /* =========================================================
+     TRAFFIC — live ADOT AZ511 congestion heat map (Leaflet, no key)
+     ========================================================= */
+  var TRAFFIC_TILE = "https://tiles.ibi511.com/Geoservice/GetTrafficTile?x={x}&y={y}&z={z}";
+  function loadLeaflet(cb) {
+    if (window.L) { cb(window.L); return; }
+    if (!doc.querySelector('link[data-leaflet]')) {
+      var css = doc.createElement("link");
+      css.rel = "stylesheet"; css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; css.setAttribute("data-leaflet", "1");
+      doc.head.appendChild(css);
+    }
+    var js = doc.createElement("script");
+    js.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    js.onload = function () { cb(window.L); };
+    js.onerror = function () { cb(null); };
+    doc.head.appendChild(js);
+  }
+  function initTraffic() {
+    var el = doc.querySelector("[data-traffic]");
+    if (!el || el.getAttribute("data-init")) return;
+    el.setAttribute("data-init", "1");
+    loadLeaflet(function (L) {
+      if (!L || !el.isConnected) { if (el.isConnected) el.innerHTML = '<p class="embed-note">The traffic map is unavailable right now.</p>'; return; }
+      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true, attributionControl: true }).setView([34.8675, -111.794], 14);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "&copy; OpenStreetMap" }).addTo(map);
+      var traffic = L.tileLayer(TRAFFIC_TILE, { maxZoom: 18, opacity: .85, attribution: "Traffic &copy; ADOT AZ511" }).addTo(map);
+      // ADOT tiles cache ~60s; nudge a redraw each minute to keep it live
+      setInterval(function () { if (el.isConnected) traffic.setUrl(TRAFFIC_TILE + "&t=" + Date.now()); }, 60000);
+      // re-measure once layout settles
+      setTimeout(function () { map.invalidateSize(); }, 250);
+    });
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -1452,6 +1485,7 @@
     initWeather();
     initFire();
     initAdventures();
+    initTraffic();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
