@@ -1162,6 +1162,14 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .tl-dark { background: #7a1313; }
 .tl-refresh { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 600; }
 @media (max-width: 600px) { .traffic-map { height: 340px; } .tl-refresh { margin-left: 0; width: 100%; } }
+
+/* compact homepage traffic preview */
+.traffic-mini-wrap { position: relative; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+.traffic-mini { height: 240px; width: 100%; background: var(--bg-2, #eee); z-index: 0; }
+.traffic-mini-link { position: absolute; inset: 0; z-index: 1000; display: flex; align-items: flex-end; padding: 16px; text-decoration: none; }
+.traffic-mini-link span { display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, .82); color: #fff; font-weight: 700; font-size: 13px; padding: 9px 15px; border-radius: var(--pill); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: background .2s ease; }
+.traffic-mini-wrap:hover .traffic-mini-link span { background: var(--accent-strong); }
+@media (max-width: 600px) { .traffic-mini { height: 200px; } }
 @media (max-width: 760px) { .wx-days { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 600px) { .wx-now { padding: 22px; } .wx-now-meta { text-align: left; } }
 @media (max-width: 460px) { .wx-days { grid-template-columns: repeat(3, 1fr); } }

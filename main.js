@@ -1191,6 +1191,26 @@
       setTimeout(function () { map.invalidateSize(); }, 250);
     });
   }
+  // compact, non-interactive homepage preview — lazy-loaded on scroll
+  function initTrafficMini() {
+    var el = doc.querySelector("[data-traffic-mini]");
+    if (!el || el.getAttribute("data-init")) return;
+    function build() {
+      if (el.getAttribute("data-init")) return;
+      el.setAttribute("data-init", "1");
+      loadLeaflet(function (L) {
+        if (!L || !el.isConnected) return;
+        var map = L.map(el, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false, touchZoom: false, tap: false }).setView([34.8662, -111.793], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18 }).addTo(map);
+        L.tileLayer(TRAFFIC_TILE, { maxZoom: 18, opacity: .9 }).addTo(map);
+        setTimeout(function () { map.invalidateSize(); }, 250);
+      });
+    }
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); build(); } }); }, { rootMargin: "250px" });
+      io.observe(el);
+    } else { build(); }
+  }
 
   /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
@@ -1486,6 +1506,7 @@
     initFire();
     initAdventures();
     initTraffic();
+    initTrafficMini();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
