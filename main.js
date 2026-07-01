@@ -2642,7 +2642,17 @@
      ========================================================= */
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("/sw.js").catch(function () {});
+      var hadController = !!navigator.serviceWorker.controller, reloaded = false;
+      navigator.serviceWorker.register("/sw.js").then(function (reg) {
+        // proactively check for a newer version on each load
+        if (reg.update) reg.update();
+      }).catch(function () {});
+      // when a new SW takes control (a fresh deploy), reload once to show it —
+      // but not on the very first install (nothing to refresh to yet)
+      navigator.serviceWorker.addEventListener("controllerchange", function () {
+        if (!hadController || reloaded) return;
+        reloaded = true; window.location.reload();
+      });
     });
   }
   // "Listen Live" app shortcut (/?play=1) — best-effort; if the browser blocks

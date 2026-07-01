@@ -9,7 +9,7 @@
      Google fonts, AzuraCast now-playing): NOT intercepted — straight to network,
      so streaming and live APIs are never touched by the cache.
 */
-var VERSION = "kazm-v1";
+var VERSION = "kazm-v2";
 var CORE = [
   "/", "/index.html", "/styles.css", "/main.js", "/manifest.webmanifest",
   "/offline.html", "/icon-192.png", "/icon-512.png",
@@ -60,10 +60,12 @@ self.addEventListener("fetch", function (e) {
     return;
   }
 
-  // pages, css, js, json, everything else same-origin: network-first (fresh),
-  // fall back to cache, then to the offline shell for navigations.
+  // pages, css, js, json, everything else same-origin: network-first, and
+  // bypass the HTTP cache entirely (cache: "reload") so a fresh deploy is
+  // always picked up — never a stale page/script.
+  var fresh; try { fresh = new Request(req, { cache: "reload" }); } catch (e) { fresh = req; }
   e.respondWith(
-    fetch(req).then(function (r) { return putCache(req, r); }).catch(function () {
+    fetch(fresh).then(function (r) { return putCache(req, r); }).catch(function () {
       return caches.match(req).then(function (c) {
         if (c) return c;
         if (req.mode === "navigate") return caches.match("/offline.html").then(function (o) { return o || caches.match("/index.html"); });
