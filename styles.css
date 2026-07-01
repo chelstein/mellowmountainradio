@@ -1322,6 +1322,14 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
   .archive-card--reverse .archive-copy { order: 0; }
   .archive-trio { grid-template-columns: 1fr; }
 }
+.archive-card--aurora { position: relative; overflow: hidden; }
+.archive-card--aurora::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #7c3aed, #d94fb0, #3f9d8f, #2ee06a); }
+
+/* lunar map placeholder */
+.lunar-placeholder { display: flex; align-items: center; gap: 18px; background: radial-gradient(120% 140% at 15% 20%, var(--navy) 0%, var(--navy-deep) 100%); color: rgba(255, 255, 255, .82); border: 1px solid var(--line); border-radius: var(--r); padding: 24px 26px; }
+.lunar-moon { font-size: 2.6rem; line-height: 1; flex: none; }
+.lunar-placeholder p { margin: 0; font-size: 14px; line-height: 1.6; }
+@media (max-width: 520px) { .lunar-placeholder { flex-direction: column; text-align: center; } }
 @media (max-width: 860px) { .vortex-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 520px) { .vortex-grid { grid-template-columns: 1fr; } .cosmic { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .wx-days { grid-template-columns: repeat(4, 1fr); } }
