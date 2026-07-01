@@ -1317,14 +1317,25 @@
     getAlerts().then(function (alerts) {
       if (!el.isConnected || !alerts || !alerts.length) { el.innerHTML = ""; return; }
       alerts = alerts.slice().sort(function (a, b) { return (ALERT_RANK[b.severity] || 0) - (ALERT_RANK[a.severity] || 0); });
-      var top = alerts[0];
-      var sev = (top.severity === "Extreme" || top.severity === "Severe") ? "sev" : (top.severity === "Moderate" ? "mod" : "min");
-      var more = alerts.length > 1 ? ' <span class="alert-more">+' + (alerts.length - 1) + ' more</span>' : "";
+      var top = alerts[0], rank = ALERT_RANK[top.severity] || 0;
+      var more = alerts.length > 1 ? (alerts.length - 1) : 0;
+      // Minor / Unknown advisories (e.g. Air Quality) -> small unobtrusive chip.
+      // Only real Moderate+ warnings (flash flood, severe storm) get the big banner.
+      if (rank <= 1) {
+        el.innerHTML =
+          '<a class="wx-alert-chip" href="https://www.weather.gov/fgz/" target="_blank" rel="noopener" title="' + esc(top.headline || top.event) + '">' +
+            '<span class="wx-alert-chip-ic" aria-hidden="true">&#9888;</span>' + esc(top.event) +
+            (more ? '<span class="wx-alert-chip-more">+' + more + '</span>' : '') +
+          '</a>';
+        return;
+      }
+      var sev = rank >= 3 ? "sev" : "mod";
+      var moreTag = more ? ' <span class="alert-more">+' + more + ' more</span>' : "";
       var head = top.headline || (top.event + (top.areaDesc ? " — " + top.areaDesc : ""));
       el.innerHTML =
         '<a class="wx-alert wx-alert--' + sev + '" href="https://www.weather.gov/fgz/" target="_blank" rel="noopener">' +
           '<span class="wx-alert-ic" aria-hidden="true">&#9888;</span>' +
-          '<span class="wx-alert-body"><b>' + esc(top.event) + more + '</b><span>' + esc(head) + '</span></span>' +
+          '<span class="wx-alert-body"><b>' + esc(top.event) + moreTag + '</b><span>' + esc(head) + '</span></span>' +
           '<span class="wx-alert-src">NWS</span>' +
         '</a>';
     });
