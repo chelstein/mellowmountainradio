@@ -997,12 +997,20 @@
     var e = m[code] || ["—", "🌡️"];
     return { label: e[0], icon: (isDay === 0 && e[2]) ? e[2] : e[1] };
   }
-  function renderWeather(box, cur, daily) {
+  function aqiInfo(v) {
+    if (v == null) return null;
+    var c = v <= 50 ? ["Good", "g"] : v <= 100 ? ["Moderate", "m"] : v <= 150 ? ["Unhealthy for sensitive groups", "u1"]
+      : v <= 200 ? ["Unhealthy", "u2"] : v <= 300 ? ["Very unhealthy", "u3"] : ["Hazardous", "hz"];
+    return { v: Math.round(v), label: c[0], cls: c[1] };
+  }
+  function renderWeather(box, cur, daily, aqi) {
     var now = wxInfo(cur.weather_code, cur.is_day);
+    var aq = aqiInfo(aqi);
+    var aqBadge = aq ? '<span class="wx-aqi wx-aqi--' + aq.cls + '"><span class="wx-aqi-n">' + aq.v + '</span> AQI · ' + esc(aq.label) + '</span>' : '';
     var hero = '<div class="wx-now">' +
       '<div class="wx-now-main"><span class="wx-now-ic">' + now.icon + '</span>' +
         '<span class="wx-now-block"><span class="wx-now-temp">' + Math.round(cur.temperature_2m) + '°</span>' +
-        '<span class="wx-now-cond">' + esc(now.label) + '</span></span></div>' +
+        '<span class="wx-now-cond">' + esc(now.label) + '</span>' + aqBadge + '</span></div>' +
       '<div class="wx-now-meta"><span class="wx-place">Sedona, AZ</span>' +
         '<span>Feels like ' + Math.round(cur.apparent_temperature) + '°</span>' +
         '<span>Humidity ' + cur.relative_humidity_2m + '%</span>' +
@@ -1039,9 +1047,12 @@
       "&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,is_day,apparent_temperature" +
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
       "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/Phoenix&forecast_days=7";
-    fetch(url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    var aqUrl = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.8697&longitude=-111.7610&current=us_aqi&timezone=America/Phoenix";
+    var aqP = fetch(aqUrl, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    Promise.all([fetch(url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }), aqP]).then(function (res) {
+      var d = res[0], aqi = res[1] && res[1].current ? res[1].current.us_aqi : null;
       if (!d || !d.current || !d.daily) { if (box) box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; return; }
-      if (box && box.isConnected) renderWeather(box, d.current, d.daily);
+      if (box && box.isConnected) renderWeather(box, d.current, d.daily, aqi);
       if (mini && mini.isConnected) renderWeatherMini(mini, d.current);
     }).catch(function () { if (box) box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; });
   }

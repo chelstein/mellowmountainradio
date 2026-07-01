@@ -1021,6 +1021,14 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .wx-now-ic { font-size: 3.4rem; line-height: 1; }
 .wx-now-temp { font-family: var(--font-display); font-size: 3.1rem; line-height: 1; display: block; }
 .wx-now-cond { display: block; margin-top: 4px; color: rgba(255, 255, 255, .85); font-size: 1.05rem; }
+.wx-aqi { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; padding: 5px 12px 5px 8px; border-radius: var(--pill); font-size: 12px; font-weight: 700; color: #fff; text-shadow: none; border: 1px solid rgba(255, 255, 255, .18); }
+.wx-aqi-n { font-family: var(--font-display); font-size: 1.05rem; line-height: 1; padding: 2px 7px; border-radius: 8px; background: rgba(0, 0, 0, .28); }
+.wx-aqi--g { background: #2e9e57; }
+.wx-aqi--m { background: #c9a227; }
+.wx-aqi--u1 { background: #d97706; }
+.wx-aqi--u2 { background: #dc2626; }
+.wx-aqi--u3 { background: #7c3aed; }
+.wx-aqi--hz { background: #7a1313; }
 .wx-now-meta { display: flex; flex-direction: column; gap: 4px; text-align: right; color: rgba(255, 255, 255, .82); font-size: 14px; }
 .wx-place { font-family: var(--font-display); color: #fff; font-size: 1.25rem; margin-bottom: 2px; }
 .wx-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 14px; }
