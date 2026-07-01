@@ -129,6 +129,11 @@
     });
   });
   doc.addEventListener("click", function (e) { if (!e.target.closest(".has-menu")) closeMegas(); });
+  // close the dropdowns + mobile menu after any nav link is followed (fixes stuck-open menu)
+  doc.querySelectorAll(".mega a, .nav-list > li > a").forEach(function (a) {
+    a.addEventListener("click", function () { closeMegas(); closeNav(); });
+  });
+  doc.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeMegas(); closeNav(); } });
 
   /* =========================================================
      LIVE STREAM PLAYER (persistent)
