@@ -1571,6 +1571,17 @@ a.contact-v:hover { color: var(--accent-strong); }
 }
 .player.show { transform: none; }
 .player { overflow: hidden; }
+/* PWA install chip */
+.pwa-install { position: fixed; left: 16px; bottom: 16px; z-index: 88; display: flex; align-items: stretch; gap: 1px;
+  border-radius: 999px; overflow: hidden; box-shadow: 0 8px 26px rgba(0,0,0,.28); animation: pwaIn .4s cubic-bezier(.16,1,.3,1); }
+.has-player .pwa-install { bottom: 84px; }
+.pwa-install button { border: 0; cursor: pointer; font-family: inherit; font-weight: 800; color: #201400; background: #e0a85a; }
+.pwa-install-go { padding: 11px 16px; font-size: 14px; }
+.pwa-install-go:hover { background: #ecb768; }
+.pwa-install-x { padding: 0 14px; font-size: 20px; line-height: 1; background: #d69a48; }
+.pwa-install-x:hover { background: #c98d3c; }
+@keyframes pwaIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (max-width: 480px) { .pwa-install-go { font-size: 13px; padding: 10px 13px; } }
 .player-viz { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 44px; opacity: 0; transition: opacity .5s ease; pointer-events: none; z-index: 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
 .viz-live .player-viz { opacity: 1; }
 .viz-live .eq i { animation: none !important; transition: height .09s linear, opacity .09s linear; background: var(--accent); }

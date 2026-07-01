@@ -81,6 +81,20 @@
     '</div></div>' +
     '<audio id="stream" preload="none" crossorigin="anonymous"><source src="https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" type="audio/mpeg" /><source src="https://streaming.live365.com/a56104" type="audio/mpeg" /></audio>';
 
+  /* ---------- shared PWA head tags (inject once, skip duplicates) ---------- */
+  (function injectHead() {
+    var head = doc.head;
+    if (!head) return;
+    function ensure(sel, make) { if (!doc.querySelector(sel)) head.appendChild(make()); }
+    ensure('link[rel="manifest"]', function () { var l = doc.createElement("link"); l.rel = "manifest"; l.href = "/manifest.webmanifest"; return l; });
+    ensure('meta[name="theme-color"]', function () { var m = doc.createElement("meta"); m.name = "theme-color"; m.content = "#223d6e"; return m; });
+    ensure('link[rel="apple-touch-icon"]', function () { var l = doc.createElement("link"); l.rel = "apple-touch-icon"; l.href = "/icon-192.png"; return l; });
+    ensure('meta[name="apple-mobile-web-app-capable"]', function () { var m = doc.createElement("meta"); m.name = "apple-mobile-web-app-capable"; m.content = "yes"; return m; });
+    ensure('meta[name="mobile-web-app-capable"]', function () { var m = doc.createElement("meta"); m.name = "mobile-web-app-capable"; m.content = "yes"; return m; });
+    ensure('meta[name="apple-mobile-web-app-status-bar-style"]', function () { var m = doc.createElement("meta"); m.name = "apple-mobile-web-app-status-bar-style"; m.content = "black-translucent"; return m; });
+    ensure('meta[name="apple-mobile-web-app-title"]', function () { var m = doc.createElement("meta"); m.name = "apple-mobile-web-app-title"; m.content = "KAZM"; return m; });
+  })();
+
   /* ---------- inject persistent shell (once) ---------- */
   var headerSlot = doc.querySelector("[data-site-header]");
   if (headerSlot) headerSlot.innerHTML = HEADER_HTML;
@@ -2040,6 +2054,52 @@
     if (u.origin === location.origin && isInternalPage(u.pathname) && u.pathname !== location.pathname) prefetch(u.pathname);
   });
   window.addEventListener("popstate", function () { navigate(location.href, false); });
+
+  /* =========================================================
+     PWA — service worker + install prompt
+     ========================================================= */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function () {});
+    });
+  }
+  // "Listen Live" app shortcut (/?play=1) — best-effort; if the browser blocks
+  // autoplay, togglePlay() cleanly resets, so nothing gets stuck.
+  try {
+    if (/[?&]play=1\b/.test(location.search) && typeof togglePlay === "function") {
+      window.addEventListener("load", function () { setTimeout(togglePlay, 400); });
+    }
+  } catch (e) {}
+
+  // Install prompt: show a small, dismissible chip only when the browser says
+  // the app is installable; hide it on install or dismiss. Remembers dismissal.
+  var deferredPrompt = null, installChip = null;
+  var INSTALL_DISMISS = "kazm-install-dismissed";
+  function removeChip() { if (installChip) { installChip.remove(); installChip = null; } }
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    var dismissed = false;
+    try { dismissed = localStorage.getItem(INSTALL_DISMISS) === "1"; } catch (_) {}
+    if (dismissed || installChip) return;
+    installChip = doc.createElement("div");
+    installChip.className = "pwa-install";
+    installChip.innerHTML =
+      '<button type="button" class="pwa-install-go"><span aria-hidden="true">⬇</span> Install KAZM App</button>' +
+      '<button type="button" class="pwa-install-x" aria-label="Dismiss">&times;</button>';
+    installChip.querySelector(".pwa-install-go").addEventListener("click", function () {
+      var p = deferredPrompt; removeChip();
+      if (!p) return;
+      p.prompt();
+      if (p.userChoice && p.userChoice.finally) p.userChoice.finally(function () { deferredPrompt = null; });
+    });
+    installChip.querySelector(".pwa-install-x").addEventListener("click", function () {
+      try { localStorage.setItem(INSTALL_DISMISS, "1"); } catch (_) {}
+      removeChip();
+    });
+    doc.body.appendChild(installChip);
+  });
+  window.addEventListener("appinstalled", function () { removeChip(); deferredPrompt = null; });
 
   /* ---------- first paint ---------- */
   initPage();
