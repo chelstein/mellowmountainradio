@@ -1388,6 +1388,20 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .gold-row.is-key span { color: var(--accent-strong); }
 .gold-card--hero .gold-row.is-key span { color: #ffe1b0; }
 @media (max-width: 560px) { .golden { grid-template-columns: 1fr; } }
+/* Best photo spots */
+.spot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 6px; }
+.spot-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
+.spot-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.spot-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.spot-card h4 { font-family: var(--font-display); font-size: 1.22rem; color: var(--heading); line-height: 1.15; }
+.spot-light { flex: none; font-size: 11px; font-weight: 800; letter-spacing: .02em; padding: 4px 10px; border-radius: var(--pill); white-space: nowrap; }
+.spot-light--sunset { background: #fbe3cf; color: #a4491b; }
+.spot-light--sunrise { background: #fde6d6; color: #b05a1e; }
+.spot-light--afternoon { background: #f3e0d0; color: #8a4b22; }
+.spot-light--midday { background: #ece1c8; color: #7a5a1c; }
+.spot-light--milky { background: #dfe2f5; color: #3a3f7a; }
+.spot-where { margin-top: 8px; font-size: 12px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--accent-strong); }
+.spot-tip { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
 /* KAZM Archives — digital museum */
 .arch-index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
