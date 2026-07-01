@@ -9,7 +9,7 @@
      Google fonts, AzuraCast now-playing): NOT intercepted — straight to network,
      so streaming and live APIs are never touched by the cache.
 */
-var VERSION = "kazm-v2";
+var VERSION = "kazm-v3";
 var CORE = [
   "/", "/index.html", "/styles.css", "/main.js", "/manifest.webmanifest",
   "/offline.html", "/icon-192.png", "/icon-512.png",
@@ -32,8 +32,15 @@ self.addEventListener("install", function (e) {
 self.addEventListener("activate", function (e) {
   e.waitUntil((async function () {
     var keys = await caches.keys();
+    var hadOld = keys.some(function (k) { return k !== VERSION; });
     await Promise.all(keys.filter(function (k) { return k !== VERSION; }).map(function (k) { return caches.delete(k); }));
     await self.clients.claim();
+    // On an UPDATE (not first install), force every open tab to reload so a
+    // fresh deploy shows immediately — no manual hard-refresh needed.
+    if (hadOld) {
+      var cs = await self.clients.matchAll({ type: "window" });
+      cs.forEach(function (c) { try { c.navigate(c.url); } catch (e) {} });
+    }
   })());
 });
 

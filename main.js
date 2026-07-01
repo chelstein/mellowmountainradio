@@ -1588,6 +1588,11 @@
     _trailsPromise = fetch("trails.json", { cache: "force-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
     return _trailsPromise;
   }
+  function fitTrail(card) {
+    if (!card._map) return;
+    card._map.invalidateSize();
+    if (card._bounds) card._map.fitBounds(card._bounds, { padding: [18, 18] });
+  }
   function buildTrailMap(card) {
     var mapEl = card.querySelector("[data-trail-map]");
     var slug = card.getAttribute("data-trail");
@@ -1598,24 +1603,26 @@
       var L = r[0], trails = r[1], data = trails && trails[slug];
       if (!L || !data || !data.lines) { mapEl.innerHTML = '<div class="trail-map-load">Route unavailable</div>'; return; }
       mapEl.innerHTML = "";
-      var map = L.map(mapEl, { zoomControl: true, attributionControl: true, scrollWheelZoom: false, dragging: true });
+      var map = L.map(mapEl, { zoomControl: true, attributionControl: true, scrollWheelZoom: false, dragging: true, tap: false });
       L.tileLayer(TOPO_TILE, { maxZoom: 16, attribution: "USGS · The National Map" }).addTo(map);
       var all = [];
       data.lines.forEach(function (seg) {
-        L.polyline(seg, { color: "#c85a1e", weight: 5, opacity: .55 }).addTo(map);   // casing
-        L.polyline(seg, { color: "#ffb14e", weight: 2.5, opacity: 1 }).addTo(map);   // core
+        L.polyline(seg, { color: "#7a2f10", weight: 6, opacity: .5 }).addTo(map);    // casing
+        L.polyline(seg, { color: "#ff8a3d", weight: 3, opacity: 1 }).addTo(map);     // core
         all = all.concat(seg);
       });
       var b = data.bbox; // [minlat,minlon,maxlat,maxlon]
-      if (b) map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: [22, 22] });
-      else if (all.length) map.fitBounds(all);
-      // endpoints
+      card._bounds = b ? [[b[0], b[1]], [b[2], b[3]]] : (all.length ? all : null);
+      if (card._bounds) map.fitBounds(card._bounds, { padding: [18, 18] });
       if (all.length) {
         L.circleMarker(all[0], { radius: 5, color: "#fff", weight: 2, fillColor: "#2fae6a", fillOpacity: 1 }).addTo(map).bindTooltip("Start");
-        L.circleMarker(all[all.length - 1], { radius: 5, color: "#fff", weight: 2, fillColor: "#d24b3a", fillOpacity: 1 }).addTo(map);
+        L.circleMarker(all[all.length - 1], { radius: 5, color: "#fff", weight: 2, fillColor: "#d24b3a", fillOpacity: 1 }).addTo(map).bindTooltip("End");
       }
       card._map = map;
-      setTimeout(function () { map.invalidateSize(); if (b) map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: [22, 22] }); }, 620);
+      // the card is mid-flip when the map is born — resize + refit once it settles
+      requestAnimationFrame(function () { fitTrail(card); });
+      setTimeout(function () { fitTrail(card); }, 350);
+      setTimeout(function () { fitTrail(card); }, 750);
     });
   }
   function initTrailMaps() {
@@ -1623,11 +1630,13 @@
     if (!cards.length) return;
     cards.forEach(function (card) {
       if (card._wired) return; card._wired = true;
+      var inner = card.querySelector(".trail-flip-inner");
       var routeBtn = card.querySelector(".trail-route-btn"), backBtn = card.querySelector(".trail-back-btn");
+      if (inner) inner.addEventListener("transitionend", function (e) { if (e.propertyName === "transform" && card.classList.contains("flipped")) fitTrail(card); });
       if (routeBtn) routeBtn.addEventListener("click", function () {
         card.classList.add("flipped");
         buildTrailMap(card);
-        if (card._map) setTimeout(function () { card._map.invalidateSize(); }, 620);
+        setTimeout(function () { fitTrail(card); }, 700);
       });
       if (backBtn) backBtn.addEventListener("click", function () { card.classList.remove("flipped"); });
     });
@@ -2198,8 +2207,8 @@
     if (!events.length) return null;
     var next = events[0], lonNow = sunLon(now);
     var days = Math.max(0, Math.round((next.date - now) / 86400000));
-    var dl = dayLengthHrs(now, lat), dlPrev = dayLengthHrs(new Date(+now - 3 * 86400000), lat);
-    var trendMin = Math.round((dl - dlPrev) / 3 * 60);                  // minutes/day
+    var dl = dayLengthHrs(now, lat), dlPrev = dayLengthHrs(new Date(+now - 7 * 86400000), lat);
+    var trendMin = Math.round((dl - dlPrev) / 7 * 60);                  // avg minutes/day over the last week
     var season = lonNow < 90 ? "Spring" : lonNow < 180 ? "Summer" : lonNow < 270 ? "Autumn" : "Winter";
     return { events: events, next: next, days: days, lonNow: lonNow, decl: sunDecl(now), dayLen: dl, trendMin: trendMin, season: season };
   }
@@ -2208,30 +2217,50 @@
     var th = (lon - 90) * _solRad();
     return { x: cx + r * Math.sin(th), y: cy - r * Math.cos(th) };
   }
+  function _arcPath(lonA, lonB, cx, cy, r) {
+    var a = _wheelXY(lonA, cx, cy, r), b = _wheelXY(lonB, cx, cy, r);
+    var large = ((lonB - lonA + 360) % 360) > 180 ? 1 : 0;
+    return "M " + a.x.toFixed(2) + " " + a.y.toFixed(2) + " A " + r + " " + r + " 0 " + large + " 1 " + b.x.toFixed(2) + " " + b.y.toFixed(2);
+  }
+  var SOL_SEASONS = [
+    { a: 0, b: 90, color: "#57b36b" },    // spring  (Ostara → Litha)
+    { a: 90, b: 180, color: "#ecb63e" },  // summer  (Litha → Mabon)
+    { a: 180, b: 270, color: "#dd7a3a" }, // autumn  (Mabon → Yule)
+    { a: 270, b: 360, color: "#6f8fd6" }  // winter  (Yule → Ostara)
+  ];
   function renderSolstice(el, s) {
     var cx = 100, cy = 100, r = 74;
-    var ticks = "", labels = "";
-    var pos = { 0: ["end", 8, 4], 90: ["middle", 0, -8], 180: ["start", -8, 4], 270: ["middle", 0, 16] };
+    var active = s.lonNow < 90 ? 0 : s.lonNow < 180 ? 1 : s.lonNow < 270 ? 2 : 3;
+    var arcs = SOL_SEASONS.map(function (se, i) {
+      return '<path d="' + _arcPath(se.a, se.b, cx, cy, r) + '" class="sol-arc' + (i === active ? " sol-arc--on" : "") + '" stroke="' + se.color + '"/>';
+    }).join("");
+    // comet trail: bright streak of the ~26° the sun just travelled
+    var trail = '<path d="' + _arcPath((s.lonNow - 26 + 360) % 360, s.lonNow, cx, cy, r) + '" class="sol-trail"/>';
+    var pos = { 0: ["end", 8, 4], 90: ["middle", 0, -9], 180: ["start", -8, 4], 270: ["middle", 0, 17] };
+    var nodes = "", labels = "";
     SOL_EVENTS.forEach(function (ev) {
-      var p = _wheelXY(ev.lon, cx, cy, r), lp = _wheelXY(ev.lon, cx, cy, r + 15), a = pos[ev.lon];
+      var p = _wheelXY(ev.lon, cx, cy, r), lp = _wheelXY(ev.lon, cx, cy, r + 16), a = pos[ev.lon];
       var isNext = ev.name === s.next.name;
-      ticks += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + (isNext ? 5.5 : 4) + '" class="sol-pt' + (isNext ? " sol-pt--next" : "") + '"/>';
-      labels += '<text x="' + (lp.x + a[1]).toFixed(1) + '" y="' + (lp.y + a[2]).toFixed(1) + '" text-anchor="' + a[0] + '" class="sol-lbl">' + ev.short + '</text>';
+      nodes += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + (isNext ? 6 : 4) + '" class="sol-node' + (isNext ? " sol-node--next" : "") + '"/>';
+      labels += '<text x="' + (lp.x + a[1]).toFixed(1) + '" y="' + (lp.y + a[2]).toFixed(1) + '" text-anchor="' + a[0] + '" class="sol-lbl' + (isNext ? " sol-lbl--next" : "") + '">' + ev.short + '</text>';
     });
     var sun = _wheelXY(s.lonNow, cx, cy, r);
-    var trendTxt = s.trendMin > 0 ? "+" + s.trendMin + " min/day (gaining light)" : s.trendMin < 0 ? s.trendMin + " min/day (losing light)" : "steady";
+    var sx = sun.x.toFixed(1), sy = sun.y.toFixed(1);
     var hrs = Math.floor(s.dayLen), mins = Math.round((s.dayLen - hrs) * 60);
     var dateStr = s.next.date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+    var trendWord = Math.abs(s.trendMin) < 1 ? "holding steady" : s.trendMin > 0 ? "gaining light" : "losing light";
+    var trendNum = (s.trendMin > 0 ? "+" : s.trendMin < 0 ? "" : "±") + s.trendMin;
     el.innerHTML =
       '<div class="sol-card">' +
         '<div class="sol-wheel">' +
-          '<svg viewBox="0 0 200 200" aria-hidden="true">' +
-            '<circle cx="100" cy="100" r="74" class="sol-ring"/>' +
-            ticks + labels +
-            '<circle cx="' + sun.x.toFixed(1) + '" cy="' + sun.y.toFixed(1) + '" r="7" class="sol-sun"/>' +
-            '<circle cx="' + sun.x.toFixed(1) + '" cy="' + sun.y.toFixed(1) + '" r="7" class="sol-sun-glow"/>' +
+          '<svg viewBox="-48 -4 296 208" aria-hidden="true">' +
+            '<defs><radialGradient id="solSunG" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff6df"/><stop offset="55%" stop-color="#ffcf7a"/><stop offset="100%" stop-color="#f0993f"/></radialGradient></defs>' +
+            '<circle cx="100" cy="100" r="74" class="sol-base"/>' +
+            arcs + trail + nodes + labels +
+            '<circle cx="' + sx + '" cy="' + sy + '" r="13" class="sol-sun-glow"/>' +
+            '<circle cx="' + sx + '" cy="' + sy + '" r="7" class="sol-sun"/>' +
           '</svg>' +
-          '<div class="sol-center"><span class="sol-days">' + s.days + '</span><span class="sol-days-k">days to</span></div>' +
+          '<div class="sol-center"><span class="sol-days">' + s.days + '</span><span class="sol-days-k">days to<br>' + esc(s.next.short) + '</span></div>' +
         '</div>' +
         '<div class="sol-info">' +
           '<span class="sol-season">' + s.season + ' &middot; the wheel turns</span>' +
@@ -2240,11 +2269,11 @@
           '<div class="sol-stats">' +
             '<div class="sol-stat"><b>' + hrs + 'h ' + mins + 'm</b><span>daylight today</span></div>' +
             '<div class="sol-stat"><b>' + (s.decl >= 0 ? "+" : "") + s.decl.toFixed(1) + '&deg;</b><span>sun declination</span></div>' +
-            '<div class="sol-stat"><b>' + (s.trendMin >= 0 ? "+" : "") + s.trendMin + ' min</b><span>per day, ' + (s.trendMin >= 0 ? "gaining" : "losing") + '</span></div>' +
+            '<div class="sol-stat"><b>' + trendNum + ' min</b><span>' + trendWord + '</span></div>' +
           '</div>' +
         '</div>' +
       '</div>' +
-      '<p class="micro-note">Solstice and equinox moments computed from the sun’s ecliptic longitude; daylight and declination for Sedona’s latitude. The wheel shows where the sun is on its yearly journey right now.</p>';
+      '<p class="micro-note">Solstice and equinox moments computed from the sun’s ecliptic longitude; daylight and declination for Sedona’s latitude. The colored ring is the year&rsquo;s four seasons; the glowing sun is where we are on it right now.</p>';
   }
   function initSolstice() {
     var el = doc.querySelector("[data-solstice]");
