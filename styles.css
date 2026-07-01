@@ -1191,6 +1191,27 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .spot-mm { margin-top: 12px; }
 .trail-card .trail-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 
+/* Trail flip cards — front info / back OSM route map */
+.trail-flip { background: transparent; border: 0; box-shadow: none; padding: 0; perspective: 1300px; }
+.trail-flip:hover { transform: none; box-shadow: none; }
+.trail-flip-inner { position: relative; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.2, .8, .2, 1); }
+.trail-flip.flipped .trail-flip-inner { transform: rotateY(180deg); }
+.trail-face { border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow-sm); -webkit-backface-visibility: hidden; backface-visibility: hidden; overflow: hidden; }
+.trail-front { position: relative; display: flex; flex-direction: column; padding: 20px 22px; min-height: 250px; }
+.trail-front h3 { font-family: var(--font-display); font-size: 1.3rem; color: var(--heading); margin-top: 12px; }
+.trail-front p { color: var(--muted); font-size: 14px; line-height: 1.55; margin-top: 8px; }
+.trail-back { position: absolute; inset: 0; transform: rotateY(180deg); padding: 0; }
+.trail-map { position: absolute; inset: 0; border-radius: var(--r); background: #eef1ee; z-index: 0; }
+.trail-map .leaflet-container { width: 100%; height: 100%; border-radius: var(--r); background: #eef1ee; font: inherit; }
+.trail-map-load { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 13px; }
+.trail-route-btn { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; margin-top: 16px;
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent-strong); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  font-weight: 800; font-size: 13px; padding: 8px 15px; border-radius: 999px; cursor: pointer; font-family: inherit; }
+.trail-route-btn:hover { background: color-mix(in srgb, var(--accent) 24%, var(--surface)); }
+.trail-back-btn { position: absolute; top: 10px; right: 10px; z-index: 500; background: rgba(20,26,46,.9); color: #fff; border: 0;
+  font-weight: 800; font-size: 12px; padding: 7px 13px; border-radius: 999px; cursor: pointer; font-family: inherit; box-shadow: 0 3px 10px rgba(0,0,0,.3); }
+.trail-back-btn:hover { background: #141a2e; }
+
 /* Mellow Meter legend */
 .mm-legend { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 24px; box-shadow: var(--shadow-sm); }
 .mm-legend-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }

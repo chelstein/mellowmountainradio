@@ -1575,6 +1575,63 @@
     js.onerror = function () { cb(null); };
     doc.head.appendChild(js);
   }
+
+  /* =========================================================
+     TRAIL ROUTE MAPS — flip a trail card to see its real OSM route
+     drawn on a USGS topo basemap. Geometry from trails.json (baked
+     from OpenStreetMap), loaded lazily on first flip.
+     ========================================================= */
+  var TOPO_TILE = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}";
+  var _trailsPromise = null;
+  function getTrails() {
+    if (_trailsPromise) return _trailsPromise;
+    _trailsPromise = fetch("trails.json", { cache: "force-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    return _trailsPromise;
+  }
+  function buildTrailMap(card) {
+    var mapEl = card.querySelector("[data-trail-map]");
+    var slug = card.getAttribute("data-trail");
+    if (!mapEl || card._mapDone) return;
+    card._mapDone = true;
+    mapEl.innerHTML = '<div class="trail-map-load">Loading route&hellip;</div>';
+    Promise.all([new Promise(function (res) { loadLeaflet(res); }), getTrails()]).then(function (r) {
+      var L = r[0], trails = r[1], data = trails && trails[slug];
+      if (!L || !data || !data.lines) { mapEl.innerHTML = '<div class="trail-map-load">Route unavailable</div>'; return; }
+      mapEl.innerHTML = "";
+      var map = L.map(mapEl, { zoomControl: true, attributionControl: true, scrollWheelZoom: false, dragging: true });
+      L.tileLayer(TOPO_TILE, { maxZoom: 16, attribution: "USGS · The National Map" }).addTo(map);
+      var all = [];
+      data.lines.forEach(function (seg) {
+        L.polyline(seg, { color: "#c85a1e", weight: 5, opacity: .55 }).addTo(map);   // casing
+        L.polyline(seg, { color: "#ffb14e", weight: 2.5, opacity: 1 }).addTo(map);   // core
+        all = all.concat(seg);
+      });
+      var b = data.bbox; // [minlat,minlon,maxlat,maxlon]
+      if (b) map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: [22, 22] });
+      else if (all.length) map.fitBounds(all);
+      // endpoints
+      if (all.length) {
+        L.circleMarker(all[0], { radius: 5, color: "#fff", weight: 2, fillColor: "#2fae6a", fillOpacity: 1 }).addTo(map).bindTooltip("Start");
+        L.circleMarker(all[all.length - 1], { radius: 5, color: "#fff", weight: 2, fillColor: "#d24b3a", fillOpacity: 1 }).addTo(map);
+      }
+      card._map = map;
+      setTimeout(function () { map.invalidateSize(); if (b) map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: [22, 22] }); }, 620);
+    });
+  }
+  function initTrailMaps() {
+    var cards = doc.querySelectorAll(".trail-flip");
+    if (!cards.length) return;
+    cards.forEach(function (card) {
+      if (card._wired) return; card._wired = true;
+      var routeBtn = card.querySelector(".trail-route-btn"), backBtn = card.querySelector(".trail-back-btn");
+      if (routeBtn) routeBtn.addEventListener("click", function () {
+        card.classList.add("flipped");
+        buildTrailMap(card);
+        if (card._map) setTimeout(function () { card._map.invalidateSize(); }, 620);
+      });
+      if (backBtn) backBtn.addEventListener("click", function () { card.classList.remove("flipped"); });
+    });
+  }
   function initTraffic() {
     var el = doc.querySelector("[data-traffic]");
     if (!el || el.getAttribute("data-init")) return;
@@ -2494,6 +2551,7 @@
     initAdventures();
     initCreek();
     initSlide();
+    initTrailMaps();
     initTraffic();
     initSchumann();
     initCosmic();
