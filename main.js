@@ -1712,7 +1712,16 @@
             srStat("Cavity", d.cavity_state || "—") +
             srStat("Station", (d.station || "").toUpperCase() || "—") +
           '</div>' +
-          '<figure class="sr-spec"><img src="' + esc(d.spectrogram) + '" alt="Live Schumann resonance spectrogram from the Tomsk observatory" loading="lazy" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" /><figcaption>Live spectrogram &middot; Tomsk Space Observing System</figcaption></figure>' +
+          (d.spectrogram ?
+          '<figure class="sr-spec">' +
+            '<div class="sr-spec-frame">' +
+              '<img class="sr-spec-img" src="' + esc(d.spectrogram) + (d.spectrogram.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now() + '" alt="Live Schumann resonance spectrogram from the Tomsk observatory" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" />' +
+              '<span class="sr-spec-scan" aria-hidden="true"></span>' +
+              '<i class="sr-corner sr-corner--tl" aria-hidden="true"></i><i class="sr-corner sr-corner--tr" aria-hidden="true"></i><i class="sr-corner sr-corner--bl" aria-hidden="true"></i><i class="sr-corner sr-corner--br" aria-hidden="true"></i>' +
+              '<span class="sr-spec-live"><span class="sr-spec-live-dot" aria-hidden="true"></span>LIVE</span>' +
+            '</div>' +
+            '<figcaption class="sr-spec-cap"><span class="sr-spec-cap-k">SIGNAL</span>Schumann resonance spectrogram<span class="sr-spec-cap-src">Tomsk Space Observing System &middot; 56&deg;N</span></figcaption>' +
+          '</figure>' : "") +
           '<p class="sr-note">The Schumann resonance is the electromagnetic hum in the cavity between Earth&rsquo;s surface and the ionosphere, driven by worldwide lightning &mdash; the planet&rsquo;s ~7.83&nbsp;Hz &ldquo;heartbeat.&rdquo; Meditators and sound healers watch its energy and peaks. Read via Zero Trust Radio' + (when ? ' &middot; updated ' + esc(when) : '') + '.</p>' +
         '</div>' +
       '</div>';
@@ -1721,14 +1730,24 @@
     el.className = "sr-chip sr-chip--" + schCls(d.activity) + " is-ready";
     el.innerHTML = '<span class="sr-chip-dot" aria-hidden="true"></span><span>Schumann ' + (d.energy_score != null ? d.energy_score : "—") + ' &middot; ' + esc(d.activity) + '</span>';
   }
+  var _srSpecTimer = null;
   function initSchumann() {
     var box = doc.querySelector("[data-schumann]"), mini = doc.querySelector("[data-schumann-mini]");
+    if (_srSpecTimer) { clearInterval(_srSpecTimer); _srSpecTimer = null; }
     if (!box && !mini) return;
     if (box) box.innerHTML = '<p class="rss-loading">Tuning into Earth&rsquo;s frequency&hellip;</p>';
     fetch("schumann.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (!d || !d.available) { if (box) box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; if (mini) mini.style.display = "none"; return; }
       if (box && box.isConnected) renderSchumann(box, d);
       if (mini && mini.isConnected) renderSchumannMini(mini, d);
+      // keep the Tomsk spectrogram live — reload the image every 90s
+      if (box && d.spectrogram) {
+        _srSpecTimer = setInterval(function () {
+          var img = box.querySelector(".sr-spec-img");
+          if (!img || !img.isConnected) { clearInterval(_srSpecTimer); _srSpecTimer = null; return; }
+          img.src = d.spectrogram + (d.spectrogram.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now();
+        }, 90000);
+      }
     }).catch(function () { if (box && box.isConnected) box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; });
   }
 

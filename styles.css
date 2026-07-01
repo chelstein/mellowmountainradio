@@ -1371,9 +1371,35 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .sr-stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
 .sr-stat-k { display: block; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
 .sr-stat-v { display: block; font-family: var(--font-display); font-size: 1.15rem; color: var(--heading); margin-top: 3px; text-transform: capitalize; }
-.sr-spec { margin: 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #0e1526; }
-.sr-spec img { display: block; width: 100%; height: auto; }
-.sr-spec figcaption { padding: 8px 12px; font-size: 12px; color: var(--muted); background: var(--surface); }
+/* Schumann spectrogram — live observatory console */
+.sr-spec { margin: 0; }
+.sr-spec-frame { position: relative; border-radius: 14px; overflow: hidden; background: #050912;
+  border: 1px solid rgba(120,180,255,.32);
+  box-shadow: 0 0 0 1px rgba(120,180,255,.08), 0 12px 34px rgba(0,0,0,.45), inset 0 0 46px rgba(40,90,180,.16); }
+.sr-spec-img { display: block; width: 100%; height: auto; filter: contrast(1.08) saturate(1.2) brightness(1.03); }
+/* CRT scanlines + a slow sweep line */
+.sr-spec-scan { position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
+.sr-spec-frame::after { content: ""; position: absolute; left: 0; right: 0; height: 16%; top: -16%; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(130,205,255,.22), transparent); animation: srScan 5s linear infinite; }
+@keyframes srScan { to { top: 116%; } }
+.sr-spec-frame::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 60px rgba(0,0,0,.55); border-radius: 14px; }
+.sr-corner { position: absolute; width: 16px; height: 16px; border: 2px solid rgba(140,205,255,.85); }
+.sr-corner--tl { top: 9px; left: 9px; border-right: 0; border-bottom: 0; }
+.sr-corner--tr { top: 9px; right: 9px; border-left: 0; border-bottom: 0; }
+.sr-corner--bl { bottom: 9px; left: 9px; border-right: 0; border-top: 0; }
+.sr-corner--br { bottom: 9px; right: 9px; border-left: 0; border-top: 0; }
+.sr-spec-live { position: absolute; top: 11px; right: 11px; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 800; letter-spacing: .14em; color: #eafff2;
+  background: rgba(5,10,22,.72); border: 1px solid rgba(120,205,255,.34); padding: 4px 10px; border-radius: 999px;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.sr-spec-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ee38a; box-shadow: 0 0 9px #4ee38a; animation: srLive 1.6s ease-in-out infinite; }
+@keyframes srLive { 0%,100% { opacity: 1; } 50% { opacity: .28; } }
+.sr-spec-cap { margin-top: 11px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.sr-spec-cap-k { font-size: 10px; font-weight: 800; letter-spacing: .16em; color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px solid var(--line); padding: 3px 8px; border-radius: 6px; }
+.sr-spec-cap-src { margin-left: auto; opacity: .82; font-variant-numeric: tabular-nums; }
 .sr-note { color: var(--muted); font-size: 14px; line-height: 1.55; }
 @media (max-width: 720px) { .sr-grid { grid-template-columns: 1fr; } .sr-stats { grid-template-columns: repeat(2, 1fr); } .sr-score { font-size: 3.8rem; } }
 
