@@ -1371,6 +1371,17 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .sr-stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
 .sr-stat-k { display: block; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
 .sr-stat-v { display: block; font-family: var(--font-display); font-size: 1.15rem; color: var(--heading); margin-top: 3px; text-transform: capitalize; }
+/* Live resonance spectrum — custom animated centerpiece */
+.sr-viz-panel { position: relative; border-radius: 14px; overflow: hidden; margin-bottom: 16px; padding: 14px 16px 4px;
+  background: radial-gradient(120% 140% at 15% 0%, #1a2452 0%, #0d1230 55%, #070a1c 100%);
+  border: 1px solid rgba(120,180,255,.22); box-shadow: 0 12px 32px rgba(0,0,0,.4), inset 0 0 50px rgba(60,90,200,.14); }
+.sr-viz-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.sr-viz-k { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #cfe4ff; }
+.sr-viz-dot { width: 7px; height: 7px; border-radius: 50%; background: #6fe0ff; box-shadow: 0 0 9px #6fe0ff; animation: srLive 1.6s ease-in-out infinite; }
+.sr-viz-hz { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: #9fd0ff; font-variant-numeric: tabular-nums; }
+.sr-viz { display: block; width: 100%; height: 190px; }
+@media (max-width: 560px) { .sr-viz { height: 150px; } }
+
 /* Schumann spectrogram — live observatory console */
 .sr-spec { margin: 0; }
 .sr-spec-frame { position: relative; border-radius: 14px; overflow: hidden; background: #050912;

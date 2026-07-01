@@ -1707,6 +1707,11 @@
             '<span class="sr-freq"><b>' + (d.detected_hz != null ? d.detected_hz : "—") + ' Hz</b> detected &middot; 7.83 Hz nominal</span></div>' +
         '</div>' +
         '<div class="sr-body">' +
+          '<div class="sr-viz-panel">' +
+            '<div class="sr-viz-head"><span class="sr-viz-k"><span class="sr-viz-dot" aria-hidden="true"></span>Live resonance spectrum</span>' +
+              '<span class="sr-viz-hz">' + (d.detected_hz != null ? d.detected_hz + ' Hz peak' : '7.83 Hz fundamental') + '</span></div>' +
+            '<canvas class="sr-viz" data-sr-viz aria-label="Live Schumann resonance spectrum"></canvas>' +
+          '</div>' +
           '<div class="sr-stats">' +
             srStat("Peaks", d.peaks != null ? d.peaks : "—") +
             srStat("Band density", d.density != null ? d.density + "%" : "—") +
@@ -1728,6 +1733,71 @@
           '<p class="sr-note">The Schumann resonance is the electromagnetic hum in the cavity between Earth&rsquo;s surface and the ionosphere, driven by worldwide lightning &mdash; the planet&rsquo;s ~7.83&nbsp;Hz &ldquo;heartbeat.&rdquo; Meditators and sound healers watch its energy and peaks. Read via Zero Trust Radio' + (when ? ' &middot; updated ' + esc(when) : '') + '.</p>' +
         '</div>' +
       '</div>';
+    // build the live spectrum from the real modes + energy, then animate it
+    var modes = [7.83, 14.31, 20.8, 27.3, 33.8], amps = [1, 0.62, 0.46, 0.34, 0.26];
+    var harm = modes.map(function (hz, i) { return { hz: hz, amp: amps[i] }; });
+    if (d.detected_hz != null && d.detected_hz > 0 && d.detected_hz < 45) {
+      // emphasise today's detected peak
+      var near = harm.reduce(function (b, h) { return Math.abs(h.hz - d.detected_hz) < Math.abs(b.hz - d.detected_hz) ? h : b; }, harm[0]);
+      if (Math.abs(near.hz - d.detected_hz) < 1.5) near.amp = Math.max(near.amp, 0.85);
+      else harm.push({ hz: d.detected_hz, amp: 0.7, detected: true });
+    }
+    var canvas = box.querySelector("[data-sr-viz]");
+    if (canvas) initSchumannViz(canvas, e, harm);
+  }
+  var _srVizRAF = null, _srVizResize = null;
+  function initSchumannViz(canvas, energy, harm) {
+    if (_srVizRAF) { cancelAnimationFrame(_srVizRAF); _srVizRAF = null; }
+    if (_srVizResize) { window.removeEventListener("resize", _srVizResize); _srVizResize = null; }
+    var ctx = canvas.getContext("2d"); if (!ctx) return;
+    var W = 0, H = 0, dpr = Math.min(2, window.devicePixelRatio || 1);
+    function size() {
+      var r = canvas.getBoundingClientRect(); W = r.width || 600; H = r.height || 190;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    size();
+    _srVizResize = function () { if (canvas.isConnected) size(); };
+    window.addEventListener("resize", _srVizResize, { passive: true });
+    var en = Math.max(0, Math.min(100, energy)) / 100, maxHz = 40, t0 = performance.now();
+    var top = 1.28 * (0.45 + en * 0.95) + 0.06, labels = [7.83, 14.3, 20.8, 27.3, 33.8];
+    function ampAt(hz, t) {
+      var a = 0;
+      for (var i = 0; i < harm.length; i++) {
+        var h = harm[i], breathe = 1 + 0.13 * Math.sin(t * 0.6 + i * 1.7), jit = 1 + 0.06 * Math.sin(t * 6.5 + i * 3.1 + hz);
+        var peak = h.amp * (0.45 + en * 0.95) * breathe * jit, sig = 0.8 + i * 0.12;
+        a += peak * Math.exp(-((hz - h.hz) * (hz - h.hz)) / (2 * sig * sig));
+      }
+      return a + 0.03 + 0.022 * Math.abs(Math.sin(hz * 2.1 + t * 1.3));
+    }
+    function xOf(hz) { var p = 10; return p + hz / maxHz * (W - 2 * p); }
+    function yOf(a) { var b = H - 16; return b - Math.min(1, a / top) * (b - 14); }
+    function frame(now) {
+      if (!canvas.isConnected) { _srVizRAF = null; return; }
+      var t = (now - t0) / 1000, baseY = H - 16, i, hz;
+      ctx.clearRect(0, 0, W, H);
+      // faint harmonic guide lines
+      for (i = 0; i < labels.length; i++) { var gx = xOf(labels[i]); ctx.strokeStyle = "rgba(150,180,255,.12)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(gx, 12); ctx.lineTo(gx, baseY); ctx.stroke(); }
+      // spectrum fill
+      ctx.beginPath(); ctx.moveTo(xOf(0), baseY);
+      for (hz = 0; hz <= maxHz; hz += 0.3) ctx.lineTo(xOf(hz), yOf(ampAt(hz, t)));
+      ctx.lineTo(xOf(maxHz), baseY); ctx.closePath();
+      var g = ctx.createLinearGradient(0, 12, 0, baseY);
+      g.addColorStop(0, "rgba(130,245,255,.6)"); g.addColorStop(.5, "rgba(150,120,255,.32)"); g.addColorStop(1, "rgba(110,80,220,.04)");
+      ctx.fillStyle = g; ctx.fill();
+      // glowing curve
+      ctx.beginPath();
+      for (hz = 0; hz <= maxHz; hz += 0.3) { var x = xOf(hz), y = yOf(ampAt(hz, t)); hz === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      ctx.lineWidth = 2; ctx.strokeStyle = "#c9f4ff"; ctx.shadowColor = "#6fe0ff"; ctx.shadowBlur = 16; ctx.stroke(); ctx.shadowBlur = 0;
+      // peak dots + labels
+      ctx.textAlign = "center"; ctx.font = "600 9px ui-sans-serif,system-ui,sans-serif";
+      for (i = 0; i < labels.length; i++) {
+        var px = xOf(labels[i]), py = yOf(ampAt(labels[i], t));
+        ctx.fillStyle = "#eafcff"; ctx.shadowColor = "#8fefff"; ctx.shadowBlur = 10; ctx.beginPath(); ctx.arc(px, py, 2.6, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+        ctx.fillStyle = "rgba(200,215,255,.5)"; ctx.fillText(labels[i] + "", px, baseY + 12);
+      }
+      _srVizRAF = requestAnimationFrame(frame);
+    }
+    _srVizRAF = requestAnimationFrame(frame);
   }
   function renderSchumannMini(el, d) {
     el.className = "sr-chip sr-chip--" + schCls(d.activity) + " is-ready";
@@ -1737,6 +1807,7 @@
   function initSchumann() {
     var box = doc.querySelector("[data-schumann]"), mini = doc.querySelector("[data-schumann-mini]");
     if (_srSpecTimer) { clearInterval(_srSpecTimer); _srSpecTimer = null; }
+    if (_srVizRAF) { cancelAnimationFrame(_srVizRAF); _srVizRAF = null; }
     if (!box && !mini) return;
     if (box) box.innerHTML = '<p class="rss-loading">Tuning into Earth&rsquo;s frequency&hellip;</p>';
     fetch("schumann.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
