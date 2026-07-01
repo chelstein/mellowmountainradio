@@ -2088,6 +2088,117 @@
   }
 
   /* =========================================================
+     SOLSTICE TRACKER — the wheel of the year. Real solstice/equinox
+     moments computed from the sun's ecliptic longitude, the sun's live
+     position on the wheel, declination, and the day-length trend.
+     ========================================================= */
+  function _solRad() { return Math.PI / 180; }
+  function sunLon(date) {
+    var rad = _solRad(), d = date.valueOf() / 86400000 - 0.5 + 2440588 - 2451545;
+    var M = rad * (357.5291 + 0.98560028 * d);
+    var L = M + rad * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M)) + rad * 102.9372 + Math.PI;
+    return ((L / rad) % 360 + 360) % 360;
+  }
+  function sunDecl(date) {
+    var rad = _solRad(), lam = sunLon(date) * rad, e = 23.4397 * rad;
+    return Math.asin(Math.sin(e) * Math.sin(lam)) / rad;               // degrees
+  }
+  function dayLengthHrs(date, lat) {
+    var rad = _solRad(), d = sunDecl(date) * rad, phi = lat * rad;
+    var x = -Math.tan(phi) * Math.tan(d);
+    if (x <= -1) return 24; if (x >= 1) return 0;
+    return 2 * (Math.acos(x) / rad) / 15;
+  }
+  var SOL_EVENTS = [
+    { lon: 0, name: "Spring Equinox", short: "Ostara" },
+    { lon: 90, name: "Summer Solstice", short: "Litha" },
+    { lon: 180, name: "Fall Equinox", short: "Mabon" },
+    { lon: 270, name: "Winter Solstice", short: "Yule" }
+  ];
+  function solarEvents(now) {
+    // scan forward ~400 days, refine each crossing to the hour
+    var out = [], start = new Date(now.getTime()), prev = sunLon(start), pd = start;
+    for (var i = 1; i <= 400 && out.length < 5; i++) {
+      var d = new Date(+start + i * 86400000), lon = sunLon(d);
+      SOL_EVENTS.forEach(function (ev) {
+        var a = prev, b = lon, crossed = ev.lon === 0 ? (a > 300 && b < 60) : (a < ev.lon && b >= ev.lon);
+        if (!crossed) return;
+        // refine to the hour within [pd, d]
+        var lo = +pd, hi = +d;
+        for (var k = 0; k < 24; k++) {
+          var mid = (lo + hi) / 2, lm = sunLon(new Date(mid));
+          var target = ev.lon === 0 ? 360 : ev.lon, cur = (ev.lon === 0 && lm < 60) ? lm + 360 : lm;
+          if (cur < target) lo = mid; else hi = mid;
+        }
+        out.push({ name: ev.name, short: ev.short, lon: ev.lon, date: new Date((lo + hi) / 2) });
+      });
+      prev = lon; pd = d;
+    }
+    return out;
+  }
+  function solsticeInfo(now, lat) {
+    var events = solarEvents(now);
+    if (!events.length) return null;
+    var next = events[0], lonNow = sunLon(now);
+    var days = Math.max(0, Math.round((next.date - now) / 86400000));
+    var dl = dayLengthHrs(now, lat), dlPrev = dayLengthHrs(new Date(+now - 3 * 86400000), lat);
+    var trendMin = Math.round((dl - dlPrev) / 3 * 60);                  // minutes/day
+    var season = lonNow < 90 ? "Spring" : lonNow < 180 ? "Summer" : lonNow < 270 ? "Autumn" : "Winter";
+    return { events: events, next: next, days: days, lonNow: lonNow, decl: sunDecl(now), dayLen: dl, trendMin: trendMin, season: season };
+  }
+  // map ecliptic longitude to a clockwise wheel angle with Summer at top
+  function _wheelXY(lon, cx, cy, r) {
+    var th = (lon - 90) * _solRad();
+    return { x: cx + r * Math.sin(th), y: cy - r * Math.cos(th) };
+  }
+  function renderSolstice(el, s) {
+    var cx = 100, cy = 100, r = 74;
+    var ticks = "", labels = "";
+    var pos = { 0: ["end", 8, 4], 90: ["middle", 0, -8], 180: ["start", -8, 4], 270: ["middle", 0, 16] };
+    SOL_EVENTS.forEach(function (ev) {
+      var p = _wheelXY(ev.lon, cx, cy, r), lp = _wheelXY(ev.lon, cx, cy, r + 15), a = pos[ev.lon];
+      var isNext = ev.name === s.next.name;
+      ticks += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + (isNext ? 5.5 : 4) + '" class="sol-pt' + (isNext ? " sol-pt--next" : "") + '"/>';
+      labels += '<text x="' + (lp.x + a[1]).toFixed(1) + '" y="' + (lp.y + a[2]).toFixed(1) + '" text-anchor="' + a[0] + '" class="sol-lbl">' + ev.short + '</text>';
+    });
+    var sun = _wheelXY(s.lonNow, cx, cy, r);
+    var trendTxt = s.trendMin > 0 ? "+" + s.trendMin + " min/day (gaining light)" : s.trendMin < 0 ? s.trendMin + " min/day (losing light)" : "steady";
+    var hrs = Math.floor(s.dayLen), mins = Math.round((s.dayLen - hrs) * 60);
+    var dateStr = s.next.date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+    el.innerHTML =
+      '<div class="sol-card">' +
+        '<div class="sol-wheel">' +
+          '<svg viewBox="0 0 200 200" aria-hidden="true">' +
+            '<circle cx="100" cy="100" r="74" class="sol-ring"/>' +
+            ticks + labels +
+            '<circle cx="' + sun.x.toFixed(1) + '" cy="' + sun.y.toFixed(1) + '" r="7" class="sol-sun"/>' +
+            '<circle cx="' + sun.x.toFixed(1) + '" cy="' + sun.y.toFixed(1) + '" r="7" class="sol-sun-glow"/>' +
+          '</svg>' +
+          '<div class="sol-center"><span class="sol-days">' + s.days + '</span><span class="sol-days-k">days to</span></div>' +
+        '</div>' +
+        '<div class="sol-info">' +
+          '<span class="sol-season">' + s.season + ' &middot; the wheel turns</span>' +
+          '<h4 class="sol-next">Next: ' + s.next.name + '</h4>' +
+          '<p class="sol-when">' + dateStr + ' &mdash; ' + s.days + ' day' + (s.days === 1 ? "" : "s") + ' away</p>' +
+          '<div class="sol-stats">' +
+            '<div class="sol-stat"><b>' + hrs + 'h ' + mins + 'm</b><span>daylight today</span></div>' +
+            '<div class="sol-stat"><b>' + (s.decl >= 0 ? "+" : "") + s.decl.toFixed(1) + '&deg;</b><span>sun declination</span></div>' +
+            '<div class="sol-stat"><b>' + (s.trendMin >= 0 ? "+" : "") + s.trendMin + ' min</b><span>per day, ' + (s.trendMin >= 0 ? "gaining" : "losing") + '</span></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<p class="micro-note">Solstice and equinox moments computed from the sun’s ecliptic longitude; daylight and declination for Sedona’s latitude. The wheel shows where the sun is on its yearly journey right now.</p>';
+  }
+  function initSolstice() {
+    var el = doc.querySelector("[data-solstice]");
+    if (!el) return;
+    var s;
+    try { s = solsticeInfo(new Date(), 34.8697); } catch (e) { el.innerHTML = ""; return; }
+    if (!s) { el.innerHTML = ""; return; }
+    renderSolstice(el, s);
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -2390,6 +2501,7 @@
     initGolden();
     initCosmicAudio();
     initGoldenMode();
+    initSolstice();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
