@@ -1694,6 +1694,7 @@
     var amp = 10 + e / 100 * 26; // calmer wave when calm, livelier when energetic
     var wFill = srWavePath(2400, amp, 66, 300) + " L2400 130 L0 130 Z";
     var wLine = srWavePath(2400, amp * 0.72, 60, 240);
+    var specSrc = d.spectrogram ? esc(d.spectrogram) + (d.spectrogram.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now() : "";
     box.innerHTML =
       '<div class="sr-grid">' +
         '<div class="sr-hero sr-hero--' + cls + '">' +
@@ -1715,7 +1716,9 @@
           (d.spectrogram ?
           '<figure class="sr-spec">' +
             '<div class="sr-spec-frame">' +
-              '<img class="sr-spec-img" src="' + esc(d.spectrogram) + (d.spectrogram.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now() + '" alt="Live Schumann resonance spectrogram from the Tomsk observatory" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" />' +
+              '<img class="sr-spec-img" src="' + specSrc + '" alt="Live Schumann resonance spectrogram from the Tomsk observatory" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" />' +
+              '<span class="sr-spec-tint" aria-hidden="true"></span>' +
+              '<span class="sr-spec-vignette" aria-hidden="true"></span>' +
               '<span class="sr-spec-scan" aria-hidden="true"></span>' +
               '<i class="sr-corner sr-corner--tl" aria-hidden="true"></i><i class="sr-corner sr-corner--tr" aria-hidden="true"></i><i class="sr-corner sr-corner--bl" aria-hidden="true"></i><i class="sr-corner sr-corner--br" aria-hidden="true"></i>' +
               '<span class="sr-spec-live"><span class="sr-spec-live-dot" aria-hidden="true"></span>LIVE</span>' +
@@ -1743,9 +1746,10 @@
       // keep the Tomsk spectrogram live — reload the image every 90s
       if (box && d.spectrogram) {
         _srSpecTimer = setInterval(function () {
-          var img = box.querySelector(".sr-spec-img");
-          if (!img || !img.isConnected) { clearInterval(_srSpecTimer); _srSpecTimer = null; return; }
-          img.src = d.spectrogram + (d.spectrogram.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now();
+          var imgs = box.querySelectorAll(".sr-spec-img, .sr-spec-bloom");
+          if (!imgs.length || !imgs[0].isConnected) { clearInterval(_srSpecTimer); _srSpecTimer = null; return; }
+          var src = d.spectrogram + (d.spectrogram.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now();
+          imgs.forEach(function (im) { im.src = src; });
         }, 90000);
       }
     }).catch(function () { if (box && box.isConnected) box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; });

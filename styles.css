@@ -1379,6 +1379,13 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 /* crop into the vivid plot — trims the white axis margins, colorbar & logo */
 .sr-spec-img { display: block; width: 100%; height: auto; transform: scale(1.22); transform-origin: 45% 44%;
   filter: contrast(1.15) saturate(1.32) brightness(1.06); }
+/* tame the white data-gap patches: a blue multiply tint pulls the glaring
+   white into the spectrogram's own palette so gaps read as "quiet", not blown out */
+.sr-spec-tint { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply;
+  background: radial-gradient(140% 130% at 50% 42%, #aebfdd 30%, #4a6392 68%, #34507e 100%); opacity: .62; }
+/* deepen the edges so the plot melts into the console */
+.sr-spec-vignette { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(130% 120% at 50% 50%, transparent 58%, rgba(3,7,16,.8) 100%); }
 /* CRT scanlines + a slow sweep line */
 .sr-spec-scan { position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
