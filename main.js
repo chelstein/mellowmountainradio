@@ -1267,6 +1267,68 @@
   }
 
   /* =========================================================
+     OAK CREEK — live USGS streamflow near Sedona (gauge 09504420)
+     ========================================================= */
+  var CREEK_API = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=09504420&parameterCd=00060,00065,00010&siteStatus=active";
+  function creekFlow(cfs) {
+    if (cfs == null) return { k: "na", label: "Flow unavailable", note: "" };
+    if (cfs < 15) return { k: "low", label: "Low &amp; lazy", note: "Gentle and clear &mdash; easy wading, warm pools." };
+    if (cfs < 60) return { k: "good", label: "Just right", note: "Classic Oak Creek &mdash; swimming holes are prime." };
+    if (cfs < 150) return { k: "strong", label: "Running strong", note: "Lively current. Fun, but mind the little ones." };
+    if (cfs < 400) return { k: "high", label: "High &amp; pushy", note: "Fast and cold. Pick your spot carefully." };
+    return { k: "flood", label: "Flooding &mdash; stay out", note: "Dangerous flow. Do not cross or swim." };
+  }
+  function creekTemp(f) {
+    if (f == null) return "";
+    if (f < 55) return "Bracing";
+    if (f < 68) return "Refreshing";
+    if (f < 78) return "Perfect for a dip";
+    return "Bath-warm";
+  }
+  function creekAgo(dt) {
+    var t = new Date(dt).getTime(); if (isNaN(t)) return "";
+    var m = Math.round((Date.now() - t) / 60000);
+    if (m < 60) return "updated " + m + " min ago";
+    var h = Math.round(m / 60); return "updated " + h + " hr ago";
+  }
+  function renderCreek(el, data) {
+    var vals = {};
+    (data && data.value && data.value.timeSeries || []).forEach(function (t) {
+      var code = t.variable.variableCode[0].value;
+      var v = t.values[0] && t.values[0].value[0];
+      if (v && v.value !== "" && v.value != null) vals[code] = { v: parseFloat(v.value), dt: v.dateTime };
+    });
+    var cfs = vals["00060"] ? vals["00060"].v : null;
+    var ft = vals["00065"] ? vals["00065"].v : null;
+    var tc = vals["00010"] ? vals["00010"].v : null;
+    var tf = tc != null ? Math.round(tc * 9 / 5 + 32) : null;
+    if (cfs == null && ft == null && tf == null) { el.innerHTML = advErr(); return; }
+    var fl = creekFlow(cfs);
+    var stamp = vals["00060"] ? creekAgo(vals["00060"].dt) : (vals["00065"] ? creekAgo(vals["00065"].dt) : "");
+    var stats = "";
+    if (cfs != null) stats += '<div class="creek-stat"><b>' + (cfs >= 100 ? Math.round(cfs) : cfs) + '</b><span>cu ft / sec</span></div>';
+    if (ft != null) stats += '<div class="creek-stat"><b>' + ft.toFixed(2) + ' ft</b><span>gage height</span></div>';
+    if (tf != null) stats += '<div class="creek-stat"><b>' + tf + '&deg;F</b><span>water &middot; ' + creekTemp(tf) + '</span></div>';
+    el.innerHTML =
+      '<div class="creek-card creek-' + fl.k + '">' +
+        '<div class="creek-hero">' +
+          '<span class="creek-wave" aria-hidden="true"></span>' +
+          '<div><span class="creek-status">' + fl.label + '</span><p class="creek-note">' + fl.note + '</p></div>' +
+        '</div>' +
+        '<div class="creek-stats">' + stats + '</div>' +
+        '<div class="creek-foot"><span class="creek-live-dot" aria-hidden="true"></span>Oak Creek near Sedona &middot; USGS 09504420' + (stamp ? ' &middot; ' + stamp : '') + '</div>' +
+      '</div>';
+  }
+  function initCreek() {
+    var el = doc.querySelector("[data-creek]");
+    if (!el) return;
+    el.innerHTML = '<p class="rss-loading">Reading the creek&hellip;</p>';
+    fetch(CREEK_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (!d) { el.innerHTML = advErr(); return; } if (el.isConnected) renderCreek(el, d); })
+      .catch(function () { el.innerHTML = advErr(); });
+  }
+
+  /* =========================================================
      TRAFFIC — live ADOT AZ511 congestion heat map (Leaflet, no key)
      ========================================================= */
   var TRAFFIC_TILE = "https://tiles.ibi511.com/Geoservice/GetTrafficTile?x={x}&y={y}&z={z}";
@@ -1706,6 +1768,7 @@
     initWeather();
     initFire();
     initAdventures();
+    initCreek();
     initTraffic();
     initSchumann();
     initCosmic();

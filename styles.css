@@ -1120,6 +1120,24 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .adv-tip { margin-top: 16px; color: var(--ink); font-size: 14px; line-height: 1.55; }
 .adv-link { color: var(--accent-strong); font-weight: 700; white-space: nowrap; }
 
+/* Oak Creek live flow */
+.creek-card { position: relative; overflow: hidden; background: linear-gradient(150deg, #12384a, #0c2733); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r); padding: 24px 26px; box-shadow: var(--shadow); color: #eaf6fb; }
+.creek-hero { display: flex; align-items: center; gap: 16px; }
+.creek-status { font-family: var(--font-display); font-size: 1.7rem; line-height: 1.1; color: #fff; }
+.creek-note { color: rgba(234,246,251,.8); font-size: 14px; margin-top: 4px; line-height: 1.45; }
+.creek-wave { flex: none; width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #6fd0e6, #2b8fb3); box-shadow: 0 0 0 6px rgba(111,208,230,.14), 0 0 18px rgba(111,208,230,.4); animation: creekpulse 2.6s ease-in-out infinite; }
+@keyframes creekpulse { 0%,100% { box-shadow: 0 0 0 5px rgba(111,208,230,.12), 0 0 14px rgba(111,208,230,.35); } 50% { box-shadow: 0 0 0 10px rgba(111,208,230,.05), 0 0 26px rgba(111,208,230,.55); } }
+.creek-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 20px; }
+.creek-stat { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 12px 14px; }
+.creek-stat b { display: block; font-family: var(--font-display); font-size: 1.5rem; color: #fff; }
+.creek-stat span { display: block; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: rgba(234,246,251,.65); font-weight: 700; margin-top: 3px; }
+.creek-foot { display: flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 12px; color: rgba(234,246,251,.6); }
+.creek-live-dot { width: 8px; height: 8px; border-radius: 50%; background: #57e08a; box-shadow: 0 0 0 0 rgba(87,224,138,.6); animation: creekdot 1.8s ease-out infinite; }
+@keyframes creekdot { 0% { box-shadow: 0 0 0 0 rgba(87,224,138,.6); } 100% { box-shadow: 0 0 0 8px rgba(87,224,138,0); } }
+.creek-high .creek-status, .creek-flood .creek-status { color: #ffd7c2; }
+.creek-flood .creek-card { }
+.creek-card.creek-flood { background: linear-gradient(150deg, #4a1f16, #331410); }
+.creek-card.creek-flood .creek-wave { background: radial-gradient(circle at 35% 30%, #ffab8a, #d1502f); box-shadow: 0 0 0 6px rgba(209,80,47,.18), 0 0 18px rgba(209,80,47,.5); }
 .trail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .trail-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
 .trail-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
