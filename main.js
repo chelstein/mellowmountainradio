@@ -32,7 +32,7 @@
           '<a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
+          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#wild">Wildlife &amp; Blooms</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="contact.html">Contact</a>' +
@@ -1559,6 +1559,57 @@
   }
 
   /* =========================================================
+     SEEN AROUND SEDONA — live wildlife + blooming plants from the
+     iNaturalist community (real observations, photos, dates; no key).
+     ========================================================= */
+  var INAT = "https://api.inaturalist.org/v1/observations?lat=34.8697&lng=-111.7610&radius=40&quality_grade=research&photos=true&order_by=observed_on&order=desc&per_page=45&locale=en";
+  var WILD_API = INAT + "&iconic_taxa=Aves,Mammalia,Reptilia,Amphibia";
+  var BLOOM_API = INAT + "&iconic_taxa=Plantae&term_id=12&term_value_id=13";
+  function inatPhoto(o) { var p = o.photos && o.photos[0]; return (p && p.url) ? p.url.replace("square", "medium") : null; }
+  function wildCap(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function wildWhen(dateStr) {
+    if (!dateStr) return "";
+    var d = new Date(dateStr + "T12:00:00"), t = d.getTime(); if (isNaN(t)) return "";
+    var days = Math.round((Date.now() - t) / 86400000);
+    if (days <= 0) return "Seen today";
+    if (days === 1) return "Yesterday";
+    if (days < 14) return days + " days ago";
+    return d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  }
+  function renderWild(el, results, emptyMsg) {
+    var seen = {}, cards = [];
+    (results || []).forEach(function (o) {
+      var t = o.taxon; if (!t) return;
+      if (seen[t.id]) return;
+      var photo = inatPhoto(o); if (!photo) return;
+      seen[t.id] = 1;
+      cards.push({ name: wildCap(t.preferred_common_name || t.name), sci: t.name, photo: photo, when: o.observed_on,
+        uri: o.uri || ("https://www.inaturalist.org/observations/" + o.id) });
+    });
+    cards = cards.slice(0, 8);
+    if (!cards.length) { el.innerHTML = '<p class="embed-note">' + esc(emptyMsg || "No recent sightings right now.") + '</p>'; return; }
+    el.innerHTML = cards.map(function (c) {
+      return '<a class="wild-card" href="' + esc(c.uri) + '" target="_blank" rel="noopener">' +
+        '<span class="wild-photo" style="background-image:url(\'' + esc(c.photo) + '\')"></span>' +
+        '<span class="wild-info"><span class="wild-name">' + esc(c.name) + '</span>' +
+        '<span class="wild-sci">' + esc(c.sci) + '</span>' +
+        '<span class="wild-when">' + esc(wildWhen(c.when)) + '</span></span></a>';
+    }).join("");
+  }
+  function initWildlife() {
+    var w = doc.querySelector("[data-wildlife]"), b = doc.querySelector("[data-blooming]");
+    if (!w && !b) return;
+    if (w) w.innerHTML = '<p class="rss-loading">Scanning the trails&hellip;</p>';
+    if (b) b.innerHTML = '<p class="rss-loading">Looking for blooms&hellip;</p>';
+    if (w) fetch(WILD_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (w.isConnected) { if (j && j.results) renderWild(w, j.results, "No recent sightings logged nearby."); else w.innerHTML = advErr(); } })
+      .catch(function () { if (w.isConnected) w.innerHTML = advErr(); });
+    if (b) fetch(BLOOM_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (b.isConnected) { if (j && j.results) renderWild(b, j.results, "Nothing logged in bloom right now."); else b.innerHTML = advErr(); } })
+      .catch(function () { if (b.isConnected) b.innerHTML = advErr(); });
+  }
+
+  /* =========================================================
      TRAFFIC — live ADOT AZ511 congestion heat map (Leaflet, no key)
      ========================================================= */
   var TRAFFIC_TILE = "https://tiles.ibi511.com/Geoservice/GetTrafficTile?x={x}&y={y}&z={z}";
@@ -2677,6 +2728,7 @@
     initAdventures();
     initCreek();
     initSlide();
+    initWildlife();
     initTrailMaps();
     initTraffic();
     initSchumann();

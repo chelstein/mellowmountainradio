@@ -1623,6 +1623,16 @@ body.golden-hour::after { content: ""; position: fixed; inset: 0; z-index: 70; p
 .gold-row.is-key span { color: var(--accent-strong); }
 .gold-card--hero .gold-row.is-key span { color: #ffe1b0; }
 @media (max-width: 560px) { .golden { grid-template-columns: 1fr; } }
+/* Seen around Sedona — live wildlife & blooms */
+.wild-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin: 4px 0 8px; }
+.wild-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; text-decoration: none; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
+.wild-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.wild-photo { display: block; width: 100%; aspect-ratio: 4 / 3; background-size: cover; background-position: center; background-color: #dfe3dc; }
+.wild-info { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 1px; }
+.wild-name { font-family: var(--font-display); font-size: 1.02rem; color: var(--heading); line-height: 1.2; }
+.wild-sci { font-size: 11px; font-style: italic; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wild-when { margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: .02em; color: var(--accent-strong); }
+
 /* Best photo spots */
 .spot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 6px; }
 .spot-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
