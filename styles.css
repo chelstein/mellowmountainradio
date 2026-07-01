@@ -1138,6 +1138,79 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .creek-flood .creek-card { }
 .creek-card.creek-flood { background: linear-gradient(150deg, #4a1f16, #331410); }
 .creek-card.creek-flood .creek-wave { background: radial-gradient(circle at 35% 30%, #ffab8a, #d1502f); box-shadow: 0 0 0 6px rgba(209,80,47,.18), 0 0 18px rgba(209,80,47,.5); }
+/* creek hero badges */
+.creek-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.creek-tempbadge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 800; color: #eaf6fb; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.16); padding: 5px 11px; border-radius: 999px; }
+/* flash-flood strip */
+.creek-floodstrip { display: flex; align-items: flex-start; gap: 12px; margin-top: 18px; padding: 13px 16px; border-radius: 12px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); }
+.creek-floodstrip b { display: block; color: #fff; font-size: 14px; }
+.creek-floodstrip span { display: block; color: rgba(234,246,251,.78); font-size: 13px; margin-top: 2px; line-height: 1.45; }
+.creek-flood-ic { font-size: 1.15rem; line-height: 1.3; flex: none; }
+.creek-floodstrip.flood-moderate { background: rgba(224,185,58,.16); border-color: rgba(224,185,58,.4); }
+.creek-floodstrip.flood-elevated { background: rgba(224,138,58,.2); border-color: rgba(224,138,58,.5); }
+.creek-floodstrip.flood-high { background: rgba(210,75,58,.24); border-color: rgba(210,75,58,.6); }
+.creek-floodstrip.flood-extreme { background: rgba(210,40,40,.34); border-color: rgba(255,120,120,.7); animation: floodpulse 2s ease-in-out infinite; }
+@keyframes floodpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,80,80,.4); } 50% { box-shadow: 0 0 0 5px rgba(255,80,80,0); } }
+/* creek stat clarity colors */
+.creek-stat--good b { color: #9df0c4; } .creek-stat--ok b { color: #ffe6a6; } .creek-stat--warn b { color: #ffc39a; } .creek-stat--bad b { color: #ff9a8a; }
+/* creek activity advisories */
+.creek-acts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 16px; }
+.creek-act { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 11px; padding: 11px 14px; }
+.creek-act-k { font-size: 12px; font-weight: 700; letter-spacing: .02em; color: rgba(234,246,251,.72); text-transform: uppercase; flex: none; }
+.creek-act b { text-align: right; color: #fff; font-size: 13px; font-weight: 700; }
+.creek-act.act-good b { color: #9df0c4; } .creek-act.act-ok b { color: #ffe6a6; } .creek-act.act-warn b { color: #ff9a8a; }
+/* Slide Rock feature */
+.creek-slide { margin-top: 16px; padding: 18px 20px; border-radius: 14px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+.creek-slide-head { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.creek-slide-ic { font-size: 1.3rem; }
+.creek-slide-head b { color: #fff; font-family: var(--font-display); font-size: 1.24rem; }
+.creek-slide p { color: rgba(234,246,251,.82); font-size: 14px; line-height: 1.6; margin-top: 8px; }
+.creek-slide .adv-link { color: #8fe0ff; }
+
+/* ===== Mellow Meter — KAZM easy→epic scale ===== */
+.mm-badge { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: #26333f;
+  background: var(--surface); border: 1px solid var(--line); padding: 5px 12px 5px 10px; border-radius: 999px; white-space: nowrap; }
+.mm-badge .mm-k { font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 800; margin: 0; }
+.mm-badge .mm-dot { width: 11px; height: 11px; border-radius: 50%; flex: none; box-shadow: 0 0 0 3px currentColor; opacity: 1; }
+.mm-badge--e { color: #1f7a4d; } .mm-badge--e .mm-dot { background: #2fae6a; color: rgba(47,174,106,.18); }
+.mm-badge--a { color: #9a7a10; } .mm-badge--a .mm-dot { background: #e3b93a; color: rgba(227,185,58,.2); }
+.mm-badge--c { color: #b1621a; } .mm-badge--c .mm-dot { background: #e0873a; color: rgba(224,135,58,.2); }
+.mm-badge--x { color: #b23a2c; } .mm-badge--x .mm-dot { background: #d24b3a; color: rgba(210,75,58,.2); }
+/* badge on dark creek card */
+.creek-card .mm-badge { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.2); color: #fff; }
+.creek-card .mm-badge .mm-k { color: rgba(255,255,255,.6); }
+.spot-mm { margin-top: 12px; }
+.trail-card .trail-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+/* Mellow Meter legend */
+.mm-legend { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 24px; box-shadow: var(--shadow-sm); }
+.mm-legend-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.mm-legend-tag { font-family: var(--font-display); font-size: 1.4rem; color: var(--heading); background: linear-gradient(90deg, #2fae6a, #e3b93a, #e0873a, #d24b3a); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.mm-legend-head p { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0; flex: 1 1 260px; }
+.mm-legend-rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 18px; }
+.mm-legend-row { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; background: var(--bg-2, #f4f1ec); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.mm-legend-row .mm-dot { width: 14px; height: 14px; border-radius: 50%; flex: none; box-shadow: 0 0 0 4px currentColor; }
+.mm-legend-row.mm-badge--e .mm-dot { background: #2fae6a; color: rgba(47,174,106,.18); }
+.mm-legend-row.mm-badge--a .mm-dot { background: #e3b93a; color: rgba(227,185,58,.2); }
+.mm-legend-row.mm-badge--c .mm-dot { background: #e0873a; color: rgba(224,135,58,.2); }
+.mm-legend-row.mm-badge--x .mm-dot { background: #d24b3a; color: rgba(210,75,58,.2); }
+.mm-legend-row b { color: var(--heading); font-size: 14px; } .mm-legend-row span { color: var(--muted); font-size: 12.5px; }
+
+/* ===== NWS alert banner ===== */
+.wx-alerts:empty { display: none; }
+.wx-alerts-wrap { margin: 0 auto; }
+.wx-alerts-wrap:has(.wx-alerts:empty) { display: none; }
+.wx-alert { display: flex; align-items: center; gap: 13px; margin-bottom: 18px; padding: 13px 18px; border-radius: 14px; text-decoration: none;
+  background: linear-gradient(135deg, #b8471f, #7a2a12); color: #fff; box-shadow: var(--shadow-sm); border: 1px solid rgba(255,255,255,.16); }
+.wx-alert--sev { background: linear-gradient(135deg, #c22020, #7a1010); animation: floodpulse 2s ease-in-out infinite; }
+.wx-alert--mod { background: linear-gradient(135deg, #c9791d, #8a4b12); }
+.wx-alert--min { background: linear-gradient(135deg, #3f6ea8, #263f66); }
+.wx-alert-ic { font-size: 1.35rem; flex: none; }
+.wx-alert-body { flex: 1; min-width: 0; }
+.wx-alert-body b { display: block; font-size: 15px; }
+.wx-alert-body span { display: block; font-size: 13px; color: rgba(255,255,255,.85); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wx-alert-src { flex: none; font-size: 10px; font-weight: 800; letter-spacing: .1em; background: rgba(255,255,255,.9); color: #201400; padding: 4px 9px; border-radius: 999px; }
+.alert-more { font-size: 11px; font-weight: 800; opacity: .85; }
 .trail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 .trail-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
 .trail-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }

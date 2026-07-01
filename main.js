@@ -1281,23 +1281,118 @@
   }
 
   /* =========================================================
-     OAK CREEK — live USGS streamflow near Sedona (gauge 09504420)
+     MELLOW METER — KAZM's own easy→epic scale (trails, water, spots)
      ========================================================= */
-  var CREEK_API = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=09504420&parameterCd=00060,00065,00010&siteStatus=active";
+  var MM_LEVELS = {
+    1: { name: "Easygoing", cls: "e", desc: "Great for everyone" },
+    2: { name: "Adventure", cls: "a", desc: "A little effort, big reward" },
+    3: { name: "Challenge", cls: "c", desc: "Bring water and good shoes" },
+    4: { name: "Epic", cls: "x", desc: "Experienced hikers and riders" }
+  };
+  function mmBadge(level) {
+    var l = MM_LEVELS[level] || MM_LEVELS[1];
+    return '<span class="mm-badge mm-badge--' + l.cls + '" title="Mellow Meter: ' + l.name + ' — ' + l.desc + '">' +
+      '<span class="mm-dot" aria-hidden="true"></span><span class="mm-k">Mellow Meter</span>' + l.name + '</span>';
+  }
+
+  /* =========================================================
+     NWS ACTIVE ALERTS — real EAS-style watches/warnings for Sedona
+     (api.weather.gov, keyless, CORS-open). Shared by the site banner
+     and Oak Creek's flash-flood read.
+     ========================================================= */
+  var NWS_ALERTS = "https://api.weather.gov/alerts/active?point=34.8697,-111.7610";
+  var _alertsPromise = null;
+  function getAlerts() {
+    if (_alertsPromise) return _alertsPromise;
+    _alertsPromise = fetch(NWS_ALERTS, { cache: "no-store", headers: { "Accept": "application/geo+json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { return (j && j.features) ? j.features.map(function (f) { return f.properties; }) : []; })
+      .catch(function () { return []; });
+    return _alertsPromise;
+  }
+  var ALERT_RANK = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1, Unknown: 0 };
+  function initAlerts() {
+    var el = doc.querySelector("[data-alerts]");
+    if (!el) return;
+    getAlerts().then(function (alerts) {
+      if (!el.isConnected || !alerts || !alerts.length) { el.innerHTML = ""; return; }
+      alerts = alerts.slice().sort(function (a, b) { return (ALERT_RANK[b.severity] || 0) - (ALERT_RANK[a.severity] || 0); });
+      var top = alerts[0];
+      var sev = (top.severity === "Extreme" || top.severity === "Severe") ? "sev" : (top.severity === "Moderate" ? "mod" : "min");
+      var more = alerts.length > 1 ? ' <span class="alert-more">+' + (alerts.length - 1) + ' more</span>' : "";
+      var head = top.headline || (top.event + (top.areaDesc ? " — " + top.areaDesc : ""));
+      el.innerHTML =
+        '<a class="wx-alert wx-alert--' + sev + '" href="https://www.weather.gov/fgz/" target="_blank" rel="noopener">' +
+          '<span class="wx-alert-ic" aria-hidden="true">&#9888;</span>' +
+          '<span class="wx-alert-body"><b>' + esc(top.event) + more + '</b><span>' + esc(head) + '</span></span>' +
+          '<span class="wx-alert-src">NWS</span>' +
+        '</a>';
+    });
+  }
+
+  /* =========================================================
+     OAK CREEK — live USGS gauge 09504420 + Open-Meteo rain + NWS floods.
+     Everything below is derived from real live data; recommendations are
+     advisories that change with conditions.
+     ========================================================= */
+  var CREEK_API = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=09504420&parameterCd=00010,00045,00060,00065,63680&siteStatus=active";
+  // upper Oak Creek Canyon (near Slide Rock) — rain up here feeds the creek
+  var CREEK_WX = "https://api.open-meteo.com/v1/forecast?latitude=34.9436&longitude=-111.7527&daily=precipitation_sum,precipitation_probability_max&past_days=3&forecast_days=1&precipitation_unit=inch&timezone=America/Phoenix";
+
   function creekFlow(cfs) {
     if (cfs == null) return { k: "na", label: "Flow unavailable", note: "" };
-    if (cfs < 15) return { k: "low", label: "Low &amp; lazy", note: "Gentle and clear &mdash; easy wading, warm pools." };
-    if (cfs < 60) return { k: "good", label: "Just right", note: "Classic Oak Creek &mdash; swimming holes are prime." };
-    if (cfs < 150) return { k: "strong", label: "Running strong", note: "Lively current. Fun, but mind the little ones." };
-    if (cfs < 400) return { k: "high", label: "High &amp; pushy", note: "Fast and cold. Pick your spot carefully." };
-    return { k: "flood", label: "Flooding &mdash; stay out", note: "Dangerous flow. Do not cross or swim." };
+    if (cfs < 15) return { k: "low", label: "Low &amp; lazy", note: "Gentle and clear &mdash; easy wading and warm, quiet pools." };
+    if (cfs < 60) return { k: "good", label: "Just right", note: "Classic Oak Creek &mdash; the swimming holes are prime." };
+    if (cfs < 150) return { k: "strong", label: "Running strong", note: "Lively current. Fun for strong swimmers; keep an eye on kids." };
+    if (cfs < 400) return { k: "high", label: "High &amp; pushy", note: "Fast and cold. Pick calm edges and skip the deep channels." };
+    return { k: "flood", label: "Flooding &mdash; stay out", note: "Dangerous flow. Do not cross, wade, or swim." };
   }
-  function creekTemp(f) {
-    if (f == null) return "";
-    if (f < 55) return "Bracing";
-    if (f < 68) return "Refreshing";
-    if (f < 78) return "Perfect for a dip";
-    return "Bath-warm";
+  function creekMM(cfs) { if (cfs == null) return 1; if (cfs < 60) return 1; if (cfs < 150) return 2; if (cfs < 400) return 3; return 4; }
+  function creekTemp(f) { if (f == null) return ""; if (f < 55) return "Bracing"; if (f < 68) return "Refreshing"; if (f < 78) return "Perfect for a dip"; return "Bath-warm"; }
+  function creekClarity(ntu) {
+    if (ntu == null) return null;
+    if (ntu < 3) return { label: "Crystal clear", cls: "good", ntu: ntu };
+    if (ntu < 10) return { label: "Clear", cls: "good", ntu: ntu };
+    if (ntu < 25) return { label: "Slightly stained", cls: "ok", ntu: ntu };
+    if (ntu < 75) return { label: "Murky", cls: "warn", ntu: ntu };
+    return { label: "Muddy &mdash; runoff", cls: "bad", ntu: ntu };
+  }
+  function creekTubing(cfs) {
+    if (cfs == null) return "—";
+    if (cfs < 20) return "Too low &mdash; you'll scrape bottom";
+    if (cfs < 80) return "Good &mdash; mellow float";
+    if (cfs < 200) return "Fast &mdash; strong swimmers only";
+    return "Skip it &mdash; dangerous flow";
+  }
+  function creekWading(cfs, ft) {
+    if (cfs == null) return "—";
+    if (cfs < 60 && (ft == null || ft < 2.6)) return "Easy &mdash; ankle to knee deep";
+    if (cfs < 150) return "Wade with care &mdash; stick to calm edges";
+    return "Too high to wade safely";
+  }
+  function creekKids(cfs, flood) {
+    if (flood.k === "extreme" || flood.k === "high" || (cfs != null && cfs >= 150)) return { label: "Not right now", cls: "warn" };
+    if (cfs != null && cfs >= 60) return { label: "Older kids, close watch", cls: "ok" };
+    return { label: "Good with supervision", cls: "good" };
+  }
+  function creekFlood(alerts, fcst, prob, recentUp, cfs) {
+    var warn = alerts.some(function (a) { return /flash flood warning|flood warning/i.test(a.event); });
+    var watch = alerts.some(function (a) { return /flash flood watch|flood watch|flood advisory/i.test(a.event); });
+    var monsoon = (function () { var m = new Date().getMonth(); return m >= 6 && m <= 8; })();
+    if (warn) return { k: "extreme", label: "Flood Warning in effect", note: "The National Weather Service has a flood warning out. Get to high ground and stay out of washes and the creek." };
+    if (watch) return { k: "high", label: "Flood watch in effect", note: "Conditions favor flooding. Oak Creek can rise several feet in minutes &mdash; don't wade or camp in the wash." };
+    if ((fcst != null && fcst >= 0.5) || (prob != null && prob >= 60)) return { k: "elevated", label: "Elevated", note: "Rain in the forecast" + (monsoon ? " during monsoon season" : "") + ". Watch the sky upstream &mdash; flash floods reach here fast under blue skies." };
+    if ((recentUp != null && recentUp >= 0.3) || (fcst != null && fcst >= 0.1)) return { k: "moderate", label: "Low to moderate", note: "Some recent or possible rain up the canyon. Stay aware near the water." };
+    return { k: "low", label: "Low", note: "Dry pattern and steady flow." + (monsoon ? " Still &mdash; this is monsoon country; a storm you can't see can flood the creek." : "") };
+  }
+  function creekFishing(tf) {
+    var win = "Dawn &amp; dusk";
+    try {
+      var g = goldenTimes(new Date()), m = g.morning.b, e = g.evening.b, T = function (d) { return skyTime(d, g.tz); };
+      win = "Dawn " + T(m.sunrise) + "&ndash;" + T(new Date(+m.sunrise + 7200000)) + " &middot; Dusk " + T(new Date(+e.sunset - 7200000)) + "&ndash;" + T(e.sunset);
+    } catch (err) {}
+    if (tf != null && tf >= 70) win += " (trout sluggish in warm water)";
+    return win;
   }
   function creekAgo(dt) {
     var t = new Date(dt).getTime(); if (isNaN(t)) return "";
@@ -1305,41 +1400,97 @@
     if (m < 60) return "updated " + m + " min ago";
     var h = Math.round(m / 60); return "updated " + h + " hr ago";
   }
-  function renderCreek(el, data) {
+  function creekStat(val, label, cls) { return '<div class="creek-stat' + (cls ? " creek-stat--" + cls : "") + '"><b>' + val + '</b><span>' + label + '</span></div>'; }
+  function creekAct(ic, label, val, cls) { return '<div class="creek-act' + (cls ? " act-" + cls : "") + '"><span class="creek-act-k">' + ic + " " + label + '</span><b>' + val + '</b></div>'; }
+
+  function renderCreek(el, data, wx, alerts) {
     var vals = {};
     (data && data.value && data.value.timeSeries || []).forEach(function (t) {
       var code = t.variable.variableCode[0].value;
       var v = t.values[0] && t.values[0].value[0];
-      if (v && v.value !== "" && v.value != null) vals[code] = { v: parseFloat(v.value), dt: v.dateTime };
+      if (v && v.value !== "" && v.value != null && parseFloat(v.value) > -999998) vals[code] = { v: parseFloat(v.value), dt: v.dateTime };
     });
     var cfs = vals["00060"] ? vals["00060"].v : null;
     var ft = vals["00065"] ? vals["00065"].v : null;
     var tc = vals["00010"] ? vals["00010"].v : null;
+    var ntu = vals["63680"] ? vals["63680"].v : null;
     var tf = tc != null ? Math.round(tc * 9 / 5 + 32) : null;
     if (cfs == null && ft == null && tf == null) { el.innerHTML = advErr(); return; }
-    var fl = creekFlow(cfs);
+
+    // rain: recent upstream (past 3 days) + today's forecast
+    var recentUp = null, fcst = null, prob = null;
+    if (wx && wx.daily && wx.daily.precipitation_sum) {
+      var ps = wx.daily.precipitation_sum, n = ps.length;
+      recentUp = 0; for (var i = 0; i < n - 1; i++) recentUp += (ps[i] || 0);
+      recentUp = Math.round(recentUp * 100) / 100;
+      fcst = ps[n - 1];
+      var pp = wx.daily.precipitation_probability_max || [];
+      prob = pp[n - 1] != null ? pp[n - 1] : null;
+    }
+    alerts = alerts || [];
+    var fl = creekFlow(cfs), mm = creekMM(cfs), flood = creekFlood(alerts, fcst, prob, recentUp, cfs);
+    var clarity = creekClarity(ntu), kids = creekKids(cfs, flood);
     var stamp = vals["00060"] ? creekAgo(vals["00060"].dt) : (vals["00065"] ? creekAgo(vals["00065"].dt) : "");
+
+    // measured stats
     var stats = "";
-    if (cfs != null) stats += '<div class="creek-stat"><b>' + (cfs >= 100 ? Math.round(cfs) : cfs) + '</b><span>cu ft / sec</span></div>';
-    if (ft != null) stats += '<div class="creek-stat"><b>' + ft.toFixed(2) + ' ft</b><span>gage height</span></div>';
-    if (tf != null) stats += '<div class="creek-stat"><b>' + tf + '&deg;F</b><span>water &middot; ' + creekTemp(tf) + '</span></div>';
+    if (cfs != null) stats += creekStat((cfs >= 100 ? Math.round(cfs) : cfs), "cu ft / sec");
+    if (ft != null) stats += creekStat(ft.toFixed(2) + " ft", "gage height");
+    if (tf != null) stats += creekStat(tf + "&deg;F", "water &middot; " + creekTemp(tf));
+    if (clarity) stats += creekStat(clarity.label, clarity.ntu.toFixed(1) + " NTU turbidity", clarity.cls);
+    if (recentUp != null) stats += creekStat(recentUp.toFixed(2) + '"', "rain upstream, 72 hr");
+
+    // activity advisories
+    var swimCls = fl.k === "flood" || flood.k === "extreme" ? "warn" : fl.k === "high" ? "ok" : "good";
+    var swimRec = fl.k === "flood" ? "Closed &mdash; too dangerous" : fl.k === "high" ? "Strong swimmers, calm pools only" : "Good &mdash; find your hole";
+    var acts =
+      creekAct("🏊", "Swimming", swimRec, swimCls) +
+      creekAct("🛟", "Tubing", creekTubing(cfs)) +
+      creekAct("🥾", "Wading", creekWading(cfs, ft)) +
+      creekAct("🧒", "Safe for kids?", kids.label, kids.cls) +
+      creekAct("🎣", "Best fishing", creekFishing(tf)) +
+      creekAct("💧", "Water quality", clarity ? clarity.label + (tf != null && tf < 70 ? " &amp; cool" : "") : (tf != null ? tf + "&deg;F" : "—"), clarity ? clarity.cls : "");
+
+    // Slide Rock featured swimming hole
+    var slideNote = fl.k === "flood"
+      ? "Closed conditions &mdash; the chute and creek are dangerous right now."
+      : (tf != null ? "Water's about " + tf + "&deg;F" + (clarity ? " and " + clarity.label.toLowerCase().replace("&mdash; runoff", "muddy") : "") + " today. " : "") +
+        (cfs != null && cfs < 60 ? "The slides run mellow at this flow." : cfs != null && cfs < 150 ? "Flow's up &mdash; the chute is quick and cold." : "");
+    var slide =
+      '<div class="creek-slide">' +
+        '<div class="creek-slide-head"><span class="creek-slide-ic" aria-hidden="true">🏞️</span><b>Slide Rock State Park</b>' + mmBadge(fl.k === "flood" ? 3 : 1) + '</div>' +
+        '<p>The natural sandstone water slide in Oak Creek Canyon, about 7 miles up SR&nbsp;89A. ' + slideNote + ' Day-use state park &mdash; entry fee and gate hours apply, and it fills early on summer weekends.</p>' +
+        '<a class="adv-link" href="https://azstateparks.com/slide-rock" target="_blank" rel="noopener">Park hours &amp; fees &rarr;</a>' +
+      '</div>';
+
     el.innerHTML =
       '<div class="creek-card creek-' + fl.k + '">' +
         '<div class="creek-hero">' +
           '<span class="creek-wave" aria-hidden="true"></span>' +
-          '<div><span class="creek-status">' + fl.label + '</span><p class="creek-note">' + fl.note + '</p></div>' +
+          '<div><span class="creek-status">' + fl.label + '</span><p class="creek-note">' + fl.note + '</p>' +
+            '<div class="creek-badges">' + mmBadge(mm) + (tf != null ? '<span class="creek-tempbadge">' + tf + '&deg;F &middot; ' + creekTemp(tf) + '</span>' : "") + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="creek-floodstrip flood-' + flood.k + '">' +
+          '<span class="creek-flood-ic" aria-hidden="true">' + (flood.k === "extreme" || flood.k === "high" ? "&#9888;" : "💧") + '</span>' +
+          '<div><b>Flash-flood risk: ' + flood.label + '</b><span>' + flood.note + '</span></div>' +
         '</div>' +
         '<div class="creek-stats">' + stats + '</div>' +
-        '<div class="creek-foot"><span class="creek-live-dot" aria-hidden="true"></span>Oak Creek near Sedona &middot; USGS 09504420' + (stamp ? ' &middot; ' + stamp : '') + '</div>' +
+        '<div class="creek-acts">' + acts + '</div>' +
+        slide +
+        '<div class="creek-foot"><span class="creek-live-dot" aria-hidden="true"></span>Flow, height, temp &amp; clarity: USGS 09504420 &middot; rain: Open-Meteo &middot; alerts: NWS' + (stamp ? ' &middot; ' + stamp : '') + '</div>' +
       '</div>';
   }
   function initCreek() {
     var el = doc.querySelector("[data-creek]");
     if (!el) return;
     el.innerHTML = '<p class="rss-loading">Reading the creek&hellip;</p>';
-    fetch(CREEK_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) { if (!d) { el.innerHTML = advErr(); return; } if (el.isConnected) renderCreek(el, d); })
-      .catch(function () { el.innerHTML = advErr(); });
+    var usgs = fetch(CREEK_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    var wx = fetch(CREEK_WX, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    Promise.all([usgs, wx, getAlerts()]).then(function (res) {
+      if (!res[0]) { el.innerHTML = advErr(); return; }
+      if (el.isConnected) renderCreek(el, res[0], res[1], res[2]);
+    }).catch(function () { el.innerHTML = advErr(); });
   }
 
   /* =========================================================
@@ -1971,6 +2122,7 @@
     initSchedule();
     initWeather();
     initFire();
+    initAlerts();
     initAdventures();
     initCreek();
     initTraffic();
