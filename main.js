@@ -1759,12 +1759,15 @@
     _srVizResize = function () { if (canvas.isConnected) size(); };
     window.addEventListener("resize", _srVizResize, { passive: true });
     var en = Math.max(0, Math.min(100, energy)) / 100, maxHz = 40, t0 = performance.now();
-    var top = 1.28 * (0.45 + en * 0.95) + 0.06, labels = [7.83, 14.3, 20.8, 27.3, 33.8];
+    // FIXED ceiling so energy actually drives peak height (low energy = flat, high = towering).
+    // Motion + glow also intensify with energy: calm hum vs. agitated storm.
+    var top = 1.8, gain = 0.16 + en * 1.25, labels = [7.83, 14.3, 20.8, 27.3, 33.8];
+    var brAmp = 0.1 + en * 0.26, brSpd = 0.6 + en * 0.9, jtAmp = 0.05 + en * 0.14, jtSpd = 5 + en * 8, sigE = 0.9 - en * 0.24;
     function ampAt(hz, t) {
       var a = 0;
       for (var i = 0; i < harm.length; i++) {
-        var h = harm[i], breathe = 1 + 0.13 * Math.sin(t * 0.6 + i * 1.7), jit = 1 + 0.06 * Math.sin(t * 6.5 + i * 3.1 + hz);
-        var peak = h.amp * (0.45 + en * 0.95) * breathe * jit, sig = 0.8 + i * 0.12;
+        var h = harm[i], breathe = 1 + brAmp * Math.sin(t * brSpd + i * 1.7), jit = 1 + jtAmp * Math.sin(t * jtSpd + i * 3.1 + hz);
+        var peak = h.amp * gain * breathe * jit, sig = sigE + i * 0.12;
         a += peak * Math.exp(-((hz - h.hz) * (hz - h.hz)) / (2 * sig * sig));
       }
       return a + 0.03 + 0.022 * Math.abs(Math.sin(hz * 2.1 + t * 1.3));
@@ -1787,7 +1790,7 @@
       // glowing curve
       ctx.beginPath();
       for (hz = 0; hz <= maxHz; hz += 0.3) { var x = xOf(hz), y = yOf(ampAt(hz, t)); hz === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
-      ctx.lineWidth = 2; ctx.strokeStyle = "#c9f4ff"; ctx.shadowColor = "#6fe0ff"; ctx.shadowBlur = 16; ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.lineWidth = 2 + en * 1.2; ctx.strokeStyle = "#c9f4ff"; ctx.shadowColor = "#6fe0ff"; ctx.shadowBlur = 12 + en * 16; ctx.stroke(); ctx.shadowBlur = 0;
       // peak dots + labels
       ctx.textAlign = "center"; ctx.font = "600 9px ui-sans-serif,system-ui,sans-serif";
       for (i = 0; i < labels.length; i++) {
