@@ -9,7 +9,7 @@
      Google fonts, AzuraCast now-playing): NOT intercepted — straight to network,
      so streaming and live APIs are never touched by the cache.
 */
-var VERSION = "kazm-v3";
+var VERSION = "kazm-v4";
 var CORE = [
   "/", "/index.html", "/styles.css", "/main.js", "/manifest.webmanifest",
   "/offline.html", "/icon-192.png", "/icon-512.png",
@@ -17,7 +17,7 @@ var CORE = [
   "/news.html", "/events.html", "/vibe.html", "/shows.html", "/schedule.html",
   "/concerts.html", "/movies.html", "/podcasts.html", "/archives.html",
   "/staff.html", "/about.html", "/contact.html", "/library.html",
-  "/music.html", "/sports.html", "/contests.html", "/advertising.html"
+  "/music.html", "/sports.html", "/contests.html", "/advertising.html", "/wildlife.html"
 ];
 
 self.addEventListener("install", function (e) {
