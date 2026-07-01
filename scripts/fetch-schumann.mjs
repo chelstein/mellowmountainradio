@@ -51,10 +51,11 @@ function activityLabel(e) {
       state_label: (state.source && state.source.state_label) || null,
       spectrogram: "https://sosrff.tsu.ru/new/shm.jpg"
     });
+    // only write when we actually got a reading — never clobber good data
+    fs.writeFileSync("schumann.json", JSON.stringify(out, null, 1));
+    console.log("schumann:", out.energy_score + " · " + out.activity + " · " + out.detected_hz + "Hz");
   } catch (e) {
-    console.error("schumann fetch failed:", e.message);
-    process.exitCode = 1;
+    console.error("schumann fetch skipped (leaving existing schumann.json):", e.message);
+    process.exitCode = 0;
   }
-  fs.writeFileSync("schumann.json", JSON.stringify(out, null, 1));
-  console.log("schumann:", out.available ? (out.energy_score + " · " + out.activity + " · " + out.detected_hz + "Hz") : "unavailable");
 })();

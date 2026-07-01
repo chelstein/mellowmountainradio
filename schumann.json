@@ -1,5 +1,20 @@
 {
- "updated": "2026-07-01T09:54:22.654Z",
+ "updated": "2026-07-01T13:18:19.733Z",
  "source": "Zero Trust Radio · Tomsk observatory",
- "available": false
+ "available": true,
+ "station": "tomsk",
+ "observed_at": "2026-06-30T21:07:03.735Z",
+ "energy_score": 31,
+ "activity": "Calm",
+ "nominal_hz": 7.83,
+ "detected_hz": 25.74,
+ "peaks": 2,
+ "density": 20,
+ "harmonics_hz": [
+  25.74
+ ],
+ "cavity_state": "indeterminate",
+ "stability": "no_signal",
+ "state_label": "active",
+ "spectrogram": "https://sosrff.tsu.ru/new/shm.jpg"
 }
