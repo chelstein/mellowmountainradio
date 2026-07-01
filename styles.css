@@ -1303,6 +1303,25 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .tri-wave path { fill: none; stroke: var(--accent-soft); stroke-width: 2; opacity: .85; }
 .tone-cap { text-align: center; color: rgba(255, 255, 255, .6); font-size: 11px; margin-top: 6px; font-style: italic; }
 @media (max-width: 760px) { .tone-story { grid-template-columns: 1fr; gap: 26px; } }
+
+/* KAZM Archives */
+.archive-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 28px 30px; box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+.archive-card .eyebrow { color: var(--accent-strong); margin-bottom: 4px; }
+.archive-card h3 { font-family: var(--font-display); font-size: 1.55rem; color: var(--heading); line-height: 1.12; }
+.archive-card p { color: var(--muted); font-size: 15px; line-height: 1.65; margin-top: 12px; }
+.archive-card--split { display: grid; grid-template-columns: 1.35fr .65fr; gap: 40px; align-items: center; }
+.archive-card--reverse .archive-copy { order: 2; }
+.phase-viz { display: flex; flex-direction: column; justify-content: center; }
+.phase-viz .tri-wave { height: 92px; margin-top: 0; }
+.archive-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.archive-trio .archive-card { margin-bottom: 0; }
+.archive-trio h3 { font-size: 1.3rem; }
+.archive-trio p { font-size: 14px; }
+@media (max-width: 820px) {
+  .archive-card--split { grid-template-columns: 1fr; gap: 24px; }
+  .archive-card--reverse .archive-copy { order: 0; }
+  .archive-trio { grid-template-columns: 1fr; }
+}
 @media (max-width: 860px) { .vortex-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 520px) { .vortex-grid { grid-template-columns: 1fr; } .cosmic { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .wx-days { grid-template-columns: repeat(4, 1fr); } }
