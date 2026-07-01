@@ -1330,6 +1330,30 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .lunar-moon { font-size: 2.6rem; line-height: 1; flex: none; }
 .lunar-placeholder p { margin: 0; font-size: 14px; line-height: 1.6; }
 @media (max-width: 520px) { .lunar-placeholder { flex-direction: column; text-align: center; } }
+
+/* KAZM Archives — digital museum */
+.arch-index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.arch-index-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; text-decoration: none; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.arch-index-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+.arch-num { font-family: var(--font-display); font-size: 1.1rem; color: var(--accent-strong); }
+.arch-index-card .arch-t { font-family: var(--font-display); font-size: 1.18rem; color: var(--heading); margin-top: 4px; }
+.arch-index-card .arch-d { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.arch-chapter { max-width: 74ch; }
+.arch-chapter h2 { margin-top: 6px; }
+.arch-chapter p { color: var(--muted); font-size: 15px; line-height: 1.7; margin-top: 14px; }
+.arch-chapter strong { color: var(--heading); }
+.arch-era-tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; background: var(--accent-strong); padding: 4px 11px; border-radius: var(--pill); }
+.arch-list { margin: 16px 0 0; padding-left: 0; list-style: none; }
+.arch-list li { position: relative; padding-left: 22px; color: var(--ink); font-size: 15px; line-height: 1.5; margin-top: 8px; }
+.arch-list li::before { content: ""; position: absolute; left: 4px; top: 9px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-strong); }
+.arch-list--cols { columns: 2; column-gap: 32px; }
+.arch-list--cols li { break-inside: avoid; }
+.arch-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.arch-soon { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 20px 22px; }
+.arch-soon h3 { font-family: var(--font-display); font-size: 1.2rem; color: var(--heading); }
+.arch-soon p { color: var(--muted); font-size: 14px; margin-top: 6px; line-height: 1.5; }
+.arch-soon::after { content: "Coming soon"; display: inline-block; margin-top: 12px; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: var(--pill); padding: 3px 9px; }
+@media (max-width: 560px) { .arch-list--cols { columns: 1; } }
 @media (max-width: 860px) { .vortex-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 520px) { .vortex-grid { grid-template-columns: 1fr; } .cosmic { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .wx-days { grid-template-columns: repeat(4, 1fr); } }
