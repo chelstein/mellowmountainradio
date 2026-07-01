@@ -1231,34 +1231,93 @@
      ========================================================= */
   function schCls(a) { return ({ "Very calm": "vc", "Calm": "c", "Moderate": "m", "Elevated": "e", "High": "h" })[a] || "c"; }
   function srStat(k, v) { return '<div class="sr-stat"><span class="sr-stat-k">' + esc(k) + '</span><span class="sr-stat-v">' + esc(v) + '</span></div>'; }
-  function initSchumann() {
-    var box = doc.querySelector("[data-schumann]");
-    if (!box) return;
-    box.innerHTML = '<p class="rss-loading">Tuning into Earth&rsquo;s frequency&hellip;</p>';
-    fetch("schumann.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (!box.isConnected) return;
-      if (!d || !d.available) { box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; return; }
-      var cls = schCls(d.activity);
-      var when = d.observed_at ? new Date(d.observed_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "";
-      box.innerHTML =
-        '<div class="sr-grid">' +
-          '<div class="sr-hero sr-hero--' + cls + '">' +
-            '<span class="sr-score">' + (d.energy_score != null ? d.energy_score : "—") + '</span>' +
+  function srWavePath(w, amp, base, period) {
+    var d = "M0 " + base.toFixed(1);
+    for (var x = 0; x <= w; x += 12) { d += " L" + x + " " + (base + amp * Math.sin(2 * Math.PI * x / period)).toFixed(1); }
+    return d;
+  }
+  function renderSchumann(box, d) {
+    var cls = schCls(d.activity);
+    var when = d.observed_at ? new Date(d.observed_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "";
+    var e = d.energy_score != null ? Math.max(0, Math.min(100, d.energy_score)) : 20;
+    var amp = 10 + e / 100 * 26; // calmer wave when calm, livelier when energetic
+    var wFill = srWavePath(2400, amp, 66, 300) + " L2400 130 L0 130 Z";
+    var wLine = srWavePath(2400, amp * 0.72, 60, 240);
+    box.innerHTML =
+      '<div class="sr-grid">' +
+        '<div class="sr-hero sr-hero--' + cls + '">' +
+          '<svg class="sr-wave" viewBox="0 0 1200 130" preserveAspectRatio="none" aria-hidden="true">' +
+            '<g class="sr-wave-g1"><path class="sr-fill" d="' + wFill + '"/></g>' +
+            '<g class="sr-wave-g2"><path class="sr-line" d="' + wLine + '"/></g>' +
+          '</svg>' +
+          '<div class="sr-hero-in"><span class="sr-score">' + (d.energy_score != null ? d.energy_score : "—") + '</span>' +
             '<span class="sr-activity">' + esc(d.activity) + ' activity</span>' +
-            '<span class="sr-freq"><b>' + (d.detected_hz != null ? d.detected_hz : "—") + ' Hz</b> detected &middot; 7.83 Hz nominal</span>' +
+            '<span class="sr-freq"><b>' + (d.detected_hz != null ? d.detected_hz : "—") + ' Hz</b> detected &middot; 7.83 Hz nominal</span></div>' +
+        '</div>' +
+        '<div class="sr-body">' +
+          '<div class="sr-stats">' +
+            srStat("Peaks", d.peaks != null ? d.peaks : "—") +
+            srStat("Band density", d.density != null ? d.density + "%" : "—") +
+            srStat("Cavity", d.cavity_state || "—") +
+            srStat("Station", (d.station || "").toUpperCase() || "—") +
           '</div>' +
-          '<div class="sr-body">' +
-            '<div class="sr-stats">' +
-              srStat("Peaks", d.peaks != null ? d.peaks : "—") +
-              srStat("Band density", d.density != null ? d.density + "%" : "—") +
-              srStat("Cavity", d.cavity_state || "—") +
-              srStat("Station", (d.station || "").toUpperCase() || "—") +
-            '</div>' +
-            '<figure class="sr-spec"><img src="' + esc(d.spectrogram) + '" alt="Live Schumann resonance spectrogram from the Tomsk observatory" loading="lazy" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" /><figcaption>Live spectrogram &middot; Tomsk Space Observing System</figcaption></figure>' +
-            '<p class="sr-note">The Schumann resonance is the electromagnetic hum in the cavity between Earth&rsquo;s surface and the ionosphere, driven by worldwide lightning &mdash; the planet&rsquo;s ~7.83&nbsp;Hz &ldquo;heartbeat.&rdquo; Meditators and sound healers watch its energy and peaks. Read via Zero Trust Radio' + (when ? ' &middot; updated ' + esc(when) : '') + '.</p>' +
-          '</div>' +
-        '</div>';
-    }).catch(function () { if (box.isConnected) box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; });
+          '<figure class="sr-spec"><img src="' + esc(d.spectrogram) + '" alt="Live Schumann resonance spectrogram from the Tomsk observatory" loading="lazy" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" /><figcaption>Live spectrogram &middot; Tomsk Space Observing System</figcaption></figure>' +
+          '<p class="sr-note">The Schumann resonance is the electromagnetic hum in the cavity between Earth&rsquo;s surface and the ionosphere, driven by worldwide lightning &mdash; the planet&rsquo;s ~7.83&nbsp;Hz &ldquo;heartbeat.&rdquo; Meditators and sound healers watch its energy and peaks. Read via Zero Trust Radio' + (when ? ' &middot; updated ' + esc(when) : '') + '.</p>' +
+        '</div>' +
+      '</div>';
+  }
+  function renderSchumannMini(el, d) {
+    el.className = "sr-chip sr-chip--" + schCls(d.activity) + " is-ready";
+    el.innerHTML = '<span class="sr-chip-dot" aria-hidden="true"></span><span>Schumann ' + (d.energy_score != null ? d.energy_score : "—") + ' &middot; ' + esc(d.activity) + '</span>';
+  }
+  function initSchumann() {
+    var box = doc.querySelector("[data-schumann]"), mini = doc.querySelector("[data-schumann-mini]");
+    if (!box && !mini) return;
+    if (box) box.innerHTML = '<p class="rss-loading">Tuning into Earth&rsquo;s frequency&hellip;</p>';
+    fetch("schumann.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.available) { if (box) box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; if (mini) mini.style.display = "none"; return; }
+      if (box && box.isConnected) renderSchumann(box, d);
+      if (mini && mini.isConnected) renderSchumannMini(mini, d);
+    }).catch(function () { if (box && box.isConnected) box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; });
+  }
+
+  /* =========================================================
+     COSMIC CONDITIONS — moon phase (computed) + geomagnetic Kp (NOAA)
+     ========================================================= */
+  function moonInfo() {
+    var syn = 29.53058867, ref = Date.UTC(2000, 0, 6, 18, 14) / 86400000, now = Date.now() / 86400000;
+    var phase = ((((now - ref) / syn) % 1) + 1) % 1;
+    var names = [["New moon", "🌑"], ["Waxing crescent", "🌒"], ["First quarter", "🌓"], ["Waxing gibbous", "🌔"],
+      ["Full moon", "🌕"], ["Waning gibbous", "🌖"], ["Last quarter", "🌗"], ["Waning crescent", "🌘"]];
+    var idx = Math.round(phase * 8) % 8;
+    return { name: names[idx][0], icon: names[idx][1], illum: Math.round((1 - Math.cos(2 * Math.PI * phase)) / 2 * 100) };
+  }
+  function kpInfo(kp) {
+    var c = kp < 3 ? ["Quiet", "q"] : kp < 4 ? ["Unsettled", "u"] : kp < 5 ? ["Active", "a"]
+      : kp < 6 ? ["Minor storm", "g1"] : kp < 7 ? ["Moderate storm", "g2"] : ["Strong storm", "g3"];
+    return { kp: Math.round(kp * 10) / 10, label: c[0], cls: c[1] };
+  }
+  function initCosmic() {
+    var box = doc.querySelector("[data-cosmic]");
+    if (!box) return;
+    var m = moonInfo();
+    box.innerHTML =
+      '<div class="cos-card"><span class="cos-ic">' + m.icon + '</span><span class="cos-k">Moon</span>' +
+        '<span class="cos-v">' + esc(m.name) + '</span><span class="cos-sub">' + m.illum + '% illuminated</span></div>' +
+      '<div class="cos-card" data-cos-kp><span class="cos-ic">🧲</span><span class="cos-k">Geomagnetic</span>' +
+        '<span class="cos-v">…</span><span class="cos-sub">NOAA Kp index</span></div>';
+    fetch("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; }).then(function (rows) {
+        var el = box.querySelector("[data-cos-kp]");
+        if (!el) return;
+        var last = rows && rows.length ? rows[rows.length - 1] : null;
+        var kp = last ? parseFloat(last.Kp != null ? last.Kp : (Array.isArray(last) ? last[1] : NaN)) : NaN;
+        if (isNaN(kp)) { el.innerHTML = '<span class="cos-ic">🧲</span><span class="cos-k">Geomagnetic</span><span class="cos-v">—</span><span class="cos-sub">NOAA Kp index</span>'; return; }
+        var info = kpInfo(kp);
+        el.className = "cos-card cos-kp--" + info.cls;
+        el.innerHTML = '<span class="cos-ic">🧲</span><span class="cos-k">Geomagnetic</span>' +
+          '<span class="cos-v">Kp ' + info.kp + '</span><span class="cos-sub">' + esc(info.label) + ' · NOAA</span>';
+      }).catch(function () {});
   }
 
   /* =========================================================
@@ -1556,6 +1615,7 @@
     initAdventures();
     initTraffic();
     initSchumann();
+    initCosmic();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();

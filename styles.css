@@ -1216,6 +1216,24 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .sr-activity { position: relative; font-family: var(--font-display); font-size: 1.25rem; }
 .sr-freq { position: relative; margin-top: 8px; font-size: 13px; color: rgba(255, 255, 255, .8); }
 .sr-freq b { color: #fff; }
+.sr-hero-in { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+.sr-wave { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.sr-wave-g1 { animation: sr-flow 17s linear infinite; }
+.sr-wave-g2 { animation: sr-flow 11s linear infinite; }
+@keyframes sr-flow { to { transform: translateX(-1200px); } }
+.sr-fill { fill: var(--_g); opacity: .2; }
+.sr-line { fill: none; stroke: var(--_g); stroke-width: 2.5; opacity: .6; }
+@media (prefers-reduced-motion: reduce) { .sr-wave-g1, .sr-wave-g2 { animation: none; } }
+
+/* homepage Schumann chip */
+.sr-chip { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: var(--pill); font-size: 13px; font-weight: 700; text-decoration: none; border: 1px solid transparent; opacity: 0; transform: translateY(6px); transition: opacity .35s ease, transform .35s ease, background .2s ease; }
+.sr-chip.is-ready { opacity: 1; transform: none; }
+.sr-chip-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: sr-breathe 2.6s ease-in-out infinite; }
+@keyframes sr-breathe { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.65); } }
+.sr-chip--vc, .sr-chip--c { background: rgba(63, 157, 143, .2); border-color: rgba(63, 157, 143, .5); color: #b8e6dc; }
+.sr-chip--m { background: rgba(208, 154, 44, .22); border-color: rgba(208, 154, 44, .55); color: #ffe1a8; }
+.sr-chip--e { background: rgba(221, 122, 42, .22); border-color: rgba(221, 122, 42, .6); color: #ffd2ad; }
+.sr-chip--h { background: rgba(214, 69, 69, .22); border-color: rgba(214, 69, 69, .6); color: #ffcccc; }
 .sr-body { display: flex; flex-direction: column; gap: 14px; }
 .sr-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .sr-stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
@@ -1226,6 +1244,34 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .sr-spec figcaption { padding: 8px 12px; font-size: 12px; color: var(--muted); background: var(--surface); }
 .sr-note { color: var(--muted); font-size: 14px; line-height: 1.55; }
 @media (max-width: 720px) { .sr-grid { grid-template-columns: 1fr; } .sr-stats { grid-template-columns: repeat(2, 1fr); } .sr-score { font-size: 3.8rem; } }
+
+/* vortex sites */
+.vortex-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.vortex-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
+.vortex-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.vortex-type { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: var(--pill); color: #fff; margin-bottom: 10px; }
+.vortex-type--up { background: #c0603a; }
+.vortex-type--in { background: #4a7fb0; }
+.vortex-type--bal { background: #6b7f4a; }
+.vortex-card h3 { font-family: var(--font-display); font-size: 1.24rem; color: var(--heading); }
+.vortex-card p { color: var(--muted); font-size: 14px; margin-top: 6px; line-height: 1.5; }
+.vortex-where { display: block; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--accent-strong); }
+
+/* cosmic conditions (moon + geomagnetic) */
+.cosmic { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 8px; }
+.cos-card { display: flex; flex-direction: column; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 22px; box-shadow: var(--shadow-sm); }
+.cos-ic { font-size: 2rem; line-height: 1; }
+.cos-k { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-top: 6px; }
+.cos-v { font-family: var(--font-display); font-size: 1.5rem; color: var(--heading); line-height: 1.1; }
+.cos-sub { color: var(--muted); font-size: 13px; }
+.cos-kp--g1 .cos-v, .cos-kp--g2 .cos-v, .cos-kp--g3 .cos-v { color: #c0392b; }
+.cos-kp--a .cos-v { color: #d97706; }
+
+.section-subhead { margin: 30px 0 16px; }
+.section-subhead h3 { font-family: var(--font-display); font-size: 1.5rem; color: var(--heading); }
+.section-subhead p { color: var(--muted); font-size: 15px; margin-top: 4px; max-width: 64ch; }
+@media (max-width: 860px) { .vortex-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .vortex-grid { grid-template-columns: 1fr; } .cosmic { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .wx-days { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 600px) { .wx-now { padding: 22px; } .wx-now-meta { text-align: left; } }
 @media (max-width: 460px) { .wx-days { grid-template-columns: repeat(3, 1fr); } }
