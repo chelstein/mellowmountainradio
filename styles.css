@@ -1348,6 +1348,24 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .lunar-moon { font-size: 2.6rem; line-height: 1; flex: none; }
 .lunar-placeholder p { margin: 0; font-size: 14px; line-height: 1.6; }
 @media (max-width: 520px) { .lunar-placeholder { flex-direction: column; text-align: center; } }
+/* Stargazing tonight */
+.stargaze { margin: 22px 0 8px; }
+.sky-card { position: relative; overflow: hidden; border-radius: var(--r); padding: 24px 26px; color: #e9edff; box-shadow: var(--shadow); background: radial-gradient(130% 120% at 80% 0%, #23305c 0%, #131a34 55%, #0c1024 100%); border: 1px solid rgba(255,255,255,.12); }
+.sky-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(1.4px 1.4px at 20% 30%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 70% 20%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 45% 60%, #cfe 50%, transparent 51%), radial-gradient(1.3px 1.3px at 88% 55%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 33% 80%, #fff 50%, transparent 51%), radial-gradient(1.1px 1.1px at 60% 75%, #dde 50%, transparent 51%); opacity: .5; }
+.sky-head { position: relative; z-index: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.sky-eyebrow { display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(233,237,255,.62); font-weight: 800; }
+.sky-verdict { display: block; font-family: var(--font-display); font-size: 2rem; line-height: 1.05; color: #fff; margin-top: 3px; }
+.sky-score { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: #cbd6ff; flex: none; }
+.sky-score::after { content: "/100"; font-size: .85rem; color: rgba(203,214,255,.5); }
+.sky-note { position: relative; z-index: 1; color: rgba(233,237,255,.82); font-size: 14px; line-height: 1.5; margin-top: 10px; }
+.sky-rows { position: relative; z-index: 1; margin-top: 18px; display: grid; gap: 12px; }
+.sky-row { display: flex; align-items: flex-start; gap: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 12px 14px; }
+.sky-ic { font-size: 1.4rem; line-height: 1; flex: none; }
+.sky-row b { display: block; color: #fff; font-size: 14px; }
+.sky-row span { display: block; color: rgba(233,237,255,.72); font-size: 13px; margin-top: 2px; line-height: 1.45; }
+.sky-foot { position: relative; z-index: 1; margin-top: 16px; font-size: 12px; color: rgba(233,237,255,.55); }
+.sky-exc .sky-verdict { color: #9df5c0; } .sky-good .sky-verdict { color: #bfe6ff; }
+.sky-fair .sky-verdict { color: #ffe1a6; } .sky-bright .sky-verdict { color: #ffc0b0; }
 
 /* KAZM Archives — digital museum */
 .arch-index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }

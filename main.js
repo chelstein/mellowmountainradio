@@ -1476,6 +1476,138 @@
   }
 
   /* =========================================================
+     STARGAZING TONIGHT — real astronomy for Sedona, no keys.
+     Twilight window, moon rise/set + illumination, and the Milky Way
+     core's altitude, all computed client-side (SunCalc-style algos,
+     validated against almanac values for Sedona).
+     ========================================================= */
+  function computeSky(now) {
+    var LAT = 34.8697, LON = -111.7610, TZ = -7;   // Sedona, MST (no DST)
+    var rad = Math.PI / 180, deg = 180 / Math.PI, dayMs = 86400000, J1970 = 2440588, J2000 = 2451545, e = rad * 23.4397;
+    function fromJD(j) { return (j + 0.5 - J1970) * dayMs; }
+    function toDays(date) { return date.valueOf() / dayMs - 0.5 + J1970 - J2000; }
+    function ra(l, b) { return Math.atan2(Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e), Math.cos(l)); }
+    function dec(l, b) { return Math.asin(Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l)); }
+    function sidereal(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
+    function alt(H, phi, dc) { return Math.asin(Math.sin(phi) * Math.sin(dc) + Math.cos(phi) * Math.cos(dc) * Math.cos(H)); }
+    function sma(d) { return rad * (357.5291 + 0.98560028 * d); }
+    function eclon(M) { return M + rad * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M)) + rad * 102.9372 + Math.PI; }
+    function sunDec(d) { return dec(eclon(sma(d)), 0); }
+    function sunRA(d) { return ra(eclon(sma(d)), 0); }
+    // sun event times for a given altitude h (deg) on the date of `now`
+    var lw = rad * -LON, phi = rad * LAT, J0 = 0.0009;
+    function transitJ(ds, M, L) { return J2000 + ds + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * L); }
+    function sunTimes(date, h) {
+      var d = toDays(date), n = Math.round(d - J0 - lw / (2 * Math.PI)),
+        ds = J0 + (0 + lw) / (2 * Math.PI) + n, M = sma(ds), L = eclon(M), dc = dec(L, 0),
+        Jnoon = transitJ(ds, M, L),
+        w = Math.acos((Math.sin(h * rad) - Math.sin(phi) * Math.sin(dc)) / (Math.cos(phi) * Math.cos(dc))),
+        a = J0 + (w + lw) / (2 * Math.PI) + n, Jset = transitJ(a, M, L);
+      return { rise: new Date(fromJD(Jnoon - (Jset - Jnoon))), set: new Date(fromJD(Jset)), noon: new Date(fromJD(Jnoon)) };
+    }
+    function moonCoords(d) {
+      var L = rad * (218.316 + 13.176396 * d), M = rad * (134.963 + 13.064993 * d), F = rad * (93.272 + 13.229350 * d),
+        l = L + rad * 6.289 * Math.sin(M), b = rad * 5.128 * Math.sin(F), dt = 385001 - 20905 * Math.cos(M);
+      return { ra: ra(l, b), dec: dec(l, b), dist: dt };
+    }
+    function moonAlt(date) {
+      var d = toDays(date), c = moonCoords(d), H = sidereal(d, lw) - c.ra, h = alt(H, phi, c.dec);
+      return h + rad * 0.017 / Math.tan(h + rad * 10.26 / (h + rad * 5.114));
+    }
+    function moonIllum(date) {
+      var d = toDays(date), sd = sunDec(d), sr = sunRA(d), m = moonCoords(d), sdist = 149598000,
+        p = Math.acos(Math.sin(sd) * Math.sin(m.dec) + Math.cos(sd) * Math.cos(m.dec) * Math.cos(sr - m.ra)),
+        inc = Math.atan2(sdist * Math.sin(p), m.dist - sdist * Math.cos(p));
+      return (1 + Math.cos(inc)) / 2;
+    }
+    function moonTimes(date) {
+      var t = new Date(date); t.setHours(0, 0, 0, 0);
+      var hc = 0.133 * rad, h0 = moonAlt(t) - hc, rise, set, ye;
+      for (var i = 1; i <= 24; i++) {
+        var h1 = moonAlt(new Date(+t + i * 3600000)) - hc;
+        if (h0 < 0 && h1 >= 0) rise = i - h0 / (h0 - h1);
+        if (h0 >= 0 && h1 < 0) set = i - h0 / (h0 - h1);
+        h0 = h1;
+      }
+      var r = {};
+      if (rise) r.rise = new Date(+t + rise * 3600000);
+      if (set) r.set = new Date(+t + set * 3600000);
+      return r;
+    }
+    // Galactic center (Sgr A*): RA 266.405°, Dec -28.936°
+    function gcAlt(date) {
+      var d = toDays(date), H = sidereal(d, lw) - rad * 266.405;
+      return alt(H, phi, rad * -28.936) * deg;
+    }
+    // reference "tonight": from today's dusk to tomorrow's dawn
+    var todaySet = sunTimes(now, -0.833).set, todayRise = sunTimes(now, -0.833).rise;
+    var tomorrow = new Date(+now + dayMs);
+    var duskAstro = sunTimes(now, -18).set;                // astronomical twilight end
+    var dawnAstro = sunTimes(tomorrow, -18).rise;          // next astro dawn
+    if (dawnAstro <= duskAstro) dawnAstro = new Date(+dawnAstro + dayMs);
+    // scan the dark window: moon-up fraction + GC best altitude
+    var steps = 48, moonUp = 0, gcBest = -90, gcBestT = null, span = dawnAstro - duskAstro;
+    for (var s = 0; s <= steps; s++) {
+      var t = new Date(+duskAstro + span * s / steps);
+      if (moonAlt(t) > 0) moonUp++;
+      var ga = gcAlt(t);
+      if (ga > gcBest) { gcBest = ga; gcBestT = t; }
+    }
+    var moonUpFrac = moonUp / (steps + 1);
+    var illum = moonIllum(now);
+    var impact = illum * moonUpFrac;                        // 0 (dark) .. 1 (bright moon all night)
+    var mt = moonTimes(now);
+    return {
+      sunset: todaySet, sunrise: new Date(+sunTimes(tomorrow, -0.833).rise),
+      dusk: duskAstro, dawn: dawnAstro,
+      moonIllum: Math.round(illum * 100), moonUpFrac: moonUpFrac,
+      moonrise: mt.rise, moonset: mt.set,
+      gcAlt: Math.round(gcBest), gcBestTime: gcBestT, gcVisible: gcBest > 12,
+      impact: impact, tz: TZ
+    };
+  }
+  function skyVerdict(impact) {
+    if (impact < 0.10) return { label: "Excellent", cls: "exc", note: "Dark skies &mdash; the Milky Way and faint stuff pop." };
+    if (impact < 0.32) return { label: "Good", cls: "good", note: "Mostly dark. Solid night for stars." };
+    if (impact < 0.62) return { label: "Fair", cls: "fair", note: "Some moonlight will wash out the faintest stars." };
+    return { label: "Bright moon", cls: "bright", note: "The moon owns the sky tonight &mdash; tough for deep-sky." };
+  }
+  function skyTime(dt, tz) {
+    if (!dt || isNaN(dt.valueOf())) return "—";
+    var u = new Date(dt.valueOf() + tz * 3600000);
+    var h = u.getUTCHours(), m = u.getUTCMinutes(), ap = h < 12 ? "AM" : "PM", h12 = h % 12 || 12;
+    return h12 + ":" + (m < 10 ? "0" : "") + m + " " + ap;
+  }
+  function initStargaze() {
+    var el = doc.querySelector("[data-stargaze]");
+    if (!el) return;
+    var sky, v;
+    try { sky = computeSky(new Date()); v = skyVerdict(sky.impact); }
+    catch (err) { el.innerHTML = ""; return; }
+    function T(dt) { return skyTime(dt, sky.tz); }
+    var mwLine = sky.gcVisible
+      ? 'Highest around <b>' + T(sky.gcBestTime) + '</b> at <b>' + sky.gcAlt + '&deg;</b> over the southern horizon.'
+      : 'Below the good-viewing line tonight &mdash; the core rides low this time of year.';
+    el.innerHTML =
+      '<div class="sky-card sky-' + v.cls + '">' +
+        '<div class="sky-head"><div><span class="sky-eyebrow">Stargazing tonight</span>' +
+          '<span class="sky-verdict">' + v.label + '</span></div>' +
+          '<span class="sky-score" aria-hidden="true">' + Math.max(0, 100 - Math.round(sky.impact * 100)) + '</span></div>' +
+        '<p class="sky-note">' + v.note + '</p>' +
+        '<div class="sky-rows">' +
+          '<div class="sky-row"><span class="sky-ic">🌌</span><div><b>Milky Way core</b><span>' + mwLine + '</span></div></div>' +
+          '<div class="sky-row"><span class="sky-ic">🌙</span><div><b>Moon &middot; ' + sky.moonIllum + '% lit</b><span>' +
+            (sky.moonrise ? 'Rises ' + T(sky.moonrise) : '') +
+            (sky.moonrise && sky.moonset ? ' &middot; ' : '') +
+            (sky.moonset ? 'Sets ' + T(sky.moonset) : '') + '</span></div></div>' +
+          '<div class="sky-row"><span class="sky-ic">🌑</span><div><b>True darkness</b><span>' +
+            T(sky.dusk) + ' &ndash; ' + T(sky.dawn) + ' (astronomical twilight)</span></div></div>' +
+        '</div>' +
+        '<div class="sky-foot">Computed live for Sedona &middot; 34.87&deg;N, 111.76&deg;W</div>' +
+      '</div>';
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -1772,6 +1904,7 @@
     initTraffic();
     initSchumann();
     initCosmic();
+    initStargaze();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
