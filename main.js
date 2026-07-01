@@ -68,7 +68,9 @@
     '</div></footer>';
 
   var PLAYER_HTML =
-    '<div class="player" data-player aria-live="polite"><div class="player-inner wrap">' +
+    '<div class="player" data-player aria-live="polite">' +
+      '<canvas class="player-viz" data-viz aria-hidden="true"></canvas>' +
+      '<div class="player-inner wrap">' +
       '<div class="player-meta">' +
         '<img class="player-art" data-now-art src="Color%20logo%20-%20no%20background.svg" alt="" aria-hidden="true" />' +
         '<span class="player-eq eq" data-eq aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' +
@@ -164,14 +166,16 @@
     if (!audio) return;
     if (player) { player.classList.add("show"); doc.body.classList.add("has-player"); }
     if (playing) { audio.pause(); return; }
+    setupAudioGraph();
+    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
     setLabel("Connecting...");
     var p = audio.play();
     if (p && p.catch) p.catch(function () { setLabel("Listen Live"); });
   }
   if (audio) {
-    audio.addEventListener("playing", function () { setPlayingState(true); });
-    audio.addEventListener("pause", function () { setPlayingState(false); });
-    audio.addEventListener("error", function () { setPlayingState(false); setLabel("Listen Live"); });
+    audio.addEventListener("playing", function () { setPlayingState(true); startViz(); });
+    audio.addEventListener("pause", function () { setPlayingState(false); stopViz(); });
+    audio.addEventListener("error", function () { setPlayingState(false); stopViz(); setLabel("Listen Live"); });
     if ("mediaSession" in navigator) {
       try {
         navigator.mediaSession.setActionHandler("play", function () { audio.play(); });
@@ -186,6 +190,90 @@
     var tag = (e.target && e.target.tagName) || "";
     if ((e.code === "Space" || e.key === " ") && !/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(tag)) { e.preventDefault(); togglePlay(); }
   });
+
+  /* =========================================================
+     LIVE AUDIO VISUALIZER (real Web Audio spectrum off the stream)
+     Reads the actual on-air signal via an AnalyserNode. If the stream
+     ever comes back CORS-tainted (all-zero data), we quietly fall back
+     to the decorative CSS bars — we never fake a "real" spectrum.
+     ========================================================= */
+  var viz = doc.querySelector("[data-viz]");
+  var eqBars = doc.querySelectorAll("[data-eq] i");
+  var audioCtx = null, analyser = null, srcNode = null, freqData = null, rafId = null;
+  var vizReal = false;      // have we ever seen non-zero spectrum data?
+  var vizChecked = 0;       // frames observed while playing (to detect a tainted stream)
+
+  function setupAudioGraph() {
+    if (audioCtx || !audio || !window.AudioContext && !window.webkitAudioContext) return;
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new Ctx();
+      srcNode = audioCtx.createMediaElementSource(audio);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 128;
+      analyser.smoothingTimeConstant = 0.78;
+      srcNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      freqData = new Uint8Array(analyser.frequencyBinCount);
+    } catch (e) { audioCtx = null; analyser = null; }
+  }
+
+  function drawViz() {
+    if (!analyser || !playing) { rafId = null; return; }
+    rafId = window.requestAnimationFrame(drawViz);
+    analyser.getByteFrequencyData(freqData);
+    // detect a genuinely-decoding stream vs. a silent/tainted one
+    var sum = 0, n = freqData.length, i;
+    for (i = 0; i < n; i++) sum += freqData[i];
+    if (sum > 0) { vizReal = true; doc.body.classList.add("viz-live"); }
+    if (!vizReal) { vizChecked++; if (vizChecked > 180) { doc.body.classList.remove("viz-live"); return; } }
+
+    // drive the 5 header eq bars off real low-to-high bands
+    if (eqBars.length && vizReal) {
+      for (i = 0; i < eqBars.length; i++) {
+        var idx = Math.floor((i + 0.5) / eqBars.length * n * 0.7);
+        var mag = freqData[idx] / 255;
+        eqBars[i].style.height = (5 + mag * 15).toFixed(1) + "px";
+        eqBars[i].style.opacity = (0.45 + mag * 0.55).toFixed(2);
+      }
+    }
+    // full spectrum on the canvas backdrop
+    if (viz && vizReal) {
+      var ctx = viz._c || (viz._c = viz.getContext("2d"));
+      var w = viz.width, h = viz.height;
+      ctx.clearRect(0, 0, w, h);
+      var bars = n, bw = w / bars;
+      for (i = 0; i < bars; i++) {
+        var v = freqData[i] / 255;
+        var bh = v * h;
+        var alpha = 0.16 + v * 0.5;
+        ctx.fillStyle = "rgba(224, 168, 90, " + alpha.toFixed(3) + ")";
+        ctx.fillRect(i * bw, h - bh, bw + 0.6, bh);
+      }
+    }
+  }
+
+  function sizeViz() {
+    if (!viz) return;
+    var rect = viz.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    viz.width = Math.max(1, Math.round((rect.width || viz.clientWidth || 480) * dpr));
+    viz.height = Math.max(1, Math.round((rect.height || 44) * dpr));
+    viz._c = null;
+  }
+  window.addEventListener("resize", sizeViz, { passive: true });
+
+  function startViz() {
+    setupAudioGraph();
+    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+    sizeViz();
+    if (!rafId) drawViz();
+  }
+  function stopViz() {
+    if (rafId) { window.cancelAnimationFrame(rafId); rafId = null; }
+    doc.body.classList.remove("viz-live");
+    for (var i = 0; i < eqBars.length; i++) { eqBars[i].style.height = ""; eqBars[i].style.opacity = ""; }
+  }
 
   /* =========================================================
      NOW PLAYING / ARTWORK / LISTENERS (AzuraCast, persistent poll)

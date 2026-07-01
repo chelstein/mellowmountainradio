@@ -1498,7 +1498,11 @@ a.contact-v:hover { color: var(--accent-strong); }
   transform: translateY(100%); transition: transform .4s cubic-bezier(.16, 1, .3, 1);
 }
 .player.show { transform: none; }
-.player-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 12px 24px; }
+.player { overflow: hidden; }
+.player-viz { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 44px; opacity: 0; transition: opacity .5s ease; pointer-events: none; z-index: 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.viz-live .player-viz { opacity: 1; }
+.viz-live .eq i { animation: none !important; transition: height .09s linear, opacity .09s linear; background: var(--accent); }
+.player-inner { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 12px 24px; }
 .player-meta { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .player-art { width: 42px; height: 42px; flex: none; border-radius: 8px; object-fit: contain; background: #f6efe2; }
 .player-art.is-art { object-fit: cover; background: #1b2640; }
