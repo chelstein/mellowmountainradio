@@ -999,9 +999,9 @@
   }
   function aqiInfo(v) {
     if (v == null) return null;
-    var c = v <= 50 ? ["Good", "g"] : v <= 100 ? ["Moderate", "m"] : v <= 150 ? ["Unhealthy for sensitive groups", "u1"]
-      : v <= 200 ? ["Unhealthy", "u2"] : v <= 300 ? ["Very unhealthy", "u3"] : ["Hazardous", "hz"];
-    return { v: Math.round(v), label: c[0], cls: c[1] };
+    var c = v <= 50 ? ["Good", "Good", "g"] : v <= 100 ? ["Moderate", "Moderate", "m"] : v <= 150 ? ["Unhealthy for sensitive groups", "Sensitive", "u1"]
+      : v <= 200 ? ["Unhealthy", "Unhealthy", "u2"] : v <= 300 ? ["Very unhealthy", "V. unhealthy", "u3"] : ["Hazardous", "Hazardous", "hz"];
+    return { v: Math.round(v), label: c[0], short: c[1], cls: c[2] };
   }
   function renderWeather(box, cur, daily, aqi) {
     var now = wxInfo(cur.weather_code, cur.is_day);
@@ -1095,9 +1095,9 @@
     if (recent > 0.03) return { k: "tacky", surface: "Tacky in spots", tip: "A little recent moisture — most trails are good, but shaded and low sections may still be soft." };
     return { k: "dry", surface: "Dry & firm", tip: "" };
   }
-  function renderHike(box, d, fire) {
+  function renderHike(box, d, fire, aqi) {
     var c = d.current, day = d.daily, w = wxInfo(c.weather_code, c.is_day), i = day.sunrise.length - 1;
-    var temp = Math.round(c.temperature_2m), uv = Math.round((day.uv_index_max || [])[i] || 0), dry = trailDry(day);
+    var temp = Math.round(c.temperature_2m), uv = Math.round((day.uv_index_max || [])[i] || 0), dry = trailDry(day), aq = aqiInfo(aqi);
     var hot = temp >= 95, title = hot ? "Hot — hike at sunrise" : (temp <= 40 ? "Cold up high — layer up" : "Good hiking weather");
     var uvWord = uv >= 8 ? "very high" : uv >= 6 ? "high" : uv >= 3 ? "moderate" : "low";
     var fireV = fire && fire.level ? (fire.stage === 0 ? "None" : fire.level) : "Check";
@@ -1109,7 +1109,9 @@
         '<span class="adv-live-sub">' + temp + '° and ' + esc(w.label.toLowerCase()) + ' in Sedona right now</span></span></div>' +
       '<div class="adv-stats">' + advStat("Trails", dry.surface) +
         advStat("Daylight", advTime(day.sunrise[i]) + " – " + advTime(day.sunset[i])) +
-        advStat("UV index", uv + " · " + uvWord) + advStat("Fire", fireV) + '</div>' +
+        advStat("UV index", uv + " · " + uvWord) +
+        (aq ? advStat("Air quality", aq.v + " · " + aq.short) : "") +
+        advStat("Fire", fireV) + '</div>' +
       '<p class="adv-tip">' + esc(tip) + '</p>';
   }
   function renderBike(box, d) {
@@ -1152,10 +1154,11 @@
         "&current=temperature_2m,weather_code,is_day,apparent_temperature&daily=sunrise,sunset,precipitation_sum,uv_index_max" +
         "&past_days=2&forecast_days=1&temperature_unit=fahrenheit&precipitation_unit=inch&timezone=America/Phoenix";
       var fp = fetch("fire.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
-      Promise.all([fetch(u, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }), fp]).then(function (res) {
-        var d = res[0];
+      var aq = fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.8697&longitude=-111.7610&current=us_aqi&timezone=America/Phoenix", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+      Promise.all([fetch(u, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }), fp, aq]).then(function (res) {
+        var d = res[0], aqi = res[2] && res[2].current ? res[2].current.us_aqi : null;
         if (!d || !d.current) { if (hike) hike.innerHTML = advErr(); if (bike) bike.innerHTML = advErr(); return; }
-        if (hike && hike.isConnected) renderHike(hike, d, res[1]);
+        if (hike && hike.isConnected) renderHike(hike, d, res[1], aqi);
         if (bike && bike.isConnected) renderBike(bike, d);
       }).catch(function () { if (hike) hike.innerHTML = advErr(); if (bike) bike.innerHTML = advErr(); });
     }
@@ -1221,6 +1224,41 @@
       var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); build(); } }); }, { rootMargin: "250px" });
       io.observe(el);
     } else { build(); }
+  }
+
+  /* =========================================================
+     SCHUMANN RESONANCE — Earth's frequency (Zero Trust Radio -> schumann.json)
+     ========================================================= */
+  function schCls(a) { return ({ "Very calm": "vc", "Calm": "c", "Moderate": "m", "Elevated": "e", "High": "h" })[a] || "c"; }
+  function srStat(k, v) { return '<div class="sr-stat"><span class="sr-stat-k">' + esc(k) + '</span><span class="sr-stat-v">' + esc(v) + '</span></div>'; }
+  function initSchumann() {
+    var box = doc.querySelector("[data-schumann]");
+    if (!box) return;
+    box.innerHTML = '<p class="rss-loading">Tuning into Earth&rsquo;s frequency&hellip;</p>';
+    fetch("schumann.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!box.isConnected) return;
+      if (!d || !d.available) { box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; return; }
+      var cls = schCls(d.activity);
+      var when = d.observed_at ? new Date(d.observed_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "";
+      box.innerHTML =
+        '<div class="sr-grid">' +
+          '<div class="sr-hero sr-hero--' + cls + '">' +
+            '<span class="sr-score">' + (d.energy_score != null ? d.energy_score : "—") + '</span>' +
+            '<span class="sr-activity">' + esc(d.activity) + ' activity</span>' +
+            '<span class="sr-freq"><b>' + (d.detected_hz != null ? d.detected_hz : "—") + ' Hz</b> detected &middot; 7.83 Hz nominal</span>' +
+          '</div>' +
+          '<div class="sr-body">' +
+            '<div class="sr-stats">' +
+              srStat("Peaks", d.peaks != null ? d.peaks : "—") +
+              srStat("Band density", d.density != null ? d.density + "%" : "—") +
+              srStat("Cavity", d.cavity_state || "—") +
+              srStat("Station", (d.station || "").toUpperCase() || "—") +
+            '</div>' +
+            '<figure class="sr-spec"><img src="' + esc(d.spectrogram) + '" alt="Live Schumann resonance spectrogram from the Tomsk observatory" loading="lazy" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" /><figcaption>Live spectrogram &middot; Tomsk Space Observing System</figcaption></figure>' +
+            '<p class="sr-note">The Schumann resonance is the electromagnetic hum in the cavity between Earth&rsquo;s surface and the ionosphere, driven by worldwide lightning &mdash; the planet&rsquo;s ~7.83&nbsp;Hz &ldquo;heartbeat.&rdquo; Meditators and sound healers watch its energy and peaks. Read via Zero Trust Radio' + (when ? ' &middot; updated ' + esc(when) : '') + '.</p>' +
+          '</div>' +
+        '</div>';
+    }).catch(function () { if (box.isConnected) box.innerHTML = '<p class="embed-note">The Schumann reading is offline right now.</p>'; });
   }
 
   /* =========================================================
@@ -1517,6 +1555,7 @@
     initFire();
     initAdventures();
     initTraffic();
+    initSchumann();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
