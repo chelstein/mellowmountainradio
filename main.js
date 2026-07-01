@@ -187,7 +187,7 @@
     if (p && p.catch) p.catch(function () { setLabel("Listen Live"); });
   }
   if (audio) {
-    audio.addEventListener("playing", function () { setPlayingState(true); startViz(); });
+    audio.addEventListener("playing", function () { setPlayingState(true); startViz(); if (typeof cxStop === "function") cxStop(); });
     audio.addEventListener("pause", function () { setPlayingState(false); stopViz(); });
     audio.addEventListener("error", function () { setPlayingState(false); stopViz(); setLabel("Listen Live"); });
     if ("mediaSession" in navigator) {
@@ -1896,6 +1896,198 @@
   }
 
   /* =========================================================
+     COSMIC AMBIENT — a generative drone voiced live from the Earth's
+     real Schumann resonance + today's geomagnetic (Kp) field. The ~7.83 Hz
+     fundamental is below hearing, so we raise the whole real harmonic
+     series 5 octaves into the audible range. Kp adds shimmer/detune.
+     100% generated client-side from real data — no audio files.
+     ========================================================= */
+  var OCT_UP = 32;                       // 2^5 — five octaves up into hearing
+  var cxCtx = null, cxNodes = [], cxMaster = null, cxComp = null, cxPlaying = false, cxEl = null, cxData = null;
+  function kpNum(kp) { return (kp == null || isNaN(kp)) ? 1.5 : kp; }
+  function kpField(kp) {
+    var k = kpNum(kp);
+    if (k < 3) return { label: "Calm", cls: "c" };
+    if (k < 5) return { label: "Unsettled", cls: "u" };
+    if (k < 6) return { label: "Active field", cls: "a" };
+    return { label: "Geomagnetic storm", cls: "s" };
+  }
+  function cxImpulse(ctx, dur, decay) {
+    var rate = ctx.sampleRate, len = Math.floor(rate * dur), buf = ctx.createBuffer(2, len, rate);
+    for (var c = 0; c < 2; c++) { var d = buf.getChannelData(c); for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
+    return buf;
+  }
+  function cxBuild(sr, kp) {
+    var Ctx = window.AudioContext || window.webkitAudioContext; if (!Ctx) return false;
+    cxCtx = new Ctx();
+    cxMaster = cxCtx.createGain(); cxMaster.gain.value = 0;
+    cxComp = cxCtx.createDynamicsCompressor();
+    cxComp.threshold.value = -14; cxComp.ratio.value = 4; cxComp.attack.value = 0.02; cxComp.release.value = 0.4;
+    var lp = cxCtx.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 0.6;
+    lp.frequency.value = 900 + Math.max(0, Math.min(100, sr.energy_score || 20)) * 9;
+    var rev = cxCtx.createConvolver(); rev.buffer = cxImpulse(cxCtx, 3.6, 2.4);
+    var wet = cxCtx.createGain(); wet.gain.value = 0.55;
+    var dry = cxCtx.createGain(); dry.gain.value = 0.7;
+    lp.connect(dry).connect(cxMaster);
+    lp.connect(rev); rev.connect(wet).connect(cxMaster);
+    cxMaster.connect(cxComp); cxComp.connect(cxCtx.destination);
+
+    var base = sr.nominal_hz || 7.83;
+    var modes = (sr.harmonics_hz && sr.harmonics_hz.length > 1) ? sr.harmonics_hz.slice(0, 6) : [7.83, 14.3, 20.8, 27.3, 33.8];
+    if (modes.indexOf(base) === -1) modes.unshift(base);
+    var detune = kpNum(kp) * 1.6;        // cents of chorus spread, grows with Kp
+    modes.forEach(function (m, i) {
+      var f = m * OCT_UP; if (f < 40 || f > 6000) return;
+      [-1, 1].forEach(function (s) {
+        var o = cxCtx.createOscillator(); o.type = "sine"; o.frequency.value = f;
+        o.detune.value = s * detune * (1 + i * 0.25);
+        var g = cxCtx.createGain(); g.gain.value = i === 0 ? 0.16 : 0.11 / (i + 1);
+        o.connect(g); g.connect(lp); o.start(); cxNodes.push(o, g);
+      });
+    });
+    // warmth: sub octave of the fundamental
+    var sub = cxCtx.createOscillator(); sub.type = "sine"; sub.frequency.value = base * 16;
+    var sg = cxCtx.createGain(); sg.gain.value = 0.13; sub.connect(sg); sg.connect(lp); sub.start(); cxNodes.push(sub, sg);
+    // live accent: today's detected peak, level tied to energy_score
+    var det = sr.detected_hz || base, df = det * OCT_UP;
+    if (df >= 40 && df <= 6000) {
+      var da = cxCtx.createOscillator(); da.type = "triangle"; da.frequency.value = df;
+      var dg = cxCtx.createGain(); dg.gain.value = 0.04 + Math.max(0, Math.min(100, sr.energy_score || 20)) / 100 * 0.1;
+      da.connect(dg); dg.connect(lp); da.start(); cxNodes.push(da, dg);
+    }
+    // breathing: slow LFOs on filter + level; rate rises with Kp
+    var lfo = cxCtx.createOscillator(); lfo.frequency.value = 0.035 + kpNum(kp) * 0.02;
+    var lg = cxCtx.createGain(); lg.gain.value = 180 + kpNum(kp) * 70; lfo.connect(lg); lg.connect(lp.frequency); lfo.start(); cxNodes.push(lfo, lg);
+    var lfo2 = cxCtx.createOscillator(); lfo2.frequency.value = 0.05;
+    var lg2 = cxCtx.createGain(); lg2.gain.value = 0.05; lfo2.connect(lg2); lg2.connect(cxMaster.gain); lfo2.start(); cxNodes.push(lfo2, lg2);
+    return true;
+  }
+  function cxSetUI(on) {
+    if (!cxEl) return;
+    cxEl.classList.toggle("is-playing", on);
+    var b = cxEl.querySelector(".cxa-btn"); if (b) b.setAttribute("aria-pressed", String(on));
+    var l = cxEl.querySelector(".cxa-btn-label"); if (l) l.textContent = on ? "Pause" : "Play";
+  }
+  function cxPlay() {
+    if (cxPlaying || !cxData) return;
+    if (playing && audio) audio.pause();            // don't fight the live stream
+    if (!cxCtx && !cxBuild(cxData.sr, cxData.kp)) return;
+    if (cxCtx.state === "suspended") cxCtx.resume();
+    cxPlaying = true;
+    var t = cxCtx.currentTime;
+    cxMaster.gain.cancelScheduledValues(t);
+    cxMaster.gain.setValueAtTime(Math.max(0.0001, cxMaster.gain.value), t);
+    cxMaster.gain.linearRampToValueAtTime(0.5, t + 3.5);
+    cxSetUI(true);
+  }
+  function cxStop() {
+    if (!cxPlaying || !cxCtx) return;
+    cxPlaying = false;
+    var t = cxCtx.currentTime;
+    cxMaster.gain.cancelScheduledValues(t);
+    cxMaster.gain.setValueAtTime(cxMaster.gain.value, t);
+    cxMaster.gain.linearRampToValueAtTime(0, t + 1.8);
+    cxSetUI(false);
+  }
+  function cxToggle() { cxPlaying ? cxStop() : cxPlay(); }
+  function renderCosmicAudio(el, sr, kp) {
+    cxEl = el; cxData = { sr: sr, kp: kp };
+    var base = sr.nominal_hz || 7.83, root = Math.round(base * OCT_UP);
+    var field = kpField(kp), det = sr.detected_hz;
+    el.innerHTML =
+      '<div class="cxa-card field-' + field.cls + '">' +
+        '<button class="cxa-btn" type="button" aria-pressed="false" aria-label="Play or pause Cosmic Ambient">' +
+          '<span class="cxa-orb" aria-hidden="true"><i></i><i></i><i></i></span>' +
+          '<svg class="cxa-play" viewBox="0 0 256 256" width="22" height="22" aria-hidden="true"><path d="M232.4 114.5 88.3 26.6a16 16 0 0 0-24.3 13.5v175.8a16 16 0 0 0 24.3 13.5l144.1-87.9a15.9 15.9 0 0 0 0-27z"/></svg>' +
+          '<svg class="cxa-pause" viewBox="0 0 256 256" width="22" height="22" aria-hidden="true"><path d="M216 48v160a16 16 0 0 1-16 16h-40a16 16 0 0 1-16-16V48a16 16 0 0 1 16-16h40a16 16 0 0 1 16 16ZM96 32H56a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h40a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16Z"/></svg>' +
+        '</button>' +
+        '<div class="cxa-info">' +
+          '<span class="cxa-title">Cosmic Ambient <span class="cxa-btn-label">Play</span></span>' +
+          '<p class="cxa-read">Voiced at <b>' + root + ' Hz</b> &mdash; Earth’s <b>' + base + ' Hz</b> resonance raised 5 octaves into hearing.' +
+            (det ? ' Tracking today’s detected peak at <b>' + det + ' Hz</b>.' : '') + '</p>' +
+          '<span class="cxa-field">Geomagnetic field: <b>' + field.label + '</b>' + (kp != null && !isNaN(kp) ? ' &middot; Kp ' + (Math.round(kp * 10) / 10) : '') + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<p class="micro-note">Generated live in your browser from the Schumann resonance (Zero Trust Radio &middot; Tomsk observatory) and NOAA space-weather data. Headphones recommended. Not medical or therapeutic &mdash; just the planet, made audible.</p>';
+    el.querySelector(".cxa-btn").addEventListener("click", cxToggle);
+  }
+  function initCosmicAudio() {
+    var el = doc.querySelector("[data-cosmic-audio]");
+    if (!el) { if (cxPlaying) cxStop(); return; }   // left the Vibe page — stop the drone
+    el.innerHTML = '<p class="rss-loading">Tuning to the planet&hellip;</p>';
+    var srP = fetch("schumann.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    var kpP = fetch("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    Promise.all([srP, kpP]).then(function (res) {
+      if (!el.isConnected) return;
+      var sr = res[0] && res[0].available !== false ? res[0] : { nominal_hz: 7.83, detected_hz: null, harmonics_hz: [7.83], energy_score: 20, activity: "Calm" };
+      var rows = res[1], kp = null;
+      if (rows && rows.length) { var last = rows[rows.length - 1]; kp = parseFloat(last.Kp != null ? last.Kp : (Array.isArray(last) ? last[1] : NaN)); }
+      renderCosmicAudio(el, sr, isNaN(kp) ? null : kp);
+    });
+  }
+
+  /* =========================================================
+     GOLDEN HOUR MODE — the site knows the exact minute the red rocks
+     catch fire. As golden hour nears it shows a countdown; during it,
+     the whole site warms and the badge counts down to the sun's edge.
+     ========================================================= */
+  function goldenModeState(now) {
+    var g, win = null;
+    try { g = goldenTimes(now); } catch (e) { return null; }
+    var t = now.getTime(), HOUR = 3600000;
+    var candidates = [
+      { kind: "dawn", start: g.morning.b.sunrise, end: g.morning.b.goldMornEnd, edge: g.morning.b.goldMornEnd, edgeLabel: "climbs" },
+      { kind: "dusk", start: g.evening.b.goldEveStart, end: g.evening.b.sunset, edge: g.evening.b.sunset, edgeLabel: "sunset" }
+    ];
+    candidates.forEach(function (c) {
+      if (!c.start || !c.end) return;
+      var s = c.start.getTime(), e = c.end.getTime();
+      if (t >= s && t <= e) { if (!win || win.state !== "active") win = { state: "active", c: c, until: e }; }
+      else if (t < s && s - t <= HOUR) { var cand = { state: "soon", c: c, until: s }; if (!win || (win.state === "soon" && cand.until < win.until)) win = win && win.state === "active" ? win : cand; }
+    });
+    return win;
+  }
+  var _goldTimer = null, _goldBadge = null, _goldDismissed = false;
+  function goldCountdown(ms) {
+    var m = Math.max(0, Math.round(ms / 60000));
+    if (m >= 60) return Math.floor(m / 60) + "h " + (m % 60) + "m";
+    return m + "m";
+  }
+  function goldenTick() {
+    if (_goldDismissed) return;
+    var st = goldenModeState(new Date());
+    doc.body.classList.toggle("golden-hour", !!(st && st.state === "active"));
+    if (!st) { if (_goldBadge) { _goldBadge.remove(); _goldBadge = null; } return; }
+    if (!_goldBadge) {
+      _goldBadge = doc.createElement("div");
+      _goldBadge.className = "golden-badge";
+      doc.body.appendChild(_goldBadge);
+    }
+    var msg, sub;
+    if (st.state === "active") {
+      msg = st.c.kind === "dusk" ? "Golden hour &mdash; the red rocks are glowing" : "Golden hour &mdash; first light on the rocks";
+      sub = (st.c.kind === "dusk" ? "Sunset in " : "Sun climbs in ") + goldCountdown(st.until - Date.now());
+    } else {
+      msg = "Golden hour approaching";
+      sub = "Starts in " + goldCountdown(st.until - Date.now());
+    }
+    _goldBadge.className = "golden-badge golden-badge--" + st.state;
+    _goldBadge.innerHTML =
+      '<span class="golden-badge-ic" aria-hidden="true">🌅</span>' +
+      '<span class="golden-badge-body"><b>' + msg + '</b><span>' + sub + '</span></span>' +
+      '<button class="golden-badge-x" type="button" aria-label="Dismiss">&times;</button>';
+    _goldBadge.querySelector(".golden-badge-x").addEventListener("click", function () {
+      _goldDismissed = true; doc.body.classList.remove("golden-hour");
+      if (_goldBadge) { _goldBadge.remove(); _goldBadge = null; }
+    });
+  }
+  function initGoldenMode() {
+    goldenTick();
+    if (_goldTimer) clearInterval(_goldTimer);
+    _goldTimer = setInterval(goldenTick, 30000);
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -2196,6 +2388,8 @@
     initCosmic();
     initStargaze();
     initGolden();
+    initCosmicAudio();
+    initGoldenMode();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
