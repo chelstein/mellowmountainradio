@@ -1608,6 +1608,64 @@
   }
 
   /* =========================================================
+     PHOTOGRAPHER'S LIGHT — golden & blue hour for Sedona, no keys.
+     Same validated sun-time solver as the stargazing panel.
+     ========================================================= */
+  function goldenTimes(now) {
+    var LAT = 34.8697, LON = -111.7610, TZ = -7;
+    var rad = Math.PI / 180, dayMs = 86400000, J1970 = 2440588, J2000 = 2451545, e = rad * 23.4397;
+    function fromJD(j) { return (j + 0.5 - J1970) * dayMs; }
+    function toDays(date) { return date.valueOf() / dayMs - 0.5 + J1970 - J2000; }
+    function dec(l, b) { return Math.asin(Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l)); }
+    function sma(d) { return rad * (357.5291 + 0.98560028 * d); }
+    function eclon(M) { return M + rad * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M)) + rad * 102.9372 + Math.PI; }
+    var lw = rad * -LON, phi = rad * LAT, J0 = 0.0009;
+    function transitJ(ds, M, L) { return J2000 + ds + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * L); }
+    function sunAt(date, h) {
+      var d = toDays(date), n = Math.round(d - J0 - lw / (2 * Math.PI)),
+        ds = J0 + lw / (2 * Math.PI) + n, M = sma(ds), L = eclon(M), dc = dec(L, 0),
+        Jnoon = transitJ(ds, M, L),
+        w = Math.acos((Math.sin(h * rad) - Math.sin(phi) * Math.sin(dc)) / (Math.cos(phi) * Math.cos(dc))),
+        a = J0 + (w + lw) / (2 * Math.PI) + n, Jset = transitJ(a, M, L);
+      return { rise: new Date(fromJD(Jnoon - (Jset - Jnoon))), set: new Date(fromJD(Jset)) };
+    }
+    function block(date) {
+      var s = sunAt(date, -0.833), g = sunAt(date, 6), b = sunAt(date, -6);
+      return { sunrise: s.rise, sunset: s.set, goldMornEnd: g.rise, goldEveStart: g.set, blueDawn: b.rise, blueDusk: b.set };
+    }
+    var today = block(now), tmr = block(new Date(+now + dayMs));
+    var mDay = now < today.goldMornEnd ? { day: now, b: today } : { day: new Date(+now + dayMs), b: tmr };
+    var eDay = now < today.blueDusk ? { day: now, b: today } : { day: new Date(+now + dayMs), b: tmr };
+    return { morning: mDay, evening: eDay, tz: TZ, now: now };
+  }
+  function initGolden() {
+    var el = doc.querySelector("[data-golden]");
+    if (!el) return;
+    var g;
+    try { g = goldenTimes(new Date()); } catch (err) { el.innerHTML = ""; return; }
+    function T(d) { return skyTime(d, g.tz); }
+    function localKey(d) { var u = new Date(d.valueOf() + g.tz * 3600000); return u.getUTCFullYear() + "-" + u.getUTCMonth() + "-" + u.getUTCDate(); }
+    function lbl(day, part) { return localKey(day) === localKey(g.now) ? ("This " + part) : ("Tomorrow " + part); }
+    function row(label, val, hi) { return '<div class="gold-row' + (hi ? " is-key" : "") + '"><span>' + label + '</span><b>' + val + '</b></div>'; }
+    var m = g.morning.b, e = g.evening.b;
+    el.innerHTML =
+      '<div class="gold-card gold-morning">' +
+        '<div class="gold-head"><span class="gold-ic">🌅</span><span class="gold-when">' + lbl(g.morning.day, "morning") + '</span></div>' +
+        '<div class="gold-rows">' +
+          row("Blue hour", T(m.blueDawn) + ' &ndash; ' + T(m.sunrise)) +
+          row("Sunrise", T(m.sunrise), true) +
+          row("Golden hour", T(m.sunrise) + ' &ndash; ' + T(m.goldMornEnd)) +
+        '</div></div>' +
+      '<div class="gold-card gold-evening gold-card--hero">' +
+        '<div class="gold-head"><span class="gold-ic">🌄</span><span class="gold-when">' + lbl(g.evening.day, "evening") + '</span><span class="gold-tag">Red-rock glow</span></div>' +
+        '<div class="gold-rows">' +
+          row("Golden hour", T(e.goldEveStart) + ' &ndash; ' + T(e.sunset), true) +
+          row("Sunset", T(e.sunset)) +
+          row("Blue hour", T(e.sunset) + ' &ndash; ' + T(e.blueDusk)) +
+        '</div></div>';
+  }
+
+  /* =========================================================
      CONCERTS (Ticketmaster Discovery API, direct)
      ========================================================= */
   // Paste your free Ticketmaster "Consumer Key" here to go live:
@@ -1905,6 +1963,7 @@
     initSchumann();
     initCosmic();
     initStargaze();
+    initGolden();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();

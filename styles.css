@@ -1366,6 +1366,28 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .sky-foot { position: relative; z-index: 1; margin-top: 16px; font-size: 12px; color: rgba(233,237,255,.55); }
 .sky-exc .sky-verdict { color: #9df5c0; } .sky-good .sky-verdict { color: #bfe6ff; }
 .sky-fair .sky-verdict { color: #ffe1a6; } .sky-bright .sky-verdict { color: #ffc0b0; }
+/* Photographer's light — golden & blue hour */
+.golden { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 8px; }
+.gold-card { border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); border: 1px solid var(--line); }
+.gold-morning { background: linear-gradient(155deg, #fef4e2, #fbe4c4); }
+.gold-card--hero { background: linear-gradient(150deg, #b8471f, #7a2a12); border-color: rgba(255,255,255,.14); box-shadow: var(--shadow); color: #fff; }
+.gold-head { display: flex; align-items: center; gap: 10px; }
+.gold-ic { font-size: 1.6rem; line-height: 1; }
+.gold-when { font-family: var(--font-display); font-size: 1.3rem; color: var(--heading); }
+.gold-card--hero .gold-when { color: #fff; }
+.gold-tag { margin-left: auto; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #7a2a12; background: rgba(255,255,255,.9); padding: 4px 9px; border-radius: var(--pill); }
+.gold-rows { margin-top: 14px; display: grid; gap: 8px; }
+.gold-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 9px 12px; border-radius: 10px; background: rgba(0,0,0,.04); }
+.gold-card--hero .gold-row { background: rgba(255,255,255,.1); }
+.gold-row span { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+.gold-card--hero .gold-row span { color: rgba(255,255,255,.72); }
+.gold-row b { font-family: var(--font-display); font-size: 1.12rem; color: var(--heading); white-space: nowrap; }
+.gold-card--hero .gold-row b { color: #fff; }
+.gold-row.is-key { background: rgba(224,146,60,.18); }
+.gold-card--hero .gold-row.is-key { background: rgba(255,214,150,.22); }
+.gold-row.is-key span { color: var(--accent-strong); }
+.gold-card--hero .gold-row.is-key span { color: #ffe1b0; }
+@media (max-width: 560px) { .golden { grid-template-columns: 1fr; } }
 
 /* KAZM Archives — digital museum */
 .arch-index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
