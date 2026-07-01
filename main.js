@@ -32,7 +32,7 @@
           '<a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek Flow</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
+          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="contact.html">Contact</a>' +
@@ -1403,7 +1403,9 @@
   function creekStat(val, label, cls) { return '<div class="creek-stat' + (cls ? " creek-stat--" + cls : "") + '"><b>' + val + '</b><span>' + label + '</span></div>'; }
   function creekAct(ic, label, val, cls) { return '<div class="creek-act' + (cls ? " act-" + cls : "") + '"><span class="creek-act-k">' + ic + " " + label + '</span><b>' + val + '</b></div>'; }
 
-  function renderCreek(el, data, wx, alerts) {
+  // parse USGS + Open-Meteo + NWS into one normalized snapshot (shared by
+  // the Oak Creek panel and the Slide Rock attraction)
+  function parseCreek(data, wx, alerts) {
     var vals = {};
     (data && data.value && data.value.timeSeries || []).forEach(function (t) {
       var code = t.variable.variableCode[0].value;
@@ -1415,9 +1417,7 @@
     var tc = vals["00010"] ? vals["00010"].v : null;
     var ntu = vals["63680"] ? vals["63680"].v : null;
     var tf = tc != null ? Math.round(tc * 9 / 5 + 32) : null;
-    if (cfs == null && ft == null && tf == null) { el.innerHTML = advErr(); return; }
-
-    // rain: recent upstream (past 3 days) + today's forecast
+    if (cfs == null && ft == null && tf == null) return null;
     var recentUp = null, fcst = null, prob = null;
     if (wx && wx.daily && wx.daily.precipitation_sum) {
       var ps = wx.daily.precipitation_sum, n = ps.length;
@@ -1428,19 +1428,34 @@
       prob = pp[n - 1] != null ? pp[n - 1] : null;
     }
     alerts = alerts || [];
-    var fl = creekFlow(cfs), mm = creekMM(cfs), flood = creekFlood(alerts, fcst, prob, recentUp, cfs);
-    var clarity = creekClarity(ntu), kids = creekKids(cfs, flood);
-    var stamp = vals["00060"] ? creekAgo(vals["00060"].dt) : (vals["00065"] ? creekAgo(vals["00065"].dt) : "");
+    var flood = creekFlood(alerts, fcst, prob, recentUp, cfs);
+    return {
+      cfs: cfs, ft: ft, tc: tc, ntu: ntu, tf: tf, recentUp: recentUp, fcst: fcst, prob: prob,
+      fl: creekFlow(cfs), mm: creekMM(cfs), flood: flood,
+      clarity: creekClarity(ntu), kids: creekKids(cfs, flood),
+      stamp: vals["00060"] ? creekAgo(vals["00060"].dt) : (vals["00065"] ? creekAgo(vals["00065"].dt) : "")
+    };
+  }
 
-    // measured stats
+  var _creekPromise = null;
+  function getCreekData() {
+    if (_creekPromise) return _creekPromise;
+    var usgs = fetch(CREEK_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    var wx = fetch(CREEK_WX, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    _creekPromise = Promise.all([usgs, wx, getAlerts()]).then(function (res) {
+      return res[0] ? parseCreek(res[0], res[1], res[2]) : null;
+    }).catch(function () { return null; });
+    return _creekPromise;
+  }
+
+  function renderCreek(el, c) {
+    var fl = c.fl, flood = c.flood, clarity = c.clarity, kids = c.kids, tf = c.tf, cfs = c.cfs, ft = c.ft;
     var stats = "";
     if (cfs != null) stats += creekStat((cfs >= 100 ? Math.round(cfs) : cfs), "cu ft / sec");
     if (ft != null) stats += creekStat(ft.toFixed(2) + " ft", "gage height");
     if (tf != null) stats += creekStat(tf + "&deg;F", "water &middot; " + creekTemp(tf));
     if (clarity) stats += creekStat(clarity.label, clarity.ntu.toFixed(1) + " NTU turbidity", clarity.cls);
-    if (recentUp != null) stats += creekStat(recentUp.toFixed(2) + '"', "rain upstream, 72 hr");
-
-    // activity advisories
+    if (c.recentUp != null) stats += creekStat(c.recentUp.toFixed(2) + '"', "rain upstream, 72 hr");
     var swimCls = fl.k === "flood" || flood.k === "extreme" ? "warn" : fl.k === "high" ? "ok" : "good";
     var swimRec = fl.k === "flood" ? "Closed &mdash; too dangerous" : fl.k === "high" ? "Strong swimmers, calm pools only" : "Good &mdash; find your hole";
     var acts =
@@ -1450,25 +1465,12 @@
       creekAct("🧒", "Safe for kids?", kids.label, kids.cls) +
       creekAct("🎣", "Best fishing", creekFishing(tf)) +
       creekAct("💧", "Water quality", clarity ? clarity.label + (tf != null && tf < 70 ? " &amp; cool" : "") : (tf != null ? tf + "&deg;F" : "—"), clarity ? clarity.cls : "");
-
-    // Slide Rock featured swimming hole
-    var slideNote = fl.k === "flood"
-      ? "Closed conditions &mdash; the chute and creek are dangerous right now."
-      : (tf != null ? "Water's about " + tf + "&deg;F" + (clarity ? " and " + clarity.label.toLowerCase().replace("&mdash; runoff", "muddy") : "") + " today. " : "") +
-        (cfs != null && cfs < 60 ? "The slides run mellow at this flow." : cfs != null && cfs < 150 ? "Flow's up &mdash; the chute is quick and cold." : "");
-    var slide =
-      '<div class="creek-slide">' +
-        '<div class="creek-slide-head"><span class="creek-slide-ic" aria-hidden="true">🏞️</span><b>Slide Rock State Park</b>' + mmBadge(fl.k === "flood" ? 3 : 1) + '</div>' +
-        '<p>The natural sandstone water slide in Oak Creek Canyon, about 7 miles up SR&nbsp;89A. ' + slideNote + ' Day-use state park &mdash; entry fee and gate hours apply, and it fills early on summer weekends.</p>' +
-        '<a class="adv-link" href="https://azstateparks.com/slide-rock" target="_blank" rel="noopener">Park hours &amp; fees &rarr;</a>' +
-      '</div>';
-
     el.innerHTML =
       '<div class="creek-card creek-' + fl.k + '">' +
         '<div class="creek-hero">' +
           '<span class="creek-wave" aria-hidden="true"></span>' +
           '<div><span class="creek-status">' + fl.label + '</span><p class="creek-note">' + fl.note + '</p>' +
-            '<div class="creek-badges">' + mmBadge(mm) + (tf != null ? '<span class="creek-tempbadge">' + tf + '&deg;F &middot; ' + creekTemp(tf) + '</span>' : "") + '</div>' +
+            '<div class="creek-badges">' + mmBadge(c.mm) + (tf != null ? '<span class="creek-tempbadge">' + tf + '&deg;F &middot; ' + creekTemp(tf) + '</span>' : "") + '</div>' +
           '</div>' +
         '</div>' +
         '<div class="creek-floodstrip flood-' + flood.k + '">' +
@@ -1477,20 +1479,72 @@
         '</div>' +
         '<div class="creek-stats">' + stats + '</div>' +
         '<div class="creek-acts">' + acts + '</div>' +
-        slide +
-        '<div class="creek-foot"><span class="creek-live-dot" aria-hidden="true"></span>Flow, height, temp &amp; clarity: USGS 09504420 &middot; rain: Open-Meteo &middot; alerts: NWS' + (stamp ? ' &middot; ' + stamp : '') + '</div>' +
+        '<div class="creek-foot"><span class="creek-live-dot" aria-hidden="true"></span>Flow, height, temp &amp; clarity: USGS 09504420 &middot; rain: Open-Meteo &middot; alerts: NWS' + (c.stamp ? ' &middot; ' + c.stamp : '') + '</div>' +
       '</div>';
   }
   function initCreek() {
     var el = doc.querySelector("[data-creek]");
     if (!el) return;
     el.innerHTML = '<p class="rss-loading">Reading the creek&hellip;</p>';
-    var usgs = fetch(CREEK_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
-    var wx = fetch(CREEK_WX, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
-    Promise.all([usgs, wx, getAlerts()]).then(function (res) {
-      if (!res[0]) { el.innerHTML = advErr(); return; }
-      if (el.isConnected) renderCreek(el, res[0], res[1], res[2]);
-    }).catch(function () { el.innerHTML = advErr(); });
+    getCreekData().then(function (c) {
+      if (!el.isConnected) return;
+      if (!c) { el.innerHTML = advErr(); return; }
+      renderCreek(el, c);
+    });
+  }
+
+  /* =========================================================
+     SLIDE ROCK STATE PARK — its own attraction, same live creek feed
+     ========================================================= */
+  function slideCond(cfs) {
+    if (cfs == null) return { label: "Conditions unavailable", note: "", cls: "ok" };
+    if (cfs < 15) return { label: "Low &amp; shallow", note: "Thin water over the rock &mdash; slow, scrapey slides, but warm pools to soak in.", cls: "good" };
+    if (cfs < 60) return { label: "Prime sliding", note: "The chute's running just right &mdash; mellow, fun, and swimmable. Classic Slide Rock.", cls: "good" };
+    if (cfs < 150) return { label: "Running quick", note: "Flow's up. The slide is fast and cold &mdash; fine for confident swimmers, hold onto the kids.", cls: "ok" };
+    if (cfs < 400) return { label: "Fast &amp; cold", note: "High water. Strong current in the chute and pools &mdash; experienced swimmers only.", cls: "warn" };
+    return { label: "Closed conditions", note: "Dangerous flow. The creek and chute are not safe today &mdash; stay out.", cls: "warn" };
+  }
+  function renderSlide(el, c) {
+    var tf = c.tf, cfs = c.cfs, clarity = c.clarity, flood = c.flood, cond = slideCond(cfs);
+    var mm = c.fl.k === "flood" ? 3 : (cfs != null && cfs >= 150 ? 2 : 1);
+    var stats = "";
+    if (tf != null) stats += creekStat(tf + "&deg;F", "water &middot; " + creekTemp(tf));
+    if (clarity) stats += creekStat(clarity.label, clarity.ntu.toFixed(1) + " NTU turbidity", clarity.cls);
+    if (cfs != null) stats += creekStat((cfs >= 100 ? Math.round(cfs) : cfs), "creek flow, cfs");
+    el.innerHTML =
+      '<div class="creek-card slide-card creek-' + c.fl.k + '">' +
+        '<div class="creek-hero">' +
+          '<span class="creek-wave" aria-hidden="true"></span>' +
+          '<div><span class="creek-status">' + cond.label + '</span><p class="creek-note">' + cond.note + '</p>' +
+            '<div class="creek-badges">' + mmBadge(mm) + (tf != null ? '<span class="creek-tempbadge">' + tf + '&deg;F &middot; ' + creekTemp(tf) + '</span>' : "") + '</div>' +
+          '</div>' +
+        '</div>' +
+        (flood.k === "extreme" || flood.k === "high" ?
+          '<div class="creek-floodstrip flood-' + flood.k + '"><span class="creek-flood-ic" aria-hidden="true">&#9888;</span>' +
+            '<div><b>Flash-flood risk: ' + flood.label + '</b><span>' + flood.note + '</span></div></div>' : "") +
+        '<div class="creek-stats">' + stats + '</div>' +
+        '<div class="slide-about">' +
+          '<p>Slide Rock is a natural 80-foot sandstone chute worn into Oak Creek, on the historic Pendley Homestead apple farm about 7 miles up SR&nbsp;89A. Bring water shoes for the slick rock, expect cold water, and know it&rsquo;s a day-use Arizona State Park with an entry fee.</p>' +
+          '<div class="slide-facts">' +
+            '<div class="slide-fact"><b>~7 mi</b><span>north of Sedona</span></div>' +
+            '<div class="slide-fact"><b>80 ft</b><span>natural slide</span></div>' +
+            '<div class="slide-fact"><b>State park</b><span>fee &amp; gate hours</span></div>' +
+            '<div class="slide-fact"><b>Fills early</b><span>summer weekends</span></div>' +
+          '</div>' +
+          '<a class="adv-link" href="https://azstateparks.com/slide-rock" target="_blank" rel="noopener">Park hours, fees &amp; closures &rarr;</a>' +
+        '</div>' +
+        '<div class="creek-foot"><span class="creek-live-dot" aria-hidden="true"></span>Water conditions from the live Oak Creek gauge, USGS 09504420' + (c.stamp ? ' &middot; ' + c.stamp : '') + '</div>' +
+      '</div>';
+  }
+  function initSlide() {
+    var el = doc.querySelector("[data-slide]");
+    if (!el) return;
+    el.innerHTML = '<p class="rss-loading">Checking the chute&hellip;</p>';
+    getCreekData().then(function (c) {
+      if (!el.isConnected) return;
+      if (!c) { el.innerHTML = advErr(); return; }
+      renderSlide(el, c);
+    });
   }
 
   /* =========================================================
@@ -2125,6 +2179,7 @@
     initAlerts();
     initAdventures();
     initCreek();
+    initSlide();
     initTraffic();
     initSchumann();
     initCosmic();

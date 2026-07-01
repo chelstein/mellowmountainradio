@@ -1166,6 +1166,15 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .creek-slide-head b { color: #fff; font-family: var(--font-display); font-size: 1.24rem; }
 .creek-slide p { color: rgba(234,246,251,.82); font-size: 14px; line-height: 1.6; margin-top: 8px; }
 .creek-slide .adv-link { color: #8fe0ff; }
+/* Slide Rock attraction */
+.slide-card { background: linear-gradient(150deg, #0f4657, #0a2b38); }
+.slide-about { margin-top: 16px; }
+.slide-about p { color: rgba(234,246,251,.85); font-size: 14px; line-height: 1.65; }
+.slide-about .adv-link { color: #8fe0ff; display: inline-block; margin-top: 6px; }
+.slide-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 14px 0 4px; }
+.slide-fact { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: 11px; padding: 11px 13px; }
+.slide-fact b { display: block; font-family: var(--font-display); font-size: 1.15rem; color: #fff; }
+.slide-fact span { display: block; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: rgba(234,246,251,.65); font-weight: 700; margin-top: 3px; }
 
 /* ===== Mellow Meter — KAZM easy→epic scale ===== */
 .mm-badge { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: #26333f;
