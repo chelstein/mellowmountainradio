@@ -1632,6 +1632,127 @@ body.golden-hour::after { content: ""; position: fixed; inset: 0; z-index: 70; p
 .wild-name { font-family: var(--font-display); font-size: 1.02rem; color: var(--heading); line-height: 1.2; }
 .wild-sci { font-size: 11px; font-style: italic; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wild-when { margin-top: 4px; font-size: 11px; font-weight: 700; letter-spacing: .02em; color: var(--accent-strong); }
+/* category tabs */
+.wild-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.wild-tab { border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; padding: 7px 15px; border-radius: 999px; cursor: pointer; font-family: inherit; transition: all .15s ease; }
+.wild-tab:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.wild-tab.is-on { background: var(--accent-strong); color: #fff; border-color: var(--accent-strong); }
+
+/* This week in nature dashboard */
+.ndash { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.ndash-card { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+.nd-a { border-left-color: #b5651d; } .nd-p { border-left-color: #c0398a; } .nd-i { border-left-color: #d59a1e; }
+.nd-b { border-left-color: #3a7bd5; } .nd-r { border-left-color: #2f9e6a; } .nd-m { border-left-color: #5a8fd6; }
+.ndash-ic { font-size: 1.7rem; line-height: 1; }
+.ndash-k { display: block; margin-top: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+.ndash-v { display: block; font-family: var(--font-display); font-size: 1.32rem; color: var(--heading); line-height: 1.15; margin-top: 3px; }
+.ndash-sub { display: block; font-size: 12px; color: var(--accent-strong); font-weight: 700; margin-top: 5px; }
+
+/* Nature almanac */
+.almanac { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.alm-tile { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow-sm); }
+.alm-ic { font-size: 1.5rem; line-height: 1; flex: none; }
+.alm-tile b { display: block; font-family: var(--font-display); font-size: 1.14rem; color: var(--heading); line-height: 1.1; }
+.alm-tile span { display: block; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-top: 2px; }
+
+/* Bloom guide */
+.bloom-grid, .catref-grid, .cal-grid, .plant-grid, .sounds-grid { display: grid; gap: 16px; }
+.bloom-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.bloom-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+.bloom-card h4 { font-family: var(--font-display); font-size: 1.2rem; color: var(--heading); }
+.bloom-when { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 800; letter-spacing: .03em; padding: 3px 10px; border-radius: var(--pill); }
+.bloom-peak { background: #fbe3cf; color: #a4491b; } .bloom-begin { background: #dff0d8; color: #2f7a3a; } .bloom-end { background: #ece1c8; color: #7a5a1c; }
+.bloom-facts { list-style: none; margin: 12px 0 0; padding: 0; }
+.bloom-facts li { position: relative; padding-left: 16px; font-size: 13.5px; color: var(--muted); line-height: 1.5; margin-top: 6px; }
+.bloom-facts li::before { content: ""; position: absolute; left: 2px; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+/* Category reference */
+.catref-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.catref { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+.catref h3 { font-family: var(--font-display); font-size: 1.25rem; color: var(--heading); }
+.catref ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.catref li { font-size: 14px; color: var(--muted); line-height: 1.5; padding: 4px 0 4px 14px; position: relative; border-top: 1px solid var(--line); }
+.catref li:first-child { border-top: 0; }
+.catref li::before { content: ""; position: absolute; left: 0; top: 12px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-strong); }
+
+/* Seasonal calendar */
+.cal-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.cal-card { border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); border: 1px solid var(--line); }
+.cal-card h3 { font-family: var(--font-display); font-size: 1.4rem; color: var(--heading); }
+.cal-mo { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+.cal-card ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.cal-card li { font-size: 14px; color: var(--ink); line-height: 1.5; margin-top: 7px; }
+.cal-spring { background: linear-gradient(160deg, #eef6e6, #fbfdf7); }
+.cal-summer { background: linear-gradient(160deg, #fdf1df, #fefaf3); }
+.cal-fall { background: linear-gradient(160deg, #f8e9db, #fdf6ef); }
+.cal-winter { background: linear-gradient(160deg, #e6eef6, #f6f9fc); }
+
+/* Native plants */
+.plant-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.plant-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+.plant-ic { font-size: 1.8rem; line-height: 1; }
+.plant-card h4 { font-family: var(--font-display); font-size: 1.18rem; color: var(--heading); margin-top: 6px; }
+.plant-card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 12px 0 0; }
+.plant-card dt { font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-strong); }
+.plant-card dd { margin: 0; font-size: 13px; color: var(--muted); }
+
+/* Wildlife sounds */
+.sounds-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.sound-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+.sound-card h3 { font-family: var(--font-display); font-size: 1.25rem; color: var(--heading); }
+.sound-card ul { list-style: none; margin: 10px 0 0; padding: 0; }
+.sound-card li { font-size: 14px; color: var(--muted); line-height: 1.5; margin-top: 6px; padding-left: 14px; position: relative; }
+.sound-card li::before { content: "♪"; position: absolute; left: 0; top: 0; color: var(--accent); font-size: 12px; }
+
+/* Photo subjects */
+.psub-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.psub { background: var(--surface); border: 1px solid var(--line); border-radius: var(--pill); padding: 9px 16px; font-size: 14px; font-weight: 600; color: var(--ink); box-shadow: var(--shadow-sm); }
+.psub-note { margin-top: 16px; color: var(--muted); font-size: 14px; }
+.psub-note a { color: var(--accent-strong); font-weight: 700; }
+
+/* Sightings map */
+.natmap-frame { border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.natmap { height: 440px; background: #eef1ee; }
+.natmap .leaflet-container { height: 100%; width: 100%; font: inherit; }
+@media (max-width: 560px) { .natmap { height: 320px; } }
+
+/* Rotating notes + facts */
+.two-col-notes { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
+.mnote, .dyk { border-radius: var(--r); padding: 26px 28px; transition: opacity .4s ease; }
+.mnote.is-fade, .dyk.is-fade { opacity: 0; }
+.mnote { position: relative; background: radial-gradient(120% 130% at 12% 0%, #26365f 0%, #16203f 60%, #0e1630 100%); color: #eaefff; box-shadow: var(--shadow); }
+.mnote-mark { font-family: var(--font-display); font-size: 4rem; line-height: .6; color: rgba(224,168,90,.5); }
+.mnote-text { font-size: 17px; line-height: 1.65; color: #eef2ff; margin-top: 6px; }
+.mnote-by { display: block; margin-top: 14px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: rgba(234,239,255,.6); font-weight: 700; }
+.dyk { background: linear-gradient(160deg, #fdf3e2, #fbfaf6); border: 1px solid var(--line); }
+.dyk-k { font-family: var(--font-display); font-size: 1.3rem; color: var(--accent-strong); }
+.dyk-text { font-size: 15px; line-height: 1.65; color: var(--ink); margin-top: 8px; }
+@media (max-width: 720px) { .two-col-notes { grid-template-columns: 1fr; } }
+
+/* Kids checklist */
+.spot-grid-kids { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.spot-item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--surface); border: 2px solid var(--line); border-radius: var(--r); padding: 18px 12px; cursor: pointer; font-family: inherit; transition: all .18s ease; }
+.spot-item:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); transform: translateY(-3px); }
+.spot-emoji { font-size: 2.4rem; line-height: 1; filter: grayscale(.4); transition: filter .18s ease; }
+.spot-label { font-size: 13px; font-weight: 700; color: var(--heading); }
+.spot-check { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--line); color: transparent; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; transition: all .18s ease; }
+.spot-item.is-got { border-color: #2f9e6a; background: color-mix(in srgb, #2f9e6a 8%, var(--surface)); }
+.spot-item.is-got .spot-emoji { filter: none; }
+.spot-item.is-got .spot-check { background: #2f9e6a; color: #fff; }
+
+/* Care cards + Leave No Trace */
+.care-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.care-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 24px; box-shadow: var(--shadow-sm); }
+.care-card h3 { font-family: var(--font-display); font-size: 1.35rem; color: var(--heading); }
+.care-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.care-list li { font-size: 14.5px; color: var(--ink); line-height: 1.55; margin-top: 10px; padding-left: 4px; }
+@media (max-width: 720px) { .care-grid { grid-template-columns: 1fr; } }
+
+/* Cross-links */
+.xlink-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.xlink { display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 14px; text-decoration: none; color: var(--heading); font-weight: 700; font-size: 15px; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
+.xlink:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.xlink span { font-size: 2rem; line-height: 1; }
 
 /* Best photo spots */
 .spot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 6px; }

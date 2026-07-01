@@ -1562,51 +1562,222 @@
      SEEN AROUND SEDONA — live wildlife + blooming plants from the
      iNaturalist community (real observations, photos, dates; no key).
      ========================================================= */
-  var INAT = "https://api.inaturalist.org/v1/observations?lat=34.8697&lng=-111.7610&radius=40&quality_grade=research&photos=true&order_by=observed_on&order=desc&per_page=45&locale=en";
-  var WILD_API = INAT + "&iconic_taxa=Aves,Mammalia,Reptilia,Amphibia";
-  var BLOOM_API = INAT + "&iconic_taxa=Plantae&term_id=12&term_value_id=13";
+  var INAT_BASE = "https://api.inaturalist.org/v1/observations?lat=34.8697&lng=-111.7610&radius=40&quality_grade=research&photos=true&order_by=observed_on&order=desc&locale=en";
+  var WILD_API = INAT_BASE + "&iconic_taxa=Aves,Mammalia,Reptilia,Amphibia,Insecta&per_page=60";
+  var BLOOM_API = INAT_BASE + "&iconic_taxa=Plantae&term_id=12&term_value_id=13&per_page=45";
   function inatPhoto(o) { var p = o.photos && o.photos[0]; return (p && p.url) ? p.url.replace("square", "medium") : null; }
   function wildCap(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
   function wildWhen(dateStr) {
     if (!dateStr) return "";
     var d = new Date(dateStr + "T12:00:00"), t = d.getTime(); if (isNaN(t)) return "";
     var days = Math.round((Date.now() - t) / 86400000);
-    if (days <= 0) return "Seen today";
-    if (days === 1) return "Yesterday";
+    if (days <= 0) return "Seen today"; if (days === 1) return "Yesterday";
     if (days < 14) return days + " days ago";
     return d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
   }
-  function renderWild(el, results, emptyMsg) {
-    var seen = {}, cards = [];
+  function dAgo(n) { return new Date(Date.now() - n * 86400000).toISOString().slice(0, 10); }
+  var _wildData = null;
+  function getWildData() {
+    if (_wildData) return _wildData;
+    var a = fetch(WILD_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    var p = fetch(BLOOM_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    _wildData = Promise.all([a, p]).then(function (res) { return { animals: (res[0] && res[0].results) || [], plants: (res[1] && res[1].results) || [] }; }).catch(function () { return { animals: [], plants: [] }; });
+    return _wildData;
+  }
+  function wildCards(results) {
+    var seen = {}, out = [];
     (results || []).forEach(function (o) {
-      var t = o.taxon; if (!t) return;
-      if (seen[t.id]) return;
-      var photo = inatPhoto(o); if (!photo) return;
-      seen[t.id] = 1;
-      cards.push({ name: wildCap(t.preferred_common_name || t.name), sci: t.name, photo: photo, when: o.observed_on,
-        uri: o.uri || ("https://www.inaturalist.org/observations/" + o.id) });
+      var t = o.taxon; if (!t || seen[t.id]) return; var ph = inatPhoto(o); if (!ph) return; seen[t.id] = 1;
+      out.push({ name: wildCap(t.preferred_common_name || t.name), sci: t.name, photo: ph, when: o.observed_on,
+        cat: t.iconic_taxon_name || "", loc: o.location, uri: o.uri || ("https://www.inaturalist.org/observations/" + o.id) });
     });
-    cards = cards.slice(0, 8);
-    if (!cards.length) { el.innerHTML = '<p class="embed-note">' + esc(emptyMsg || "No recent sightings right now.") + '</p>'; return; }
-    el.innerHTML = cards.map(function (c) {
-      return '<a class="wild-card" href="' + esc(c.uri) + '" target="_blank" rel="noopener">' +
-        '<span class="wild-photo" style="background-image:url(\'' + esc(c.photo) + '\')"></span>' +
-        '<span class="wild-info"><span class="wild-name">' + esc(c.name) + '</span>' +
-        '<span class="wild-sci">' + esc(c.sci) + '</span>' +
-        '<span class="wild-when">' + esc(wildWhen(c.when)) + '</span></span></a>';
-    }).join("");
+    return out;
+  }
+  function wildCardHTML(c) {
+    return '<a class="wild-card" href="' + esc(c.uri) + '" target="_blank" rel="noopener">' +
+      '<span class="wild-photo" style="background-image:url(\'' + esc(c.photo) + '\')"></span>' +
+      '<span class="wild-info"><span class="wild-name">' + esc(c.name) + '</span>' +
+      '<span class="wild-sci">' + esc(c.sci) + '</span><span class="wild-when">' + esc(wildWhen(c.when)) + '</span></span></a>';
   }
   function initWildlife() {
-    var w = doc.querySelector("[data-wildlife]"), b = doc.querySelector("[data-blooming]");
+    var w = doc.querySelector("[data-wildlife]"), b = doc.querySelector("[data-blooming]"), tabs = doc.querySelector("[data-wild-tabs]");
     if (!w && !b) return;
     if (w) w.innerHTML = '<p class="rss-loading">Scanning the trails&hellip;</p>';
     if (b) b.innerHTML = '<p class="rss-loading">Looking for blooms&hellip;</p>';
-    if (w) fetch(WILD_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { if (w.isConnected) { if (j && j.results) renderWild(w, j.results, "No recent sightings logged nearby."); else w.innerHTML = advErr(); } })
-      .catch(function () { if (w.isConnected) w.innerHTML = advErr(); });
-    if (b) fetch(BLOOM_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { if (b.isConnected) { if (j && j.results) renderWild(b, j.results, "Nothing logged in bloom right now."); else b.innerHTML = advErr(); } })
-      .catch(function () { if (b.isConnected) b.innerHTML = advErr(); });
+    getWildData().then(function (d) {
+      if (w && w.isConnected) {
+        var cards = wildCards(d.animals);
+        if (tabs) {
+          var cats = [["All", ""], ["Birds", "Aves"], ["Mammals", "Mammalia"], ["Reptiles", "Reptilia"], ["Insects", "Insecta"]];
+          tabs.innerHTML = cats.map(function (c, i) { return '<button class="wild-tab' + (i === 0 ? " is-on" : "") + '" type="button" data-cat="' + c[1] + '">' + c[0] + '</button>'; }).join("");
+          var paint = function (cat) { var f = cat ? cards.filter(function (x) { return x.cat === cat; }) : cards; w.innerHTML = f.length ? f.slice(0, 12).map(wildCardHTML).join("") : '<p class="embed-note">Nothing in this group logged in the last couple of weeks.</p>'; };
+          tabs.querySelectorAll(".wild-tab").forEach(function (btn) { btn.addEventListener("click", function () { tabs.querySelectorAll(".wild-tab").forEach(function (x) { x.classList.remove("is-on"); }); btn.classList.add("is-on"); paint(btn.getAttribute("data-cat")); }); });
+          paint("");
+        } else { w.innerHTML = cards.length ? cards.slice(0, 8).map(wildCardHTML).join("") : '<p class="embed-note">No recent sightings logged nearby.</p>'; }
+      }
+      if (b && b.isConnected) { var bc = wildCards(d.plants); b.innerHTML = bc.length ? bc.slice(0, 8).map(wildCardHTML).join("") : '<p class="embed-note">Nothing logged in bloom right now.</p>'; }
+    });
+  }
+
+  /* ---- This Week in Nature dashboard ---- */
+  function natSeason(m) { if (m === 11 || m <= 1) return "winter"; if (m <= 4) return "spring"; if (m <= 7) return "summer"; return "fall"; }
+  var NAT_PROFILE = {
+    spring: { wildlife: "Active", flowers: "Wildflower peak", pollinators: "Excellent", birds: "Very high &middot; migration" },
+    summer: { wildlife: "Very active", flowers: "Peak summer bloom", pollinators: "Excellent", birds: "High" },
+    fall: { wildlife: "Active", flowers: "Late-season bloom", pollinators: "Good", birds: "High &middot; migration" },
+    winter: { wildlife: "Moderate", flowers: "Sparse", pollinators: "Low", birds: "Moderate" }
+  };
+  function reptileLabel(tf, season) {
+    if (season === "winter") return "Mostly dormant";
+    if (tf == null) return "Active";
+    if (tf >= 95) return "Active &middot; dawn &amp; dusk";
+    if (tf >= 75) return "Active &middot; warm afternoons";
+    if (tf >= 58) return "Basking out";
+    return "Low &middot; cool";
+  }
+  function ndCard(ic, k, v, sub, cls) { return '<div class="ndash-card' + (cls ? " nd-" + cls : "") + '"><span class="ndash-ic">' + ic + '</span><span class="ndash-k">' + k + '</span><span class="ndash-v">' + v + '</span>' + (sub ? '<span class="ndash-sub">' + sub + '</span>' : '') + '</div>'; }
+  function initNatureDash() {
+    var el = doc.querySelector("[data-nature-dash]"); if (!el) return;
+    el.innerHTML = '<p class="rss-loading">Reading the land&hellip;</p>';
+    var season = natSeason(new Date().getMonth()), prof = NAT_PROFILE[season], d14 = dAgo(14);
+    var wx = fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610&current=temperature_2m&daily=precipitation_probability_max&forecast_days=1&temperature_unit=fahrenheit&timezone=America/Phoenix", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    function cnt(taxa, extra) { return fetch(INAT_BASE + "&iconic_taxa=" + taxa + (extra || "") + "&d1=" + d14 + "&per_page=0", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { return j ? j.total_results : null; }).catch(function () { return null; }); }
+    Promise.all([wx, cnt("Aves"), cnt("Aves,Mammalia,Reptilia,Amphibia,Insecta"), cnt("Insecta"), cnt("Plantae", "&term_id=12&term_value_id=13")]).then(function (r) {
+      if (!el.isConnected) return;
+      var c = r[0] && r[0].current, tf = c ? Math.round(c.temperature_2m) : null;
+      var pp = r[0] && r[0].daily && r[0].daily.precipitation_probability_max ? r[0].daily.precipitation_probability_max[0] : null;
+      var mon = pp == null ? "&mdash;" : pp + "% chance &middot; " + (pp >= 50 ? "likely" : pp >= 20 ? "possible" : "unlikely");
+      el.innerHTML =
+        ndCard("🦌", "Wildlife activity", prof.wildlife, r[2] != null ? r[2] + " logged this week" : "", "a") +
+        ndCard("🌸", "Wildflowers", prof.flowers, r[4] != null ? r[4] + " in bloom logged" : "", "p") +
+        ndCard("🦋", "Pollinators", prof.pollinators, r[3] != null ? r[3] + " insects logged" : "", "i") +
+        ndCard("🐦", "Bird activity", prof.birds, r[1] != null ? r[1] + " logged this week" : "", "b") +
+        ndCard("🦎", "Reptiles", reptileLabel(tf, season), tf != null ? tf + "&deg;F right now" : "", "r") +
+        ndCard("🌧️", "Monsoon watch", mon, season === "summer" ? "Jul&ndash;Sep monsoon season" : "Live NWS-fed forecast", "m");
+    });
+  }
+
+  /* ---- Nature Almanac (today) ---- */
+  function almTime(dt) { return (dt && !isNaN(dt.valueOf())) ? skyTime(dt, -7) : "—"; }
+  function initAlmanac() {
+    var el = doc.querySelector("[data-almanac]"); if (!el) return;
+    el.innerHTML = '<p class="rss-loading">Reading today&rsquo;s sky&hellip;</p>';
+    var m = moonInfo(), g = null; try { g = goldenTimes(new Date()); } catch (e) {}
+    var wx = fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610&current=temperature_2m,relative_humidity_2m,wind_speed_10m,uv_index&daily=uv_index_max&forecast_days=1&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/Phoenix", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    var aq = fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.8697&longitude=-111.7610&current=us_aqi&timezone=America/Phoenix", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    Promise.all([wx, aq]).then(function (r) {
+      if (!el.isConnected) return;
+      var c = r[0] && r[0].current, uv = c && c.uv_index != null ? Math.round(c.uv_index) : null;
+      var aqi = r[1] && r[1].current ? r[1].current.us_aqi : null, ai = aqiInfo ? aqiInfo(aqi) : null;
+      function tile(ic, k, v) { return '<div class="alm-tile"><span class="alm-ic">' + ic + '</span><div><b>' + v + '</b><span>' + k + '</span></div></div>'; }
+      el.innerHTML =
+        tile("🌅", "Sunrise", g ? almTime(g.morning.b.sunrise) : "—") +
+        tile("🌇", "Sunset", g ? almTime(g.evening.b.sunset) : "—") +
+        tile("🌙", "Moon", m.icon + " " + m.illum + "%") +
+        tile("🌡️", "Temperature", c ? Math.round(c.temperature_2m) + "&deg;F" : "—") +
+        tile("☀️", "UV index", uv != null ? uv + " &middot; " + (uv >= 8 ? "very high" : uv >= 6 ? "high" : uv >= 3 ? "moderate" : "low") : "—") +
+        tile("💨", "Wind", c && c.wind_speed_10m != null ? Math.round(c.wind_speed_10m) + " mph" : "—") +
+        tile("💧", "Humidity", c && c.relative_humidity_2m != null ? Math.round(c.relative_humidity_2m) + "%" : "—") +
+        tile("🌫️", "Air quality", (aqi != null ? aqi : "—") + (ai ? " &middot; " + ai.short : ""));
+    });
+  }
+
+  /* ---- Best photo subjects this week ---- */
+  var PHOTO_SUBJECTS = {
+    spring: ["🌼 Desert wildflowers", "🐦 Hummingbirds at feeders", "🦋 Butterflies on blooms", "🌵 Cactus buds swelling", "🌌 Milky Way returning", "🦅 Hawks nesting"],
+    summer: ["🌵 Cactus &amp; wildflower blooms", "⛈️ Monsoon clouds &amp; lightning", "🦎 Lizards basking on rock", "🦋 Pollinators at work", "🌌 Milky Way core, high &amp; bright", "🐦 Ravens riding the thermals"],
+    fall: ["🍂 Cottonwood &amp; oak fall color", "🦌 Deer &amp; elk more active", "🦅 Migrating raptors", "🌾 Golden grasses at low light", "🌌 Crisp dark skies", "🕸️ Tarantulas on the move"],
+    winter: ["❄️ Snow on the red rocks", "🦅 Bald eagles along the creek", "🌲 Junipers &amp; frost", "🌅 Long golden light all day", "🌙 Bright winter moon", "🐦 Juncos &amp; winter sparrows"]
+  };
+  function initPhotoSubjects() {
+    var el = doc.querySelector("[data-photo-subjects]"); if (!el) return;
+    var season = natSeason(new Date().getMonth()), subs = PHOTO_SUBJECTS[season] || PHOTO_SUBJECTS.summer;
+    var g = null; try { g = goldenTimes(new Date()); } catch (e) {}
+    var gt = g ? "Best light this evening: golden hour " + almTime(g.evening.b.goldEveStart) + "&ndash;" + almTime(g.evening.b.sunset) : "";
+    el.innerHTML = '<div class="psub-grid">' + subs.map(function (s) { return '<span class="psub">' + s + '</span>'; }).join("") + '</div>' +
+      (gt ? '<p class="psub-note">' + gt + ' &middot; <a href="events.html#photography">full photographer&rsquo;s guide &rarr;</a></p>' : '');
+  }
+
+  /* ---- KAZM Mountain Notes (rotating field notes from the towers) ---- */
+  var MOUNTAIN_NOTES = [
+    "The mule deer at our transmitter site always loved rubbing their antlers on the weather station &mdash; the interference rode right onto the signal, like they'd found their own little antenna.",
+    "Signal Watch volunteers spent as much time logging the ravens riding thermals around the towers as they did watching meters. Those birds knew the wind before we did.",
+    "Monsoon season meant watching the lightning as carefully as the transmitters. You learn to read a wall of cloud coming up the Verde like a second gauge.",
+    "One winter a pair of bald eagles worked the creek below the hill for weeks. We kept the studio window clear just to watch them fish between songs.",
+    "On the stillest summer nights you could hear the coyotes start up right as the crickets peaked &mdash; the whole hillside tuning up while the AM signal reached for Alaska.",
+    "Come first light the canyon wrens would run their falling song down the rocks, and that was the real sign the day had started &mdash; earlier than any clock in the building."
+  ];
+  var _mnTimer = null;
+  function initMountainNotes() {
+    var el = doc.querySelector("[data-mountain-notes]"); if (!el) return;
+    if (_mnTimer) { clearInterval(_mnTimer); _mnTimer = null; }
+    var i = Math.floor(Date.now() / 86400000) % MOUNTAIN_NOTES.length;
+    function show() { el.innerHTML = '<span class="mnote-mark" aria-hidden="true">&ldquo;</span><p class="mnote-text">' + MOUNTAIN_NOTES[i % MOUNTAIN_NOTES.length] + '</p><span class="mnote-by">&mdash; from the KAZM Archives</span>'; el.classList.remove("is-fade"); }
+    show();
+    _mnTimer = setInterval(function () { if (!el.isConnected) { clearInterval(_mnTimer); _mnTimer = null; return; } el.classList.add("is-fade"); setTimeout(function () { i++; show(); }, 400); }, 11000);
+  }
+
+  /* ---- Did You Know (rotating facts) ---- */
+  var NATURE_FACTS = [
+    "Ravens are among the smartest birds alive &mdash; they use tools, remember faces, and can mimic sounds, including human speech.",
+    "Saguaro cactus don't naturally grow up around Sedona &mdash; it's too high and cold. That iconic silhouette lives in the lower Sonoran Desert to the south.",
+    "Prickly pear fruit &mdash; the \"tunas\" &mdash; ripen deep red in late summer and have fed people here for thousands of years.",
+    "A single monsoon storm can green up a hillside overnight; desert plants are built to seize a day's rain and run with it.",
+    "Javelina aren't pigs at all &mdash; they're peccaries, a New World family, and they travel the washes in tight-knit family squadrons.",
+    "The Greater Short-horned Lizard can squirt a jet of blood from the corner of its eye to startle predators.",
+    "Black-chinned and broad-tailed hummingbirds beat their wings around 50 times a second and can drop into torpor on cold nights to survive.",
+    "Oak Creek is one of only a handful of permanent streams in Arizona &mdash; a green ribbon of life through the red rock."
+  ];
+  var _dykTimer = null;
+  function initDidYouKnow() {
+    var el = doc.querySelector("[data-did-you-know]"); if (!el) return;
+    if (_dykTimer) { clearInterval(_dykTimer); _dykTimer = null; }
+    var i = Math.floor(Date.now() / 3600000) % NATURE_FACTS.length;
+    function show() { el.innerHTML = '<span class="dyk-k">Did you know?</span><p class="dyk-text">' + NATURE_FACTS[i % NATURE_FACTS.length] + '</p>'; el.classList.remove("is-fade"); }
+    show();
+    _dykTimer = setInterval(function () { if (!el.isConnected) { clearInterval(_dykTimer); _dykTimer = null; return; } el.classList.add("is-fade"); setTimeout(function () { i++; show(); }, 400); }, 9000);
+  }
+
+  /* ---- Kids: Can you spot these? (checklist, remembered) ---- */
+  var KIDS_SPOT = [["🦌", "Mule deer"], ["🐦‍⬛", "Raven"], ["🦎", "Lizard"], ["🌵", "Prickly pear"], ["🦅", "Hawk"], ["🐿️", "Rock squirrel"]];
+  function initKidsSpot() {
+    var el = doc.querySelector("[data-kids-spot]"); if (!el) return;
+    var got = {}; try { got = JSON.parse(localStorage.getItem("kazm-spot") || "{}") || {}; } catch (e) {}
+    el.innerHTML = KIDS_SPOT.map(function (s, i) { return '<button class="spot-item' + (got[i] ? " is-got" : "") + '" type="button" data-i="' + i + '"><span class="spot-emoji">' + s[0] + '</span><span class="spot-label">' + s[1] + '</span><span class="spot-check" aria-hidden="true">✓</span></button>'; }).join("");
+    el.querySelectorAll(".spot-item").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var i = btn.getAttribute("data-i"); got[i] = !got[i]; btn.classList.toggle("is-got", !!got[i]);
+        try { localStorage.setItem("kazm-spot", JSON.stringify(got)); } catch (e) {}
+      });
+    });
+  }
+
+  /* ---- Interactive nature map (live sightings + trails on topo) ---- */
+  var _natMap = null;
+  function initNatureMap() {
+    var el = doc.querySelector("[data-nature-map]"); if (!el || el._done) return;
+    el._done = true;
+    el.innerHTML = '<div class="trail-map-load">Mapping the sightings&hellip;</div>';
+    Promise.all([new Promise(function (res) { loadLeaflet(res); }), getWildData(), getTrails()]).then(function (r) {
+      var L = r[0], d = r[1], trails = r[2];
+      if (!L || !el.isConnected) { el.innerHTML = '<div class="trail-map-load">Map unavailable</div>'; return; }
+      el.innerHTML = "";
+      var map = L.map(el, { zoomControl: true, scrollWheelZoom: false }).setView([34.8697, -111.7610], 11);
+      L.tileLayer(TOPO_TILE, { maxZoom: 16, attribution: "USGS · The National Map" }).addTo(map);
+      if (trails) Object.keys(trails).forEach(function (k) { (trails[k].lines || []).forEach(function (seg) { L.polyline(seg, { color: "#c85a1e", weight: 2, opacity: .45 }).addTo(map); }); });
+      var col = { Aves: "#3a7bd5", Mammalia: "#b5651d", Reptilia: "#2f9e6a", Insecta: "#d59a1e", Amphibia: "#7a5ad5", Plantae: "#c0398a" };
+      function plot(list) {
+        list.forEach(function (o) {
+          if (!o.location) return; var p = o.location.split(","), la = parseFloat(p[0]), ln = parseFloat(p[1]); if (isNaN(la) || isNaN(ln)) return;
+          var t = o.taxon || {}, cat = t.iconic_taxon_name || "", name = wildCap(t.preferred_common_name || t.name || "Sighting");
+          L.circleMarker([la, ln], { radius: 5, color: "#fff", weight: 1.5, fillColor: col[cat] || "#888", fillOpacity: .95 })
+            .addTo(map).bindPopup('<b>' + esc(name) + '</b><br>' + esc(wildWhen(o.observed_on)) + ' &middot; <a href="' + esc(o.uri || ("https://www.inaturalist.org/observations/" + o.id)) + '" target="_blank" rel="noopener">iNaturalist</a>');
+        });
+      }
+      plot(d.animals.slice(0, 40)); plot(d.plants.slice(0, 25));
+      _natMap = map;
+      setTimeout(function () { map.invalidateSize(); }, 300);
+    });
   }
 
   /* =========================================================
@@ -2729,6 +2900,12 @@
     initCreek();
     initSlide();
     initWildlife();
+    initNatureDash();
+    initPhotoSubjects();
+    initMountainNotes();
+    initDidYouKnow();
+    initKidsSpot();
+    initNatureMap();
     initTrailMaps();
     initTraffic();
     initSchumann();
