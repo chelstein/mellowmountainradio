@@ -1731,21 +1731,10 @@
     var season = natSeason(new Date().getMonth()), base = (PHOTO_SUBJECTS[season] || PHOTO_SUBJECTS.summer).slice();
     var g = null; try { g = goldenTimes(new Date()); } catch (e) {}
     var gt = g ? "Best light this evening: golden hour " + almTime(g.evening.b.goldEveStart) + "&ndash;" + almTime(g.evening.b.sunset) : "";
-    var day = Math.floor(Date.now() / 86400000);
-    function rot(a) { var i = day % a.length; return a.slice(i).concat(a.slice(0, i)); }   // rotate daily
-    function render(live) {
-      var subs = live.concat(rot(base)).slice(0, 6);
-      el.innerHTML = '<div class="psub-grid">' + subs.map(function (s) { return '<span class="psub">' + s + '</span>'; }).join("") + '</div>' +
-        (gt ? '<p class="psub-note">' + gt + ' &middot; <a href="events.html#photography">full photographer&rsquo;s guide &rarr;</a></p>' : '');
-    }
-    render([]);   // instant seasonal render
-    getWildData().then(function (d) {   // then ground it in this week's real sightings
-      if (!el.isConnected) return;
-      var live = [], bloom = wildCards(d.plants)[0], seen = wildCards(d.animals)[0];
-      if (bloom) live.push("🌸 " + esc(bloom.name) + " in bloom now");
-      if (seen) live.push("📷 " + esc(seen.name) + ", seen this week");
-      render(live);
-    });
+    var day = Math.floor(Date.now() / 86400000), i = day % base.length;
+    var subs = base.slice(i).concat(base.slice(0, i)).slice(0, 6);   // rotate the seasonal picks daily
+    el.innerHTML = '<div class="psub-grid">' + subs.map(function (s) { return '<span class="psub">' + s + '</span>'; }).join("") + '</div>' +
+      (gt ? '<p class="psub-note">' + gt + ' &middot; <a href="events.html#photography">full photographer&rsquo;s guide &rarr;</a></p>' : '');
   }
   /* ---- Wildlife sounds — rotate the featured calls daily ---- */
   var SOUND_POOL = {
