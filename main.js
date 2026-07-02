@@ -3226,29 +3226,30 @@
      crypto-shuffled single draw and a three-card past/present/future,
      dealt face-down and flipped by hand. Reversed cards render inverted.
      ========================================================= */
+  // name, glyph, upright, reversed, Golden Dawn correspondence (real attributions)
   var TAROT_MAJORS = [
-    ["The Fool", "🌄", "a leap of faith, fresh starts, innocence", "recklessness, cold feet, a start delayed"],
-    ["The Magician", "✨", "manifestation, skill, as above so below", "untapped talent, trickery, scattered will"],
-    ["The High Priestess", "🔮", "intuition, the inner voice, mystery", "secrets kept from you, ignoring your gut"],
-    ["The Empress", "🌹", "abundance, nurture, creation in bloom", "creative block, smothering, self-neglect"],
-    ["The Emperor", "🏛", "structure, authority, solid foundations", "rigidity, control, a challenge to power"],
-    ["The Hierophant", "🗝", "tradition, teachers, spiritual guidance", "breaking convention, dogma, your own path"],
-    ["The Lovers", "💞", "union, alignment, a choice of the heart", "disharmony, imbalance, values at odds"],
-    ["The Chariot", "🏆", "willpower, momentum, hard-won victory", "scattered force, stalling, losing the reins"],
-    ["Strength", "🦁", "quiet courage, gentle power, patience", "self-doubt, raw nerves, forcing it"],
-    ["The Hermit", "🏮", "introspection, seeking, the inner lamp", "isolation, withdrawal, lost in the cave"],
-    ["Wheel of Fortune", "☸", "cycles turning, luck, a pivotal moment", "resisting change, a rough turn, delays"],
-    ["Justice", "⚖", "truth, fairness, cause and effect", "imbalance, avoidance, unfair dealings"],
-    ["The Hanged Man", "🙃", "surrender, a new angle, sacred pause", "stalling, martyrdom, sacrifice in vain"],
-    ["Death", "🦋", "endings that free you, transformation", "clinging to what's done, stagnation"],
-    ["Temperance", "🕊", "balance, blending, the middle way", "excess, impatience, forces out of mix"],
-    ["The Devil", "⛓", "attachment, shadow work, the tether seen", "release, reclaiming power, chains loosening"],
-    ["The Tower", "🌩", "sudden truth, upheaval that clears", "disaster averted, fear of the shake-up"],
-    ["The Star", "⭐", "hope, healing, quiet renewal", "dimmed faith, doubt, refill the well"],
-    ["The Moon", "🌙", "dreams, the unknown, trust the tide", "confusion lifting, fear losing its grip"],
-    ["The Sun", "☀", "joy, vitality, everything illuminated", "clouded optimism, small delays, look up"],
-    ["Judgement", "📯", "awakening, the call, rising renewed", "self-doubt, ignoring the call, harsh review"],
-    ["The World", "🌍", "completion, wholeness, the circle closed", "loose ends, almost there, close the loop"]
+    ["The Fool", "🌄", "a leap of faith, fresh starts, innocence", "recklessness, cold feet, a start delayed", "Air"],
+    ["The Magician", "✨", "manifestation, skill, as above so below", "untapped talent, trickery, scattered will", "Mercury ☿"],
+    ["The High Priestess", "🔮", "intuition, the inner voice, mystery", "secrets kept from you, ignoring your gut", "Moon ☽"],
+    ["The Empress", "🌹", "abundance, nurture, creation in bloom", "creative block, smothering, self-neglect", "Venus ♀"],
+    ["The Emperor", "🏛", "structure, authority, solid foundations", "rigidity, control, a challenge to power", "Aries ♈"],
+    ["The Hierophant", "🗝", "tradition, teachers, spiritual guidance", "breaking convention, dogma, your own path", "Taurus ♉"],
+    ["The Lovers", "💞", "union, alignment, a choice of the heart", "disharmony, imbalance, values at odds", "Gemini ♊"],
+    ["The Chariot", "🏆", "willpower, momentum, hard-won victory", "scattered force, stalling, losing the reins", "Cancer ♋"],
+    ["Strength", "🦁", "quiet courage, gentle power, patience", "self-doubt, raw nerves, forcing it", "Leo ♌"],
+    ["The Hermit", "🏮", "introspection, seeking, the inner lamp", "isolation, withdrawal, lost in the cave", "Virgo ♍"],
+    ["Wheel of Fortune", "☸", "cycles turning, luck, a pivotal moment", "resisting change, a rough turn, delays", "Jupiter ♃"],
+    ["Justice", "⚖", "truth, fairness, cause and effect", "imbalance, avoidance, unfair dealings", "Libra ♎"],
+    ["The Hanged Man", "🙃", "surrender, a new angle, sacred pause", "stalling, martyrdom, sacrifice in vain", "Water"],
+    ["Death", "🦋", "endings that free you, transformation", "clinging to what's done, stagnation", "Scorpio ♏"],
+    ["Temperance", "🕊", "balance, blending, the middle way", "excess, impatience, forces out of mix", "Sagittarius ♐"],
+    ["The Devil", "⛓", "attachment, shadow work, the tether seen", "release, reclaiming power, chains loosening", "Capricorn ♑"],
+    ["The Tower", "🌩", "sudden truth, upheaval that clears", "disaster averted, fear of the shake-up", "Mars ♂"],
+    ["The Star", "⭐", "hope, healing, quiet renewal", "dimmed faith, doubt, refill the well", "Aquarius ♒"],
+    ["The Moon", "🌙", "dreams, the unknown, trust the tide", "confusion lifting, fear losing its grip", "Pisces ♓"],
+    ["The Sun", "☀", "joy, vitality, everything illuminated", "clouded optimism, small delays, look up", "Sun ☉"],
+    ["Judgement", "📯", "awakening, the call, rising renewed", "self-doubt, ignoring the call, harsh review", "Fire"],
+    ["The World", "🌍", "completion, wholeness, the circle closed", "loose ends, almost there, close the loop", "Saturn ♄"]
   ];
   var TAROT_SUITS = [
     { s: "Wands", g: "🔥", el: "Fire · will & creativity",
@@ -3268,11 +3269,11 @@
   var TAROT_NUM = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"];
   function tarotDeck() {
     var d = TAROT_MAJORS.map(function (m, i) {
-      return { name: m[0], g: m[1], up: m[2], rev: m[3], tag: TAROT_NUM[i] + " · Major Arcana", major: true };
+      return { name: m[0], g: m[1], up: m[2], rev: m[3], astro: m[4], tag: TAROT_NUM[i] + " · Major Arcana", major: true };
     });
     TAROT_SUITS.forEach(function (su) {
       TAROT_RANKS.forEach(function (r, ri) {
-        d.push({ name: r + " of " + su.s, g: su.g, up: su.up[ri], rev: su.rev[ri], tag: su.el, major: false });
+        d.push({ name: r + " of " + su.s, g: su.g, up: su.up[ri], rev: su.rev[ri], astro: "", tag: su.el, major: false });
       });
     });
     return d;   // 22 + 56 = 78
@@ -3285,6 +3286,7 @@
           '<span class="tc-tag">' + esc(card.tag) + '</span>' +
           '<span class="tc-glyph">' + card.g + '</span>' +
           '<span class="tc-name">' + esc(card.name) + '</span>' +
+          (card.astro ? '<span class="tc-astro">' + esc(card.astro) + '</span>' : '') +
           (reversed ? '<span class="tc-revb">reversed</span>' : '') +
         '</div></div>' +
       '</div>' +
@@ -3303,6 +3305,21 @@
     }
     return out;
   }
+  // the Celtic Cross — the classic ten positions, in the traditional order
+  var TAROT_CELTIC = [
+    ["The heart of it", "the situation as it truly is"],
+    ["What crosses it", "the force helping or opposing you"],
+    ["The root", "what lies beneath — the foundation"],
+    ["The recent past", "what is already passing away"],
+    ["The crown", "the best that can come of this"],
+    ["The near future", "what approaches next"],
+    ["Yourself", "how you stand within it"],
+    ["Your surroundings", "the people and currents around you"],
+    ["Hopes & fears", "what you long for — and dread"],
+    ["The outcome", "where it resolves if the course holds"]
+  ];
+  var TAROT_JKEY = "kazm-tarot-journal";
+  function tarotJournal() { try { return JSON.parse(localStorage.getItem(TAROT_JKEY) || "[]"); } catch (e) { return []; } }
   function initTarot() {
     var el = doc.querySelector("[data-tarot]"); if (!el) return;
     var deck = tarotDeck();
@@ -3320,32 +3337,132 @@
       '</div>' +
       '<div class="tarot-pull">' +
         '<div class="tarot-pull-head"><h3>Pull your own</h3><p>Take a breath, hold your question, and draw. Tap each card to turn it over.</p></div>' +
-        '<div class="tarot-btns"><button class="btn btn-primary" data-tar-one>🂠 Draw one card</button>' +
-        '<button class="btn btn-secondary" data-tar-three>Past &middot; Present &middot; Future</button></div>' +
+        '<div class="tarot-btns">' +
+          '<button class="btn btn-primary" data-tar-one>🂠 One card</button>' +
+          '<button class="btn btn-secondary" data-tar-three>Past &middot; Present &middot; Future</button>' +
+          '<button class="btn btn-secondary" data-tar-celtic>✚ Celtic Cross &middot; 10 cards</button>' +
+        '</div>' +
         '<div class="tarot-table" data-tar-table></div>' +
         '<div class="tarot-read" data-tar-read></div>' +
-      '</div>';
-    var table = el.querySelector("[data-tar-table]"), read = el.querySelector("[data-tar-read]");
-    function deal(n) {
-      var labels = n === 3 ? ["Past", "Present", "Future"] : [""];
-      var draws = tarotRandom(n);
-      table.innerHTML = draws.map(function (d, i) { return tarotCardHTML(d.card, d.rev, labels[i], false); }).join("");
+        '<div class="tarot-actions" data-tar-actions hidden>' +
+          '<button class="btn btn-secondary" data-tar-copy>⧉ Copy this reading</button>' +
+          '<span class="tarot-saved-note">Saved to your reading journal below — kept only on this device.</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="tarot-lib">' +
+        '<div class="tarot-pull-head"><h3>The whole deck</h3><p>All 78 cards, open for study. Filter by arcana, tap any card for both of its faces &mdash; upright and reversed.</p></div>' +
+        '<div class="tlib-chips" data-tlib-chips></div>' +
+        '<div class="tlib-detail" data-tlib-detail hidden></div>' +
+        '<div class="tlib-grid" data-tlib-grid></div>' +
+      '</div>' +
+      '<div class="tarot-journal" data-tar-journal></div>';
+    var table = el.querySelector("[data-tar-table]"), read = el.querySelector("[data-tar-read]"),
+        actions = el.querySelector("[data-tar-actions]"), journalBox = el.querySelector("[data-tar-journal]");
+    var currentSpread = "", currentLines = [];
+    function saveReading() {
+      var j = tarotJournal();
+      j.unshift({ t: Date.now(), spread: currentSpread, lines: currentLines.slice() });
+      if (j.length > 12) j = j.slice(0, 12);
+      try { localStorage.setItem(TAROT_JKEY, JSON.stringify(j)); } catch (e) {}
+      renderJournal();
+    }
+    function renderJournal() {
+      var j = tarotJournal();
+      if (!j.length) { journalBox.innerHTML = ""; return; }
+      journalBox.innerHTML =
+        '<div class="tarot-pull-head tj-head"><h3>Your reading journal</h3>' +
+          '<button class="btn btn-secondary tj-clear" data-tj-clear>Clear</button></div>' +
+        '<p class="tj-note">Kept in your browser only &mdash; nobody else can see these, not even us.</p>' +
+        j.map(function (r) {
+          var d = new Date(r.t);
+          return '<div class="tj-entry"><span class="tj-when">' + esc(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " · " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })) + ' &middot; ' + esc(r.spread) + '</span>' +
+            r.lines.map(function (l) { return '<p class="tarot-line">' + l + '</p>'; }).join("") + '</div>';
+        }).join("");
+      var cb = journalBox.querySelector("[data-tj-clear]");
+      if (cb) cb.addEventListener("click", function () { try { localStorage.removeItem(TAROT_JKEY); } catch (e) {} renderJournal(); });
+    }
+    function deal(kind) {
+      var labels, n;
+      if (kind === "celtic") { labels = TAROT_CELTIC.map(function (p) { return p[0]; }); n = 10; }
+      else if (kind === "three") { labels = ["Past", "Present", "Future"]; n = 3; }
+      else { labels = [""]; n = 1; }
+      currentSpread = kind === "celtic" ? "Celtic Cross" : kind === "three" ? "Past · Present · Future" : "One card";
+      currentLines = []; actions.hidden = true;
+      var draws = tarotRandom(n), flippedCount = 0;
+      table.className = "tarot-table" + (kind === "celtic" ? " tarot-table--celtic" : "");
+      table.innerHTML = draws.map(function (d, i) {
+        // the crossing card (position 2) lies across position 1 — same grid cell, rotated
+        var area = i === 1 ? "p1" : "p" + (i + 1);
+        var pos = kind === "celtic" ? ' style="grid-area:' + area + '"' : "";
+        return '<div class="tc-slot"' + pos + (i === 1 && kind === "celtic" ? ' data-cross="1"' : '') + '>' + tarotCardHTML(d.card, d.rev, labels[i], false) + '</div>';
+      }).join("");
       read.innerHTML = "";
+      var slots = table.querySelectorAll(".tc-slot");
+      slots.forEach(function (s, i) { setTimeout(function () { s.classList.add("is-dealt"); }, 90 + i * 130); });   // the deal, card by card
+      // the crossing card lies over the heart — it waits (clicks pass through)
+      // until the heart is turned, the traditional order anyway
+      var crossTC = table.querySelector('[data-cross] .tc');
+      if (crossTC) crossTC.classList.add("tc--waiting");
       table.querySelectorAll(".tc").forEach(function (tc, i) {
         function flip() {
-          if (tc.classList.contains("is-flipped")) return;
+          if (tc.classList.contains("is-flipped") || tc.classList.contains("tc--waiting")) return;
           tc.classList.add("is-flipped");
-          var p = doc.createElement("p");
-          p.className = "tarot-line";
-          p.innerHTML = (labels[i] ? '<span class="tarot-pos-tag">' + labels[i] + '</span>' : '') + tarotMeaning(draws[i].card, draws[i].rev);
+          var line = (labels[i] ? '<span class="tarot-pos-tag">' + esc(labels[i]) + '</span>' : '') +
+            (kind === "celtic" ? '<span class="tj-posnote">' + esc(TAROT_CELTIC[i][1]) + ' &middot; </span>' : '') +
+            tarotMeaning(draws[i].card, draws[i].rev);
+          currentLines.push(line);
+          var p = doc.createElement("p"); p.className = "tarot-line"; p.innerHTML = line;
           read.appendChild(p);
+          if (i === 0 && crossTC) crossTC.classList.remove("tc--waiting");   // heart turned — the cross may follow
+          if (++flippedCount === n) { actions.hidden = false; saveReading(); }
         }
         tc.addEventListener("click", flip);
         tc.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); flip(); } });
       });
     }
-    el.querySelector("[data-tar-one]").addEventListener("click", function () { deal(1); });
-    el.querySelector("[data-tar-three]").addEventListener("click", function () { deal(3); });
+    el.querySelector("[data-tar-one]").addEventListener("click", function () { deal("one"); });
+    el.querySelector("[data-tar-three]").addEventListener("click", function () { deal("three"); });
+    el.querySelector("[data-tar-celtic]").addEventListener("click", function () { deal("celtic"); });
+    el.querySelector("[data-tar-copy]").addEventListener("click", function () {
+      var txt = "KAZM Tarot · " + currentSpread + " · " + new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) + "\n" +
+        currentLines.map(function (l) { var d = doc.createElement("div"); d.innerHTML = l; return "• " + d.textContent; }).join("\n") +
+        "\n— drawn at mellowmountainradio.com";
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () {
+        var b = el.querySelector("[data-tar-copy]"); b.textContent = "✓ Copied"; setTimeout(function () { b.innerHTML = "⧉ Copy this reading"; }, 1600);
+      });
+    });
+    // ---- the whole deck, open for study ----
+    var chips = el.querySelector("[data-tlib-chips]"), grid = el.querySelector("[data-tlib-grid]"), detail = el.querySelector("[data-tlib-detail]");
+    var FILTERS = [["all", "All 78"], ["major", "Major Arcana"], ["Wands", "🔥 Wands"], ["Cups", "💧 Cups"], ["Swords", "🗡 Swords"], ["Pentacles", "🪙 Pentacles"]];
+    chips.innerHTML = FILTERS.map(function (f, i) { return '<button class="chip' + (i === 0 ? ' is-active' : '') + '" data-f="' + f[0] + '">' + f[1] + '</button>'; }).join("");
+    function libMatch(c, f) { return f === "all" || (f === "major" ? c.major : c.name.indexOf(" of " + f) > -1); }
+    function renderLib(f) {
+      grid.innerHTML = deck.map(function (c, i) {
+        if (!libMatch(c, f)) return "";
+        return '<button class="tlib-card" data-i="' + i + '"><span class="tlib-g">' + c.g + '</span><span class="tlib-n">' + esc(c.name) + '</span></button>';
+      }).join("");
+      grid.querySelectorAll(".tlib-card").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var c = deck[+b.getAttribute("data-i")];
+          grid.querySelectorAll(".tlib-card").forEach(function (x) { x.classList.remove("is-active"); });
+          b.classList.add("is-active");
+          detail.hidden = false;
+          detail.innerHTML = '<span class="tlib-d-g">' + c.g + '</span><div>' +
+            '<span class="tc-tag">' + esc(c.tag) + (c.astro ? ' &middot; ' + esc(c.astro) : '') + '</span>' +
+            '<h4>' + esc(c.name) + '</h4>' +
+            '<p><b>Upright:</b> ' + esc(c.up) + '.</p><p><b>Reversed:</b> ' + esc(c.rev) + '.</p></div>';
+          detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      });
+    }
+    chips.querySelectorAll(".chip").forEach(function (ch) {
+      ch.addEventListener("click", function () {
+        chips.querySelectorAll(".chip").forEach(function (x) { x.classList.remove("is-active"); });
+        ch.classList.add("is-active"); detail.hidden = true; renderLib(ch.getAttribute("data-f"));
+      });
+    });
+    renderLib("all");
+    renderJournal();
   }
 
   /* =========================================================

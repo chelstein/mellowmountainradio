@@ -1756,6 +1756,53 @@ body.chk-imm-open { overflow: hidden; }
 .tarot-pos-tag { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--navy); border-radius: 20px; padding: 3px 10px; margin-right: 9px; vertical-align: 1px; }
 @media (max-width: 640px) { .tarot-day { flex-direction: column; text-align: center; } .tc { width: 132px; } .tarot-table { gap: 16px; } }
 
+/* astro correspondence on the card face */
+.tc-astro { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: #8a6a33; }
+
+/* the deal — cards arrive one by one */
+.tc-slot { opacity: 0; transform: translateY(26px) scale(.92); transition: opacity .45s ease, transform .45s cubic-bezier(.2,.7,.25,1); }
+.tc-slot.is-dealt { opacity: 1; transform: none; }
+
+/* Celtic Cross layout: cross of six + staff of four */
+.tarot-table--celtic { display: grid !important; grid-template-areas: ". p5 . p10" "p4 p1 p6 p9" ". p3 . p8" ". . . p7"; gap: 18px 22px; justify-content: center; align-items: center; }
+.tarot-table--celtic .tc { width: 106px; }
+.tarot-table--celtic .tc-glyph { font-size: 2.1rem; }
+.tarot-table--celtic .tc-name { font-size: .86rem; }
+.tarot-table--celtic .tc-pos { font-size: 10px; letter-spacing: .06em; margin-top: 7px; }
+.tc-slot[data-cross] { z-index: 2; pointer-events: none; }
+.tc-slot[data-cross] .tc { pointer-events: auto; }
+.tc.tc--waiting, .tc-slot[data-cross] .tc.tc--waiting { pointer-events: none; }   /* clicks fall through to the heart beneath */
+.tc-slot[data-cross].is-dealt { transform: rotate(90deg) translateX(30px); }
+.tc-slot[data-cross] .tc-pos { transform: rotate(-90deg); position: absolute; right: -74px; top: 50%; margin: 0; }
+@media (max-width: 860px) { .tarot-table--celtic { grid-template-areas: ". p5 ." "p4 p1 p6" ". p3 ." "p10 p9 p8" ". p7 ."; } .tarot-table--celtic .tc { width: 96px; } }
+
+/* reading actions + journal */
+.tarot-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 16px; }
+.tarot-saved-note { font-size: 12.5px; color: var(--muted); }
+.tj-posnote { color: var(--muted); font-style: italic; }
+.tarot-journal { margin-top: 34px; }
+.tj-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
+.tj-clear { padding: 6px 14px; font-size: 12.5px; }
+.tj-note { margin: 0 0 12px; font-size: 12.5px; color: var(--muted); }
+.tj-entry { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); }
+.tj-when { display: block; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.tj-entry .tarot-line { font-size: 13px; margin: 5px 0; }
+
+/* the whole deck, open for study */
+.tarot-lib { margin-top: 34px; }
+.tlib-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.tlib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; }
+.tlib-card { display: flex; flex-direction: column; align-items: center; gap: 4px; font: inherit; cursor: pointer; background: linear-gradient(170deg, #f7efdc 0%, #efe3c6 100%); border: 1px solid rgba(140,110,60,.4); border-radius: 10px; padding: 10px 6px; transition: transform .12s ease, box-shadow .12s ease; }
+.tlib-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(120,90,40,.25); }
+.tlib-card.is-active { box-shadow: 0 0 0 2px #c98a2e, 0 4px 14px rgba(201,138,46,.35); }
+.tlib-g { font-size: 1.4rem; line-height: 1; }
+.tlib-n { font-size: 11px; line-height: 1.25; text-align: center; color: #3c2f18; font-weight: 700; }
+.tlib-detail { display: flex; gap: 16px; align-items: flex-start; background: linear-gradient(170deg, #f7efdc 0%, #efe3c6 100%); border: 1px solid rgba(140,110,60,.5); border-radius: 14px; padding: 16px 20px; margin-bottom: 14px; box-shadow: inset 0 0 0 4px rgba(140,110,60,.14); }
+.tlib-d-g { font-size: 2.6rem; line-height: 1; flex: none; filter: drop-shadow(0 2px 5px rgba(120,90,40,.35)); }
+.tlib-detail h4 { margin: 2px 0 8px; font-family: var(--font-display); font-size: 1.3rem; color: #3c2f18; }
+.tlib-detail p { margin: 4px 0; font-size: 13.5px; line-height: 1.55; color: #4a3a20; }
+.tlib-detail .tc-tag { font-size: 10px; }
+
 /* Stargazing tonight */
 .stargaze { margin: 22px 0 8px; }
 .sky-card { position: relative; overflow: hidden; border-radius: var(--r); padding: 24px 26px; color: #e9edff; box-shadow: var(--shadow); background: radial-gradient(130% 120% at 80% 0%, #23305c 0%, #131a34 55%, #0c1024 100%); border: 1px solid rgba(255,255,255,.12); }
