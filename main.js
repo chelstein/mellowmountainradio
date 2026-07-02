@@ -1110,7 +1110,7 @@
       : v <= 200 ? ["Unhealthy", "Unhealthy", "u2"] : v <= 300 ? ["Very unhealthy", "V. unhealthy", "u3"] : ["Hazardous", "Hazardous", "hz"];
     return { v: Math.round(v), label: c[0], short: c[1], cls: c[2] };
   }
-  function renderWeather(box, cur, daily, aqi) {
+  function renderWeather(box, cur, daily, aqi, src) {
     var now = wxInfo(cur.weather_code, cur.is_day);
     var aq = aqiInfo(aqi);
     var aqBadge = aq ? '<span class="wx-aqi wx-aqi--' + aq.cls + '"><span class="wx-aqi-n">' + aq.v + '</span> AQI · ' + esc(aq.label) + '</span>' : '';
@@ -1120,7 +1120,7 @@
         '<span class="wx-now-cond">' + esc(now.label) + '</span>' + aqBadge + '</span></div>' +
       '<div class="wx-now-meta"><span class="wx-place">Sedona, AZ</span>' +
         '<span>Feels like ' + Math.round(cur.apparent_temperature) + '°</span>' +
-        '<span>Humidity ' + cur.relative_humidity_2m + '%</span>' +
+        (cur.relative_humidity_2m != null ? '<span>Humidity ' + Math.round(cur.relative_humidity_2m) + '%</span>' : '') +
         '<span>Wind ' + Math.round(cur.wind_speed_10m) + ' mph</span></div></div>';
     var days = daily.time.map(function (t, i) {
       var d = new Date(t + "T12:00:00");
@@ -1136,7 +1136,7 @@
         '</div>';
     }).join("");
     box.innerHTML = hero + '<div class="wx-days">' + days + '</div>' +
-      '<p class="wx-credit">Live conditions for Sedona &middot; data by Open-Meteo &middot; Cathedral Rock photo via Wikimedia Commons</p>';
+      '<p class="wx-credit">Live conditions for Sedona &middot; data by ' + (src || "Open-Meteo") + ' &middot; Cathedral Rock photo via Wikimedia Commons</p>';
   }
   function renderWeatherMini(el, cur) {
     var w = wxInfo(cur.weather_code, cur.is_day);
@@ -1145,6 +1145,43 @@
       '<span class="wx-chip-meta"><span class="wx-chip-cond">' + esc(w.label) + '</span>' +
       '<span class="wx-chip-place">Sedona now</span></span>';
     el.classList.add("is-ready");
+  }
+  // ---- NWS fallback: keep the panel live if Open-Meteo ever blips ----
+  var NWS_FORECAST = "https://api.weather.gov/gridpoints/FGZ/68,75/forecast"; // Sedona gridpoint
+  function nwsCode(t) {
+    t = (t || "").toLowerCase();
+    if (/thunder/.test(t)) return 95; if (/snow|flurr/.test(t)) return 71; if (/shower/.test(t)) return 80;
+    if (/rain|drizzle/.test(t)) return 61; if (/smoke|haze|fog/.test(t)) return 45;
+    if (/overcast/.test(t)) return 3; if (/mostly cloudy/.test(t)) return 3; if (/partly|mostly sunny|mostly clear|partly cloudy/.test(t)) return 2;
+    if (/sunny|clear/.test(t)) return 0; return 2;
+  }
+  function nwsWind(s) { var m = (s || "").match(/(\d+)\s*mph/) || (s || "").match(/(\d+)/); return m ? parseInt(m[1], 10) : 0; }
+  function nwsAdapt(periods) {
+    if (!periods || !periods.length) return null;
+    var p0 = periods[0];
+    var cur = { temperature_2m: p0.temperature, apparent_temperature: p0.temperature, weather_code: nwsCode(p0.shortForecast),
+      wind_speed_10m: nwsWind(p0.windSpeed), relative_humidity_2m: (p0.relativeHumidity && p0.relativeHumidity.value != null) ? p0.relativeHumidity.value : null, is_day: p0.isDaytime ? 1 : 0 };
+    var byDate = {};
+    periods.forEach(function (p) {
+      var day = (p.startTime || "").slice(0, 10); if (!day) return; byDate[day] = byDate[day] || {};
+      if (p.isDaytime) { byDate[day].hi = p.temperature; byDate[day].code = nwsCode(p.shortForecast); byDate[day].pp = (p.probabilityOfPrecipitation && p.probabilityOfPrecipitation.value) || 0; }
+      else { byDate[day].lo = p.temperature; }
+    });
+    var time = [], code = [], hi = [], lo = [], pp = [];
+    Object.keys(byDate).sort().slice(0, 7).forEach(function (day) {
+      var b = byDate[day]; time.push(day); code.push(b.code != null ? b.code : 2);
+      hi.push(b.hi != null ? b.hi : (b.lo != null ? b.lo : 0)); lo.push(b.lo != null ? b.lo : b.hi); pp.push(b.pp || 0);
+    });
+    return { current: cur, daily: { time: time, weather_code: code, temperature_2m_max: hi, temperature_2m_min: lo, precipitation_probability_max: pp } };
+  }
+  function weatherFallback(box, mini, aqi) {
+    fetch(NWS_FORECAST, { cache: "no-store", headers: { "Accept": "application/geo+json" } }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        var om = j && j.properties && nwsAdapt(j.properties.periods);
+        if (!om) { if (box && box.isConnected) box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; return; }
+        if (box && box.isConnected) renderWeather(box, om.current, om.daily, aqi, "National Weather Service");
+        if (mini && mini.isConnected) renderWeatherMini(mini, om.current);
+      }).catch(function () { if (box && box.isConnected) box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; });
   }
   function initWeather() {
     var box = doc.querySelector("[data-weather]"), mini = doc.querySelector("[data-weather-mini]");
@@ -1156,12 +1193,12 @@
       "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/Phoenix&forecast_days=7";
     var aqUrl = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.8697&longitude=-111.7610&current=us_aqi&timezone=America/Phoenix";
     var aqP = fetch(aqUrl, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
-    Promise.all([fetch(url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }), aqP]).then(function (res) {
+    Promise.all([fetch(url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }), aqP]).then(function (res) {
       var d = res[0], aqi = res[1] && res[1].current ? res[1].current.us_aqi : null;
-      if (!d || !d.current || !d.daily) { if (box) box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; return; }
+      if (!d || !d.current || !d.daily) { weatherFallback(box, mini, aqi); return; }  // Open-Meteo down -> NWS
       if (box && box.isConnected) renderWeather(box, d.current, d.daily, aqi);
       if (mini && mini.isConnected) renderWeatherMini(mini, d.current);
-    }).catch(function () { if (box) box.innerHTML = '<p class="embed-note">Live weather is unavailable right now.</p>'; });
+    }).catch(function () { weatherFallback(box, mini, null); });
   }
 
   /* =========================================================
