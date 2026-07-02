@@ -3084,11 +3084,14 @@
   }
   function chkStop() {
     chkBathTimers.forEach(function (id) { clearTimeout(id); }); chkBathTimers = [];
-    if (chkCtx && chkMaster) {
-      var t = chkCtx.currentTime;
-      try { chkMaster.gain.cancelScheduledValues(t); chkMaster.gain.setValueAtTime(chkMaster.gain.value, t); chkMaster.gain.linearRampToValueAtTime(0.0001, t + 0.15); } catch (e) {}
-      setTimeout(function () { chkCurrent.forEach(function (nd) { try { nd.stop && nd.stop(); } catch (e) {} }); chkCurrent = []; if (chkMaster) try { chkMaster.gain.setValueAtTime(0.85, chkCtx.currentTime); } catch (e) {} }, 200);
-    }
+    if (!chkCtx) return;
+    // snapshot + clear so a tone started right after this can't be killed by
+    // the cleanup below (that race silenced every click after the first).
+    var t = chkCtx.currentTime, nodes = chkCurrent; chkCurrent = [];
+    nodes.forEach(function (nd) {
+      try { if (nd.gain) { nd.gain.cancelScheduledValues(t); nd.gain.setValueAtTime(nd.gain.value, t); nd.gain.linearRampToValueAtTime(0.0001, t + 0.12); } } catch (e) {}
+    });
+    setTimeout(function () { nodes.forEach(function (nd) { try { if (nd.stop) nd.stop(); } catch (e) {} }); }, 170);
   }
   function chkBath() {
     chkStop();
