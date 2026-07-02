@@ -942,9 +942,12 @@
     var legs = [];
     if (key && FEED_PROXY) legs.push(FEED_PROXY + "?src=" + encodeURIComponent(key));
     if (url) {
-      legs.push(url);
-      legs.push("https://corsproxy.io/?url=" + encodeURIComponent(url));
+      legs.push(url);   // rss.app feeds are CORS-open, so this direct hit works in-browser
+      // CORS proxies for feeds that aren't (e.g. Google News) — several, so one
+      // going down (corsproxy.io now wants a key) never blanks the headlines.
+      legs.push("https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(url));
       legs.push("https://api.allorigins.win/raw?url=" + encodeURIComponent(url));
+      legs.push("https://corsproxy.io/?url=" + encodeURIComponent(url));
     }
     var i = 0;
     function attempt() {
