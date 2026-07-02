@@ -3041,14 +3041,52 @@
       blocked: "Cynical, isolated, spiritually flat, stuck in the head", crystal: "Clear quartz · selenite · amethyst", oil: "Frankincense · lotus · myrrh", pose: "Corpse pose (Savasana)",
       vortex: "The dark sky over Sedona — dissolve up into the Milky Way." }
   ];
-  function lotusSVG(col, petals) {
-    var shown = Math.min(petals, 24), r = 15, cx = 24, cy = 24, out = "";
-    for (var i = 0; i < shown; i++) {
-      var a = i / shown * Math.PI * 2, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
-      out += '<ellipse cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="3.4" ry="7" fill="' + col + '" fill-opacity="0.85" transform="rotate(' + (a * 180 / Math.PI + 90).toFixed(1) + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"/>';
+  // Each chakra drawn as its REAL traditional yantra — the correct petal
+  // count, the classical inner geometry (Muladhara's square + downward
+  // triangle, Svadhisthana's crescent, Anahata's six-pointed star, Ajna's
+  // two wings, Sahasrara's layered thousand-petal rings) and the bija
+  // seed syllable in Devanagari at the center.
+  function lotusSVG(c) {
+    var col = c.col, k = c.k;
+    var DEV = { root: "लं", sacral: "वं", solar: "रं", heart: "यं", throat: "हं", brow: "ॐ", crown: "ॐ" };
+    function petal(r1, r2, wDeg, aDeg, op) {
+      var a = aDeg * Math.PI / 180, w = wDeg * Math.PI / 180, mid = (r1 + r2) / 2;
+      function pt(ang, rr) { return (50 + Math.cos(ang) * rr).toFixed(1) + "," + (50 + Math.sin(ang) * rr).toFixed(1); }
+      return '<path d="M' + pt(a - w, r1) + ' Q' + pt(a - w * 1.18, mid) + ' ' + pt(a, r2) +
+        ' Q' + pt(a + w * 1.18, mid) + ' ' + pt(a + w, r1) + ' Z" fill="' + col + '" fill-opacity="' + (op || 0.82) +
+        '" stroke="rgba(255,255,255,.5)" stroke-width="0.7" stroke-linejoin="round"/>';
     }
-    return '<svg viewBox="0 0 48 48" class="chk-lotus" aria-hidden="true">' + out +
-      '<circle cx="24" cy="24" r="8.5" fill="#fff" fill-opacity="0.9"/><circle cx="24" cy="24" r="8.5" fill="none" stroke="' + col + '" stroke-width="1.5"/></svg>';
+    function ring(n, r1, r2, off, op) {
+      var out = "", w = 360 / n / 2 * 0.74;
+      for (var i = 0; i < n; i++) out += petal(r1, r2, w, (off || 0) + i * 360 / n - 90, op);
+      return out;
+    }
+    function tri(r, down) {
+      var pts = [], start = down ? 90 : -90;
+      for (var i = 0; i < 3; i++) { var a = (start + i * 120) * Math.PI / 180; pts.push((50 + Math.cos(a) * r).toFixed(1) + "," + (50 + Math.sin(a) * r).toFixed(1)); }
+      return '<polygon points="' + pts.join(" ") + '" fill="' + col + '" fill-opacity=".26" stroke="#ffe9b0" stroke-width="1.1" stroke-linejoin="round"/>';
+    }
+    var geo = "";
+    if (k === "root") geo = '<rect x="38" y="38" width="24" height="24" fill="' + col + '" fill-opacity=".22" stroke="#ffe9b0" stroke-width="1.1"/>' + tri(10.5, true);
+    else if (k === "sacral") geo = '<circle cx="50" cy="50" r="15" fill="' + col + '" fill-opacity=".2" stroke="#ffe9b0" stroke-width="1.1"/><path d="M38,55 A14,14 0 0,0 62,55 A11,11 0 0,1 38,55 Z" fill="#fff" fill-opacity=".85"/>';
+    else if (k === "solar") geo = tri(15, true);
+    else if (k === "heart") geo = tri(15, true) + tri(15, false);
+    else if (k === "throat") geo = tri(16, true) + '<circle cx="50" cy="50" r="9" fill="#fff" fill-opacity=".16" stroke="#ffe9b0" stroke-width="1"/>';
+    else if (k === "brow") geo = tri(14, true);
+    else if (k === "crown") geo = '<circle cx="50" cy="50" r="11" fill="#fff" fill-opacity=".18" stroke="#ffe9b0" stroke-width="1.1"/>';
+    var petals;
+    if (k === "brow") petals = petal(18, 47, 24, 180) + petal(18, 47, 24, 0);            // Ajna's two wings
+    else if (k === "crown") petals = ring(20, 30, 48) + ring(16, 26, 39, 9, 0.65);        // layered "thousand petals"
+    else petals = ring({ root: 4, sacral: 6, solar: 10, heart: 12, throat: 16 }[k], 27, 47);
+    var uid = "chg-" + k;
+    return '<svg viewBox="0 0 100 100" class="chk-lotus" aria-hidden="true">' +
+      '<defs><radialGradient id="' + uid + '"><stop offset="0%" stop-color="' + col + '" stop-opacity=".5"/><stop offset="62%" stop-color="' + col + '" stop-opacity=".16"/><stop offset="100%" stop-color="' + col + '" stop-opacity="0"/></radialGradient></defs>' +
+      '<circle cx="50" cy="50" r="49" fill="url(#' + uid + ')"/>' +
+      '<g class="chk-ring">' + petals + '</g>' +
+      '<circle cx="50" cy="50" r="25.5" fill="#0d1226" fill-opacity=".8" stroke="rgba(255,255,255,.4)" stroke-width="0.8"/>' +
+      geo +
+      '<text x="50" y="51" text-anchor="middle" dominant-baseline="central" font-size="14.5" fill="#fff" font-family="serif">' + (DEV[k] || "") + '</text>' +
+      '</svg>';
   }
   // ---- live tone synthesis (Web Audio) ----
   var chkCtx = null, chkBus = null, chkMaster = null, chkCurrent = [], chkBathTimers = [], chkOnStep = null;
@@ -3125,7 +3163,7 @@
     var sel = 3;   // heart, to start
     function detail(i) {
       var c = CHAKRAS[i];
-      return '<div class="chk-detail-head">' + lotusSVG(c.col, c.petals) +
+      return '<div class="chk-detail-head">' + lotusSVG(c) +
           '<div><span class="chk-eyebrow" style="color:' + c.col + '">' + c.sa + '</span>' +
           '<h3>' + c.n + ' chakra</h3><span class="chk-loc">' + c.loc + '</span></div></div>' +
         '<p class="chk-aff" style="color:' + c.col + '">&ldquo;' + c.aff + '&rdquo;</p>' +
@@ -3148,7 +3186,7 @@
     }
     var orbs = CHAKRAS.map(function (c, i) {
       return '<button class="chk-orb" data-chk="' + i + '" style="--cc:' + c.col + '; top:' + c.pos + '%" aria-label="' + c.n + ' chakra, ' + c.hz + ' hertz">' +
-        '<span class="chk-orb-core"></span>' + lotusSVG(c.col, c.petals) +
+        '<span class="chk-orb-core"></span>' + lotusSVG(c) +
         '<span class="chk-orb-lab"><b>' + c.n + '</b><span>' + c.hz + ' Hz &middot; ' + c.bija + '</span></span></button>';
     }).join("");
     el.innerHTML =

@@ -1655,7 +1655,7 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .chk-orb-lab span { display: block; font-size: 11.5px; color: rgba(203,214,255,.7); }
 .chk-orb:hover .chk-lotus { transform: scale(1.12); }
 .chk-orb.is-active { z-index: 3; }
-.chk-orb.is-active .chk-lotus { animation: chkSpin 16s linear infinite; }
+.chk-orb.is-active .chk-ring, .chk-detail-head .chk-ring { transform-origin: 50px 50px; animation: chkSpin 26s linear infinite; }
 .chk-orb.is-active .chk-orb-core { inset: -14px; animation: chkBreathe 3s ease-in-out infinite; }
 .chk-orb.sounding .chk-orb-core { animation: chkBloom 1.6s ease-out infinite; }
 @keyframes chkBreathe { 0%,100% { opacity: .55; transform: scale(.92); } 50% { opacity: .95; transform: scale(1.08); } }
@@ -1666,7 +1666,7 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 /* detail card */
 .chk-detail { background: radial-gradient(130% 120% at 85% 0%, #1c2647 0%, #121935 55%, #0b0f22 100%); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r); padding: 26px 28px; color: #e9edff; box-shadow: var(--shadow); position: sticky; top: 92px; }
 .chk-detail-head { display: flex; align-items: center; gap: 16px; }
-.chk-detail-head .chk-lotus { width: 58px; height: 58px; }
+.chk-detail-head .chk-lotus { width: 92px; height: 92px; filter: drop-shadow(0 0 16px rgba(255,255,255,.15)); }
 .chk-eyebrow { display: block; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .chk-detail-head h3 { margin: 2px 0; font-family: var(--font-display); font-size: 1.9rem; color: #fff; line-height: 1.05; }
 .chk-loc { display: block; font-size: 13px; color: rgba(233,237,255,.62); }
