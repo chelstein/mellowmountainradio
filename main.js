@@ -35,7 +35,7 @@
           '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Horoscopes</a><a role="menuitem" href="contact.html">Contact</a>' +
+          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="contact.html">Contact</a>' +
         '</div></li>' +
         '<li data-nav="advertising"><a href="advertising.html">Advertising</a></li>' +
       '</ul></nav>' +
@@ -58,7 +58,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Horoscopes</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Astrology</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
     '<div class="wrap footer-bottom">' +
@@ -2556,9 +2556,51 @@
         var l2 = eclLon(p[0], new Date(+date + 5 * 86400000)), dd = ((l2 - lon + 540) % 360) - 180;
         retro = dd < 0;
       }
-      return { name: p[0], glyph: p[1], sign: idx, deg: deg, retro: retro };
+      return { name: p[0], glyph: p[1], sign: idx, deg: deg, retro: retro, lon: lon };
     });
   }
+  // ---- computed astrology: aspects, retrogrades, elemental balance, birth chart ----
+  var ASPECTS = [
+    { a: 0, orb: 8, n: "Conjunction", sym: "☌", note: "fused — energies merge" },
+    { a: 60, orb: 4, n: "Sextile", sym: "⚹", note: "an easy opening" },
+    { a: 90, orb: 6, n: "Square", sym: "▢", note: "friction that pushes growth" },
+    { a: 120, orb: 7, n: "Trine", sym: "△", note: "smooth, flowing support" },
+    { a: 180, orb: 8, n: "Opposition", sym: "☍", note: "a balancing act" }
+  ];
+  function astroAspects(sky) {
+    var out = [];
+    for (var i = 0; i < sky.length; i++) for (var j = i + 1; j < sky.length; j++) {
+      var d = Math.abs(sky[i].lon - sky[j].lon) % 360; if (d > 180) d = 360 - d;
+      for (var k = 0; k < ASPECTS.length; k++) {
+        var A = ASPECTS[k], orbv = Math.abs(d - A.a);
+        if (orbv <= A.orb) { out.push({ a: sky[i], b: sky[j], asp: A, orb: orbv }); break; }
+      }
+    }
+    return out.sort(function (x, y) { return x.orb - y.orb; });
+  }
+  function skyBalance(sky) {
+    var el = { Fire: 0, Earth: 0, Air: 0, Water: 0 }, q = { Cardinal: 0, Fixed: 0, Mutable: 0 };
+    sky.forEach(function (b) { var z = ZODIAC[b.sign]; el[z.el]++; q[z.q]++; });
+    return { el: el, q: q };
+  }
+  function ascMC(date, latDeg, lonDeg) {   // ecliptic longitudes of Ascendant & Midheaven
+    var rad = Math.PI / 180, deg = 180 / Math.PI;
+    var JD = date.valueOf() / 86400000 + 2440587.5, d = JD - 2451545, Tu = d / 36525;
+    var GMST = 280.46061837 + 360.98564736629 * d + 0.000387933 * Tu * Tu; GMST = ((GMST % 360) + 360) % 360;
+    var th = ((((GMST + lonDeg) % 360) + 360) % 360) * rad, eps = 23.4397 * rad, phi = latDeg * rad;
+    var mc = ((Math.atan2(Math.sin(th), Math.cos(th) * Math.cos(eps)) * deg) % 360 + 360) % 360;
+    var asc = ((Math.atan2(Math.cos(th), -(Math.sin(th) * Math.cos(eps) + Math.tan(phi) * Math.sin(eps))) * deg) % 360 + 360) % 360;
+    if ((((asc - mc) % 360) + 360) % 360 > 180) asc = (asc + 180) % 360;   // eastern (ascending) point
+    return { asc: asc, mc: mc };
+  }
+  var BIRTH_CITIES = [
+    { n: "Sedona, AZ", lat: 34.87, lon: -111.76, tz: -7 }, { n: "Phoenix, AZ", lat: 33.45, lon: -112.07, tz: -7 },
+    { n: "Flagstaff, AZ", lat: 35.20, lon: -111.65, tz: -7 }, { n: "Los Angeles, CA", lat: 34.05, lon: -118.24, tz: -8 },
+    { n: "Las Vegas, NV", lat: 36.17, lon: -115.14, tz: -8 }, { n: "Denver, CO", lat: 39.74, lon: -104.99, tz: -7 },
+    { n: "Dallas, TX", lat: 32.78, lon: -96.80, tz: -6 }, { n: "Chicago, IL", lat: 41.88, lon: -87.63, tz: -6 },
+    { n: "New York, NY", lat: 40.71, lon: -74.01, tz: -5 }, { n: "Miami, FL", lat: 25.76, lon: -80.19, tz: -5 },
+    { n: "London, UK", lat: 51.51, lon: -0.13, tz: 0 }, { n: "Sydney, AU", lat: -33.87, lon: 151.21, tz: 10 }
+  ];
   // Zodiac in ecliptic order (index === floor(lon/30)). Constellation = real star figure.
   var ZODIAC = [
     { k: "aries", n: "Aries", g: "♈", sym: "the Ram", dates: "Mar 21 – Apr 19", el: "Fire", q: "Cardinal", ruler: "Mars ♂",
@@ -2625,6 +2667,83 @@
         '<p class="sky-strip-foot">Real geocentric positions computed live for ' +
         now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) +
         ' &middot; ℞ = retrograde. The Sun sits in <b>' + ZODIAC[sunSign].n + '</b> right now.</p>';
+    }
+
+    // ---- cosmic weather: today's aspects ----
+    var aspBox = doc.querySelector("[data-aspects]");
+    if (aspBox) {
+      var asp = astroAspects(sky);
+      aspBox.innerHTML = asp.length ? '<div class="asp-grid">' + asp.map(function (x) {
+        return '<div class="asp asp--' + x.asp.n.toLowerCase() + '">' +
+          '<span class="asp-pair">' + x.a.glyph + ' <span class="asp-sym">' + x.asp.sym + '</span> ' + x.b.glyph + '</span>' +
+          '<span class="asp-name">' + x.a.name + ' ' + x.asp.n.toLowerCase() + ' ' + x.b.name + '</span>' +
+          '<span class="asp-note">' + x.asp.note + ' &middot; ' + x.orb.toFixed(1) + '&deg; orb</span></div>';
+      }).join("") + '</div>' : '<p class="micro-note">No tight aspects between the planets right now — a quiet sky.</p>';
+    }
+
+    // ---- retrograde watch ----
+    var retroBox = doc.querySelector("[data-retro]");
+    if (retroBox) {
+      var rx = sky.filter(function (b) { return b.retro; });
+      retroBox.innerHTML = rx.length ? '<div class="retro-grid">' + rx.map(function (b) {
+        return '<div class="retro"><span class="retro-g">' + b.glyph + '℞</span><b>' + b.name + ' retrograde</b>' +
+          '<span>in ' + ZODIAC[b.sign].g + ' ' + ZODIAC[b.sign].n + ' — review, revisit, slow down its themes</span></div>';
+      }).join("") + '</div>' : '<p class="micro-note">✓ No planets are retrograde right now — all systems moving direct.</p>';
+    }
+
+    // ---- balance of the sky (elements + modalities) ----
+    var balBox = doc.querySelector("[data-balance]");
+    if (balBox) {
+      var bal = skyBalance(sky), total = sky.length;
+      function bars(obj, cls) {
+        return Object.keys(obj).map(function (kk) {
+          var pct = Math.round(obj[kk] / total * 100);
+          return '<div class="bal-row ' + cls + '-' + kk.toLowerCase() + '"><span class="bal-k">' + kk + '</span>' +
+            '<span class="bal-track"><i style="width:' + pct + '%"></i></span><span class="bal-v">' + obj[kk] + '</span></div>';
+        }).join("");
+      }
+      balBox.innerHTML = '<div class="bal-cols"><div class="bal-col"><h4>Elements</h4>' + bars(bal.el, "el") + '</div>' +
+        '<div class="bal-col"><h4>Modalities</h4>' + bars(bal.q, "mo") + '</div></div>' +
+        '<p class="micro-note">Where the seven bodies fall across the four elements and three modalities right now — the mood of the moment.</p>';
+    }
+
+    // ---- birth chart: Sun · Moon · Rising ----
+    var bc = doc.querySelector("[data-birthchart]");
+    if (bc) {
+      var cityOpts = BIRTH_CITIES.map(function (c, i) { return '<option value="' + i + '">' + c.n + '</option>'; }).join("");
+      bc.innerHTML =
+        '<form class="bchart-form" data-bc-form>' +
+          '<div class="bc-field"><label for="bc-date">Birth date</label><input type="date" id="bc-date" required min="1900-01-01" max="2030-12-31" /></div>' +
+          '<div class="bc-field"><label for="bc-time">Birth time <span>(for Moon &amp; Rising)</span></label><input type="time" id="bc-time" /></div>' +
+          '<div class="bc-field"><label for="bc-city">Nearest city</label><select id="bc-city">' + cityOpts + '</select></div>' +
+          '<button type="submit" class="btn btn-primary bc-go">Cast my chart</button>' +
+        '</form>' +
+        '<div class="bchart-out" data-bc-out></div>';
+      var form = bc.querySelector("[data-bc-form]"), out = bc.querySelector("[data-bc-out]");
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var dv = bc.querySelector("#bc-date").value; if (!dv) return;
+        var tv = bc.querySelector("#bc-time").value, city = BIRTH_CITIES[+bc.querySelector("#bc-city").value] || BIRTH_CITIES[0];
+        var parts = dv.split("-"), hm = (tv || "12:00").split(":");
+        // build the birth instant in UTC from local time + the city's standard offset
+        var utcMs = Date.UTC(+parts[0], +parts[1] - 1, +parts[2], +hm[0] - city.tz, +hm[1]);
+        var when = new Date(utcMs);
+        var sunL = eclLon("Sun", when), moonL = eclLon("Moon", when);
+        function chip(label, glyph, lon, note) {
+          var z = ZODIAC[Math.floor(((lon % 360) + 360) % 360 / 30) % 12], dd = ((lon % 30) + 30) % 30;
+          return '<div class="bc-res"><span class="bc-res-k">' + label + '</span>' +
+            '<span class="bc-res-v">' + glyph + ' ' + z.g + ' ' + z.n + '</span>' +
+            '<span class="bc-res-d">' + Math.floor(dd) + '&deg; ' + z.n + (note ? ' &middot; ' + note : '') + '</span></div>';
+        }
+        var html = chip("Sun sign", "☉", sunL, "who you are") +
+          chip("Moon sign", "☽", moonL, tv ? "your inner world" : "approx — add birth time");
+        if (tv) { var am = ascMC(when, city.lat, city.lon);
+          html += chip("Rising", "↑", am.asc, "how you meet the world") + chip("Midheaven", "MC", am.mc, "your public path"); }
+        out.innerHTML = '<div class="bc-results">' + html + '</div>' +
+          '<p class="bc-foot">Computed from real ephemeris for ' + when.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) +
+          ' in ' + esc(city.n) + '.' + (tv ? ' Rising uses standard time for that city — near a cusp it can shift by a sign, so use an exact birth time.' : ' Add your birth time for your Moon (precisely) and your Rising sign.') + '</p>';
+        out.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
     }
 
     // ---- 12 sign cards ----

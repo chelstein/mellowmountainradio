@@ -1587,6 +1587,57 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 @media (max-width: 860px) { .zodiac { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .zodiac { grid-template-columns: 1fr; } }
 
+/* cosmic weather — aspects */
+.aspects { margin: 20px 0 8px; }
+.asp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.asp { background: var(--surface); border: 1px solid var(--line); border-left-width: 4px; border-radius: 12px; padding: 13px 15px; box-shadow: var(--shadow-sm); }
+.asp-pair { display: block; font-size: 1.35rem; color: var(--ink); line-height: 1; }
+.asp-sym { color: var(--muted); }
+.asp-name { display: block; font-weight: 700; font-size: 13.5px; color: var(--ink); margin-top: 6px; text-transform: capitalize; }
+.asp-note { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.asp--conjunction { border-left-color: #d1a13a; } .asp--sextile { border-left-color: #4f8a4a; }
+.asp--square { border-left-color: #c0533f; } .asp--trine { border-left-color: #3f7fa6; }
+.asp--opposition { border-left-color: #8257a8; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+@media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+
+/* retrograde watch */
+.retro-grid { display: flex; flex-direction: column; gap: 10px; }
+.retro { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 15px; box-shadow: var(--shadow-sm); }
+.retro-g { display: inline-block; font-size: 1.15rem; color: #c0533f; margin-right: 6px; }
+.retro b { color: var(--ink); font-size: 14px; } .retro span { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; line-height: 1.45; }
+
+/* balance of the sky */
+.balance { }
+.bal-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.bal-col h4 { margin: 0 0 10px; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.bal-row { display: grid; grid-template-columns: 64px 1fr 20px; align-items: center; gap: 9px; margin-bottom: 8px; }
+.bal-k { font-size: 12.5px; color: var(--ink); } .bal-v { font-size: 12.5px; color: var(--muted); text-align: right; }
+.bal-track { height: 8px; background: rgba(0,0,0,.07); border-radius: 6px; overflow: hidden; }
+.bal-track i { display: block; height: 100%; border-radius: 6px; background: var(--navy); }
+.el-fire i { background: #d1683a; } .el-earth i { background: #4f8a4a; } .el-air i { background: #3f7fa6; } .el-water i { background: #5a6fb0; }
+.mo-cardinal i { background: #c98a2e; } .mo-fixed i { background: #7a6bb0; } .mo-mutable i { background: #3f9aa6; }
+@media (max-width: 420px) { .bal-cols { grid-template-columns: 1fr; } }
+
+/* birth chart */
+.bchart { margin-top: 20px; }
+.bchart-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; background: radial-gradient(120% 130% at 80% 0%, #202b52 0%, #131a34 60%, #0c1024 100%); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow); }
+.bc-field { display: flex; flex-direction: column; gap: 5px; }
+.bc-field label { font-size: 12px; font-weight: 700; letter-spacing: .04em; color: rgba(233,237,255,.8); }
+.bc-field label span { font-weight: 400; color: rgba(233,237,255,.5); }
+.bc-field input, .bc-field select { font: inherit; font-size: 14px; color: #fff; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 9px 12px; min-width: 150px; }
+.bc-field input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: .7; }
+.bc-field select option { color: #14203c; }
+.bc-go { align-self: flex-end; }
+.bchart-out:empty { display: none; }
+.bc-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-top: 20px; }
+.bc-res { background: radial-gradient(120% 130% at 60% 0%, #222d55 0%, #10162e 70%); border: 1px solid rgba(255,255,255,.13); border-radius: 14px; padding: 16px 18px; color: #e9edff; box-shadow: var(--shadow-sm); }
+.bc-res-k { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(203,214,255,.6); font-weight: 800; }
+.bc-res-v { display: block; font-family: var(--font-display); font-size: 1.5rem; color: #fff; margin-top: 4px; }
+.bc-res-d { display: block; font-size: 12.5px; color: rgba(233,237,255,.66); margin-top: 3px; }
+.bc-foot { margin: 14px 2px 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
 /* Stargazing tonight */
 .stargaze { margin: 22px 0 8px; }
 .sky-card { position: relative; overflow: hidden; border-radius: var(--r); padding: 24px 26px; color: #e9edff; box-shadow: var(--shadow); background: radial-gradient(130% 120% at 80% 0%, #23305c 0%, #131a34 55%, #0c1024 100%); border: 1px solid rgba(255,255,255,.12); }
