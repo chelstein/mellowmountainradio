@@ -3268,12 +3268,17 @@
   var TAROT_RANKS = ["Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Page", "Knight", "Queen", "King"];
   var TAROT_NUM = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"];
   function tarotDeck() {
+    // img: the original 1909 Rider–Waite paintings by Pamela Colman Smith
+    // (public domain), served from /tarot/.
     var d = TAROT_MAJORS.map(function (m, i) {
-      return { name: m[0], g: m[1], up: m[2], rev: m[3], astro: m[4], tag: TAROT_NUM[i] + " · Major Arcana", major: true };
+      return { name: m[0], g: m[1], up: m[2], rev: m[3], astro: m[4], tag: TAROT_NUM[i] + " · Major Arcana", major: true,
+        img: "tarot/m" + (i < 10 ? "0" : "") + i + ".jpg" };
     });
     TAROT_SUITS.forEach(function (su) {
+      var sl = { Wands: "w", Cups: "c", Swords: "s", Pentacles: "p" }[su.s];
       TAROT_RANKS.forEach(function (r, ri) {
-        d.push({ name: r + " of " + su.s, g: su.g, up: su.up[ri], rev: su.rev[ri], astro: "", tag: su.el, major: false });
+        d.push({ name: r + " of " + su.s, g: su.g, up: su.up[ri], rev: su.rev[ri], astro: "", tag: su.el, major: false,
+          img: "tarot/" + sl + (ri < 9 ? "0" : "") + (ri + 1) + ".jpg" });
       });
     });
     return d;   // 22 + 56 = 78
@@ -3283,10 +3288,9 @@
       '<div class="tc-inner">' +
         '<div class="tc-back"><span class="tc-back-sun">☀</span><span class="tc-back-moon">☽</span><i></i></div>' +
         '<div class="tc-face"><div class="tc-face-in">' +
-          '<span class="tc-tag">' + esc(card.tag) + '</span>' +
-          '<span class="tc-glyph">' + card.g + '</span>' +
-          '<span class="tc-name">' + esc(card.name) + '</span>' +
-          (card.astro ? '<span class="tc-astro">' + esc(card.astro) + '</span>' : '') +
+          '<img class="tc-img" src="' + card.img + '" alt="" loading="lazy" />' +
+          '<span class="tc-name">' + esc(card.name) +
+            (card.astro ? ' <i class="tc-astro">' + esc(card.astro) + '</i>' : '') + '</span>' +
           (reversed ? '<span class="tc-revb">reversed</span>' : '') +
         '</div></div>' +
       '</div>' +
@@ -3439,7 +3443,7 @@
     function renderLib(f) {
       grid.innerHTML = deck.map(function (c, i) {
         if (!libMatch(c, f)) return "";
-        return '<button class="tlib-card" data-i="' + i + '"><span class="tlib-g">' + c.g + '</span><span class="tlib-n">' + esc(c.name) + '</span></button>';
+        return '<button class="tlib-card" data-i="' + i + '"><img class="tlib-img" src="' + c.img + '" alt="" loading="lazy" /><span class="tlib-n">' + esc(c.name) + '</span></button>';
       }).join("");
       grid.querySelectorAll(".tlib-card").forEach(function (b) {
         b.addEventListener("click", function () {
@@ -3447,7 +3451,7 @@
           grid.querySelectorAll(".tlib-card").forEach(function (x) { x.classList.remove("is-active"); });
           b.classList.add("is-active");
           detail.hidden = false;
-          detail.innerHTML = '<span class="tlib-d-g">' + c.g + '</span><div>' +
+          detail.innerHTML = '<img class="tlib-d-img" src="' + c.img + '" alt="' + esc(c.name) + ' — Rider-Waite tarot card" />' + '<div>' +
             '<span class="tc-tag">' + esc(c.tag) + (c.astro ? ' &middot; ' + esc(c.astro) : '') + '</span>' +
             '<h4>' + esc(c.name) + '</h4>' +
             '<p><b>Upright:</b> ' + esc(c.up) + '.</p><p><b>Reversed:</b> ' + esc(c.rev) + '.</p></div>';

@@ -1733,11 +1733,12 @@ body.chk-imm-open { overflow: hidden; }
 .tc-back-sun { position: absolute; top: 34%; font-size: 2rem; color: #e8c877; text-shadow: 0 0 18px rgba(232,200,119,.7); z-index: 1; }
 .tc-back-moon { position: absolute; bottom: 30%; font-size: 1.4rem; color: #cdd9ff; text-shadow: 0 0 14px rgba(205,217,255,.7); z-index: 1; }
 .tc-face { transform: rotateY(180deg); background: linear-gradient(170deg, #f7efdc 0%, #efe3c6 100%); border: 1px solid rgba(140,110,60,.55); box-shadow: 0 6px 22px rgba(0,0,0,.4), inset 0 0 0 5px rgba(140,110,60,.22), inset 0 0 0 6px rgba(247,239,220,.9); display: flex; }
-.tc-face-in { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 14px 10px; text-align: center; }
+.tc-face-in { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 9px 9px 8px; text-align: center; min-height: 0; }
 .tc.is-rev .tc-face-in { transform: rotate(180deg); }
+.tc-img { width: 100%; flex: 1; min-height: 0; object-fit: cover; border-radius: 5px; border: 1px solid rgba(140,110,60,.4); }
 .tc-tag { font-size: 9.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #8a6a33; }
 .tc-glyph { font-size: 3rem; line-height: 1; filter: drop-shadow(0 2px 5px rgba(120,90,40,.35)); }
-.tc-name { font-family: var(--font-display); font-size: 1.06rem; line-height: 1.2; color: #3c2f18; }
+.tc-name { font-family: var(--font-display); font-size: .86rem; line-height: 1.15; color: #3c2f18; flex: none; }
 .tc-revb { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #a33d36; border: 1px solid rgba(163,61,54,.5); border-radius: 20px; padding: 2px 9px; }
 .tc-pos { display: block; text-align: center; margin-top: 10px; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .tc:hover .tc-inner { box-shadow: 0 0 30px rgba(210,180,110,.25); }
@@ -1757,7 +1758,7 @@ body.chk-imm-open { overflow: hidden; }
 @media (max-width: 640px) { .tarot-day { flex-direction: column; text-align: center; } .tc { width: 132px; } .tarot-table { gap: 16px; } }
 
 /* astro correspondence on the card face */
-.tc-astro { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: #8a6a33; }
+.tc-astro { font-size: 9.5px; font-weight: 700; letter-spacing: .04em; color: #8a6a33; font-style: normal; display: block; margin-top: 1px; }
 
 /* the deal — cards arrive one by one */
 .tc-slot { opacity: 0; transform: translateY(26px) scale(.92); transition: opacity .45s ease, transform .45s cubic-bezier(.2,.7,.25,1); }
@@ -1792,13 +1793,13 @@ body.chk-imm-open { overflow: hidden; }
 .tarot-lib { margin-top: 34px; }
 .tlib-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .tlib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; }
-.tlib-card { display: flex; flex-direction: column; align-items: center; gap: 4px; font: inherit; cursor: pointer; background: linear-gradient(170deg, #f7efdc 0%, #efe3c6 100%); border: 1px solid rgba(140,110,60,.4); border-radius: 10px; padding: 10px 6px; transition: transform .12s ease, box-shadow .12s ease; }
+.tlib-card { display: flex; flex-direction: column; align-items: center; gap: 6px; font: inherit; cursor: pointer; background: linear-gradient(170deg, #f7efdc 0%, #efe3c6 100%); border: 1px solid rgba(140,110,60,.4); border-radius: 10px; padding: 7px 7px 8px; transition: transform .12s ease, box-shadow .12s ease; }
 .tlib-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(120,90,40,.25); }
 .tlib-card.is-active { box-shadow: 0 0 0 2px #c98a2e, 0 4px 14px rgba(201,138,46,.35); }
-.tlib-g { font-size: 1.4rem; line-height: 1; }
+.tlib-img { width: 100%; border-radius: 6px; border: 1px solid rgba(140,110,60,.35); display: block; }
 .tlib-n { font-size: 11px; line-height: 1.25; text-align: center; color: #3c2f18; font-weight: 700; }
-.tlib-detail { display: flex; gap: 16px; align-items: flex-start; background: linear-gradient(170deg, #f7efdc 0%, #efe3c6 100%); border: 1px solid rgba(140,110,60,.5); border-radius: 14px; padding: 16px 20px; margin-bottom: 14px; box-shadow: inset 0 0 0 4px rgba(140,110,60,.14); }
-.tlib-d-g { font-size: 2.6rem; line-height: 1; flex: none; filter: drop-shadow(0 2px 5px rgba(120,90,40,.35)); }
+.tlib-detail { display: flex; gap: 18px; align-items: flex-start; background: linear-gradient(170deg, #f7efdc 0%, #efe3c6 100%); border: 1px solid rgba(140,110,60,.5); border-radius: 14px; padding: 16px 20px; margin-bottom: 14px; box-shadow: inset 0 0 0 4px rgba(140,110,60,.14); }
+.tlib-d-img { width: 128px; flex: none; border-radius: 8px; border: 1px solid rgba(140,110,60,.45); box-shadow: 0 4px 14px rgba(120,90,40,.3); }
 .tlib-detail h4 { margin: 2px 0 8px; font-family: var(--font-display); font-size: 1.3rem; color: #3c2f18; }
 .tlib-detail p { margin: 4px 0; font-size: 13.5px; line-height: 1.55; color: #4a3a20; }
 .tlib-detail .tc-tag { font-size: 10px; }
