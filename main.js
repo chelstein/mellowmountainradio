@@ -1691,11 +1691,40 @@
   };
   function initPhotoSubjects() {
     var el = doc.querySelector("[data-photo-subjects]"); if (!el) return;
-    var season = natSeason(new Date().getMonth()), subs = PHOTO_SUBJECTS[season] || PHOTO_SUBJECTS.summer;
+    var season = natSeason(new Date().getMonth()), base = (PHOTO_SUBJECTS[season] || PHOTO_SUBJECTS.summer).slice();
     var g = null; try { g = goldenTimes(new Date()); } catch (e) {}
     var gt = g ? "Best light this evening: golden hour " + almTime(g.evening.b.goldEveStart) + "&ndash;" + almTime(g.evening.b.sunset) : "";
-    el.innerHTML = '<div class="psub-grid">' + subs.map(function (s) { return '<span class="psub">' + s + '</span>'; }).join("") + '</div>' +
-      (gt ? '<p class="psub-note">' + gt + ' &middot; <a href="events.html#photography">full photographer&rsquo;s guide &rarr;</a></p>' : '');
+    var day = Math.floor(Date.now() / 86400000);
+    function rot(a) { var i = day % a.length; return a.slice(i).concat(a.slice(0, i)); }   // rotate daily
+    function render(live) {
+      var subs = live.concat(rot(base)).slice(0, 6);
+      el.innerHTML = '<div class="psub-grid">' + subs.map(function (s) { return '<span class="psub">' + s + '</span>'; }).join("") + '</div>' +
+        (gt ? '<p class="psub-note">' + gt + ' &middot; <a href="events.html#photography">full photographer&rsquo;s guide &rarr;</a></p>' : '');
+    }
+    render([]);   // instant seasonal render
+    getWildData().then(function (d) {   // then ground it in this week's real sightings
+      if (!el.isConnected) return;
+      var live = [], bloom = wildCards(d.plants)[0], seen = wildCards(d.animals)[0];
+      if (bloom) live.push("🌸 " + esc(bloom.name) + " in bloom now");
+      if (seen) live.push("📷 " + esc(seen.name) + ", seen this week");
+      render(live);
+    });
+  }
+  /* ---- Wildlife sounds — rotate the featured calls daily ---- */
+  var SOUND_POOL = {
+    morning: ["Canyon &amp; rock wrens tumbling down the cliffs", "Gambel's quail calling from the brush", "Hummingbirds buzzing the feeders", "Woodpeckers drumming on juniper", "Cactus wrens rattling at first light", "Mourning doves cooing low", "Curve-billed thrashers running their song", "Bewick's wrens chattering in the scrub"],
+    evening: ["Coyotes starting up across the hills", "Crickets rising with the dark", "Great horned owls trading hoots", "Common poorwills on warm nights", "Western screech-owls trilling", "Common nighthawks booming overhead", "Bats clicking over the creek", "Elk bugling up on the rim (in fall)"],
+    monsoon: ["Spadefoot &amp; canyon treefrogs after the rain", "Thunder rolling up the Verde Valley", "Cicadas at full volume in the heat", "Runoff moving through the washes", "Red-spotted toads calling from fresh pools", "Rain drumming on the slickrock"]
+  };
+  function initSounds() {
+    var el = doc.querySelector("[data-sounds]"); if (!el) return;
+    var day = Math.floor(Date.now() / 86400000);
+    function pick(arr, n, seed) { var a = arr.slice(), out = [], s = seed; while (out.length < n && a.length) { s = (s * 9301 + 49297) % 233280; out.push(a.splice(Math.floor(s / 233280 * a.length), 1)[0]); } return out; }
+    var cols = [["🌅 Morning", "morning"], ["🌇 Evening", "evening"], ["⛈️ Monsoon", "monsoon"]];
+    el.innerHTML = cols.map(function (c, k) {
+      var items = pick(SOUND_POOL[c[1]], 4, day + k * 31);
+      return '<article class="sound-card"><h3>' + c[0] + '</h3><ul>' + items.map(function (x) { return '<li>' + x + '</li>'; }).join("") + '</ul></article>';
+    }).join("");
   }
 
   /* ---- KAZM Mountain Notes (rotating field notes from the towers) ---- */
@@ -2902,6 +2931,7 @@
     initWildlife();
     initNatureDash();
     initPhotoSubjects();
+    initSounds();
     initMountainNotes();
     initDidYouKnow();
     initKidsSpot();
