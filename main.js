@@ -3288,10 +3288,6 @@
       '<div class="tc-inner">' +
         '<div class="tc-back"><i></i>' +
           '<img class="tc-back-logo" src="White%20logo%20-%20no%20background.svg" alt="" loading="lazy" />' +
-          '<span class="tc-back-sun">☀</span><span class="tc-back-moon">☽</span>' +
-          '<span class="tc-back-c tc-back-c1">K</span><span class="tc-back-c tc-back-c2">A</span>' +
-          '<span class="tc-back-c tc-back-c3">Z</span><span class="tc-back-c tc-back-c4">M</span>' +
-          '<span class="tc-back-freq">106.5 FM &middot; 780 AM</span>' +
         '</div>' +
         '<div class="tc-face"><div class="tc-face-in">' +
           '<img class="tc-img" src="' + card.img + '" alt="" loading="lazy" />' +
