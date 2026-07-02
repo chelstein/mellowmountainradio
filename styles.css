@@ -1539,6 +1539,54 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .lunar-foot { position: relative; z-index: 1; margin-top: 16px; font-size: 12px; color: rgba(233,237,255,.55); line-height: 1.5; }
 @media (max-width: 720px) { .lunar-stats { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .lunar-main { flex-direction: column; } .lunar-disc { width: 240px; max-width: 80%; } .lunar-info { width: 100%; } }
+
+/* ===== Sedona Horoscope ===== */
+.page-hero--stars { position: relative; overflow: hidden; background: radial-gradient(130% 120% at 78% -10%, #26305c 0%, #141a36 52%, #0a0e20 100%); }
+.page-hero--stars::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(1.5px 1.5px at 12% 22%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 82% 16%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 58% 30%, #cfe 50%, transparent 51%), radial-gradient(1.4px 1.4px at 33% 62%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 71% 74%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 46% 84%, #dde 50%, transparent 51%), radial-gradient(1px 1px at 92% 52%, #fff 50%, transparent 51%); opacity: .5; }
+.page-hero--stars .wrap { position: relative; z-index: 1; }
+
+/* live sky strip */
+.sky-now { margin: 22px 0 8px; }
+.sky-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.skb { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; background: radial-gradient(120% 130% at 50% 0%, #202b52 0%, #121935 70%); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 14px 8px; box-shadow: var(--shadow-sm); }
+.skb-p { font-size: 1.7rem; line-height: 1; color: #ffe9a8; }
+.skb-in { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: rgba(203,214,255,.5); }
+.skb-s { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; }
+.skb-d { font-size: 12px; color: rgba(203,214,255,.7); }
+.skb-d .rx { color: #ff9a7a; font-style: normal; }
+.skb-n { font-size: 11px; color: rgba(233,237,255,.55); margin-top: 2px; }
+.sky-strip-foot { margin: 14px 2px 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.sky-strip-foot b { color: var(--ink); }
+@media (max-width: 860px) { .sky-strip { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 480px) { .sky-strip { grid-template-columns: repeat(3, 1fr); } .skb-p { font-size: 1.45rem; } }
+
+/* zodiac cards */
+.horo-updated { color: var(--muted); font-size: 13px; font-style: italic; }
+.zodiac { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 22px; }
+.zc { position: relative; display: flex; flex-direction: column; border-radius: var(--r); overflow: hidden; border: 1px solid rgba(255,255,255,.1); background: var(--surface); box-shadow: var(--shadow-sm); transition: transform .18s ease, box-shadow .18s ease; }
+.zc:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.zc-logo { position: relative; height: 132px; display: flex; align-items: center; justify-content: center; background: radial-gradient(120% 130% at 70% 0%, #202b52 0%, #10162e 60%, #0a0e20 100%); overflow: hidden; }
+.zc-logo::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(1px 1px at 18% 30%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 82% 24%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 60% 74%, #cfe 50%, transparent 51%), radial-gradient(1px 1px at 30% 80%, #fff 50%, transparent 51%); opacity: .45; }
+.cst { position: relative; z-index: 1; width: 82%; height: 100%; }
+.zc-glyph { position: absolute; z-index: 2; right: 12px; bottom: 8px; font-size: 2rem; line-height: 1; color: rgba(255,255,255,.9); text-shadow: 0 0 14px rgba(150,180,255,.6); }
+.zc-sunbadge { position: absolute; z-index: 2; top: 10px; left: 10px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #1a1204; background: linear-gradient(180deg, #ffe08a, #ffb44d); border-radius: 20px; padding: 3px 9px; box-shadow: 0 0 14px rgba(255,190,90,.5); }
+.zc--sun { border-color: rgba(255,190,90,.5); box-shadow: 0 0 0 1px rgba(255,190,90,.25), var(--shadow-sm); }
+.zc-body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+.zc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.zc-head h3 { margin: 0; font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); }
+.zc-dates { font-size: 12px; color: var(--muted); flex: none; }
+.zc-sub { margin: 6px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.zc-star { margin: 8px 0 0; font-size: 12px; color: var(--muted); } .zc-star b { color: var(--ink); }
+.zc-tabs { display: flex; gap: 6px; margin: 14px 0 10px; }
+.zc-tab { flex: 1; font: inherit; font-size: 12px; font-weight: 700; color: var(--muted); background: var(--surface-2, rgba(0,0,0,.04)); border: 1px solid var(--line); border-radius: 20px; padding: 6px 4px; cursor: pointer; transition: all .15s ease; }
+.zc-tab:hover { color: var(--ink); }
+.zc-tab.is-active { color: #fff; background: var(--navy); border-color: var(--navy); }
+.zc-read { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--ink); flex: 1; }
+.zc--fire .zc-head h3 { color: #d1683a; } .zc--earth .zc-head h3 { color: #4f8a4a; }
+.zc--air .zc-head h3 { color: #3f7fa6; } .zc--water .zc-head h3 { color: #5a6fb0; }
+@media (max-width: 860px) { .zodiac { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .zodiac { grid-template-columns: 1fr; } }
+
 /* Stargazing tonight */
 .stargaze { margin: 22px 0 8px; }
 .sky-card { position: relative; overflow: hidden; border-radius: var(--r); padding: 24px 26px; color: #e9edff; box-shadow: var(--shadow); background: radial-gradient(130% 120% at 80% 0%, #23305c 0%, #131a34 55%, #0c1024 100%); border: 1px solid rgba(255,255,255,.12); }

@@ -35,7 +35,7 @@
           '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="contact.html">Contact</a>' +
+          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Sedona Horoscope</a><a role="menuitem" href="contact.html">Contact</a>' +
         '</div></li>' +
         '<li data-nav="advertising"><a href="advertising.html">Advertising</a></li>' +
       '</ul></nav>' +
@@ -58,7 +58,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Horoscope</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
     '<div class="wrap footer-bottom">' +
@@ -2501,6 +2501,177 @@
   }
 
   /* =========================================================
+     SEDONA HOROSCOPE — grounded in the REAL sky, not made up.
+     The daily/weekly/monthly readings are pulled live server-side from
+     freehoroscopeapi.com into horoscopes.json (same-origin). The "sky
+     right now" strip and every planet's current sign are computed live
+     from Keplerian ephemeris (JPL mean elements) — actual geocentric
+     ecliptic longitudes — so the zodiac positions are true, not decorative.
+     Each sign's logo is its real constellation, drawn from star positions.
+     ========================================================= */
+  // Live geocentric ecliptic longitudes → which zodiac sign each body is in now.
+  var PLANET_ELEMS = {
+    // a(AU), e, I, L, longPeri(ϖ), longNode(Ω)  + per-century rates. JPL/Standish 1800–2050.
+    Mercury: [0.38709927, 0.20563593, 7.00497902, 252.25032350, 77.45779628, 48.33076593, 0.00000037, 0.00001906, -0.00594749, 149472.67411175, 0.16047689, -0.12534081],
+    Venus:   [0.72333566, 0.00677672, 3.39467605, 181.97909950, 131.60246718, 76.67984255, 0.00000390, -0.00004107, -0.00078890, 58517.81538729, 0.00268329, -0.27769418],
+    Earth:   [1.00000261, 0.01671123, -0.00001531, 100.46457166, 102.93768193, 0.0, 0.00000562, -0.00004392, -0.01294668, 35999.37244981, 0.32327364, 0.0],
+    Mars:    [1.52371034, 0.09339410, 1.84969142, -4.55343205, -23.94362959, 49.55953891, 0.00001847, 0.00007882, -0.00813131, 19140.30268499, 0.44441088, -0.29257343],
+    Jupiter: [5.20288700, 0.04838624, 1.30439695, 34.39644051, 14.72847983, 100.47390909, -0.00011607, -0.00013253, -0.00183714, 3034.74612775, 0.21252668, 0.20469106],
+    Saturn:  [9.53667594, 0.05386179, 2.48599187, 49.95424423, 92.59887831, 113.66242448, -0.00125060, -0.00050991, 0.00193609, 1222.49362201, -0.41897216, -0.28867794]
+  };
+  function helio(name, T) {
+    var e = PLANET_ELEMS[name], rad = Math.PI / 180;
+    var a = e[0] + e[6] * T, ec = e[1] + e[7] * T, I = (e[2] + e[8] * T) * rad,
+      L = e[3] + e[9] * T, wbar = e[4] + e[10] * T, Om = (e[5] + e[11] * T) * rad;
+    var M = L - wbar, w = wbar * rad - Om;
+    M = ((M % 360) + 540) % 360 - 180; M *= rad;
+    var E = M + ec * Math.sin(M);
+    for (var k = 0; k < 6; k++) { E = E - (E - ec * Math.sin(E) - M) / (1 - ec * Math.cos(E)); }
+    var xp = a * (Math.cos(E) - ec), yp = a * Math.sqrt(1 - ec * ec) * Math.sin(E);
+    var cw = Math.cos(w), sw = Math.sin(w), cO = Math.cos(Om), sO = Math.sin(Om), cI = Math.cos(I), sI = Math.sin(I);
+    return {
+      x: (cw * cO - sw * sO * cI) * xp + (-sw * cO - cw * sO * cI) * yp,
+      y: (cw * sO + sw * cO * cI) * xp + (-sw * sO + cw * cO * cI) * yp,
+      z: (sw * sI) * xp + (cw * sI) * yp
+    };
+  }
+  function eclLon(name, date) {   // geocentric ecliptic longitude (deg 0–360)
+    var T = (date.valueOf() / 86400000 - 10957.5) / 36525;   // centuries since J2000
+    var earth = helio("Earth", T), deg = 180 / Math.PI;
+    if (name === "Sun") return (Math.atan2(-earth.y, -earth.x) * deg + 360) % 360;
+    if (name === "Moon") {
+      var d = date.valueOf() / 86400000 - 10957.5, rad = Math.PI / 180;
+      var Lm = 218.316 + 13.176396 * d, Mm = 134.963 + 13.064993 * d;
+      return (((Lm + 6.289 * Math.sin(Mm * rad)) % 360) + 360) % 360;
+    }
+    var p = helio(name, T);
+    return (Math.atan2(p.y - earth.y, p.x - earth.x) * deg + 360) % 360;
+  }
+  var PLANETS = [["Sun", "☉"], ["Moon", "☽"], ["Mercury", "☿"], ["Venus", "♀"], ["Mars", "♂"], ["Jupiter", "♃"], ["Saturn", "♄"]];
+  function skyNow(date) {
+    return PLANETS.map(function (p) {
+      var lon = eclLon(p[0], date), idx = Math.floor(lon / 30) % 12, deg = lon % 30;
+      var retro = false;
+      if (p[0] !== "Sun" && p[0] !== "Moon") {
+        var l2 = eclLon(p[0], new Date(+date + 5 * 86400000)), dd = ((l2 - lon + 540) % 360) - 180;
+        retro = dd < 0;
+      }
+      return { name: p[0], glyph: p[1], sign: idx, deg: deg, retro: retro };
+    });
+  }
+  // Zodiac in ecliptic order (index === floor(lon/30)). Constellation = real star figure.
+  var ZODIAC = [
+    { k: "aries", n: "Aries", g: "♈", sym: "the Ram", dates: "Mar 21 – Apr 19", el: "Fire", q: "Cardinal", ruler: "Mars ♂",
+      stars: [[20, 20], [40, 27], [54, 31], [72, 44]], lines: [[0, 1], [1, 2], [2, 3]], alpha: 0, aName: "Hamal" },
+    { k: "taurus", n: "Taurus", g: "♉", sym: "the Bull", dates: "Apr 20 – May 20", el: "Earth", q: "Fixed", ruler: "Venus ♀",
+      stars: [[14, 16], [30, 30], [40, 36], [52, 40], [64, 33], [82, 18], [78, 50]], lines: [[1, 2], [2, 3], [3, 4], [4, 5], [3, 6]], alpha: 3, aName: "Aldebaran" },
+    { k: "gemini", n: "Gemini", g: "♊", sym: "the Twins", dates: "May 21 – Jun 20", el: "Air", q: "Mutable", ruler: "Mercury ☿",
+      stars: [[28, 13], [52, 16], [24, 34], [48, 37], [18, 53], [40, 55], [60, 50]], lines: [[0, 1], [0, 2], [2, 4], [1, 3], [3, 5], [3, 6]], alpha: 1, aName: "Pollux" },
+    { k: "cancer", n: "Cancer", g: "♋", sym: "the Crab", dates: "Jun 21 – Jul 22", el: "Water", q: "Cardinal", ruler: "the Moon ☽",
+      stars: [[50, 14], [44, 32], [58, 34], [38, 50], [72, 42]], lines: [[0, 1], [0, 2], [1, 3], [2, 4]], alpha: 2, aName: "Tarf" },
+    { k: "leo", n: "Leo", g: "♌", sym: "the Lion", dates: "Jul 23 – Aug 22", el: "Fire", q: "Fixed", ruler: "the Sun ☉",
+      stars: [[22, 46], [22, 33], [27, 21], [38, 15], [47, 23], [42, 35], [66, 45], [86, 39]], lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 1], [0, 6], [6, 7]], alpha: 0, aName: "Regulus" },
+    { k: "virgo", n: "Virgo", g: "♍", sym: "the Maiden", dates: "Aug 23 – Sep 22", el: "Earth", q: "Mutable", ruler: "Mercury ☿",
+      stars: [[16, 20], [32, 27], [46, 22], [58, 33], [72, 28], [52, 47], [66, 60]], lines: [[0, 1], [1, 2], [2, 3], [3, 4], [3, 5], [5, 6]], alpha: 6, aName: "Spica" },
+    { k: "libra", n: "Libra", g: "♎", sym: "the Scales", dates: "Sep 23 – Oct 22", el: "Air", q: "Cardinal", ruler: "Venus ♀",
+      stars: [[28, 46], [44, 24], [66, 21], [76, 44], [52, 41]], lines: [[0, 1], [1, 2], [2, 3], [1, 4], [2, 4]], alpha: 2, aName: "Zubeneschamali" },
+    { k: "scorpio", n: "Scorpio", g: "♏", sym: "the Scorpion", dates: "Oct 23 – Nov 21", el: "Water", q: "Fixed", ruler: "Pluto ♇ / Mars ♂",
+      stars: [[12, 16], [22, 23], [30, 30], [40, 37], [50, 45], [61, 53], [71, 59], [79, 52], [80, 41]], lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8]], alpha: 3, aName: "Antares", red: true },
+    { k: "sagittarius", n: "Sagittarius", g: "♐", sym: "the Archer", dates: "Nov 22 – Dec 21", el: "Fire", q: "Mutable", ruler: "Jupiter ♃",
+      stars: [[14, 40], [26, 34], [30, 50], [44, 22], [58, 50], [62, 34], [74, 38]], lines: [[0, 1], [1, 2], [2, 4], [4, 5], [5, 1], [1, 3], [3, 5], [5, 6], [6, 4]], alpha: 2, aName: "Kaus Australis" },
+    { k: "capricorn", n: "Capricorn", g: "♑", sym: "the Sea-Goat", dates: "Dec 22 – Jan 19", el: "Earth", q: "Cardinal", ruler: "Saturn ♄",
+      stars: [[18, 24], [30, 21], [70, 25], [82, 34], [58, 53], [40, 51], [26, 40]], lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 0]], alpha: 3, aName: "Deneb Algedi" },
+    { k: "aquarius", n: "Aquarius", g: "♒", sym: "the Water-Bearer", dates: "Jan 20 – Feb 18", el: "Air", q: "Fixed", ruler: "Uranus ♅ / Saturn ♄",
+      stars: [[36, 18], [48, 24], [60, 17], [48, 31], [42, 43], [55, 49], [46, 59], [62, 62]], lines: [[0, 1], [1, 2], [1, 3], [3, 4], [4, 5], [5, 6], [6, 7]], alpha: 2, aName: "Sadalsuud" },
+    { k: "pisces", n: "Pisces", g: "♓", sym: "the Fishes", dates: "Feb 19 – Mar 20", el: "Water", q: "Mutable", ruler: "Neptune ♆ / Jupiter ♃",
+      stars: [[12, 20], [19, 14], [27, 18], [20, 27], [40, 34], [58, 45], [73, 31], [82, 19]], lines: [[0, 1], [1, 2], [2, 3], [3, 0], [2, 4], [4, 5], [5, 6], [6, 7]], alpha: 5, aName: "Alpherg" }
+  ];
+  function constellationSVG(z) {
+    var pts = z.stars.map(function (s, i) {
+      var big = i === z.alpha, r = big ? 2.9 : (1.1 + (s[2] || 0));
+      var fill = big ? (z.red ? "#ff7a6b" : "#ffe9a8") : "#dfe8ff";
+      return '<circle cx="' + s[0] + '" cy="' + s[1] + '" r="' + r + '" fill="' + fill + '"' +
+        (big ? ' filter="url(#hglow)"' : ' opacity="' + (0.55 + (s[2] || 0) * 0.15) + '"') + '/>';
+    }).join("");
+    var segs = z.lines.map(function (l) {
+      var a = z.stars[l[0]], b = z.stars[l[1]];
+      return '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="rgba(180,200,255,.32)" stroke-width="0.7"/>';
+    }).join("");
+    return '<svg class="cst" viewBox="0 0 100 68" role="img" aria-label="' + z.n + ' constellation">' +
+      '<defs><filter id="hglow" x="-120%" y="-120%" width="340%" height="340%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' +
+      segs + pts + '</svg>';
+  }
+  var _horoData = null;
+  function horoText(sign, period) {
+    var s = _horoData && _horoData.signs && _horoData.signs[sign];
+    if (s && s[period]) return s[period];
+    return "";
+  }
+  function initHoroscope() {
+    var page = doc.querySelector("[data-zodiac]"); if (!page) return;
+    var elGlyph = { Fire: "🔥", Earth: "🌿", Air: "💨", Water: "🌊" };
+    var now = new Date(), sky = skyNow(now), sunSign = sky[0].sign;
+
+    // ---- live sky strip ----
+    var strip = doc.querySelector("[data-sky-now]");
+    if (strip) {
+      strip.innerHTML = '<div class="sky-strip">' + sky.map(function (b) {
+        var z = ZODIAC[b.sign];
+        return '<div class="skb"><span class="skb-p">' + b.glyph + '</span>' +
+          '<span class="skb-in">in</span><span class="skb-s">' + z.g + ' ' + z.n + '</span>' +
+          '<span class="skb-d">' + Math.floor(b.deg) + '&deg;' + (b.retro ? ' <b class="rx">℞</b>' : '') + '</span>' +
+          '<span class="skb-n">' + b.name + '</span></div>';
+      }).join("") + '</div>' +
+        '<p class="sky-strip-foot">Real geocentric positions computed live for ' +
+        now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) +
+        ' &middot; ℞ = retrograde. The Sun sits in <b>' + ZODIAC[sunSign].n + '</b> right now.</p>';
+    }
+
+    // ---- 12 sign cards ----
+    function card(z, i) {
+      var isSun = i === sunSign;
+      return '<article class="zc zc--' + z.el.toLowerCase() + (isSun ? ' zc--sun' : '') + '" data-sign="' + z.k + '">' +
+        '<div class="zc-logo">' + constellationSVG(z) +
+          '<span class="zc-glyph">' + z.g + '</span>' +
+          (isSun ? '<span class="zc-sunbadge">☀ Sun is here now</span>' : '') +
+        '</div>' +
+        '<div class="zc-body">' +
+          '<div class="zc-head"><h3>' + z.n + '</h3><span class="zc-dates">' + z.dates + '</span></div>' +
+          '<p class="zc-sub">' + z.sym + ' &middot; ' + elGlyph[z.el] + ' ' + z.el + ' &middot; ' + z.q + ' &middot; ruled by ' + z.ruler + '</p>' +
+          '<p class="zc-star">✦ brightest star: <b>' + z.aName + '</b></p>' +
+          '<div class="zc-tabs" role="tablist">' +
+            '<button class="zc-tab is-active" data-p="daily">Today</button>' +
+            '<button class="zc-tab" data-p="weekly">This week</button>' +
+            '<button class="zc-tab" data-p="monthly">This month</button>' +
+          '</div>' +
+          '<p class="zc-read" data-read>' + (esc(horoText(z.k, "daily")) || "Reading loading&hellip;") + '</p>' +
+        '</div>' +
+      '</article>';
+    }
+    function render() {
+      page.innerHTML = ZODIAC.map(card).join("");
+      page.querySelectorAll(".zc").forEach(function (cardEl) {
+        var sign = cardEl.getAttribute("data-sign"), read = cardEl.querySelector("[data-read]");
+        cardEl.querySelectorAll(".zc-tab").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            cardEl.querySelectorAll(".zc-tab").forEach(function (t) { t.classList.remove("is-active"); });
+            tab.classList.add("is-active");
+            var p = tab.getAttribute("data-p"), txt = horoText(sign, p);
+            read.innerHTML = txt ? esc(txt) : "That reading isn&rsquo;t in yet &mdash; check back after the next refresh.";
+          });
+        });
+      });
+    }
+    render();
+    // load live readings (same-origin JSON written by the 6-hour relay)
+    fetch("horoscopes.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d && d.signs) { _horoData = d; render();
+        var when = doc.querySelector("[data-horo-updated]");
+        if (when && d.updated) when.textContent = "Readings refreshed " + new Date(d.updated).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " · freehoroscopeapi.com"; } })
+      .catch(function () {});
+  }
+
+  /* =========================================================
      PHOTOGRAPHER'S LIGHT — golden & blue hour for Sedona, no keys.
      Same validated sun-time solver as the stargazing panel.
      ========================================================= */
@@ -3191,6 +3362,7 @@
     initCosmic();
     initStargaze();
     initLunar();
+    initHoroscope();
     initGolden();
     initCosmicAudio();
     initGoldenMode();

@@ -44,11 +44,14 @@ jobs:
         env:
           ZTR_KEY: ${{ secrets.ZTR_KEY }}
         continue-on-error: true
+      - name: Fetch horoscopes (all twelve signs)
+        run: node scripts/fetch-horoscopes.mjs
+        continue-on-error: true
       - name: Commit changes if any
         run: |
           git config user.name "mmr-data-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add showtimes.json library-events.json festivals.json concerts.json fire.json schumann.json 2>/dev/null || true
+          git add showtimes.json library-events.json festivals.json concerts.json fire.json schumann.json horoscopes.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No changes."
           else
