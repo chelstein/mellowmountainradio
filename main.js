@@ -2278,6 +2278,226 @@
   }
 
   /* =========================================================
+     DETAILED LUNAR MAP — everything computed live, no keys, no images.
+     Phase, illumination, age, Earth&ndash;Moon distance, angular size,
+     optical libration (Meeus), and Sedona moonrise/moonset — then the
+     near side is rendered pixel-by-pixel with the REAL terminator for
+     tonight (correct lit fraction + waxing/waning limb), the major maria
+     drawn at their true selenographic positions, and the named craters
+     that are actually catching the sun right now.
+     ========================================================= */
+  function lunarInfo(now) {
+    var LAT = 34.8697, LON = -111.7610, TZ = -7;
+    var rad = Math.PI / 180, deg = 180 / Math.PI, dayMs = 86400000, J1970 = 2440588, J2000 = 2451545, e = rad * 23.4397, syn = 29.530588853;
+    function fromJD(j) { return (j + 0.5 - J1970) * dayMs; }
+    function toDays(date) { return date.valueOf() / dayMs - 0.5 + J1970 - J2000; }
+    function n360(x) { return ((x % 360) + 360) % 360; }
+    function n180(x) { x = n360(x); return x > 180 ? x - 360 : x; }
+    function raOf(l, b) { return Math.atan2(Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e), Math.cos(l)); }
+    function decOf(l, b) { return Math.asin(Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l)); }
+    function sidereal(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
+    function altOf(H, phi, dc) { return Math.asin(Math.sin(phi) * Math.sin(dc) + Math.cos(phi) * Math.cos(dc) * Math.cos(H)); }
+    function sma(d) { return rad * (357.5291 + 0.98560028 * d); }
+    function eclon(M) { return M + rad * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M)) + rad * 102.9372 + Math.PI; }
+    var d = toDays(now);
+    var ls = n360(eclon(sma(d)) * deg);                                  // sun ecliptic longitude (deg)
+    var Lm = 218.316 + 13.176396 * d, Mm = 134.963 + 13.064993 * d, Fm = 93.272 + 13.229350 * d;
+    var lonM = n360(Lm + 6.289 * Math.sin(Mm * rad));                    // moon true ecliptic lon (deg)
+    var latM = 5.128 * Math.sin(Fm * rad);                              // moon ecliptic lat (deg)
+    var distKm = 385001 - 20905 * Math.cos(Mm * rad);                   // Earth–Moon distance (km)
+    var lonMr = lonM * rad, latMr = latM * rad;
+    var elong = n360(lonM - ls);                                        // 0 new · 180 full
+    var illum = (1 - Math.cos(elong * rad)) / 2;                        // lit fraction
+    var waxing = elong < 180;
+    var age = elong / 360 * syn;                                        // days since new
+    var subSunLon = n180(180 - elong);                                 // selenographic subsolar longitude
+    // optical libration (Meeus, Astronomical Algorithms ch.53)
+    var Om = n360(125.0445 - 0.0529539 * d), I = 1.54242;
+    var W = n360(lonM - Om) * rad, Ir = I * rad, br = latMr;
+    var A = Math.atan2(Math.sin(W) * Math.cos(br) * Math.cos(Ir) - Math.sin(br) * Math.sin(Ir), Math.cos(W) * Math.cos(br));
+    var libLon = n180(A * deg - Fm);
+    var libLat = Math.asin(-Math.sin(W) * Math.cos(br) * Math.sin(Ir) - Math.sin(br) * Math.cos(Ir)) * deg;
+    // Sedona moonrise / moonset
+    var lw = rad * -LON, phi = rad * LAT;
+    function moonAltAt(date) {
+      var dd = toDays(date), LL = 218.316 + 13.176396 * dd, MM = 134.963 + 13.064993 * dd, FF = 93.272 + 13.229350 * dd;
+      var lo = (LL + 6.289 * Math.sin(MM * rad)) * rad, la = (5.128 * Math.sin(FF * rad)) * rad;
+      var H = sidereal(dd, lw) - raOf(lo, la), h = altOf(H, phi, decOf(lo, la));
+      return h + rad * 0.017 / Math.tan(h + rad * 10.26 / (h + rad * 5.114));
+    }
+    function moonTimes(date) {
+      var t = new Date(date); t.setHours(0, 0, 0, 0);
+      var hc = 0.133 * rad, h0 = moonAltAt(t) - hc, rise, set;
+      for (var i = 1; i <= 24; i++) {
+        var h1 = moonAltAt(new Date(+t + i * 3600000)) - hc;
+        if (h0 < 0 && h1 >= 0) rise = i - h0 / (h0 - h1);
+        if (h0 >= 0 && h1 < 0) set = i - h0 / (h0 - h1);
+        h0 = h1;
+      }
+      var r = {}; if (rise) r.rise = new Date(+t + rise * 3600000); if (set) r.set = new Date(+t + set * 3600000); return r;
+    }
+    var mt = moonTimes(now);
+    var angMin = 2 * Math.atan(1737.4 / distKm) * deg * 60;             // apparent diameter (arcmin)
+    function nextAt(target) { return new Date(+now + n360(target - elong) / 360 * syn * dayMs); }
+    var names = [["New moon", "🌑"], ["Waxing crescent", "🌒"], ["First quarter", "🌓"], ["Waxing gibbous", "🌔"],
+      ["Full moon", "🌕"], ["Waning gibbous", "🌖"], ["Last quarter", "🌗"], ["Waning crescent", "🌘"]];
+    var idx = Math.round(elong / 45) % 8;
+    return {
+      name: names[idx][0], icon: names[idx][1], illum: illum, waxing: waxing, age: age,
+      subSunLon: subSunLon, libLon: libLon, libLat: libLat, distKm: distKm, angMin: angMin, elong: elong,
+      moonrise: mt.rise, moonset: mt.set, tz: TZ, nextFull: nextAt(180), nextNew: nextAt(360)
+    };
+  }
+  // near-side feature catalogue — real selenographic coordinates (lon +E, lat +N)
+  var LUNAR_MARIA = [
+    { n: "Oceanus Procellarum", lon: -57, lat: 19, r: 27, soft: 9 }, { n: "Mare Imbrium", lon: -16, lat: 33, r: 18, soft: 6 },
+    { n: "Mare Serenitatis", lon: 18, lat: 28, r: 11, soft: 5 }, { n: "Mare Tranquillitatis", lon: 31, lat: 9, r: 13, soft: 5 },
+    { n: "Mare Crisium", lon: 59, lat: 17, r: 8, soft: 3 }, { n: "Mare Fecunditatis", lon: 52, lat: -8, r: 10, soft: 4 },
+    { n: "Mare Nectaris", lon: 34, lat: -15, r: 6, soft: 3 }, { n: "Mare Nubium", lon: -17, lat: -21, r: 11, soft: 5 },
+    { n: "Mare Humorum", lon: -39, lat: -24, r: 7, soft: 3 }, { n: "Mare Frigoris", lon: 0, lat: 56, r: 8, soft: 5 },
+    { n: "Mare Vaporum", lon: 4, lat: 13, r: 5, soft: 3 }, { n: "Mare Insularum", lon: -31, lat: 8, r: 8, soft: 4 },
+    { n: "Mare Cognitum", lon: -23, lat: -10, r: 5, soft: 3 }, { n: "Sinus Iridum", lon: -32, lat: 45, r: 5, soft: 3 },
+    { n: "Mare Humboldtianum", lon: 81, lat: 57, r: 5, soft: 3 }
+  ];
+  var LUNAR_CRATERS = [
+    { n: "Tycho", lon: -11, lat: -43, rays: true, rk: 3 }, { n: "Copernicus", lon: -20, lat: 10, rays: true, rk: 3 },
+    { n: "Kepler", lon: -38, lat: 8, rays: true, rk: 2 }, { n: "Aristarchus", lon: -47, lat: 24, rk: 2 },
+    { n: "Plato", lon: -9, lat: 51, dark: true, rk: 3 }, { n: "Clavius", lon: -14, lat: -58, rk: 3 },
+    { n: "Grimaldi", lon: -68, lat: -5, dark: true, rk: 3 }, { n: "Gassendi", lon: -40, lat: -18, dark: true, rk: 2 },
+    { n: "Ptolemaeus", lon: -2, lat: -9, rk: 3 }, { n: "Langrenus", lon: 61, lat: -9, rk: 2 },
+    { n: "Petavius", lon: 61, lat: -25, rk: 2 }, { n: "Posidonius", lon: 30, lat: 32, rk: 2 },
+    { n: "Aristoteles", lon: 17, lat: 50, rk: 2 }
+  ];
+  var LUNAR_SITES = [{ n: "Apollo 11", lon: 23.5, lat: 0.7 }, { n: "Apollo 17", lon: 30.8, lat: 20.2 }];
+  function lunarSeleVec(lon, lat) { var rad = Math.PI / 180, cl = Math.cos(lat * rad); return [cl * Math.cos(lon * rad), cl * Math.sin(lon * rad), Math.sin(lat * rad)]; }
+  function lunarLit(f, L) {   // is a near-side feature currently sunlit AND facing us?
+    var rad = Math.PI / 180, sb0 = Math.sin(L.libLat * rad), cb0 = Math.cos(L.libLat * rad);
+    var b = f.lat * rad, dLon = (f.lon - L.libLon) * rad;
+    var Z = Math.sin(b) * sb0 + Math.cos(b) * cb0 * Math.cos(dLon);
+    if (Z <= 0.05) return false;
+    return Math.cos(b) * Math.cos((f.lon - L.subSunLon) * rad) > 0.06;
+  }
+  function drawMoon(cv, L) {
+    var rad = Math.PI / 180;
+    var cssW = cv.clientWidth || 300, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W = Math.max(1, Math.round(cssW * dpr)), H = W;
+    cv.width = W; cv.height = H; cv.style.height = cssW + "px";
+    var ctx = cv.getContext("2d"), cx = W / 2, cy = H / 2, R = W * 0.47;
+    var subLon = L.libLon * rad, sinb0 = Math.sin(L.libLat * rad), cosb0 = Math.cos(L.libLat * rad), subSun = L.subSunLon * rad;
+    var maria = LUNAR_MARIA.map(function (m) { return { v: lunarSeleVec(m.lon, m.lat), ci: Math.cos(m.r * rad), co: Math.cos((m.r + (m.soft || 5)) * rad) }; });
+    var img = ctx.createImageData(W, H), data = img.data;
+    for (var y = 0; y < H; y++) {
+      for (var x = 0; x < W; x++) {
+        var nx = (x - cx) / R, ny = (y - cy) / R, r2 = nx * nx + ny * ny, o = (y * W + x) * 4;
+        if (r2 > 1) { data[o + 3] = 0; continue; }
+        var Xs = nx, Ys = -ny, Z = Math.sqrt(1 - r2);
+        var sinb = Ys * cosb0 + Z * sinb0; if (sinb > 1) sinb = 1; else if (sinb < -1) sinb = -1;
+        var b = Math.asin(sinb), cb = Math.cos(b);
+        var lam = subLon + Math.atan2(Xs, Z * cosb0 - Ys * sinb0);
+        var vx = cb * Math.cos(lam), vy = cb * Math.sin(lam), vz = sinb;
+        var alb = 0.88;
+        for (var k = 0; k < maria.length; k++) {
+          var mm = maria[k], dd = vx * mm.v[0] + vy * mm.v[1] + vz * mm.v[2];
+          if (dd > mm.co) { var t = (dd - mm.co) / (mm.ci - mm.co); if (t > 1) t = 1; t = t * t * (3 - 2 * t); alb += (0.30 - alb) * t * 0.9; }
+        }
+        alb += 0.03 * Math.sin(lam * 7) * Math.cos(b * 9);              // faint highland mottling
+        var limb = 0.35 + 0.65 * (0.5 + 0.5 * Z);
+        var cosi = cb * Math.cos(lam - subSun);
+        var lit = (cosi + 0.03) / 0.09; if (lit < 0) lit = 0; else if (lit > 1) lit = 1; lit = lit * lit * (3 - 2 * lit);
+        var bright = 0.12 + 0.88 * Math.pow(cosi > 0 ? cosi : 0, 0.6), earth = 0.055;
+        var lum = alb * limb * (earth + (bright - earth) * lit); if (lum < 0) lum = 0;
+        var r8 = lum * 232, g8 = lum * 226, b8 = lum * 210;
+        if (lit < 0.5) { var ee = (0.5 - lit) * 2; r8 = r8 * (1 - 0.22 * ee) + 5 * ee; g8 = g8 * (1 - 0.14 * ee) + 7 * ee; b8 = b8 + 14 * ee; }  // cool earthshine
+        data[o] = r8; data[o + 1] = g8; data[o + 2] = b8; data[o + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.clip();
+    function proj(lon, lat) {
+      var dLon = (lon - L.libLon) * rad, bb = lat * rad;
+      var X = Math.cos(bb) * Math.sin(dLon), Y = Math.sin(bb) * cosb0 - Math.cos(bb) * sinb0 * Math.cos(dLon),
+        Zt = Math.sin(bb) * sinb0 + Math.cos(bb) * cosb0 * Math.cos(dLon);
+      return { x: cx + X * R, y: cy - Y * R, z: Zt };
+    }
+    LUNAR_CRATERS.forEach(function (c) {
+      if (!lunarLit(c, L)) return;
+      var p = proj(c.lon, c.lat), rr = (c.rk || 2) * dpr;
+      if (c.dark) { ctx.beginPath(); ctx.arc(p.x, p.y, rr, 0, 7); ctx.fillStyle = "rgba(18,20,28,.5)"; ctx.fill(); return; }
+      if (c.rays) {
+        ctx.strokeStyle = "rgba(255,255,248,.09)"; ctx.lineWidth = dpr * 0.8;
+        for (var a = 0; a < 12; a++) { var an = a / 12 * Math.PI * 2; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.cos(an) * rr * 7, p.y + Math.sin(an) * rr * 7); ctx.stroke(); }
+      }
+      var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rr * 2.6);
+      g.addColorStop(0, "rgba(255,255,250,.9)"); g.addColorStop(.45, "rgba(255,255,244,.32)"); g.addColorStop(1, "rgba(255,255,244,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, rr * 2.6, 0, 7); ctx.fill();
+    });
+    LUNAR_SITES.forEach(function (s) {                                   // Apollo landmarks — cyan pins
+      if (!lunarLit(s, L)) return;
+      var p = proj(s.lon, s.lat), rr = 1.7 * dpr;
+      ctx.fillStyle = "rgba(120,230,255,.95)"; ctx.strokeStyle = "rgba(0,0,0,.5)"; ctx.lineWidth = dpr * 0.6;
+      ctx.beginPath(); ctx.arc(p.x, p.y, rr, 0, 7); ctx.fill(); ctx.stroke();
+    });
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.lineWidth = Math.max(1, dpr); ctx.strokeStyle = "rgba(150,180,255,.22)"; ctx.stroke();
+  }
+  var _lunarTimer = null;
+  function initLunar() {
+    var el = doc.querySelector("[data-lunar]"); if (!el) return;
+    if (_lunarTimer) { clearInterval(_lunarTimer); _lunarTimer = null; }
+    function T(dt) { return skyTime(dt, -7); }
+    function D(dt) { if (!dt || isNaN(dt.valueOf())) return "—"; var u = new Date(dt.valueOf() - 7 * 3600000); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][u.getUTCMonth()] + " " + u.getUTCDate(); }
+    function build() {
+      var L;
+      try { L = lunarInfo(new Date()); } catch (err) { el.innerHTML = ""; return; }
+      var distTag = L.distKm < 362000 ? " · near perigee" : L.distKm > 404000 ? " · near apogee" : "";
+      var libEW = Math.abs(L.libLon).toFixed(1) + "&deg; " + (L.libLon >= 0 ? "E" : "W");
+      var libNS = Math.abs(L.libLat).toFixed(1) + "&deg; " + (L.libLat >= 0 ? "N" : "S");
+      function stat(k, v, s) { return '<div class="lstat"><span class="lstat-k">' + k + '</span><span class="lstat-v">' + v + '</span>' + (s ? '<span class="lstat-s">' + s + '</span>' : '') + '</div>'; }
+      var maria = LUNAR_MARIA.filter(function (m) { return lunarLit(m, L); });
+      var craters = LUNAR_CRATERS.filter(function (c) { return lunarLit(c, L); });
+      var sites = LUNAR_SITES.filter(function (s) { return lunarLit(s, L); });
+      function chips(arr, cls) { return arr.map(function (f) { return '<span class="lchip ' + cls + '">' + esc(f.n) + '</span>'; }).join(""); }
+      el.innerHTML =
+        '<div class="lunar-card">' +
+          '<div class="lunar-main">' +
+            '<div class="lunar-disc"><div class="lunar-frame">' +
+              '<canvas data-lunar-canvas aria-label="Rendered near side of the Moon showing tonight&rsquo;s illuminated fraction"></canvas>' +
+              '<span class="lunar-live"><i></i>LIVE</span>' +
+              '<span class="lc-n">N</span><span class="lc-s">S</span><span class="lc-e">E</span><span class="lc-w">W</span>' +
+            '</div></div>' +
+            '<div class="lunar-info">' +
+              '<div class="lunar-phase"><span class="lunar-ph-ic">' + L.icon + '</span>' +
+                '<div><span class="lunar-ph-name">' + esc(L.name) + '</span>' +
+                '<span class="lunar-ph-sub">' + Math.round(L.illum * 100) + '% illuminated &middot; ' + (L.waxing ? "waxing" : "waning") + '</span></div></div>' +
+              '<div class="lunar-stats">' +
+                stat("Moon age", L.age.toFixed(1) + " days", "since new moon") +
+                stat("Distance", Math.round(L.distKm).toLocaleString() + " km", "Earth to Moon" + distTag) +
+                stat("Apparent size", L.angMin.toFixed(1) + "&prime;", "angular diameter") +
+                stat("Libration", libEW, libNS + " tilt") +
+                stat("Moonrise", T(L.moonrise), "over Sedona") +
+                stat("Moonset", T(L.moonset), "over Sedona") +
+                stat("Next full", D(L.nextFull), Math.max(0, Math.round((L.nextFull - Date.now()) / 86400000)) + " days away") +
+                stat("Next new", D(L.nextNew), Math.max(0, Math.round((L.nextNew - Date.now()) / 86400000)) + " days away") +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          (maria.length || craters.length ?
+          '<div class="lunar-feat">' +
+            '<span class="lunar-feat-h">Catching the sun right now</span>' +
+            '<div class="lunar-chips">' + chips(maria, "lchip--mare") + chips(craters, "lchip--crater") +
+              (sites.length ? chips(sites, "lchip--site") : "") + '</div>' +
+          '</div>' : '') +
+          '<div class="lunar-foot">Phase, libration &amp; the terminator shadow are computed live for tonight and drawn to the Moon&rsquo;s real geography &middot; lunar north up, east to the right</div>' +
+        '</div>';
+      var cv = el.querySelector("[data-lunar-canvas]");
+      if (cv) { try { drawMoon(cv, L); } catch (e) {} }
+    }
+    build();
+    _lunarTimer = setInterval(build, 300000);   // terminator creeps ~0.5°/hr — refresh every 5 min
+  }
+
+  /* =========================================================
      PHOTOGRAPHER'S LIGHT — golden & blue hour for Sedona, no keys.
      Same validated sun-time solver as the stargazing panel.
      ========================================================= */
@@ -2967,6 +3187,7 @@
     initSchumann();
     initCosmic();
     initStargaze();
+    initLunar();
     initGolden();
     initCosmicAudio();
     initGoldenMode();

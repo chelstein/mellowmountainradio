@@ -1504,10 +1504,41 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .archive-card--aurora::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #7c3aed, #d94fb0, #3f9d8f, #2ee06a); }
 
 /* lunar map placeholder */
-.lunar-placeholder { display: flex; align-items: center; gap: 18px; background: radial-gradient(120% 140% at 15% 20%, var(--navy) 0%, var(--navy-deep) 100%); color: rgba(255, 255, 255, .82); border: 1px solid var(--line); border-radius: var(--r); padding: 24px 26px; }
-.lunar-moon { font-size: 2.6rem; line-height: 1; flex: none; }
-.lunar-placeholder p { margin: 0; font-size: 14px; line-height: 1.6; }
-@media (max-width: 520px) { .lunar-placeholder { flex-direction: column; text-align: center; } }
+/* Detailed lunar map — live-rendered near side + ephemeris console */
+.lunar { margin: 22px 0 8px; }
+.lunar-card { position: relative; overflow: hidden; border-radius: var(--r); padding: 24px 26px; color: #e9edff; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,.12); background: radial-gradient(130% 120% at 82% 0%, #202b52 0%, #121935 55%, #0a0e20 100%); }
+.lunar-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(1.4px 1.4px at 12% 22%, #fff 50%, transparent 51%), radial-gradient(1.1px 1.1px at 88% 14%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 60% 8%, #cfe 50%, transparent 51%), radial-gradient(1.2px 1.2px at 30% 12%, #fff 50%, transparent 51%); opacity: .45; }
+.lunar-main { position: relative; z-index: 1; display: flex; gap: 26px; align-items: center; }
+.lunar-disc { flex: none; width: 300px; max-width: 44%; }
+.lunar-frame { position: relative; border-radius: 50%; padding: 0; }
+.lunar-frame canvas { display: block; width: 100%; height: auto; border-radius: 50%; filter: drop-shadow(0 0 26px rgba(150,180,255,.28)); }
+.lunar-live { position: absolute; top: 6px; left: 6px; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; letter-spacing: .14em; color: #bfe6ff; background: rgba(8,12,26,.6); border: 1px solid rgba(150,180,255,.3); border-radius: 20px; padding: 3px 9px; }
+.lunar-live i { width: 6px; height: 6px; border-radius: 50%; background: #7dffb0; box-shadow: 0 0 8px #7dffb0; animation: lunarPulse 2.2s ease-in-out infinite; }
+@keyframes lunarPulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+.lunar-frame [class^="lc-"] { position: absolute; font-size: 11px; font-weight: 800; color: rgba(203,214,255,.6); letter-spacing: .08em; }
+.lc-n { top: -2px; left: 50%; transform: translateX(-50%); } .lc-s { bottom: -2px; left: 50%; transform: translateX(-50%); }
+.lc-e { right: -3px; top: 50%; transform: translateY(-50%); } .lc-w { left: -4px; top: 50%; transform: translateY(-50%); }
+.lunar-info { flex: 1; min-width: 0; }
+.lunar-phase { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.lunar-ph-ic { font-size: 2.7rem; line-height: 1; flex: none; filter: drop-shadow(0 0 10px rgba(255,255,240,.35)); }
+.lunar-ph-name { display: block; font-family: var(--font-display); font-size: 1.9rem; line-height: 1.05; color: #fff; }
+.lunar-ph-sub { display: block; font-size: 13px; color: rgba(233,237,255,.72); margin-top: 3px; }
+.lunar-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.lstat { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 11px 13px; }
+.lstat-k { display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(203,214,255,.6); font-weight: 800; }
+.lstat-v { display: block; font-size: 16px; color: #fff; font-weight: 700; margin-top: 3px; line-height: 1.15; }
+.lstat-s { display: block; font-size: 11px; color: rgba(233,237,255,.6); margin-top: 2px; line-height: 1.35; }
+.lunar-feat { position: relative; z-index: 1; margin-top: 18px; }
+.lunar-feat-h { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(203,214,255,.62); font-weight: 800; margin-bottom: 9px; }
+.lunar-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.lchip { font-size: 12px; color: #e9edff; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.13); border-radius: 20px; padding: 4px 11px; }
+.lchip--mare { color: #cbd6ff; border-color: rgba(140,165,255,.32); }
+.lchip--crater::before { content: "◉ "; color: rgba(255,255,240,.65); }
+.lchip--site { color: #9fe9ff; border-color: rgba(120,230,255,.4); background: rgba(120,230,255,.08); }
+.lchip--site::before { content: "▸ "; }
+.lunar-foot { position: relative; z-index: 1; margin-top: 16px; font-size: 12px; color: rgba(233,237,255,.55); line-height: 1.5; }
+@media (max-width: 720px) { .lunar-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .lunar-main { flex-direction: column; } .lunar-disc { width: 240px; max-width: 80%; } .lunar-info { width: 100%; } }
 /* Stargazing tonight */
 .stargaze { margin: 22px 0 8px; }
 .sky-card { position: relative; overflow: hidden; border-radius: var(--r); padding: 24px 26px; color: #e9edff; box-shadow: var(--shadow); background: radial-gradient(130% 120% at 80% 0%, #23305c 0%, #131a34 55%, #0c1024 100%); border: 1px solid rgba(255,255,255,.12); }
