@@ -36,7 +36,7 @@
           '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="contact.html">Contact</a>' +
+          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras</a><a role="menuitem" href="contact.html">Contact</a>' +
         '</div></li>' +
         '<li data-nav="advertising"><a href="advertising.html">Advertising</a></li>' +
       '</ul></nav>' +
@@ -59,7 +59,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Astrology</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
     '<div class="wrap footer-bottom">' +
@@ -3005,6 +3005,217 @@
   }
 
   /* =========================================================
+     THE SEVEN CHAKRAS — a real reference (Sanskrit, element, seed sound,
+     petal count, Solfeggio frequency) tied to Sedona's vortexes, with a
+     sound bath that SYNTHESIZES each chakra's real tone live in the
+     browser (Web Audio). No samples, no fakes — actual generated tones.
+     Root→crown, bottom→top. Frequencies are the Solfeggio healing set.
+     ========================================================= */
+  var CHAKRAS = [
+    { k: "root", n: "Root", sa: "Muladhara", loc: "Base of the spine", col: "#e0393f", el: "Earth", bija: "LAM", hz: 396, note: "G", petals: 4, pos: 95,
+      gov: "Safety, grounding, survival, belonging", bal: "Steady, secure, present in your body", aff: "I am safe. I belong here.",
+      blocked: "Anxious, ungrounded, scattered, insecure about money or home", crystal: "Red jasper · hematite · black tourmaline", oil: "Cedarwood · patchouli · vetiver", pose: "Mountain pose (Tadasana)",
+      vortex: "Bell Rock — stand at the base and feel your feet on the red rock." },
+    { k: "sacral", n: "Sacral", sa: "Svadhisthana", loc: "Lower belly", col: "#f07a24", el: "Water", bija: "VAM", hz: 417, note: "G♯", petals: 6, pos: 80,
+      gov: "Creativity, emotion, pleasure, flow", bal: "Playful, feeling, open to change", aff: "I feel, I create, I flow.",
+      blocked: "Numb or overwhelmed, creatively stuck, guilt around pleasure", crystal: "Carnelian · orange calcite · sunstone", oil: "Sweet orange · ylang-ylang · sandalwood", pose: "Goddess pose (Utkata Konasana)",
+      vortex: "Oak Creek — let moving water pull the stuck stuff loose." },
+    { k: "solar", n: "Solar Plexus", sa: "Manipura", loc: "Upper belly", col: "#f2c53d", el: "Fire", bija: "RAM", hz: 528, note: "C", petals: 10, pos: 63,
+      gov: "Willpower, confidence, identity", bal: "Empowered, decisive, warm", aff: "I am strong. I choose my path.",
+      blocked: "Powerless or controlling, low self-worth, digestive tension", crystal: "Citrine · tiger's eye · yellow calcite", oil: "Lemon · ginger · bergamot", pose: "Boat pose (Navasana)",
+      vortex: "Airport Mesa at sunset — claim your fire as the rocks glow." },
+    { k: "heart", n: "Heart", sa: "Anahata", loc: "Center of the chest", col: "#4fae58", el: "Air", bija: "YAM", hz: 639, note: "E", petals: 12, pos: 47,
+      gov: "Love, compassion, connection", bal: "Open-hearted, forgiving, at peace", aff: "I give and receive love freely.",
+      blocked: "Guarded, grieving, resentful, hard to trust", crystal: "Rose quartz · green aventurine · malachite", oil: "Rose · bergamot · geranium", pose: "Camel pose (Ustrasana)",
+      vortex: "Boynton Canyon — the tender heart of the red rocks." },
+    { k: "throat", n: "Throat", sa: "Vishuddha", loc: "The throat", col: "#3aa0d8", el: "Ether / Sound", bija: "HAM", hz: 741, note: "F♯", petals: 16, pos: 33,
+      gov: "Truth, expression, your voice", bal: "Honest, clear, heard", aff: "I speak my truth with ease.",
+      blocked: "Held back, unheard, throat tension, fear of speaking up", crystal: "Lapis lazuli · aquamarine · blue lace agate", oil: "Eucalyptus · peppermint · chamomile", pose: "Fish pose (Matsyasana)",
+      vortex: "Sing along on 106.5 — your voice carries across the canyon." },
+    { k: "brow", n: "Third Eye", sa: "Ajna", loc: "Between the brows", col: "#3d5aa8", el: "Light", bija: "OM", hz: 852, note: "A", petals: 2, pos: 20,
+      gov: "Intuition, insight, imagination", bal: "Perceptive, focused, trusting your knowing", aff: "I trust my inner knowing.",
+      blocked: "Foggy, doubtful, over-thinking, cut off from intuition", crystal: "Amethyst · lapis lazuli · fluorite", oil: "Clary sage · frankincense · juniper", pose: "Child's pose (Balasana)",
+      vortex: "Cathedral Rock — the seer's vortex, where the veil goes thin." },
+    { k: "crown", n: "Crown", sa: "Sahasrara", loc: "Top of the head", col: "#9b5fc0", el: "Thought / Cosmos", bija: "silence · OM", hz: 963, note: "B", petals: 1000, pos: 7,
+      gov: "Connection, transcendence, the infinite", bal: "Awake, unified, part of something vast", aff: "I am one with all that is.",
+      blocked: "Cynical, isolated, spiritually flat, stuck in the head", crystal: "Clear quartz · selenite · amethyst", oil: "Frankincense · lotus · myrrh", pose: "Corpse pose (Savasana)",
+      vortex: "The dark sky over Sedona — dissolve up into the Milky Way." }
+  ];
+  function lotusSVG(col, petals) {
+    var shown = Math.min(petals, 24), r = 15, cx = 24, cy = 24, out = "";
+    for (var i = 0; i < shown; i++) {
+      var a = i / shown * Math.PI * 2, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+      out += '<ellipse cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="3.4" ry="7" fill="' + col + '" fill-opacity="0.85" transform="rotate(' + (a * 180 / Math.PI + 90).toFixed(1) + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"/>';
+    }
+    return '<svg viewBox="0 0 48 48" class="chk-lotus" aria-hidden="true">' + out +
+      '<circle cx="24" cy="24" r="8.5" fill="#fff" fill-opacity="0.9"/><circle cx="24" cy="24" r="8.5" fill="none" stroke="' + col + '" stroke-width="1.5"/></svg>';
+  }
+  // ---- live tone synthesis (Web Audio) ----
+  var chkCtx = null, chkBus = null, chkMaster = null, chkCurrent = [], chkBathTimers = [], chkOnStep = null;
+  function chkEnsure() {
+    if (chkCtx) return chkCtx;
+    var C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
+    try {
+      chkCtx = new C();
+      chkMaster = chkCtx.createGain(); chkMaster.gain.value = 0.85;
+      var rev = chkCtx.createConvolver(); rev.buffer = cxImpulse(chkCtx, 3, 2.2);
+      var wet = chkCtx.createGain(); wet.gain.value = 0.32;
+      var dry = chkCtx.createGain(); dry.gain.value = 0.82;
+      chkBus = chkCtx.createGain();
+      chkBus.connect(dry); dry.connect(chkMaster);
+      chkBus.connect(rev); rev.connect(wet); wet.connect(chkMaster);
+      chkMaster.connect(chkCtx.destination);
+    } catch (e) { chkCtx = null; return null; }
+    return chkCtx;
+  }
+  function chkTone(freq, dur) {
+    var ctx = chkEnsure(); if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume();
+    var t = ctx.currentTime, end = t + dur;
+    [[freq, 0.24, "sine"], [freq * 2, 0.06, "sine"], [freq * 1.5, 0.045, "sine"]].forEach(function (v) {
+      var o = ctx.createOscillator(); o.type = v[2]; o.frequency.value = v[0];
+      var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(v[1], t + 0.5);
+      g.gain.setValueAtTime(v[1], Math.max(t + 0.5, end - 0.7));
+      g.gain.exponentialRampToValueAtTime(0.0001, end);
+      o.connect(g); g.connect(chkBus); o.start(t); o.stop(end + 0.05);
+      chkCurrent.push(o, g);
+    });
+  }
+  function chkStop() {
+    chkBathTimers.forEach(function (id) { clearTimeout(id); }); chkBathTimers = [];
+    if (chkCtx && chkMaster) {
+      var t = chkCtx.currentTime;
+      try { chkMaster.gain.cancelScheduledValues(t); chkMaster.gain.setValueAtTime(chkMaster.gain.value, t); chkMaster.gain.linearRampToValueAtTime(0.0001, t + 0.15); } catch (e) {}
+      setTimeout(function () { chkCurrent.forEach(function (nd) { try { nd.stop && nd.stop(); } catch (e) {} }); chkCurrent = []; if (chkMaster) try { chkMaster.gain.setValueAtTime(0.85, chkCtx.currentTime); } catch (e) {} }, 200);
+    }
+  }
+  function chkBath() {
+    chkStop();
+    setTimeout(function () {
+      var step = 4.4;
+      CHAKRAS.forEach(function (c, i) {
+        var id = setTimeout(function () { if (chkOnStep) chkOnStep(i); chkTone(c.hz, step + 0.6); }, i * step * 1000);
+        chkBathTimers.push(id);
+      });
+      var done = setTimeout(function () { if (chkOnStep) chkOnStep(-1); }, CHAKRAS.length * step * 1000 + 800);
+      chkBathTimers.push(done);
+    }, 260);
+  }
+  function chkFigureSVG() {
+    return '<svg class="chk-figure" viewBox="0 0 200 480" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
+      '<defs>' +
+        '<linearGradient id="chkChan" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#9b5fc0"/><stop offset="20%" stop-color="#3d5aa8"/><stop offset="33%" stop-color="#3aa0d8"/>' +
+          '<stop offset="48%" stop-color="#4fae58"/><stop offset="64%" stop-color="#f2c53d"/><stop offset="82%" stop-color="#f07a24"/><stop offset="100%" stop-color="#e0393f"/>' +
+        '</linearGradient>' +
+        '<radialGradient id="chkAura" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#9fb4ff" stop-opacity=".22"/><stop offset="100%" stop-color="#9fb4ff" stop-opacity="0"/></radialGradient>' +
+      '</defs>' +
+      '<path d="M100 18 C158 150 158 330 100 462 C42 330 42 150 100 18 Z" fill="url(#chkAura)"/>' +
+      '<circle cx="100" cy="34" r="21" fill="#eaf0ff" fill-opacity=".08" stroke="#cdd9ff" stroke-opacity=".25" stroke-width="1.5"/>' +
+      '<line x1="100" y1="34" x2="100" y2="458" stroke="url(#chkChan)" stroke-width="3.2" stroke-linecap="round" opacity=".55"/>' +
+    '</svg>';
+  }
+  function initChakras() {
+    var el = doc.querySelector("[data-chakras]");
+    if (!el) { chkStop(); return; }   // left the page — silence any sound bath
+    var sel = 3;   // heart, to start
+    function detail(i) {
+      var c = CHAKRAS[i];
+      return '<div class="chk-detail-head">' + lotusSVG(c.col, c.petals) +
+          '<div><span class="chk-eyebrow" style="color:' + c.col + '">' + c.sa + '</span>' +
+          '<h3>' + c.n + ' chakra</h3><span class="chk-loc">' + c.loc + '</span></div></div>' +
+        '<p class="chk-aff" style="color:' + c.col + '">&ldquo;' + c.aff + '&rdquo;</p>' +
+        '<div class="chk-stats">' +
+          '<div><span>Element</span><b>' + c.el + '</b></div>' +
+          '<div><span>Seed sound</span><b>' + c.bija + '</b></div>' +
+          '<div><span>Frequency</span><b>' + c.hz + ' Hz</b></div>' +
+          '<div><span>Petals</span><b>' + (c.petals === 1000 ? "1,000" : c.petals) + '</b></div>' +
+        '</div>' +
+        '<p class="chk-gov"><b>Governs:</b> ' + c.gov + '</p>' +
+        '<p class="chk-gov"><b>In balance:</b> ' + c.bal + '</p>' +
+        '<p class="chk-gov chk-blocked"><b>Out of balance:</b> ' + c.blocked + '</p>' +
+        '<div class="chk-corr">' +
+          '<div><span>💎 Crystals</span><b>' + c.crystal + '</b></div>' +
+          '<div><span>🌿 Oils</span><b>' + c.oil + '</b></div>' +
+          '<div><span>🧘 Pose</span><b>' + c.pose + '</b></div>' +
+        '</div>' +
+        '<p class="chk-vortex">📍 <b>Sedona:</b> ' + c.vortex + '</p>' +
+        '<div class="chk-play-row"><button class="btn btn-primary chk-play" data-chk-play>▸ Sound the ' + c.n + ' tone &middot; ' + c.hz + ' Hz</button></div>';
+    }
+    var orbs = CHAKRAS.map(function (c, i) {
+      return '<button class="chk-orb" data-chk="' + i + '" style="--cc:' + c.col + '; top:' + c.pos + '%" aria-label="' + c.n + ' chakra, ' + c.hz + ' hertz">' +
+        '<span class="chk-orb-core"></span>' + lotusSVG(c.col, c.petals) +
+        '<span class="chk-orb-lab"><b>' + c.n + '</b><span>' + c.hz + ' Hz &middot; ' + c.bija + '</span></span></button>';
+    }).join("");
+    el.innerHTML =
+      '<div class="chk-wrap">' +
+        '<div class="chk-stage" data-chk-stage>' + chkFigureSVG() + orbs + '</div>' +
+        '<div class="chk-detail" data-chk-detail>' + detail(sel) + '</div>' +
+      '</div>' +
+      '<div class="chk-controls"><button class="btn btn-primary chk-bath" data-chk-bath>🧘 Enter the sound bath &middot; root to crown</button>' +
+        '<button class="btn btn-secondary chk-stop" data-chk-stop>◼ Stop</button>' +
+        '<span class="chk-note">Real tones synthesized live in your browser — headphones and a quiet room recommended.</span></div>' +
+      // immersive overlay
+      '<div class="chk-imm" data-chk-imm hidden><div class="chk-imm-veil"></div>' +
+        '<button class="chk-imm-x" data-imm-x aria-label="Close">&times;</button>' +
+        '<div class="chk-imm-inner">' +
+          '<div class="chk-breath" data-breath><span class="chk-breath-ring"></span><span class="chk-breath-orb"></span><span class="chk-breath-txt" data-breath-txt>Settle in</span></div>' +
+          '<div class="chk-imm-dots" data-imm-dots>' + CHAKRAS.map(function (c, i) { return '<i style="--cc:' + c.col + '" data-d="' + i + '"></i>'; }).join("") + '</div>' +
+          '<div class="chk-imm-name" data-imm-name></div>' +
+          '<div class="chk-imm-aff" data-imm-aff></div>' +
+          '<div class="chk-imm-hz" data-imm-hz></div>' +
+        '</div>' +
+      '</div>';
+    var stage = el.querySelector("[data-chk-stage]"), det = el.querySelector("[data-chk-detail]");
+    var imm = el.querySelector("[data-chk-imm]"), breathTxt = imm.querySelector("[data-breath-txt]");
+    var orbEls = stage.querySelectorAll(".chk-orb"), dots = imm.querySelectorAll("[data-imm-dots] i");
+    var breathTimer = null;
+    function setActive(i) { orbEls.forEach(function (o) { o.classList.toggle("is-active", +o.getAttribute("data-chk") === i); }); }
+    function setSounding(i) { orbEls.forEach(function (o) { o.classList.toggle("sounding", +o.getAttribute("data-chk") === i); }); }
+    function immSet(i) {
+      var c = CHAKRAS[i];
+      imm.style.setProperty("--cc", c.col);
+      imm.querySelector("[data-imm-name]").innerHTML = '<span style="color:' + c.col + '">' + c.sa + '</span>' + c.n + ' &middot; ' + c.loc;
+      imm.querySelector("[data-imm-aff]").textContent = "“" + c.aff + "”";
+      imm.querySelector("[data-imm-hz]").textContent = c.hz + " Hz · seed sound " + c.bija;
+      dots.forEach(function (d) { d.classList.toggle("on", +d.getAttribute("data-d") <= i); d.classList.toggle("cur", +d.getAttribute("data-d") === i); });
+    }
+    function openImm() {
+      imm.hidden = false; doc.body.classList.add("chk-imm-open");
+      var phases = ["Breathe in…", "Hold", "Breathe out…", "Hold"], k = 0;
+      breathTxt.textContent = "Settle in…";
+      clearInterval(breathTimer);
+      breathTimer = setInterval(function () { breathTxt.textContent = phases[k % 4]; k++; }, 3800);
+    }
+    function closeImm() { clearInterval(breathTimer); breathTimer = null; imm.hidden = true; doc.body.classList.remove("chk-imm-open"); }
+    function select(i, play) {
+      sel = i; det.innerHTML = detail(i); setActive(i);
+      det.querySelector("[data-chk-play]").addEventListener("click", function () { playOne(i); });
+      if (play) playOne(i);
+    }
+    function playOne(i) {
+      chkStop(); setActive(i);
+      setTimeout(function () { setSounding(i); chkTone(CHAKRAS[i].hz, 6); }, 180);
+      setTimeout(function () { setSounding(-1); }, 6400);
+    }
+    chkOnStep = function (i) {
+      if (i < 0) {   // bath complete
+        setSounding(-1); clearInterval(breathTimer); breathTimer = null;
+        if (!imm.hidden) { breathTxt.textContent = "Rest here."; imm.querySelector("[data-imm-name]").innerHTML = '<span>Complete</span>carry it with you'; imm.querySelector("[data-imm-aff]").textContent = ""; imm.querySelector("[data-imm-hz]").textContent = "✦"; }
+        return;
+      }
+      setActive(i); setSounding(i);
+      if (!imm.hidden) immSet(i);
+    };
+    orbEls.forEach(function (o) { o.addEventListener("click", function () { select(+o.getAttribute("data-chk"), true); }); });
+    select(sel, false);
+    el.querySelector("[data-chk-bath]").addEventListener("click", function () { immSet(0); openImm(); chkBath(); });
+    el.querySelector("[data-chk-stop]").addEventListener("click", function () { chkStop(); setSounding(-1); closeImm(); });
+    imm.querySelector("[data-imm-x]").addEventListener("click", function () { chkStop(); setSounding(-1); closeImm(); });
+  }
+
+  /* =========================================================
      GOLDEN HOUR MODE — the site knows the exact minute the red rocks
      catch fire. As golden hour nears it shows a countdown; during it,
      the whole site warms and the badge counts down to the sun's edge.
@@ -3507,6 +3718,7 @@
     initStargaze();
     initLunar();
     initHoroscope();
+    initChakras();
     initGolden();
     initCosmicAudio();
     initGoldenMode();
