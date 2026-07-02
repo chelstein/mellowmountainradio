@@ -36,7 +36,7 @@
           '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras</a><a role="menuitem" href="contact.html">Contact</a>' +
+          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="contact.html">Contact</a>' +
         '</div></li>' +
         '<li data-nav="advertising"><a href="advertising.html">Advertising</a></li>' +
       '</ul></nav>' +
@@ -59,7 +59,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
     '<div class="wrap footer-bottom">' +
@@ -3219,6 +3219,136 @@
   }
 
   /* =========================================================
+     TAROT — the full 78-card deck, nothing canned. All 22 Major Arcana
+     and all 56 Minors with their traditional Rider–Waite upright AND
+     reversed meanings. A deterministic "card of the day over Sedona"
+     (same card for every listener all day), plus real spreads: a
+     crypto-shuffled single draw and a three-card past/present/future,
+     dealt face-down and flipped by hand. Reversed cards render inverted.
+     ========================================================= */
+  var TAROT_MAJORS = [
+    ["The Fool", "🌄", "a leap of faith, fresh starts, innocence", "recklessness, cold feet, a start delayed"],
+    ["The Magician", "✨", "manifestation, skill, as above so below", "untapped talent, trickery, scattered will"],
+    ["The High Priestess", "🔮", "intuition, the inner voice, mystery", "secrets kept from you, ignoring your gut"],
+    ["The Empress", "🌹", "abundance, nurture, creation in bloom", "creative block, smothering, self-neglect"],
+    ["The Emperor", "🏛", "structure, authority, solid foundations", "rigidity, control, a challenge to power"],
+    ["The Hierophant", "🗝", "tradition, teachers, spiritual guidance", "breaking convention, dogma, your own path"],
+    ["The Lovers", "💞", "union, alignment, a choice of the heart", "disharmony, imbalance, values at odds"],
+    ["The Chariot", "🏆", "willpower, momentum, hard-won victory", "scattered force, stalling, losing the reins"],
+    ["Strength", "🦁", "quiet courage, gentle power, patience", "self-doubt, raw nerves, forcing it"],
+    ["The Hermit", "🏮", "introspection, seeking, the inner lamp", "isolation, withdrawal, lost in the cave"],
+    ["Wheel of Fortune", "☸", "cycles turning, luck, a pivotal moment", "resisting change, a rough turn, delays"],
+    ["Justice", "⚖", "truth, fairness, cause and effect", "imbalance, avoidance, unfair dealings"],
+    ["The Hanged Man", "🙃", "surrender, a new angle, sacred pause", "stalling, martyrdom, sacrifice in vain"],
+    ["Death", "🦋", "endings that free you, transformation", "clinging to what's done, stagnation"],
+    ["Temperance", "🕊", "balance, blending, the middle way", "excess, impatience, forces out of mix"],
+    ["The Devil", "⛓", "attachment, shadow work, the tether seen", "release, reclaiming power, chains loosening"],
+    ["The Tower", "🌩", "sudden truth, upheaval that clears", "disaster averted, fear of the shake-up"],
+    ["The Star", "⭐", "hope, healing, quiet renewal", "dimmed faith, doubt, refill the well"],
+    ["The Moon", "🌙", "dreams, the unknown, trust the tide", "confusion lifting, fear losing its grip"],
+    ["The Sun", "☀", "joy, vitality, everything illuminated", "clouded optimism, small delays, look up"],
+    ["Judgement", "📯", "awakening, the call, rising renewed", "self-doubt, ignoring the call, harsh review"],
+    ["The World", "🌍", "completion, wholeness, the circle closed", "loose ends, almost there, close the loop"]
+  ];
+  var TAROT_SUITS = [
+    { s: "Wands", g: "🔥", el: "Fire · will & creativity",
+      up: ["a spark of pure inspiration", "planning, the world in your hand", "expansion, ships coming in", "celebration, homecoming, stable joy", "friction, creative competition", "victory, public recognition", "defending your ground", "swift movement, news in flight", "resilience, the last push", "a heavy load nearly carried home", "an eager message, curiosity lit", "bold pursuit, adventure at speed", "warm confidence, magnetic energy", "visionary leadership, the long view"],
+      rev: ["a spark delayed, false starts", "fear of the leap, small plans", "obstacles, watch the horizon", "shaky ground, celebrate later", "conflict avoided or gone sour", "a fall from favor, ego's cost", "worn down, ground given", "delays, crossed signals", "paranoia, guard too high", "burnout, put something down", "bad news, a message astray", "haste, a scattered chase", "jealousy, warmth withdrawn", "tyranny, vision without care"] },
+    { s: "Cups", g: "💧", el: "Water · heart & feeling",
+      up: ["new love, the heart overflows", "partnership, mutual attraction", "friendship, celebration shared", "apathy, a gift unnoticed", "grief, spilled cups — two remain", "nostalgia, kindness returned", "choices, dreams and illusions", "walking away toward deeper meaning", "contentment, the wish fulfilled", "lasting happiness, family harmony", "a tender message, imagination", "romance, the offer of the heart", "compassion, emotional depth", "calm mastery of the heart"],
+      rev: ["a blocked heart, self-love first", "a bond strained, imbalance", "overindulgence, the third wheel", "waking up, new appetite", "acceptance, moving through grief", "stuck in the past, come home to now", "clarity cutting through fog", "one more try, fear of change", "smugness, hollow satisfaction", "discord at home, a dream deferred", "creative block, moody waters", "moodiness, a flatterer", "emotions overflowing their banks", "manipulation, the cold current"] },
+    { s: "Swords", g: "🗡", el: "Air · mind & truth",
+      up: ["breakthrough, clarity's blade", "a stalemate, eyes covered", "heartbreak that tells the truth", "rest, recovery, quiet the mind", "a hollow win, count the cost", "transition, calmer waters ahead", "strategy, moving quietly", "restriction that is mostly mental", "anxiety in the small hours", "an ending, rock bottom's gift", "hunger for ideas, watchfulness", "charging thought, the direct route", "sharp perception, independent mind", "intellectual command, hard truth"],
+      rev: ["fog, a truth resisted", "the blindfold slips, decision due", "healing begins, forgiveness", "restlessness, burnout warning", "make amends, an old grudge", "carrying baggage, rough water", "conscience calls, come clean", "self-imposed limits released", "the dread was worse than the day", "recovery, the worst is behind", "gossip, all talk", "recklessness, slow the charge", "coldness, the edge overused", "cruelty, abuse of the mind's power"] },
+    { s: "Pentacles", g: "🪙", el: "Earth · body & work",
+      up: ["a seed of prosperity, opportunity", "juggling, graceful balance", "teamwork, craft recognized", "holding on, security kept close", "hard times, help nearby unseen", "generosity, giving and receiving", "patience, the long investment", "apprenticeship, devoted craft", "earned luxury, self-sufficiency", "legacy, lasting wealth, roots", "a student's spark, good news of work", "steady effort, the reliable path", "practical warmth, the nurturing home", "abundance mastered, the good steward"],
+      rev: ["an opportunity missed, greed", "dropped balls, overcommitment", "mediocrity, credit taken", "letting go, generosity opens", "recovery, the door was open", "strings attached, debt's weight", "impatience, effort misplaced", "cut corners, half-hearted work", "overwork, hollow success", "a windfall with strings, family friction", "procrastination, a lesson unheeded", "boredom, stuck in a rut", "self-care neglected, clutter", "hoarding, worth measured wrong"] }
+  ];
+  var TAROT_RANKS = ["Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Page", "Knight", "Queen", "King"];
+  var TAROT_NUM = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"];
+  function tarotDeck() {
+    var d = TAROT_MAJORS.map(function (m, i) {
+      return { name: m[0], g: m[1], up: m[2], rev: m[3], tag: TAROT_NUM[i] + " · Major Arcana", major: true };
+    });
+    TAROT_SUITS.forEach(function (su) {
+      TAROT_RANKS.forEach(function (r, ri) {
+        d.push({ name: r + " of " + su.s, g: su.g, up: su.up[ri], rev: su.rev[ri], tag: su.el, major: false });
+      });
+    });
+    return d;   // 22 + 56 = 78
+  }
+  function tarotCardHTML(card, reversed, label, faceUp) {
+    return '<div class="tc' + (faceUp ? " is-flipped" : "") + (reversed ? " is-rev" : "") + '" tabindex="0" role="button" aria-label="' + esc(label ? label + " card" : card.name) + '">' +
+      '<div class="tc-inner">' +
+        '<div class="tc-back"><span class="tc-back-sun">☀</span><span class="tc-back-moon">☽</span><i></i></div>' +
+        '<div class="tc-face"><div class="tc-face-in">' +
+          '<span class="tc-tag">' + esc(card.tag) + '</span>' +
+          '<span class="tc-glyph">' + card.g + '</span>' +
+          '<span class="tc-name">' + esc(card.name) + '</span>' +
+          (reversed ? '<span class="tc-revb">reversed</span>' : '') +
+        '</div></div>' +
+      '</div>' +
+      (label ? '<span class="tc-pos">' + esc(label) + '</span>' : '') +
+    '</div>';
+  }
+  function tarotMeaning(card, reversed) {
+    return '<b>' + esc(card.name) + (reversed ? ' (reversed)' : '') + '</b> — ' + esc(reversed ? card.rev : card.up) + '.';
+  }
+  function tarotRandom(n) {   // crypto-shuffled draw of n distinct cards + orientations
+    var deck = tarotDeck(), out = [], buf = new Uint32Array(n * 2);
+    (window.crypto || {}).getRandomValues ? crypto.getRandomValues(buf) : buf.forEach(function (_, i) { buf[i] = Math.floor(Math.random() * 4294967296); });
+    for (var i = 0; i < n; i++) {
+      var idx = buf[i * 2] % deck.length;
+      out.push({ card: deck.splice(idx, 1)[0], rev: buf[i * 2 + 1] % 100 < 30 });   // ~30% reversed, tradition-adjacent
+    }
+    return out;
+  }
+  function initTarot() {
+    var el = doc.querySelector("[data-tarot]"); if (!el) return;
+    var deck = tarotDeck();
+    // card of the day — seeded by the date, same for every listener all day
+    var day = Math.floor((Date.now() / 86400000 + (-7 / 24)));   // Sedona's day, MST
+    var h = day * 2654435761 % 4294967296; h = (h ^ (h >>> 13)) >>> 0;
+    var cod = deck[h % 78], codRev = (h >>> 8) % 100 < 20;
+    el.innerHTML =
+      '<div class="tarot-day">' +
+        '<div class="tarot-day-card">' + tarotCardHTML(cod, codRev, "", true) + '</div>' +
+        '<div class="tarot-day-info"><span class="tarot-eyebrow">Card of the day over Sedona</span>' +
+          '<h3>' + esc(cod.name) + (codRev ? ' <span class="tarot-revtag">reversed</span>' : '') + '</h3>' +
+          '<p>' + esc(codRev ? cod.rev : cod.up).replace(/^./, function (c) { return c.toUpperCase(); }) + '.</p>' +
+          '<p class="tarot-day-note">One card for the whole canyon — it turns at midnight and everyone listening sees the same one. Tomorrow brings the next.</p></div>' +
+      '</div>' +
+      '<div class="tarot-pull">' +
+        '<div class="tarot-pull-head"><h3>Pull your own</h3><p>Take a breath, hold your question, and draw. Tap each card to turn it over.</p></div>' +
+        '<div class="tarot-btns"><button class="btn btn-primary" data-tar-one>🂠 Draw one card</button>' +
+        '<button class="btn btn-secondary" data-tar-three>Past &middot; Present &middot; Future</button></div>' +
+        '<div class="tarot-table" data-tar-table></div>' +
+        '<div class="tarot-read" data-tar-read></div>' +
+      '</div>';
+    var table = el.querySelector("[data-tar-table]"), read = el.querySelector("[data-tar-read]");
+    function deal(n) {
+      var labels = n === 3 ? ["Past", "Present", "Future"] : [""];
+      var draws = tarotRandom(n);
+      table.innerHTML = draws.map(function (d, i) { return tarotCardHTML(d.card, d.rev, labels[i], false); }).join("");
+      read.innerHTML = "";
+      table.querySelectorAll(".tc").forEach(function (tc, i) {
+        function flip() {
+          if (tc.classList.contains("is-flipped")) return;
+          tc.classList.add("is-flipped");
+          var p = doc.createElement("p");
+          p.className = "tarot-line";
+          p.innerHTML = (labels[i] ? '<span class="tarot-pos-tag">' + labels[i] + '</span>' : '') + tarotMeaning(draws[i].card, draws[i].rev);
+          read.appendChild(p);
+        }
+        tc.addEventListener("click", flip);
+        tc.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); flip(); } });
+      });
+    }
+    el.querySelector("[data-tar-one]").addEventListener("click", function () { deal(1); });
+    el.querySelector("[data-tar-three]").addEventListener("click", function () { deal(3); });
+  }
+
+  /* =========================================================
      GOLDEN HOUR MODE — the site knows the exact minute the red rocks
      catch fire. As golden hour nears it shows a countdown; during it,
      the whole site warms and the badge counts down to the sun's edge.
@@ -3722,6 +3852,7 @@
     initLunar();
     initHoroscope();
     initChakras();
+    initTarot();
     initGolden();
     initCosmicAudio();
     initGoldenMode();
