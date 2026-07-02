@@ -2595,12 +2595,35 @@
     return { asc: asc, mc: mc };
   }
   var BIRTH_CITIES = [
+    // Sedona first (default); then AZ + Southwest, across the US, then the world.
     { n: "Sedona, AZ", lat: 34.87, lon: -111.76, tz: -7 }, { n: "Phoenix, AZ", lat: 33.45, lon: -112.07, tz: -7 },
-    { n: "Flagstaff, AZ", lat: 35.20, lon: -111.65, tz: -7 }, { n: "Los Angeles, CA", lat: 34.05, lon: -118.24, tz: -8 },
-    { n: "Las Vegas, NV", lat: 36.17, lon: -115.14, tz: -8 }, { n: "Denver, CO", lat: 39.74, lon: -104.99, tz: -7 },
-    { n: "Dallas, TX", lat: 32.78, lon: -96.80, tz: -6 }, { n: "Chicago, IL", lat: 41.88, lon: -87.63, tz: -6 },
-    { n: "New York, NY", lat: 40.71, lon: -74.01, tz: -5 }, { n: "Miami, FL", lat: 25.76, lon: -80.19, tz: -5 },
-    { n: "London, UK", lat: 51.51, lon: -0.13, tz: 0 }, { n: "Sydney, AU", lat: -33.87, lon: 151.21, tz: 10 }
+    { n: "Flagstaff, AZ", lat: 35.20, lon: -111.65, tz: -7 }, { n: "Tucson, AZ", lat: 32.22, lon: -110.97, tz: -7 },
+    { n: "Albuquerque, NM", lat: 35.08, lon: -106.65, tz: -7 }, { n: "Las Vegas, NV", lat: 36.17, lon: -115.14, tz: -8 },
+    { n: "Salt Lake City, UT", lat: 40.76, lon: -111.89, tz: -7 }, { n: "Denver, CO", lat: 39.74, lon: -104.99, tz: -7 },
+    { n: "Los Angeles, CA", lat: 34.05, lon: -118.24, tz: -8 }, { n: "San Diego, CA", lat: 32.72, lon: -117.16, tz: -8 },
+    { n: "San Francisco, CA", lat: 37.77, lon: -122.42, tz: -8 }, { n: "Portland, OR", lat: 45.52, lon: -122.68, tz: -8 },
+    { n: "Seattle, WA", lat: 47.61, lon: -122.33, tz: -8 }, { n: "Anchorage, AK", lat: 61.22, lon: -149.90, tz: -9 },
+    { n: "Honolulu, HI", lat: 21.31, lon: -157.86, tz: -10 },
+    { n: "Dallas, TX", lat: 32.78, lon: -96.80, tz: -6 }, { n: "Houston, TX", lat: 29.76, lon: -95.37, tz: -6 },
+    { n: "Austin, TX", lat: 30.27, lon: -97.74, tz: -6 }, { n: "San Antonio, TX", lat: 29.42, lon: -98.49, tz: -6 },
+    { n: "Kansas City, MO", lat: 39.10, lon: -94.58, tz: -6 }, { n: "Minneapolis, MN", lat: 44.98, lon: -93.27, tz: -6 },
+    { n: "Chicago, IL", lat: 41.88, lon: -87.63, tz: -6 }, { n: "Nashville, TN", lat: 36.16, lon: -86.78, tz: -6 },
+    { n: "New Orleans, LA", lat: 29.95, lon: -90.07, tz: -6 }, { n: "Memphis, TN", lat: 35.15, lon: -90.05, tz: -6 },
+    { n: "Detroit, MI", lat: 42.33, lon: -83.05, tz: -5 }, { n: "Cleveland, OH", lat: 41.50, lon: -81.69, tz: -5 },
+    { n: "Columbus, OH", lat: 39.96, lon: -83.00, tz: -5 }, { n: "Pittsburgh, PA", lat: 40.44, lon: -79.996, tz: -5 },
+    { n: "Atlanta, GA", lat: 33.75, lon: -84.39, tz: -5 }, { n: "Miami, FL", lat: 25.76, lon: -80.19, tz: -5 },
+    { n: "Washington, DC", lat: 38.91, lon: -77.04, tz: -5 }, { n: "Philadelphia, PA", lat: 39.95, lon: -75.17, tz: -5 },
+    { n: "Baltimore, MD", lat: 39.29, lon: -76.61, tz: -5 }, { n: "New York, NY", lat: 40.71, lon: -74.01, tz: -5 },
+    { n: "Syracuse, NY", lat: 43.05, lon: -76.15, tz: -5 }, { n: "Buffalo, NY", lat: 42.89, lon: -78.88, tz: -5 },
+    { n: "Rochester, NY", lat: 43.16, lon: -77.61, tz: -5 }, { n: "Albany, NY", lat: 42.65, lon: -73.75, tz: -5 },
+    { n: "Boston, MA", lat: 42.36, lon: -71.06, tz: -5 }, { n: "Toronto, ON", lat: 43.65, lon: -79.38, tz: -5 },
+    { n: "Mexico City, MX", lat: 19.43, lon: -99.13, tz: -6 }, { n: "São Paulo, BR", lat: -23.55, lon: -46.63, tz: -3 },
+    { n: "London, UK", lat: 51.51, lon: -0.13, tz: 0 }, { n: "Dublin, IE", lat: 53.35, lon: -6.26, tz: 0 },
+    { n: "Paris, FR", lat: 48.86, lon: 2.35, tz: 1 }, { n: "Berlin, DE", lat: 52.52, lon: 13.40, tz: 1 },
+    { n: "Madrid, ES", lat: 40.42, lon: -3.70, tz: 1 }, { n: "Rome, IT", lat: 41.90, lon: 12.50, tz: 1 },
+    { n: "Dubai, AE", lat: 25.20, lon: 55.27, tz: 4 }, { n: "Mumbai, IN", lat: 19.08, lon: 72.88, tz: 5.5 },
+    { n: "Tokyo, JP", lat: 35.68, lon: 139.69, tz: 9 }, { n: "Sydney, AU", lat: -33.87, lon: 151.21, tz: 10 },
+    { n: "Auckland, NZ", lat: -36.85, lon: 174.76, tz: 12 }
   ];
   // Zodiac in ecliptic order (index === floor(lon/30)). Constellation = real star figure.
   var ZODIAC = [
@@ -2726,8 +2749,9 @@
         var dv = bc.querySelector("#bc-date").value; if (!dv) return;
         var tv = bc.querySelector("#bc-time").value, city = BIRTH_CITIES[+bc.querySelector("#bc-city").value] || BIRTH_CITIES[0];
         var parts = dv.split("-"), hm = (tv || "12:00").split(":");
-        // build the birth instant in UTC from local time + the city's standard offset
-        var utcMs = Date.UTC(+parts[0], +parts[1] - 1, +parts[2], +hm[0] - city.tz, +hm[1]);
+        // build the birth instant in UTC from local time − the city's standard offset
+        // (subtract as ms so half-hour zones like +5:30 work)
+        var utcMs = Date.UTC(+parts[0], +parts[1] - 1, +parts[2], +hm[0], +hm[1]) - city.tz * 3600000;
         var when = new Date(utcMs);
         var sunL = eclLon("Sun", when), moonL = eclLon("Moon", when);
         function chip(label, glyph, lon, note) {
