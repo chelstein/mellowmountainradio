@@ -3041,51 +3041,81 @@
       blocked: "Cynical, isolated, spiritually flat, stuck in the head", crystal: "Clear quartz · selenite · amethyst", oil: "Frankincense · lotus · myrrh", pose: "Corpse pose (Savasana)",
       vortex: "The dark sky over Sedona — dissolve up into the Milky Way." }
   ];
-  // Each chakra drawn as its REAL traditional yantra — the correct petal
-  // count, the classical inner geometry (Muladhara's square + downward
-  // triangle, Svadhisthana's crescent, Anahata's six-pointed star, Ajna's
-  // two wings, Sahasrara's layered thousand-petal rings) and the bija
-  // seed syllable in Devanagari at the center.
+  // Each chakra drawn as its REAL traditional yantra, poster-grade:
+  // correct petal counts and classical geometry (Muladhara's square +
+  // downward triangle, Svadhisthana's crescent, Anahata's six-pointed
+  // star, Ajna's two wings, Sahasrara's layered thousand petals), with
+  // luminous two-tone petals in counter-rotating layers, gold beadwork,
+  // a glowing center plate and the Devanagari seed syllable.
+  function chkShade(hex, amt) {   // amt >0 toward white, <0 toward black
+    var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255, t = amt > 0 ? 255 : 0, p = Math.abs(amt);
+    function m(x) { return Math.round(x + (t - x) * p); }
+    return "rgb(" + m(r) + "," + m(g) + "," + m(b) + ")";
+  }
   function lotusSVG(c) {
-    var col = c.col, k = c.k;
+    var col = c.col, k = c.k, uid = "chg-" + k;
     var DEV = { root: "लं", sacral: "वं", solar: "रं", heart: "यं", throat: "हं", brow: "ॐ", crown: "ॐ" };
-    function petal(r1, r2, wDeg, aDeg, op) {
+    var GOLD = "#f2d791", goldSoft = "rgba(242,215,145,.75)";
+    function pt(ang, rr) { return (50 + Math.cos(ang) * rr).toFixed(1) + "," + (50 + Math.sin(ang) * rr).toFixed(1); }
+    function petal(r1, r2, wDeg, aDeg, fill, op, sw) {
       var a = aDeg * Math.PI / 180, w = wDeg * Math.PI / 180, mid = (r1 + r2) / 2;
-      function pt(ang, rr) { return (50 + Math.cos(ang) * rr).toFixed(1) + "," + (50 + Math.sin(ang) * rr).toFixed(1); }
-      return '<path d="M' + pt(a - w, r1) + ' Q' + pt(a - w * 1.18, mid) + ' ' + pt(a, r2) +
-        ' Q' + pt(a + w * 1.18, mid) + ' ' + pt(a + w, r1) + ' Z" fill="' + col + '" fill-opacity="' + (op || 0.82) +
-        '" stroke="rgba(255,255,255,.5)" stroke-width="0.7" stroke-linejoin="round"/>';
+      return '<path d="M' + pt(a - w, r1) + ' Q' + pt(a - w * 1.26, mid) + ' ' + pt(a, r2) +
+        ' Q' + pt(a + w * 1.26, mid) + ' ' + pt(a + w, r1) + ' Z" fill="' + fill + '" fill-opacity="' + op +
+        '" stroke="' + goldSoft + '" stroke-width="' + (sw || 0.8) + '" stroke-linejoin="round"/>';
     }
-    function ring(n, r1, r2, off, op) {
-      var out = "", w = 360 / n / 2 * 0.74;
-      for (var i = 0; i < n; i++) out += petal(r1, r2, w, (off || 0) + i * 360 / n - 90, op);
+    function ring(n, r1, r2, off, fill, op, sw) {
+      var out = "", w = 360 / n / 2 * 0.78;
+      for (var i = 0; i < n; i++) out += petal(r1, r2, w, (off || 0) + i * 360 / n - 90, fill, op, sw);
       return out;
     }
-    function tri(r, down) {
+    function beads(n, r) {
+      var out = "";
+      for (var i = 0; i < n; i++) { var a = (i * 360 / n - 90) * Math.PI / 180; out += '<circle cx="' + (50 + Math.cos(a) * r).toFixed(1) + '" cy="' + (50 + Math.sin(a) * r).toFixed(1) + '" r="0.9" fill="' + GOLD + '" fill-opacity=".8"/>'; }
+      return out;
+    }
+    function tri(r, down, op) {
       var pts = [], start = down ? 90 : -90;
-      for (var i = 0; i < 3; i++) { var a = (start + i * 120) * Math.PI / 180; pts.push((50 + Math.cos(a) * r).toFixed(1) + "," + (50 + Math.sin(a) * r).toFixed(1)); }
-      return '<polygon points="' + pts.join(" ") + '" fill="' + col + '" fill-opacity=".26" stroke="#ffe9b0" stroke-width="1.1" stroke-linejoin="round"/>';
+      for (var i = 0; i < 3; i++) { var a = (start + i * 120) * Math.PI / 180; pts.push(pt(a, r)); }
+      return '<polygon points="' + pts.join(" ") + '" fill="url(#' + uid + '-geo)" fill-opacity="' + (op != null ? op : 1) + '" stroke="' + GOLD + '" stroke-width="1.3" stroke-linejoin="round" filter="url(#' + uid + '-glow)"/>';
     }
     var geo = "";
-    if (k === "root") geo = '<rect x="38" y="38" width="24" height="24" fill="' + col + '" fill-opacity=".22" stroke="#ffe9b0" stroke-width="1.1"/>' + tri(10.5, true);
-    else if (k === "sacral") geo = '<circle cx="50" cy="50" r="15" fill="' + col + '" fill-opacity=".2" stroke="#ffe9b0" stroke-width="1.1"/><path d="M38,55 A14,14 0 0,0 62,55 A11,11 0 0,1 38,55 Z" fill="#fff" fill-opacity=".85"/>';
-    else if (k === "solar") geo = tri(15, true);
-    else if (k === "heart") geo = tri(15, true) + tri(15, false);
-    else if (k === "throat") geo = tri(16, true) + '<circle cx="50" cy="50" r="9" fill="#fff" fill-opacity=".16" stroke="#ffe9b0" stroke-width="1"/>';
-    else if (k === "brow") geo = tri(14, true);
-    else if (k === "crown") geo = '<circle cx="50" cy="50" r="11" fill="#fff" fill-opacity=".18" stroke="#ffe9b0" stroke-width="1.1"/>';
-    var petals;
-    if (k === "brow") petals = petal(18, 47, 24, 180) + petal(18, 47, 24, 0);            // Ajna's two wings
-    else if (k === "crown") petals = ring(20, 30, 48) + ring(16, 26, 39, 9, 0.65);        // layered "thousand petals"
-    else petals = ring({ root: 4, sacral: 6, solar: 10, heart: 12, throat: 16 }[k], 27, 47);
-    var uid = "chg-" + k;
+    if (k === "root") geo = '<rect x="37.5" y="37.5" width="25" height="25" fill="url(#' + uid + '-geo)" stroke="' + GOLD + '" stroke-width="1.2" filter="url(#' + uid + '-glow)"/>' + tri(10.5, true, 1);
+    else if (k === "sacral") geo = '<circle cx="50" cy="50" r="15.5" fill="url(#' + uid + '-geo)" stroke="' + GOLD + '" stroke-width="1.2" filter="url(#' + uid + '-glow)"/><path d="M37.5,55 A14.5,14.5 0 0,0 62.5,55 A11.2,11.2 0 0,1 37.5,55 Z" fill="#fdfdff" fill-opacity=".9" filter="url(#' + uid + '-glow)"/>';
+    else if (k === "solar") geo = tri(15.5, true);
+    else if (k === "heart") geo = tri(15.5, true) + tri(15.5, false);
+    else if (k === "throat") geo = tri(16, true) + '<circle cx="50" cy="50" r="9" fill="#fdfdff" fill-opacity=".2" stroke="' + GOLD + '" stroke-width="1" filter="url(#' + uid + '-glow)"/>';
+    else if (k === "brow") geo = tri(14.5, true);
+    else if (k === "crown") geo = '<circle cx="50" cy="50" r="11" fill="url(#' + uid + '-geo)" stroke="' + GOLD + '" stroke-width="1.2" filter="url(#' + uid + '-glow)"/>';
+    var lit = "url(#" + uid + "-pet)", deep = chkShade(col, -0.28);
+    var outer, inner;
+    if (k === "brow") {   // Ajna's two great wings, layered
+      outer = petal(18, 48, 26, 180, lit, 0.95, 1) + petal(18, 48, 26, 0, lit, 0.95, 1);
+      inner = petal(20, 40, 18, 180, deep, 0.9) + petal(20, 40, 18, 0, deep, 0.9);
+    } else if (k === "crown") {
+      outer = ring(22, 30, 48.5, 0, lit, 0.95, 0.7);
+      inner = ring(18, 27, 40, 8, deep, 0.85, 0.6) + ring(14, 26, 33, 4, chkShade(col, 0.25), 0.75, 0.5);
+    } else {
+      var n = { root: 4, sacral: 6, solar: 10, heart: 12, throat: 16 }[k];
+      outer = ring(n, 28, 48.5, 0, lit, 0.97, 1);
+      inner = ring(n, 27, 39, 180 / n, deep, 0.9, 0.7);
+    }
     return '<svg viewBox="0 0 100 100" class="chk-lotus" aria-hidden="true">' +
-      '<defs><radialGradient id="' + uid + '"><stop offset="0%" stop-color="' + col + '" stop-opacity=".5"/><stop offset="62%" stop-color="' + col + '" stop-opacity=".16"/><stop offset="100%" stop-color="' + col + '" stop-opacity="0"/></radialGradient></defs>' +
-      '<circle cx="50" cy="50" r="49" fill="url(#' + uid + ')"/>' +
-      '<g class="chk-ring">' + petals + '</g>' +
-      '<circle cx="50" cy="50" r="25.5" fill="#0d1226" fill-opacity=".8" stroke="rgba(255,255,255,.4)" stroke-width="0.8"/>' +
+      '<defs>' +
+        '<radialGradient id="' + uid + '-halo"><stop offset="0%" stop-color="' + col + '" stop-opacity=".55"/><stop offset="62%" stop-color="' + col + '" stop-opacity=".18"/><stop offset="100%" stop-color="' + col + '" stop-opacity="0"/></radialGradient>' +
+        '<radialGradient id="' + uid + '-pet"><stop offset="30%" stop-color="' + chkShade(col, -0.18) + '"/><stop offset="72%" stop-color="' + col + '"/><stop offset="100%" stop-color="' + chkShade(col, 0.42) + '"/></radialGradient>' +
+        '<radialGradient id="' + uid + '-geo"><stop offset="0%" stop-color="' + chkShade(col, 0.5) + '" stop-opacity=".5"/><stop offset="100%" stop-color="' + col + '" stop-opacity=".32"/></radialGradient>' +
+        '<radialGradient id="' + uid + '-plate"><stop offset="0%" stop-color="#1c2450"/><stop offset="78%" stop-color="#0e1330"/><stop offset="100%" stop-color="#0a0e22"/></radialGradient>' +
+        '<filter id="' + uid + '-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+      '</defs>' +
+      '<circle cx="50" cy="50" r="49.5" fill="url(#' + uid + '-halo)"/>' +
+      '<circle cx="50" cy="50" r="48.8" fill="none" stroke="' + col + '" stroke-opacity=".38" stroke-width="0.7"/>' +
+      '<g class="chk-ring2">' + inner + '</g>' +
+      '<g class="chk-ring">' + outer + '</g>' +
+      '<circle cx="50" cy="50" r="26" fill="url(#' + uid + '-plate)" stroke="' + GOLD + '" stroke-opacity=".85" stroke-width="1.1"/>' +
+      '<circle cx="50" cy="50" r="23.6" fill="none" stroke="' + goldSoft + '" stroke-width="0.5"/>' +
+      beads(Math.max(12, ({ root: 4, sacral: 6, solar: 10, heart: 12, throat: 16 }[k] || 16) * 2), 26) +
       geo +
-      '<text x="50" y="51" text-anchor="middle" dominant-baseline="central" font-size="14.5" fill="#fff" font-family="serif">' + (DEV[k] || "") + '</text>' +
+      '<text x="50" y="51" text-anchor="middle" dominant-baseline="central" font-size="15" fill="#fff" font-family="serif" filter="url(#' + uid + '-glow)">' + (DEV[k] || "") + '</text>' +
       '</svg>';
   }
   // ---- live tone synthesis (Web Audio) ----

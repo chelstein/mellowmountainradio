@@ -1656,6 +1656,7 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
 .chk-orb:hover .chk-lotus { transform: scale(1.12); }
 .chk-orb.is-active { z-index: 3; }
 .chk-orb.is-active .chk-ring, .chk-detail-head .chk-ring { transform-origin: 50px 50px; animation: chkSpin 26s linear infinite; }
+.chk-orb.is-active .chk-ring2, .chk-detail-head .chk-ring2 { transform-origin: 50px 50px; animation: chkSpin 44s linear infinite reverse; }
 .chk-orb.is-active .chk-orb-core { inset: -14px; animation: chkBreathe 3s ease-in-out infinite; }
 .chk-orb.sounding .chk-orb-core { animation: chkBloom 1.6s ease-out infinite; }
 @keyframes chkBreathe { 0%,100% { opacity: .55; transform: scale(.92); } 50% { opacity: .95; transform: scale(1.08); } }

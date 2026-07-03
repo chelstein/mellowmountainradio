@@ -9,7 +9,7 @@
      Google fonts, AzuraCast now-playing): NOT intercepted — straight to network,
      so streaming and live APIs are never touched by the cache.
 */
-var VERSION = "kazm-v12";
+var VERSION = "kazm-v13";
 var CORE = [
   "/", "/index.html", "/styles.css", "/main.js", "/manifest.webmanifest",
   "/offline.html", "/icon-192.png", "/icon-512.png",
@@ -61,7 +61,7 @@ self.addEventListener("fetch", function (e) {
 
   var isAsset = /\.(png|jpe?g|svg|webp|gif|ico|woff2?|ttf)$/i.test(url.pathname);
   if (isAsset) {
-    e.respondWith(caches.match(req).then(function (cached) {
+    e.respondWith(caches.match(req, { ignoreSearch: true }).then(function (cached) {
       var net = fetch(req).then(function (r) { return putCache(req, r); }).catch(function () { return cached; });
       return cached || net;
     }));
@@ -74,7 +74,7 @@ self.addEventListener("fetch", function (e) {
   var fresh; try { fresh = new Request(req, { cache: "reload" }); } catch (e) { fresh = req; }
   e.respondWith(
     fetch(fresh).then(function (r) { return putCache(req, r); }).catch(function () {
-      return caches.match(req).then(function (c) {
+      return caches.match(req, { ignoreSearch: true }).then(function (c) {
         if (c) return c;
         if (req.mode === "navigate") return caches.match("/offline.html").then(function (o) { return o || caches.match("/index.html"); });
         return Response.error();
