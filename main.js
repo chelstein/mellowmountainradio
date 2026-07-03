@@ -3722,6 +3722,18 @@
       shArm(cfg.autoMins);
     }, 600);
   }
+  function shStartSolo(freqs, mul, autoMins) {   // hold one tone (or the full chord) outside the sequence
+    shStop(0.5);
+    setTimeout(function () {
+      if (!shEnsure()) return;
+      shBank(freqs.map(function (f) { return f * mul; }), freqs.length > 1 ? 0.14 : 0.3);
+      shState = { type: "solo", freqs: freqs.slice(), mul: mul, t0: Date.now() };
+      shWave = freqs.slice();
+      if (shOnState) shOnState(shState);
+      shTick = setInterval(function () { if (shState && shOnState) shOnState(shState); }, 500);
+      shArm(autoMins);
+    }, 600);
+  }
   function shStartBinaural(delta, name, autoMins) {   // true binaural: carrier hard-left, carrier+Δ hard-right
     shStop(0.5);
     setTimeout(function () {
@@ -3771,11 +3783,19 @@
         subEl = root.querySelector("[data-sh-sub]"), segsEl = root.querySelector("[data-sh-segs]"),
         prog = root.querySelector("[data-sh-prog] i"), timeEl = root.querySelector("[data-sh-time]"),
         cycEl = root.querySelector("[data-sh-cycle]"), scope = root.querySelector("[data-sh-scope]");
-    var pace = 150, useV1 = false, oct = false, autoMins = 0;
+    var pace = 150, useV1 = false, oct = false, autoMins = 0, soloIdx = -1;
     function stackFreqs() { return useV1 ? SH_STACK_V1 : SH_STACK_V2; }
     function drawSegs() {
       var f = stackFreqs();
-      segsEl.innerHTML = f.map(function (x, i) { return '<span class="sh-seg" data-si="' + i + '">' + x + '</span>'; }).join("") + '<span class="sh-seg sh-seg--all" data-si="4">ALL</span>';
+      segsEl.innerHTML = f.map(function (x, i) { return '<button class="sh-seg" data-si="' + i + '" title="Hold ' + x + ' Hz on its own">' + x + '</button>'; }).join("") +
+        '<button class="sh-seg sh-seg--all" data-si="4" title="Hold all four together">ALL</button>';
+      segsEl.querySelectorAll(".sh-seg").forEach(function (s) {
+        s.addEventListener("click", function () {
+          var si = +s.getAttribute("data-si");
+          soloIdx = si;
+          shStartSolo(si === 4 ? stackFreqs() : [stackFreqs()[si]], oct ? 2 : 1, autoMins);
+        });
+      });
     }
     drawSegs();
     shScope(scope);
@@ -3793,6 +3813,14 @@
         if (prog) prog.style.width = Math.min(100, el2 / st.segLen * 100) + "%";
         timeEl.textContent = shFmt(st.segLen - el2);
         cycEl.textContent = "PASS " + st.cycle;
+      } else if (st.type === "solo") {
+        var allS = st.freqs.length > 1;
+        freqEl.innerHTML = allS ? st.freqs.join(" + ") : st.freqs[0] + ' <small>Hz</small>';
+        subEl.textContent = "held tone" + (st.mul === 2 ? " · raised one octave" : "") + " — tap another to switch, ▸ for the full cycle";
+        var liveS = segsEl.querySelector('[data-si="' + (allS ? 4 : soloIdx) + '"]'); if (liveS) liveS.classList.add("is-live");
+        if (prog) prog.style.width = "100%";
+        timeEl.textContent = shFmt((Date.now() - st.t0) / 1000);
+        cycEl.textContent = "HELD ∞";
       } else {
         freqEl.innerHTML = st.carrier + " <small>Hz</small> <span class='sh-delta'>Δ " + st.delta + "</span>";
         subEl.textContent = st.name + " · " + st.carrier + " Hz left ear, " + (st.carrier + st.delta) + " Hz right — the " + st.delta + " Hz beat exists only in your head";
@@ -3811,8 +3839,13 @@
       });
     });
     var v1btn = root.querySelector("[data-sh-v1]"), octbtn = root.querySelector("[data-sh-oct]");
-    v1btn.addEventListener("click", function () { useV1 = !useV1; v1btn.classList.toggle("is-active", useV1); drawSegs(); if (shState && shState.type === "stack") shStartStack({ freqs: stackFreqs(), segLen: pace, octaveUp: oct, autoMins: autoMins }); });
-    octbtn.addEventListener("click", function () { oct = !oct; octbtn.classList.toggle("is-active", oct); if (shState && shState.type === "stack") shStartStack({ freqs: stackFreqs(), segLen: pace, octaveUp: oct, autoMins: autoMins }); });
+    function reVoice() {   // a running session follows the voicing switches
+      if (!shState) return;
+      if (shState.type === "stack") shStartStack({ freqs: stackFreqs(), segLen: pace, octaveUp: oct, autoMins: autoMins });
+      else if (shState.type === "solo" && soloIdx > -1) shStartSolo(soloIdx === 4 ? stackFreqs() : [stackFreqs()[soloIdx]], oct ? 2 : 1, autoMins);
+    }
+    v1btn.addEventListener("click", function () { useV1 = !useV1; v1btn.classList.toggle("is-active", useV1); drawSegs(); reVoice(); });
+    octbtn.addEventListener("click", function () { oct = !oct; octbtn.classList.toggle("is-active", oct); reVoice(); });
     root.querySelectorAll("[data-sh-auto] .chip").forEach(function (ch) {
       ch.addEventListener("click", function () {
         root.querySelectorAll("[data-sh-auto] .chip").forEach(function (x) { x.classList.remove("is-active"); });
@@ -3834,6 +3867,117 @@
         bwrap._t = setInterval(function () { inhale = !inhale; blab.textContent = inhale ? "inhale" : "exhale"; }, 5500);
       } else if (bwrap._t) { clearInterval(bwrap._t); bwrap._t = null; }
     });
+  }
+
+  /* =========================================================
+     UFC FIGHT CENTER — live from ESPN's public MMA API (CORS-open, same
+     source as the scoreboards). The next card with a real countdown,
+     every bout with records + country flags + weight class, main event
+     and co-main billed like a poster, live round/clock on fight night
+     (auto-polls every 30s while a card is running), and how the last
+     card went, bout by bout.
+     ========================================================= */
+  var UFC_API = "https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard";
+  var ufcTimer = null, ufcCountTimer = null;
+  function ufcFlag(a) { return (a && a.flag && a.flag.href) ? '<span class="ufc-oct"><img src="' + esc(a.flag.href) + '" alt="" loading="lazy" onerror="this.parentNode.style.visibility=\'hidden\'" /></span>' : '<span class="ufc-oct ufc-oct--none"></span>'; }
+  function ufcRec(x) { return (x.records && x.records[0] && x.records[0].summary) || ""; }
+  function ufcBoutState(c) {
+    var st = c.status && c.status.type;
+    if (!st) return { k: "pre", label: "" };
+    if (st.state === "in") return { k: "live", label: "LIVE · R" + (c.status.period || 1) + " " + (c.status.displayClock || "") };
+    if (st.completed) return { k: "done", label: "Final · R" + (c.status.period || "?") + " " + (c.status.displayClock || "") };
+    return { k: "pre", label: "" };
+  }
+  function ufcBoutRow(c, i, total) {
+    var A = c.competitors && c.competitors[0], B = c.competitors && c.competitors[1];
+    if (!A || !B) return "";
+    var wc = (c.type && (c.type.abbreviation || c.type.text)) || "";
+    var st = ufcBoutState(c);
+    var bill = i === 0 ? "MAIN EVENT" : i === 1 ? "CO-MAIN" : "BOUT " + (total - i);
+    function side(x, right) {
+      return '<div class="ufc-f' + (right ? " ufc-f--r" : "") + (x.winner ? " is-winner" : "") + '">' +
+        ufcFlag(x.athlete) + '<div class="ufc-f-t"><b>' + esc(x.athlete ? x.athlete.displayName : "TBA") + (x.winner ? ' <i class="ufc-w">✓</i>' : '') + '</b>' +
+        '<span>' + esc(ufcRec(x)) + '</span></div></div>';
+    }
+    return '<div class="ufc-bout' + (i === 0 ? " ufc-bout--main" : "") + (st.k === "live" ? " is-live" : "") + '">' +
+      '<div class="ufc-bout-top"><span class="ufc-bill' + (i === 0 ? " ufc-bill--main" : "") + '">' + bill + '</span>' +
+        (wc ? '<span class="ufc-wc">' + esc(wc) + '</span>' : '') +
+        (st.label ? '<span class="ufc-st ufc-st--' + st.k + '">' + esc(st.label) + '</span>' : '') + '</div>' +
+      '<div class="ufc-vs">' + side(A) + '<span class="ufc-x">VS</span>' + side(B, true) + '</div>' +
+    '</div>';
+  }
+  function ufcCountdown(el, iso) {
+    if (ufcCountTimer) { clearInterval(ufcCountTimer); ufcCountTimer = null; }
+    function tick() {
+      if (!el.isConnected) { clearInterval(ufcCountTimer); ufcCountTimer = null; return; }
+      var ms = new Date(iso) - Date.now();
+      if (ms <= 0) { el.innerHTML = '<span class="ufc-cd-live">🔴 FIGHT NIGHT</span>'; clearInterval(ufcCountTimer); ufcCountTimer = null; return; }
+      var d = Math.floor(ms / 86400000), h = Math.floor(ms % 86400000 / 3600000), m = Math.floor(ms % 3600000 / 60000), s = Math.floor(ms % 60000 / 1000);
+      el.innerHTML = (d ? '<b>' + d + '</b>d ' : '') + '<b>' + h + '</b>h <b>' + m + '</b>m ' + (d ? '' : '<b>' + s + '</b>s');
+    }
+    tick(); ufcCountTimer = setInterval(tick, 1000);
+  }
+  function initUFC() {
+    var nx = doc.querySelector("[data-ufc-next]");
+    if (!nx) { if (ufcTimer) { clearInterval(ufcTimer); ufcTimer = null; } if (ufcCountTimer) { clearInterval(ufcCountTimer); ufcCountTimer = null; } return; }
+    var lastBox = doc.querySelector("[data-ufc-last]");
+    if (!nx.children.length) nx.innerHTML = '<p class="rss-loading">Ringing the cage&hellip;</p>';
+    function load() {
+      fetch(UFC_API, { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) {
+        if (!nx.isConnected) return;
+        var evs = d.events || [];
+        var ev = null;
+        for (var i = 0; i < evs.length; i++) { if (!(evs[i].status && evs[i].status.type && evs[i].status.type.completed)) { ev = evs[i]; break; } }
+        if (!ev) ev = evs[evs.length - 1];
+        if (!ev) { nx.innerHTML = '<p class="embed-note">No upcoming card on the schedule right now.</p>'; return; }
+        var comps = (ev.competitions || []).slice().reverse();   // ESPN lists early prelims first — the poster reads top down
+        var v = ev.venues && ev.venues[0];
+        var bc = null;
+        for (var b = 0; b < comps.length && !bc; b++) { var bb = comps[b].broadcasts; if (bb && bb[0] && bb[0].names) bc = bb[0].names[0]; }
+        var live = ev.status && ev.status.type && ev.status.type.state === "in";
+        var names = ev.name.split(":");
+        nx.innerHTML =
+          '<div class="ufc-card' + (live ? " is-live" : "") + '">' +
+            '<div class="ufc-head">' +
+              '<div><span class="ufc-league">' + esc((names[0] || ev.name).trim()) + (live ? ' <span class="ufc-livepill">● LIVE</span>' : '') + '</span>' +
+              '<h3 class="ufc-title">' + esc((names[1] || "").trim() || ev.shortName || "") + '</h3>' +
+              '<span class="ufc-meta">' + esc(azDateTime(ev.date)) + ' AZ' +
+                (v ? ' &middot; ' + esc(v.fullName) + (v.address ? ', ' + esc(v.address.city) : '') : '') +
+                (bc ? ' &middot; ' + esc(bc) : '') + '</span></div>' +
+              '<div class="ufc-cd" data-ufc-cd></div>' +
+            '</div>' +
+            '<div class="ufc-bouts">' + comps.map(function (c, i) { return ufcBoutRow(c, i, comps.length); }).join("") + '</div>' +
+            '<div class="ufc-foot">Full card, billed order &middot; records &amp; results live from ESPN &middot; times Arizona</div>' +
+          '</div>';
+        var cd = nx.querySelector("[data-ufc-cd]");
+        if (cd && !live) ufcCountdown(cd, ev.date);
+        else if (cd) cd.innerHTML = '<span class="ufc-cd-live">🔴 FIGHT NIGHT</span>';
+        if (ufcTimer) clearInterval(ufcTimer);
+        ufcTimer = setInterval(load, live ? 30000 : 300000);   // 30s on fight night, 5 min otherwise
+      }).catch(function () { if (nx.isConnected && !nx.querySelector(".ufc-card")) nx.innerHTML = '<p class="embed-note">The fight card is unavailable right now.</p>'; });
+      if (lastBox) {
+        var now = new Date(), past = new Date(+now - 60 * 86400000);
+        function ymd(dt) { return dt.toISOString().slice(0, 10).replace(/-/g, ""); }
+        fetch(UFC_API + "?dates=" + ymd(past) + "-" + ymd(now), { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) {
+          if (!lastBox.isConnected) return;
+          var done = (d.events || []).filter(function (e) { return e.status && e.status.type && e.status.type.completed; });
+          var ev = done[done.length - 1]; if (!ev) { lastBox.innerHTML = ""; return; }
+          var comps = (ev.competitions || []).slice().reverse().slice(0, 5);
+          lastBox.innerHTML =
+            '<div class="ufc-lastcard"><div class="ufc-last-h"><b>' + esc(ev.name) + '</b><span>' + esc(azDateTime(ev.date)) + ' AZ</span></div>' +
+            comps.map(function (c) {
+              var w = (c.competitors || []).filter(function (x) { return x.winner; })[0];
+              var l = (c.competitors || []).filter(function (x) { return !x.winner; })[0];
+              var st = ufcBoutState(c);
+              if (!w || !l) return "";
+              return '<div class="ufc-res">' + ufcFlag(w.athlete) +
+                '<span class="ufc-res-t"><b>' + esc(w.athlete.displayName) + '</b> def. ' + esc(l.athlete.displayName) + '</span>' +
+                '<span class="ufc-res-st">' + esc(st.label) + '</span></div>';
+            }).join("") + '</div>';
+        }).catch(function () {});
+      }
+    }
+    load();
   }
 
   /* =========================================================
@@ -4342,6 +4486,7 @@
     initChakras();
     initTarot();
     initSoundHealing();
+    initUFC();
     initGolden();
     initCosmicAudio();
     initGoldenMode();
