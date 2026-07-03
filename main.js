@@ -35,10 +35,12 @@
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
-        '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="soundhealing.html">Sound Healing</a><a role="menuitem" href="contact.html">Contact</a>' +
+        '<li class="has-menu" data-nav="vibe"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">The Vibe</button><div class="mega" role="menu">' +
+          '<a role="menuitem" href="vibe.html">Cosmic Conditions</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="soundhealing.html">Sound Healing</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a>' +
         '</div></li>' +
-        '<li data-nav="advertising"><a href="advertising.html">Advertising</a></li>' +
+        '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
+          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="advertising.html">Advertising</a><a role="menuitem" href="contact.html">Contact</a>' +
+        '</div></li>' +
       '</ul></nav>' +
       '<div class="header-actions">' +
         '<button class="listen-btn" data-listen aria-pressed="false"><span class="listen-icon" aria-hidden="true">' + ICON_PLAY + ICON_PAUSE + '</span><span class="listen-label" data-listen-label>Listen Live</span></button>' +
@@ -59,7 +61,8 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="The Vibe"><h4>The Vibe</h4><a href="vibe.html">Cosmic Conditions</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="wildlife.html">Seen around Sedona</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
     '<div class="wrap footer-bottom">' +

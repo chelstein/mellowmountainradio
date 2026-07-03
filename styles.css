@@ -2280,7 +2280,7 @@ a.contact-v:hover { color: var(--accent-strong); }
    FOOTER
    ========================================================= */
 .site-footer { background: var(--navy-deeper); color: rgba(255, 255, 255, .72); padding: 70px 0 30px; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 34px; }
 .footer-logo { height: 64px; width: auto; margin-bottom: 18px; }
 .footer-tag { max-width: 34ch; font-size: 15px; color: rgba(255, 255, 255, .6); }
 .social { display: flex; gap: 10px; margin-top: 22px; }
