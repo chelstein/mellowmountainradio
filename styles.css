@@ -1936,6 +1936,18 @@ body.chk-imm-open { overflow: hidden; }
 .sh-bin h3 { margin: 4px 0 0; font-family: var(--font-display); font-size: 1.4rem; color: #fff; }
 .sh-bin p { margin: 0 0 10px; font-size: 13.5px; line-height: 1.55; color: rgba(233,237,255,.75); flex: 1; }
 
+/* doors to the other sound rooms */
+.sh-doors { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 22px; }
+@media (max-width: 720px) { .sh-doors { grid-template-columns: 1fr; } }
+.sh-door { display: flex; align-items: center; gap: 16px; text-decoration: none; background: radial-gradient(120% 130% at 70% 0%, #1c2647 0%, #10162e 60%, #0a0e20 100%); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+.sh-door:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: rgba(141,232,255,.4); }
+.sh-door-ic { font-size: 2rem; line-height: 1; flex: none; filter: drop-shadow(0 0 10px rgba(141,232,255,.3)); }
+.sh-door-t { min-width: 0; }
+.sh-door-t b { display: block; font-family: var(--font-display); font-size: 1.15rem; color: #fff; margin-bottom: 3px; }
+.sh-door-t span { display: block; font-size: 12.5px; line-height: 1.5; color: rgba(233,237,255,.65); }
+.sh-door-a { margin-left: auto; flex: none; font-size: 1.3rem; color: #8de8ff; transition: transform .16s ease; }
+.sh-door:hover .sh-door-a { transform: translateX(4px); }
+
 /* Stargazing tonight */
 .stargaze { margin: 22px 0 8px; }
 .sky-card { position: relative; overflow: hidden; border-radius: var(--r); padding: 24px 26px; color: #e9edff; box-shadow: var(--shadow); background: radial-gradient(130% 120% at 80% 0%, #23305c 0%, #131a34 55%, #0c1024 100%); border: 1px solid rgba(255,255,255,.12); }
