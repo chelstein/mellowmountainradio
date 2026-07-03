@@ -1835,6 +1835,15 @@ body.chk-imm-open { overflow: hidden; }
 .tlib-detail p { margin: 4px 0; font-size: 13.5px; line-height: 1.55; color: #4a3a20; }
 .tlib-detail .tc-tag { font-size: 10px; }
 
+/* ===== brand art gallery (About) ===== */
+.moods-hero { margin-top: 22px; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); }
+.moods-hero img { display: block; width: 100%; height: auto; }
+.moods-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+@media (max-width: 760px) { .moods-grid { grid-template-columns: repeat(2, 1fr); } }
+.mood { margin: 0; background: #0d1226; border: 1px solid rgba(255,255,255,.1); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.mood img { display: block; width: 100%; height: 200px; object-fit: contain; padding: 14px; box-sizing: border-box; }
+.mood figcaption { padding: 10px 14px 12px; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: rgba(233,237,255,.6); text-align: center; border-top: 1px solid rgba(255,255,255,.08); }
+
 /* ===== UFC fight center ===== */
 .ufc-next { margin-top: 20px; }
 .ufc-card { background: radial-gradient(130% 120% at 80% 0%, #23151a 0%, #150e14 50%, #0c090f 100%); border: 1px solid rgba(224,80,70,.28); border-radius: var(--r); padding: 24px 26px; color: #f2ecec; box-shadow: var(--shadow); }
