@@ -18,8 +18,8 @@
   var HEADER_HTML =
     '<header class="site-header" id="top" data-header><div class="header-inner">' +
       '<a class="brand" href="index.html" aria-label="KAZM Mellow Mountain Radio home">' +
-        '<img src="Color%20logo%20-%20no%20background.svg" alt="KAZM 106.5 FM and 780 AM, Mellow Mountain Radio" class="brand-logo brand-logo--light" />' +
-        '<img src="White%20logo%20-%20no%20background.svg" alt="" aria-hidden="true" class="brand-logo brand-logo--dark" />' +
+        '<img src="Color%20logo%20-%20no%20background.svg" alt="KAZM 106.5 FM and 780 AM, Mellow Mountain Radio" class="brand-logo brand-logo--light" width="109" height="100" />' +
+        '<img src="White%20logo%20-%20no%20background.svg" alt="" aria-hidden="true" class="brand-logo brand-logo--dark" width="109" height="100" />' +
       '</a>' +
       '<nav class="primary-nav" aria-label="Primary"><ul class="nav-list">' +
         '<li data-nav="home"><a href="index.html">Home</a></li>' +
@@ -43,7 +43,7 @@
         '</div></li>' +
       '</ul></nav>' +
       '<div class="header-actions">' +
-        '<button class="listen-btn" data-listen aria-pressed="false"><span class="listen-icon" aria-hidden="true">' + ICON_PLAY + ICON_PAUSE + '</span><span class="listen-label" data-listen-label>Listen Live</span></button>' +
+        '<button class="listen-btn" data-listen aria-pressed="false" aria-label="Listen live"><span class="listen-icon" aria-hidden="true">' + ICON_PLAY + ICON_PAUSE + '</span><span class="listen-label" data-listen-label>Listen Live</span></button>' +
         '<button class="menu-toggle" data-menu-toggle aria-expanded="false" aria-label="Open menu"><span></span><span></span><span></span></button>' +
       '</div>' +
     '</div></header>';
@@ -51,7 +51,7 @@
   var FOOTER_HTML =
     '<footer class="site-footer"><div class="wrap footer-grid">' +
       '<div class="footer-brand">' +
-        '<img src="White%20logo%20-%20no%20background.svg" alt="KAZM 106.5 FM and 780 AM, Mellow Mountain Radio" class="footer-logo" />' +
+        '<img src="White%20logo%20-%20no%20background.svg" alt="KAZM 106.5 FM and 780 AM, Mellow Mountain Radio" class="footer-logo" width="109" height="100" />' +
         '<p class="footer-tag">The sound of Sedona since 1974. Soft oldies, yacht rock, and the news that matters here.</p>' +
         '<div class="social" aria-label="Social media">' +
           '<a href="https://www.facebook.com/profile.php?id=61552335103946" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.95.93-1.95 1.89v2.25h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07Z"/></svg></a>' +
@@ -76,7 +76,7 @@
       '<canvas class="player-viz" data-viz aria-hidden="true"></canvas>' +
       '<div class="player-inner wrap">' +
       '<div class="player-meta">' +
-        '<img class="player-art" data-now-art src="Color%20logo%20-%20no%20background.svg" alt="" aria-hidden="true" />' +
+        '<img class="player-art" data-now-art src="Color%20logo%20-%20no%20background.svg" alt="" aria-hidden="true" width="100" height="100" />' +
         '<span class="player-eq eq" data-eq aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' +
         '<span class="player-onair"><span class="onair-dot" aria-hidden="true"></span> On air <span class="player-listeners" data-listeners></span></span>' +
         '<span class="player-track"><span class="player-title" data-now-track>Mellow Mountain Radio</span><span class="player-artist" data-now-artist>106.5 FM &amp; 780 AM</span></span>' +
