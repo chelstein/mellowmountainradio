@@ -3126,9 +3126,10 @@
     try {
       chkCtx = new C();
       chkMaster = chkCtx.createGain(); chkMaster.gain.value = 0.85;
-      var rev = chkCtx.createConvolver(); rev.buffer = cxImpulse(chkCtx, 3, 2.2);
-      var wet = chkCtx.createGain(); wet.gain.value = 0.32;
-      var dry = chkCtx.createGain(); dry.gain.value = 0.82;
+      // a long, soft cathedral tail — the space the bowls ring in
+      var rev = chkCtx.createConvolver(); rev.buffer = cxImpulse(chkCtx, 4.6, 2.6);
+      var wet = chkCtx.createGain(); wet.gain.value = 0.45;
+      var dry = chkCtx.createGain(); dry.gain.value = 0.72;
       chkBus = chkCtx.createGain();
       chkBus.connect(dry); dry.connect(chkMaster);
       chkBus.connect(rev); rev.connect(wet); wet.connect(chkMaster);
@@ -3136,17 +3137,59 @@
     } catch (e) { chkCtx = null; return null; }
     return chkCtx;
   }
-  function chkTone(freq, dur) {
+  // One struck singing bowl: a soft mallet strike, then the fundamental
+  // with slightly-detuned shimmer partials (the beating you hear in a real
+  // bowl), a slow vibrato breathing through it, panned gently in space,
+  // blooming in and ringing out long past its slot so voices overlap.
+  function chkBowl(freq, when, dur, pan, level) {
     var ctx = chkEnsure(); if (!ctx) return;
     if (ctx.state === "suspended") ctx.resume();
-    var t = ctx.currentTime, end = t + dur;
-    [[freq, 0.24, "sine"], [freq * 2, 0.06, "sine"], [freq * 1.5, 0.045, "sine"]].forEach(function (v) {
-      var o = ctx.createOscillator(); o.type = v[2]; o.frequency.value = v[0];
-      var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(v[1], t + 0.5);
-      g.gain.setValueAtTime(v[1], Math.max(t + 0.5, end - 0.7));
-      g.gain.exponentialRampToValueAtTime(0.0001, end);
-      o.connect(g); g.connect(chkBus); o.start(t); o.stop(end + 0.05);
+    var t0 = ctx.currentTime + (when || 0), lv = level || 1;
+    var out = ctx.createGain(); out.gain.value = 1;
+    var pn = null;
+    try { pn = ctx.createStereoPanner(); pn.pan.value = pan || 0; out.connect(pn); pn.connect(chkBus); }
+    catch (e) { out.connect(chkBus); }
+    // slow vibrato lives on all partials — the bowl "breathes"
+    var lfo = ctx.createOscillator(); lfo.frequency.value = 0.14;
+    var lg = ctx.createGain(); lg.gain.value = 3.2;   // cents of wow
+    lfo.connect(lg); lfo.start(t0); lfo.stop(t0 + dur + 6.2);
+    // partials: fundamental pair (detuned for beating) + soft overtones
+    [[1, 0, 0.20], [1, 3.4, 0.16], [2.004, 0, 0.05], [2.996, 5, 0.022], [1.498, -4, 0.03]].forEach(function (v) {
+      var o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = freq * v[0]; o.detune.value = v[1];
+      try { lg.connect(o.detune); } catch (e) {}
+      var g = ctx.createGain();
+      var peak = v[2] * lv;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(peak, t0 + 1.6);                       // slow bloom
+      g.gain.exponentialRampToValueAtTime(peak * 0.5, t0 + dur);                 // gentle sing
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur + 5.8);               // long ring-out
+      o.connect(g); g.connect(out);
+      o.start(t0); o.stop(t0 + dur + 6);
+      chkCurrent.push(o, g);
+    });
+    // the mallet: a brief bright partial that decays fast — the "strike"
+    var s = ctx.createOscillator(); s.type = "sine"; s.frequency.value = freq * 5.19;
+    var sg = ctx.createGain();
+    sg.gain.setValueAtTime(0.0001, t0);
+    sg.gain.exponentialRampToValueAtTime(0.035 * lv, t0 + 0.06);
+    sg.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
+    s.connect(sg); sg.connect(out); s.start(t0); s.stop(t0 + 1.2);
+    chkCurrent.push(s, sg, lfo, lg, out); if (pn) chkCurrent.push(pn);
+  }
+  function chkTone(freq, dur) { chkBowl(freq, 0, dur, 0, 1); }
+  // the river under the bath — a barely-there earth drone (root, an octave
+  // down) that fades in first, holds the whole journey, and settles last
+  function chkDrone(when, hold) {
+    var ctx = chkEnsure(); if (!ctx) return;
+    var t0 = ctx.currentTime + when;
+    [[0.5, "sine", 0.055], [0.5, "triangle", 0.018], [0.7495, "sine", 0.02]].forEach(function (v) {
+      var o = ctx.createOscillator(); o.type = v[1]; o.frequency.value = CHAKRAS[0].hz * v[0];
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(v[2], t0 + 4);
+      g.gain.setValueAtTime(v[2], t0 + hold);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + hold + 7);
+      o.connect(g); g.connect(chkBus); o.start(t0); o.stop(t0 + hold + 7.2);
       chkCurrent.push(o, g);
     });
   }
@@ -3157,21 +3200,28 @@
     // the cleanup below (that race silenced every click after the first).
     var t = chkCtx.currentTime, nodes = chkCurrent; chkCurrent = [];
     nodes.forEach(function (nd) {
-      try { if (nd.gain) { nd.gain.cancelScheduledValues(t); nd.gain.setValueAtTime(nd.gain.value, t); nd.gain.linearRampToValueAtTime(0.0001, t + 0.12); } } catch (e) {}
+      try { if (nd.gain) { nd.gain.cancelScheduledValues(t); nd.gain.setValueAtTime(nd.gain.value, t); nd.gain.linearRampToValueAtTime(0.0001, t + 0.4); } } catch (e) {}
     });
-    setTimeout(function () { nodes.forEach(function (nd) { try { if (nd.stop) nd.stop(); } catch (e) {} }); }, 170);
+    setTimeout(function () { nodes.forEach(function (nd) { try { if (nd.stop) nd.stop(); } catch (e) {} }); }, 450);
   }
   function chkBath() {
     chkStop();
     setTimeout(function () {
-      var step = 4.4;
+      var step = 7.5, n = CHAKRAS.length;                     // ~1 min root to crown
+      chkDrone(0, n * step + 6);                              // the river runs the whole way
       CHAKRAS.forEach(function (c, i) {
-        var id = setTimeout(function () { if (chkOnStep) chkOnStep(i); chkTone(c.hz, step + 0.6); }, i * step * 1000);
+        var pan = i === n - 1 ? 0 : (i % 2 ? 0.3 : -0.3);     // bowls placed around you; crown dead center
+        var id = setTimeout(function () {
+          if (chkOnStep) chkOnStep(i);
+          chkBowl(c.hz, 0, step + 3.5, pan, 1);               // rings well into the next bowl's bloom
+        }, (1.5 + i * step) * 1000);
         chkBathTimers.push(id);
       });
-      var done = setTimeout(function () { if (chkOnStep) chkOnStep(-1); }, CHAKRAS.length * step * 1000 + 800);
-      chkBathTimers.push(done);
-    }, 260);
+      // the close: root and crown sound together — grounded and open
+      var closing = setTimeout(function () { chkBowl(CHAKRAS[0].hz, 0, 6, -0.15, 0.5); chkBowl(CHAKRAS[6].hz, 0.4, 6, 0.15, 0.6); }, (1.5 + n * step) * 1000);
+      var done = setTimeout(function () { if (chkOnStep) chkOnStep(-1); }, (1.5 + n * step + 10) * 1000);
+      chkBathTimers.push(closing, done);
+    }, 500);
   }
   function chkFigureSVG() {
     return '<svg class="chk-figure" viewBox="0 0 200 480" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
