@@ -36,7 +36,7 @@
           '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="contact.html">Contact</a>' +
+          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="vibe.html">The Vibe</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="soundhealing.html">Sound Healing</a><a role="menuitem" href="contact.html">Contact</a>' +
         '</div></li>' +
         '<li data-nav="advertising"><a href="advertising.html">Advertising</a></li>' +
       '</ul></nav>' +
@@ -59,7 +59,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="vibe.html">The Vibe</a><a href="wildlife.html">Seen around Sedona</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
     '<div class="wrap footer-bottom">' +
@@ -3620,6 +3620,223 @@
   }
 
   /* =========================================================
+     SOUND HEALING — the transmission room.
+     Centerpiece: the KAZM Harmonic Stack, a live re-creation of the real
+     overnight experiment this station ran on the 5,000-watt 780 AM rig —
+     54, 72, 84, 111 Hz, five minutes each, then all four together, then
+     around again until dawn. Every tone is synthesized on-device,
+     transmitter-clean (pure sines, no effects), with equal-power
+     crossfades between segments and a phosphor oscilloscope drawing the
+     REAL summed waveform. Plus true stereo binaural sessions and a
+     coherent-breathing pacer. One session at a time, like one transmitter.
+     ========================================================= */
+  var SH_STACK_V2 = [54, 72, 84, 111], SH_STACK_V1 = [54.7, 72.3, 89.4, 111.0];
+  var shCtx = null, shMaster = null, shNodes = [], shTick = null, shAutoOff = null,
+      shState = null, shWave = [], shRAF = null, shOnState = null;
+  function shEnsure() {
+    if (shCtx) return shCtx;
+    var C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
+    try {
+      shCtx = new C();
+      shMaster = shCtx.createGain(); shMaster.gain.value = 0.9;
+      var comp = shCtx.createDynamicsCompressor();
+      comp.threshold.value = -14; comp.ratio.value = 5; comp.attack.value = 0.01; comp.release.value = 0.3;
+      shMaster.connect(comp); comp.connect(shCtx.destination);
+    } catch (e) { shCtx = null; return null; }
+    return shCtx;
+  }
+  // one bank of pure tones, blooming in over 1.5s; returns handles so the
+  // next segment can sing it back down (equal-power crossfade)
+  function shBank(freqs, level, pans) {
+    var ctx = shEnsure(); if (!ctx) return [];
+    if (ctx.state === "suspended") ctx.resume();
+    var t = ctx.currentTime, made = [];
+    freqs.forEach(function (f, i) {
+      var o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = f;
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(level, t + 1.5);
+      var dest = shMaster;
+      if (pans && pans[i] != null) { try { var pn = ctx.createStereoPanner(); pn.pan.value = pans[i]; pn.connect(shMaster); dest = pn; shNodes.push(pn); } catch (e) {} }
+      o.connect(g); g.connect(dest); o.start(t);
+      shNodes.push(o, g); made.push({ o: o, g: g });
+    });
+    return made;
+  }
+  function shFadeBank(bank, secs) {
+    if (!shCtx || !bank) return;
+    var t = shCtx.currentTime;
+    bank.forEach(function (h) {
+      try {
+        h.g.gain.cancelScheduledValues(t); h.g.gain.setValueAtTime(Math.max(h.g.gain.value, 0.0001), t);
+        h.g.gain.exponentialRampToValueAtTime(0.0001, t + secs);
+        h.o.stop(t + secs + 0.1);
+      } catch (e) {}
+    });
+  }
+  function shStop(fade) {
+    if (shTick) { clearInterval(shTick); shTick = null; }
+    if (shAutoOff) { clearTimeout(shAutoOff); shAutoOff = null; }
+    shState = null; shWave = [];
+    if (shCtx) {
+      var t = shCtx.currentTime, nodes = shNodes; shNodes = [];
+      nodes.forEach(function (nd) {
+        try { if (nd.gain) { nd.gain.cancelScheduledValues(t); nd.gain.setValueAtTime(Math.max(nd.gain.value, 0.0001), t); nd.gain.exponentialRampToValueAtTime(0.0001, t + (fade || 0.8)); } } catch (e) {}
+      });
+      setTimeout(function () { nodes.forEach(function (nd) { try { if (nd.stop) nd.stop(); } catch (e) {} }); }, ((fade || 0.8) + 0.2) * 1000);
+    }
+    if (shOnState) shOnState(null);
+  }
+  function shArm(mins) {   // optional sign-off timer, fades out like end of broadcast day
+    if (shAutoOff) { clearTimeout(shAutoOff); shAutoOff = null; }
+    if (mins) shAutoOff = setTimeout(function () { shStop(6); }, mins * 60000);
+  }
+  function shStartStack(cfg) {   // cfg: {freqs, segLen, octaveUp, autoMins}
+    shStop(0.5);
+    setTimeout(function () {
+      if (!shEnsure()) return;
+      var base = cfg.freqs.slice(), mul = cfg.octaveUp ? 2 : 1;
+      var segs = base.map(function (f) { return [f]; }); segs.push(base.slice());   // 4 solos, then ALL — the real overnight pattern
+      var st = { type: "stack", idx: 0, cycle: 1, segLen: cfg.segLen, segs: segs, mul: mul, bank: null, t0: Date.now() };
+      shState = st;
+      function seg() { return st.segs[st.idx]; }
+      function play() {
+        var freqs = seg().map(function (f) { return f * mul; });
+        var lvl = seg().length > 1 ? 0.14 : 0.3;
+        var old = st.bank;
+        st.bank = shBank(freqs, lvl);
+        if (old) shFadeBank(old, 1.8);
+        shWave = seg().slice();   // scope draws the true (un-octaved) math
+        if (shOnState) shOnState(st);
+      }
+      play();
+      shTick = setInterval(function () {
+        if (!shState) return;
+        var el = (Date.now() - st.t0) / 1000;
+        if (el >= st.segLen) {
+          st.t0 = Date.now(); st.idx++;
+          if (st.idx >= st.segs.length) { st.idx = 0; st.cycle++; }   // ↻ around again, all night if you like
+          play();
+        } else if (shOnState) shOnState(st);
+      }, 200);
+      shArm(cfg.autoMins);
+    }, 600);
+  }
+  function shStartBinaural(delta, name, autoMins) {   // true binaural: carrier hard-left, carrier+Δ hard-right
+    shStop(0.5);
+    setTimeout(function () {
+      if (!shEnsure()) return;
+      var carrier = 111;   // a nod to the top of the stack
+      shBank([carrier, carrier + delta], 0.22, [-1, 1]);
+      shState = { type: "binaural", name: name, delta: delta, carrier: carrier, t0: Date.now() };
+      shWave = [carrier, carrier + delta];
+      if (shOnState) shOnState(shState);
+      shTick = setInterval(function () { if (shState && shOnState) shOnState(shState); }, 500);
+      shArm(autoMins);
+    }, 600);
+  }
+  // phosphor oscilloscope — draws the genuine sum of the active tones
+  function shScope(canvas) {
+    var ctx2 = canvas.getContext("2d"), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    function size() { var w = canvas.clientWidth || 600; canvas.width = w * dpr; canvas.height = 130 * dpr; }
+    size();
+    var t0 = performance.now();
+    function frame() {
+      if (!canvas.isConnected) { shRAF = null; return; }
+      var W = canvas.width, H = canvas.height, mid = H / 2;
+      ctx2.fillStyle = "rgba(7,11,28,.24)"; ctx2.fillRect(0, 0, W, H);   // phosphor fade
+      var fs = shWave;
+      ctx2.beginPath();
+      var tNow = (performance.now() - t0) / 1000;
+      for (var x = 0; x <= W; x += 2 * dpr) {
+        var tt = tNow + (x / W) * 0.09, v = 0;
+        for (var i = 0; i < fs.length; i++) v += Math.sin(2 * Math.PI * fs[i] * tt) / Math.max(2, fs.length);
+        var y = mid - v * H * 0.36;
+        x === 0 ? ctx2.moveTo(x, y) : ctx2.lineTo(x, y);
+      }
+      if (!fs.length) { ctx2.moveTo(0, mid); ctx2.lineTo(W, mid); }   // flatline, carrier idle
+      ctx2.strokeStyle = fs.length ? "#8de8ff" : "rgba(141,232,255,.35)";
+      ctx2.lineWidth = 1.6 * dpr; ctx2.shadowColor = "#4fc3f7"; ctx2.shadowBlur = 10 * dpr;
+      ctx2.stroke(); ctx2.shadowBlur = 0;
+      shRAF = requestAnimationFrame(frame);
+    }
+    if (shRAF) cancelAnimationFrame(shRAF);
+    shRAF = requestAnimationFrame(frame);
+  }
+  function shFmt(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); }
+  function initSoundHealing() {
+    var root = doc.querySelector("[data-sh]");
+    if (!root) { if (shState) shStop(1); shOnState = null; return; }   // left the room — sign off
+    var lamp = root.querySelector("[data-sh-lamp]"), freqEl = root.querySelector("[data-sh-freq]"),
+        subEl = root.querySelector("[data-sh-sub]"), segsEl = root.querySelector("[data-sh-segs]"),
+        prog = root.querySelector("[data-sh-prog] i"), timeEl = root.querySelector("[data-sh-time]"),
+        cycEl = root.querySelector("[data-sh-cycle]"), scope = root.querySelector("[data-sh-scope]");
+    var pace = 150, useV1 = false, oct = false, autoMins = 0;
+    function stackFreqs() { return useV1 ? SH_STACK_V1 : SH_STACK_V2; }
+    function drawSegs() {
+      var f = stackFreqs();
+      segsEl.innerHTML = f.map(function (x, i) { return '<span class="sh-seg" data-si="' + i + '">' + x + '</span>'; }).join("") + '<span class="sh-seg sh-seg--all" data-si="4">ALL</span>';
+    }
+    drawSegs();
+    shScope(scope);
+    shOnState = function (st) {
+      var on = !!st;
+      lamp.classList.toggle("is-on", on);
+      root.querySelectorAll(".sh-seg").forEach(function (s) { s.classList.remove("is-live"); });
+      if (!on) { freqEl.innerHTML = "&mdash;"; subEl.textContent = "transmitter idle"; if (prog) prog.style.width = "0%"; timeEl.textContent = "–:––"; cycEl.textContent = ""; return; }
+      if (st.type === "stack") {
+        var f = st.segs[st.idx], all = f.length > 1;
+        freqEl.innerHTML = all ? f.join(" + ") : f[0] + ' <small>Hz</small>';
+        subEl.textContent = (all ? "all four together" : "pure tone") + (st.mul === 2 ? " · raised one octave" : "") + " · pass " + st.cycle;
+        var live = segsEl.querySelector('[data-si="' + (all ? 4 : st.idx) + '"]'); if (live) live.classList.add("is-live");
+        var el2 = (Date.now() - st.t0) / 1000;
+        if (prog) prog.style.width = Math.min(100, el2 / st.segLen * 100) + "%";
+        timeEl.textContent = shFmt(st.segLen - el2);
+        cycEl.textContent = "PASS " + st.cycle;
+      } else {
+        freqEl.innerHTML = st.carrier + " <small>Hz</small> <span class='sh-delta'>Δ " + st.delta + "</span>";
+        subEl.textContent = st.name + " · " + st.carrier + " Hz left ear, " + (st.carrier + st.delta) + " Hz right — the " + st.delta + " Hz beat exists only in your head";
+        timeEl.textContent = shFmt((Date.now() - st.t0) / 1000);
+        cycEl.textContent = "BINAURAL";
+        if (prog) prog.style.width = "100%";
+      }
+    };
+    shOnState(shState);   // resync UI if a session survived SPA navigation
+    // controls
+    root.querySelectorAll("[data-sh-pace] .chip").forEach(function (ch) {
+      ch.addEventListener("click", function () {
+        root.querySelectorAll("[data-sh-pace] .chip").forEach(function (x) { x.classList.remove("is-active"); });
+        ch.classList.add("is-active"); pace = +ch.getAttribute("data-secs");
+        if (shState && shState.type === "stack") shState.segLen = pace;
+      });
+    });
+    var v1btn = root.querySelector("[data-sh-v1]"), octbtn = root.querySelector("[data-sh-oct]");
+    v1btn.addEventListener("click", function () { useV1 = !useV1; v1btn.classList.toggle("is-active", useV1); drawSegs(); if (shState && shState.type === "stack") shStartStack({ freqs: stackFreqs(), segLen: pace, octaveUp: oct, autoMins: autoMins }); });
+    octbtn.addEventListener("click", function () { oct = !oct; octbtn.classList.toggle("is-active", oct); if (shState && shState.type === "stack") shStartStack({ freqs: stackFreqs(), segLen: pace, octaveUp: oct, autoMins: autoMins }); });
+    root.querySelectorAll("[data-sh-auto] .chip").forEach(function (ch) {
+      ch.addEventListener("click", function () {
+        root.querySelectorAll("[data-sh-auto] .chip").forEach(function (x) { x.classList.remove("is-active"); });
+        ch.classList.add("is-active"); autoMins = +ch.getAttribute("data-mins"); if (shState) shArm(autoMins);
+      });
+    });
+    root.querySelector("[data-sh-start]").addEventListener("click", function () { shStartStack({ freqs: stackFreqs(), segLen: pace, octaveUp: oct, autoMins: autoMins }); });
+    root.querySelector("[data-sh-stop]").addEventListener("click", function () { shStop(1.2); });
+    root.querySelectorAll("[data-sh-bin]").forEach(function (b) {
+      b.addEventListener("click", function () { shStartBinaural(+b.getAttribute("data-sh-bin"), b.getAttribute("data-sh-name"), autoMins); });
+    });
+    // coherent-breathing pacer — 5.5s in, 5.5s out
+    var bwrap = root.querySelector("[data-sh-breathbox]"), btog = root.querySelector("[data-sh-breath]"), blab = root.querySelector("[data-sh-breathlab]");
+    if (btog) btog.addEventListener("click", function () {
+      var on = bwrap.hidden; bwrap.hidden = !on; btog.classList.toggle("is-active", on);
+      btog.textContent = on ? "◼ Hide the breath pacer" : "◉ Breathe with it · 5.5 in / 5.5 out";
+      if (on) {
+        var inhale = true; blab.textContent = "inhale";
+        bwrap._t = setInterval(function () { inhale = !inhale; blab.textContent = inhale ? "inhale" : "exhale"; }, 5500);
+      } else if (bwrap._t) { clearInterval(bwrap._t); bwrap._t = null; }
+    });
+  }
+
+  /* =========================================================
      GOLDEN HOUR MODE — the site knows the exact minute the red rocks
      catch fire. As golden hour nears it shows a countdown; during it,
      the whole site warms and the badge counts down to the sun's edge.
@@ -4124,6 +4341,7 @@
     initHoroscope();
     initChakras();
     initTarot();
+    initSoundHealing();
     initGolden();
     initCosmicAudio();
     initGoldenMode();

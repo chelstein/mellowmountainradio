@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sound Healing | KAZM Mellow Mountain Radio</title>
+  <meta name="description" content="The KAZM Harmonic Stack — a live re-creation of the real overnight tone experiment run on our 5,000-watt 780 AM transmitter (54, 72, 84, 111 Hz) — plus true binaural sessions and a coherent-breathing pacer. Every tone synthesized live in your browser." />
+  <meta name="theme-color" content="#223d6e" />
+  <link rel="icon" type="image/svg+xml" href="Color%20logo%20-%20no%20background.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=15" />
+</head>
+<body data-page="about">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div data-site-header></div>
+  <main id="main">
+<section class="page-hero page-hero--stars"><div class="wrap"><p class="eyebrow">From the transmitter room &middot; est. one long night in the archives</p><h1>Sound healing</h1><p class="lead">For about a year, after programming signed off, our 5,000-watt 780 AM rig carried a quiet experiment through the small hours &mdash; four low tones, five minutes each, then all four together, then around again until dawn. The desert slept on it. Now the same tones are yours: synthesized live in your browser, transmitter-clean, exactly as they ran. No medicine, no magic &mdash; a good question and a quiet transmitter.</p><div class="page-hero-cta"><button class="btn btn-primary" data-listen aria-pressed="false"><svg viewBox="0 0 256 256" width="18" height="18" aria-hidden="true"><path d="M232.4 114.5 88.3 26.6a16 16 0 0 0-24.3 13.5v175.8a16 16 0 0 0 24.3 13.5l144.1-87.9a15.9 15.9 0 0 0 0-27z"/></svg><span data-listen-label>Listen Live</span></button></div></div></section>
+
+<div data-sh>
+<section class="page-section"><div class="wrap">
+  <div class="section-head"><h2>The KAZM Harmonic Stack</h2><p class="lead">Our signature session &mdash; the overnight cycle, reborn. 54 &rarr; 72 &rarr; 84 &rarr; 111 Hz, then all four in chorus, repeating for as long as you leave it on. <b>↻</b></p></div>
+  <div class="sh-grid">
+    <aside class="sh-log">
+      <span class="sh-log-h">ENGINEERING LOG &middot; THE HARMONIC TONE PROJECT</span>
+      <p><b>What we did.</b> For about a year, after programming shut down, the 5,000-watt 780 AM rig carried a low-frequency audio test overnight. Four tones cycled through the small hours, five minutes each, then all four together for five minutes, then around again.</p>
+      <p><b>The numbers.</b> We started with slightly detuned values &mdash; 54.7, 72.3, 89.4, and 111.0 Hz &mdash; then simplified to clean ones: 54, 72, 84, and 111 Hz. The round numbers were easier to generate, easier to log, and easier to trust over a long unattended night.</p>
+      <p><b>What we learned.</b> Simple low tones are great test signals. They show you how steady your audio chain really is over hours, where the monitor room rings, and how the transmitter behaves doing the same quiet thing all night. Curiosity, not a claim &mdash; no medicine, no magic, just a good question and a quiet transmitter.</p>
+      <span class="sh-log-f">54 &middot; 72 &middot; 84 &middot; 111 &middot; ALL &nbsp;Hz &middot; 5 min each &middot; repeat overnight ↻</span>
+    </aside>
+    <div class="sh-console">
+      <div class="sh-lamprow"><span class="sh-lamp" data-sh-lamp><i></i>TRANSMITTING</span><span class="sh-cycle" data-sh-cycle></span></div>
+      <canvas class="sh-scope" data-sh-scope aria-label="Live oscilloscope of the tones playing now"></canvas>
+      <div class="sh-readout"><span class="sh-freq" data-sh-freq>&mdash;</span><span class="sh-sub" data-sh-sub>transmitter idle</span></div>
+      <div class="sh-segs" data-sh-segs></div>
+      <div class="sh-progrow"><div class="sh-prog" data-sh-prog><i></i></div><span class="sh-time" data-sh-time>–:––</span></div>
+      <div class="sh-ctl">
+        <div class="sh-ctl-group"><span class="sh-ctl-lab">Segment length</span>
+          <div class="sh-chips" data-sh-pace>
+            <button class="chip" data-secs="60">1:00</button>
+            <button class="chip is-active" data-secs="150">2:30</button>
+            <button class="chip" data-secs="300">5:00 &middot; true overnight</button>
+          </div>
+        </div>
+        <div class="sh-ctl-group"><span class="sh-ctl-lab">Voicing</span>
+          <div class="sh-chips">
+            <button class="chip" data-sh-v1 title="The original slightly-detuned values from year one">v1 detuned &middot; 54.7 / 72.3 / 89.4 / 111.0</button>
+            <button class="chip" data-sh-oct title="Small speakers can't reproduce 54 Hz — raise everything one octave">+1 octave for small speakers</button>
+          </div>
+        </div>
+        <div class="sh-ctl-group"><span class="sh-ctl-lab">Sign-off timer</span>
+          <div class="sh-chips" data-sh-auto>
+            <button class="chip is-active" data-mins="0">overnight ∞</button>
+            <button class="chip" data-mins="15">15 min</button>
+            <button class="chip" data-mins="30">30 min</button>
+          </div>
+        </div>
+      </div>
+      <div class="sh-btns">
+        <button class="btn btn-primary sh-go" data-sh-start>▸ Begin transmission</button>
+        <button class="btn btn-secondary" data-sh-stop>◼ Sign off</button>
+        <button class="btn btn-secondary sh-breathbtn" data-sh-breath>◉ Breathe with it &middot; 5.5 in / 5.5 out</button>
+      </div>
+      <div class="sh-breathbox" data-sh-breathbox hidden>
+        <div class="sh-breathviz"><i></i><span data-sh-breathlab>inhale</span></div>
+        <p class="sh-breathnote">Coherent breathing &mdash; about five and a half seconds in, five and a half out, roughly five breaths a minute. Follow the circle; let the tones hold the room.</p>
+      </div>
+      <p class="sh-note">Headphones or speakers with real low end recommended &mdash; 54 Hz simply doesn't exist on a laptop speaker (that's what the octave switch is for). Best lying down, lights low, volume moderate.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="page-section page-section--tint"><div class="wrap">
+  <div class="section-head"><h2>Binaural sessions</h2><p class="lead">Two pure tones, one in each ear, a few hertz apart &mdash; your brain hears a slow beat that isn't in either ear. Ours ride a 111 Hz carrier, the top of the Stack. <b>Headphones required</b> &mdash; that's physics, not preference.</p></div>
+  <div class="sh-bins">
+    <article class="sh-bin"><span class="sh-bin-hz">Δ 2 Hz</span><h3>Delta Drift</h3><p>The slowest beat we make &mdash; the rhythm of deep sleep. For winding all the way down.</p><button class="btn btn-primary" data-sh-bin="2" data-sh-name="Delta Drift">▸ Begin</button></article>
+    <article class="sh-bin"><span class="sh-bin-hz">Δ 5 Hz</span><h3>Theta Gate</h3><p>The dream-edge tempo &mdash; where meditation sits. For drifting without sleeping.</p><button class="btn btn-primary" data-sh-bin="5" data-sh-name="Theta Gate">▸ Begin</button></article>
+    <article class="sh-bin"><span class="sh-bin-hz">Δ 10 Hz</span><h3>Alpha Clear</h3><p>The relaxed-and-awake rhythm &mdash; eyes closed, mind clear. For a reset between things.</p><button class="btn btn-primary" data-sh-bin="10" data-sh-name="Alpha Clear">▸ Begin</button></article>
+  </div>
+  <p class="micro-note">The beat frequencies are real and the stereo separation is true &mdash; the research on effects is genuinely mixed, and we're a radio station, not a clinic. Use the console above to sign off or set a timer; one session plays at a time, like one transmitter.</p>
+</div></section>
+
+<section class="page-section"><div class="wrap">
+  <div class="section-head"><h2>More rooms in the house</h2><p class="lead">The <a href="chakras.html">singing-bowl chakra bath</a> runs root to crown in about a minute of overlapping struck bowls, and <a href="vibe.html">Cosmic Ambient</a> tunes a drone to the Earth's live Schumann resonance and today's geomagnetic field. Different doors, same quiet.</p></div>
+</div></section>
+</div>
+  </main>
+  <div data-site-footer></div>
+  <script src="main.js?v=15" defer></script>
+</body>
+</html>
