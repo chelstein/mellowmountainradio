@@ -3474,10 +3474,19 @@
         '</div>' +
       '</div>' +
       '<div class="tarot-lib">' +
-        '<div class="tarot-pull-head"><h3>The whole deck</h3><p>All 78 cards, open for study. Filter by arcana, tap any card for both of its faces &mdash; upright and reversed.</p></div>' +
-        '<div class="tlib-chips" data-tlib-chips></div>' +
-        '<div class="tlib-detail" data-tlib-detail hidden></div>' +
-        '<div class="tlib-grid" data-tlib-grid></div>' +
+        '<div class="tarot-pull-head"><h3>The whole deck</h3><p>Seventy-eight cards asleep in the stack. Spread them to study any card &mdash; upright and reversed.</p></div>' +
+        '<div class="tlib-deckwrap" data-tlib-deckwrap>' +
+          '<button class="tlib-deck" data-tlib-deck aria-expanded="false" aria-label="Spread the deck to browse all 78 cards">' +
+            '<span class="tlib-deckcard"><i></i><img src="White%20logo%20-%20no%20background.svg" alt="" loading="lazy" /></span>'.repeat(5) +
+          '</button>' +
+          '<span class="tlib-deck-lab">✦ tap the deck to spread all 78 ✦</span>' +
+        '</div>' +
+        '<div class="tlib-body" data-tlib-body hidden>' +
+          '<div class="tlib-chips" data-tlib-chips></div>' +
+          '<div class="tlib-detail" data-tlib-detail hidden></div>' +
+          '<div class="tlib-grid" data-tlib-grid></div>' +
+          '<div class="tlib-gather"><button class="btn btn-secondary" data-tlib-gather>🂠 Gather the deck</button></div>' +
+        '</div>' +
       '</div>' +
       '<div class="tarot-journal" data-tar-journal></div>';
     var table = el.querySelector("[data-tar-table]"), read = el.querySelector("[data-tar-read]"),
@@ -3565,7 +3574,14 @@
         if (!libMatch(c, f)) return "";
         return '<button class="tlib-card" data-i="' + i + '"><img class="tlib-img" src="' + c.img + '" alt="" loading="lazy" /><span class="tlib-n">' + esc(c.name) + '</span></button>';
       }).join("");
-      grid.querySelectorAll(".tlib-card").forEach(function (b) {
+      var cards = grid.querySelectorAll(".tlib-card");
+      // the deal: cards ripple onto the table one after another
+      cards.forEach(function (cd, i) { cd.style.transitionDelay = Math.min(i * 13, 850) + "ms"; });
+      requestAnimationFrame(function () { requestAnimationFrame(function () {
+        cards.forEach(function (cd) { cd.classList.add("is-in"); });
+        setTimeout(function () { cards.forEach(function (cd) { cd.style.transitionDelay = "0ms"; }); }, 1400);   // hovers snap after the deal
+      }); });
+      cards.forEach(function (b) {
         b.addEventListener("click", function () {
           var c = deck[+b.getAttribute("data-i")];
           grid.querySelectorAll(".tlib-card").forEach(function (x) { x.classList.remove("is-active"); });
@@ -3585,7 +3601,21 @@
         ch.classList.add("is-active"); detail.hidden = true; renderLib(ch.getAttribute("data-f"));
       });
     });
-    renderLib("all");
+    // the deck sits stacked until asked — nothing loads until it's spread
+    var deckWrap = el.querySelector("[data-tlib-deckwrap]"), deckBtn = el.querySelector("[data-tlib-deck]"), libBody = el.querySelector("[data-tlib-body]");
+    deckBtn.addEventListener("click", function () {
+      deckBtn.classList.add("is-open"); deckBtn.setAttribute("aria-expanded", "true");
+      setTimeout(function () {
+        deckWrap.hidden = true; libBody.hidden = false;
+        renderLib("all");
+      }, 420);   // let the stack scatter first
+    });
+    el.querySelector("[data-tlib-gather]").addEventListener("click", function () {
+      libBody.hidden = true; detail.hidden = true;
+      deckBtn.classList.remove("is-open"); deckBtn.setAttribute("aria-expanded", "false");
+      deckWrap.hidden = false;
+      deckWrap.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
     renderJournal();
   }
 
