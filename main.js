@@ -1633,27 +1633,106 @@
     (results || []).forEach(function (o) {
       var t = o.taxon; if (!t || seen[t.id]) return; var ph = inatPhoto(o); if (!ph) return; seen[t.id] = 1;
       out.push({ name: wildCap(t.preferred_common_name || t.name), sci: t.name, photo: ph, when: o.observed_on,
-        cat: t.iconic_taxon_name || "", loc: o.location, uri: o.uri || ("https://www.inaturalist.org/observations/" + o.id) });
+        cat: t.iconic_taxon_name || "", loc: o.location, uri: o.uri || ("https://www.inaturalist.org/observations/" + o.id),
+        place: (o.place_guess || "").split(",")[0], user: (o.user && (o.user.name || o.user.login)) || "",
+        faves: o.faves_count || 0, research: o.quality_grade === "research" });
     });
     return out;
   }
+  var WILD_ICON = { Aves: "🐦", Mammalia: "🦌", Reptilia: "🦎", Amphibia: "🐸", Insecta: "🦋", Plantae: "🌸", Arachnida: "🕷" };
   function wildCardHTML(c) {
-    return '<a class="wild-card" href="' + esc(c.uri) + '" target="_blank" rel="noopener">' +
-      '<span class="wild-photo" style="background-image:url(\'' + esc(c.photo) + '\')"></span>' +
+    return '<a class="wild-card" href="' + esc(c.uri) + '" target="_blank" rel="noopener" style="background-image:url(\'' + esc(c.photo) + '\')">' +
+      '<span class="wild-shade"></span>' +
+      '<span class="wild-cat-ic">' + (WILD_ICON[c.cat] || "🌿") + '</span>' +
+      (c.research ? '<span class="wild-rg" title="Research grade — community verified">✓</span>' : '') +
       '<span class="wild-info"><span class="wild-name">' + esc(c.name) + '</span>' +
-      '<span class="wild-sci">' + esc(c.sci) + '</span><span class="wild-when">' + esc(wildWhen(c.when)) + '</span></span></a>';
+        '<span class="wild-meta">' + esc(wildWhen(c.when)) + (c.place ? ' &middot; ' + esc(c.place) : '') + '</span>' +
+        (c.user ? '<span class="wild-obs">📷 ' + esc(c.user) + '</span>' : '') +
+      '</span></a>';
+  }
+  // the one sighting that owns the week — most loved, verified, freshest
+  function wildSpotHTML(c) {
+    return '<a class="wild-spot" href="' + esc(c.uri) + '" target="_blank" rel="noopener">' +
+      '<span class="wild-spot-img" style="background-image:url(\'' + esc(c.photo.replace("medium", "large")) + '\')"></span>' +
+      '<span class="wild-spot-body"><span class="wild-spot-eyebrow">✦ Sighting of the week</span>' +
+        '<span class="wild-spot-name">' + (WILD_ICON[c.cat] || "🌿") + ' ' + esc(c.name) + '</span>' +
+        '<span class="wild-spot-sci">' + esc(c.sci) + '</span>' +
+        '<span class="wild-spot-meta">' + esc(wildWhen(c.when)) + (c.place ? ' &middot; ' + esc(c.place) : '') +
+          (c.user ? ' &middot; spotted by <b>' + esc(c.user) + '</b>' : '') +
+          (c.research ? ' &middot; <i class="wild-rg-tag">✓ research grade</i>' : '') + '</span>' +
+        '<span class="wild-spot-cta">See the observation &rarr;</span>' +
+      '</span></a>';
+  }
+  // the wild hour — dawn & dusk are when the desert actually moves
+  function initWildPulse() {
+    var el = doc.querySelector("[data-wild-pulse]"); if (!el) return;
+    var g = null; try { g = goldenTimes(new Date()); } catch (e) {}
+    var hour = "";
+    if (g) {
+      var now = Date.now(), H = 5400000;   // ±90 min around sunrise / sunset
+      var wins = [[+g.morning.b.sunrise - H, +g.morning.b.sunrise + H], [+g.evening.b.sunset - H, +g.evening.b.sunset + H]];
+      var live = wins.some(function (w) { return now >= w[0] && now <= w[1]; });
+      if (live) hour = '<span class="wp-hour is-live"><i></i>THE WILD HOUR — dawn &amp; dusk are when the desert moves. It&rsquo;s moving now.</span>';
+      else {
+        var next = wins.map(function (w) { return w[0]; }).filter(function (t) { return t > now; })[0] || (+g.morning.b.sunrise - H + 86400000);
+        var m = Math.round((next - now) / 60000);
+        hour = '<span class="wp-hour">🌗 Next wild hour in <b>' + (m >= 60 ? Math.floor(m / 60) + "h " + (m % 60) + "m" : m + "m") + '</b> — the desert wakes at dawn and dusk</span>';
+      }
+    }
+    el.innerHTML = '<div class="wp-stats">' +
+      '<span class="wp-stat"><b data-wp-sight>&hellip;</b>sightings this fortnight</span>' +
+      '<span class="wp-stat"><b data-wp-species>&hellip;</b>species</span>' +
+      '<span class="wp-stat"><b data-wp-bloom>&hellip;</b>in bloom</span>' +
+    '</div>' + hour;
+    getWildData().then(function (d) {
+      if (!el.isConnected) return;
+      var s = el.querySelector("[data-wp-sight]"), sp = el.querySelector("[data-wp-species]"), b = el.querySelector("[data-wp-bloom]");
+      if (s) s.textContent = d.animals.length + d.plants.length;
+      if (sp) sp.textContent = wildCards(d.animals).length + wildCards(d.plants).length;
+      if (b) b.textContent = wildCards(d.plants).length;
+    });
+  }
+  // who's running Sedona — most-seen species, last 30 days, live from iNat
+  function initWildBoard() {
+    var el = doc.querySelector("[data-wild-board]"); if (!el) return;
+    var d1 = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+    fetch("https://api.inaturalist.org/v1/observations/species_counts?nelat=35.05&nelng=-111.55&swlat=34.70&swlng=-112.0&d1=" + d1 + "&per_page=7&hrank=species", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!el.isConnected || !j || !j.results || !j.results.length) { el.innerHTML = ""; return; }
+        var max = j.results[0].count;
+        el.innerHTML = j.results.map(function (r, i) {
+          var t = r.taxon, ph = t.default_photo && (t.default_photo.medium_url || t.default_photo.square_url);
+          return '<a class="wb-row" href="https://www.inaturalist.org/taxa/' + t.id + '" target="_blank" rel="noopener">' +
+            '<span class="wb-rank">' + (i + 1) + '</span>' +
+            (ph ? '<img class="wb-ph" src="' + esc(ph) + '" alt="" loading="lazy" />' : '<span class="wb-ph wb-ph--ic">' + (WILD_ICON[t.iconic_taxon_name] || "🌿") + '</span>') +
+            '<span class="wb-t"><b>' + esc(wildCap(t.preferred_common_name || t.name)) + '</b><span>' + esc(t.name) + '</span></span>' +
+            '<span class="wb-barwrap"><i style="width:' + Math.max(8, Math.round(r.count / max * 100)) + '%"></i></span>' +
+            '<span class="wb-n">×' + r.count + '</span></a>';
+        }).join("") +
+        '<p class="micro-note">' + j.total_results.toLocaleString() + ' species logged around Sedona in the last 30 days &middot; live from the iNaturalist community</p>';
+      }).catch(function () { el.innerHTML = ""; });
   }
   function initWildlife() {
     var w = doc.querySelector("[data-wildlife]"), b = doc.querySelector("[data-blooming]"), tabs = doc.querySelector("[data-wild-tabs]");
     if (!w && !b) return;
     if (w) w.innerHTML = '<p class="rss-loading">Scanning the trails&hellip;</p>';
     if (b) b.innerHTML = '<p class="rss-loading">Looking for blooms&hellip;</p>';
+    var spot = doc.querySelector("[data-wild-spot]");
     getWildData().then(function (d) {
       if (w && w.isConnected) {
         var cards = wildCards(d.animals);
+        // the spotlight: most-loved of the fortnight; verified beats not; fresh beats stale
+        if (spot && cards.length) {
+          var best = cards.slice().sort(function (x, y) { return (y.faves - x.faves) || (y.research - x.research) || String(y.when).localeCompare(String(x.when)); })[0];
+          spot.innerHTML = wildSpotHTML(best);
+        }
         if (tabs) {
           var cats = [["All", ""], ["Birds", "Aves"], ["Mammals", "Mammalia"], ["Reptiles", "Reptilia"], ["Insects", "Insecta"]];
-          tabs.innerHTML = cats.map(function (c, i) { return '<button class="wild-tab' + (i === 0 ? " is-on" : "") + '" type="button" data-cat="' + c[1] + '">' + c[0] + '</button>'; }).join("");
+          tabs.innerHTML = cats.map(function (c, i) {
+            var n = c[1] ? cards.filter(function (x) { return x.cat === c[1]; }).length : cards.length;
+            return '<button class="wild-tab' + (i === 0 ? " is-on" : "") + '" type="button" data-cat="' + c[1] + '">' + c[0] + ' <i>' + n + '</i></button>';
+          }).join("");
           var paint = function (cat) { var f = cat ? cards.filter(function (x) { return x.cat === cat; }) : cards; w.innerHTML = f.length ? f.slice(0, 12).map(wildCardHTML).join("") : '<p class="embed-note">Nothing in this group logged in the last couple of weeks.</p>'; };
           tabs.querySelectorAll(".wild-tab").forEach(function (btn) { btn.addEventListener("click", function () { tabs.querySelectorAll(".wild-tab").forEach(function (x) { x.classList.remove("is-on"); }); btn.classList.add("is-on"); paint(btn.getAttribute("data-cat")); }); });
           paint("");
@@ -4472,6 +4551,8 @@
     initCreek();
     initSlide();
     initWildlife();
+    initWildPulse();
+    initWildBoard();
     initNatureDash();
     initPhotoSubjects();
     initSounds();
