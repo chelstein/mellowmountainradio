@@ -1,0 +1,85 @@
+{
+  "name": "KAZM Request Line",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kazm-request-line",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://mellowmountainradio.com"
+        }
+      },
+      "id": "wh-submit",
+      "name": "Listener submits request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "kazm-request-line"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Queue lives in workflow static data — no credentials, no database needed.\nconst store = $getWorkflowStaticData('global');\nstore.queue = store.queue || [];\nconst b = $input.first().json.body || {};\nconst title = String(b.title || '').trim().slice(0, 120);\nconst artist = String(b.artist || '').trim().slice(0, 120);\nconst name = String(b.name || '').trim().slice(0, 60);\nif (!title) {\n  return [{ json: { success: false, message: 'Tell us the song — a title is the one thing we need.' } }];\n}\nif (store.queue.length >= 50) {\n  return [{ json: { success: false, message: 'The request line is jammed — give it a little while and try again.' } }];\n}\nstore.queue.push({ title, artist, name, at: new Date().toISOString() });\nreturn [{ json: { success: true, message: 'Request received in the studio — listen for it on 106.5 and 780.' } }];"
+      },
+      "id": "code-submit",
+      "name": "Validate + queue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "resp-submit",
+      "name": "Respond to listener",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "kazm-request-drain",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-drain",
+      "name": "Mac Studio polls queue",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 220],
+      "webhookId": "kazm-request-drain"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Drains the queue for the studio poller. Set your own secret below\n// (and put the same value in macstudio-poller.sh) before activating.\nconst SECRET = 'CHANGE-ME-BEFORE-ACTIVATING';\nconst store = $getWorkflowStaticData('global');\nconst key = ($input.first().json.query || {}).key;\nif (key !== SECRET || SECRET === 'CHANGE-ME-BEFORE-ACTIVATING') {\n  return [{ json: { error: 'unauthorized' } }];\n}\nconst out = store.queue || [];\nstore.queue = [];\nreturn [{ json: { requests: out } }];"
+      },
+      "id": "code-drain",
+      "name": "Check key + drain",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 220]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "resp-drain",
+      "name": "Respond to poller",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [440, 220]
+    }
+  ],
+  "connections": {
+    "Listener submits request": { "main": [[{ "node": "Validate + queue", "type": "main", "index": 0 }]] },
+    "Validate + queue": { "main": [[{ "node": "Respond to listener", "type": "main", "index": 0 }]] },
+    "Mac Studio polls queue": { "main": [[{ "node": "Check key + drain", "type": "main", "index": 0 }]] },
+    "Check key + drain": { "main": [[{ "node": "Respond to poller", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
