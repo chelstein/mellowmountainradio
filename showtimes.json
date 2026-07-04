@@ -1,55 +1,11 @@
 {
- "updated": "2026-07-03T19:26:45.515Z",
+ "updated": "2026-07-04T03:25:02.638Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Tuner",
-   "date": "2026-07-03",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/tuner/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/TUNER-poster.jpg",
-   "summary": "A gifted piano tuner’s meticulous skills for tuning pianos lead him to discover an unexpected aptitude for cracking safes, turning his life upside down in “Tuner” — Academy Award-winning director Daniel Roher’s first…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "The Soundman",
-   "date": "2026-07-03",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/the-soundman/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/The-Soundman-poster.jpg",
-   "summary": "“The Soundman” is a moving love story about passion, imagination, and the pursuit of humanity during dark times. Set against the marvelous world of 1940s Belgian radio, their voices rise above the rumble of…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Eleanor the Great",
-   "date": "2026-07-03",
-   "time": "",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/eleanor-the-great/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Eleanor-the-Great-poster.jpg",
-   "summary": "“Eleanor the Great” features a bravura performance from June Squibb in the title role of the spirited 94-year-old who tells a tale that takes on a dangerous life of its own."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Elena’s War",
-   "date": "2026-07-03",
-   "time": "",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/elenas-war/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Elenas-War-poster.jpg",
-   "summary": "A stirring portrait of rebellion, resilience, and the cost of speaking truth to power, “Elena’s War” celebrates the indomitable spirit of a woman who refused to remain silent and dared to stand alone against tyranny…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Outdoor Film: Yankee Doodle Dandy",
@@ -316,6 +272,50 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Peter Asher: Everywhere Man",
+   "date": "2026-07-24",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/peter-asher-everywhere-man/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Peter-Asher-poster.jpg",
+   "summary": "“Peter Asher: Everywhere Man” is a feature-length documentary inspired by musician, producer, and manager Peter Asher’s celebrated cabaret show A Musical Memoir of the ’60s and Beyond. Like his stage performance, the…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Brunello: The Gracious Visionary",
+   "date": "2026-07-24",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/brunello-the-gracious-visionary/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Brunello-poster.jpg",
+   "summary": "Giuseppe Tornatore’s “Brunello: The Gracious Visionary” is more than a biographical film — it’s a celebration of a designer who built a global luxury empire from the rolling hills of Umbria, rooted in humanistic…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Rose of Nevada",
+   "date": "2026-07-24",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/rose-of-nevada/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Rose-of-Nevada-poster.jpg",
+   "summary": "Three decades ago, the Rose of Nevada vanished at sea, along with its crew. Now, it has returned. In a remote fishing village, its reappearance is embraced as an auspicious sign, with the local citizens convinced the…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Beyond the Powder: The Legacy of the First Women’s Cross-Country Air Race",
+   "date": "2026-07-24",
+   "time": "16:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/beyond-the-powder-the-legacy-of-the-first-womens-cross-country-air-race/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Beyond-the-Powder-poster.jpg",
+   "summary": "“Beyond the Powder: The Legacy of the First Women’s Cross-Country Air Race” is a documentary film that follows the 2014 Air Race Classic racers as they make their way across the country, while telling the story of…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Gun Fury",
    "date": "2026-07-25",
    "time": "15:00",
@@ -357,6 +357,17 @@
    "url": "https://sedonafilmfestival.com/event/outdoor-film-michael/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Michael-poster.jpg",
    "summary": "Join us on Tuesday, July 28 as we present “Michael” outdoors in the calle at Tlaquepaque Arts & Shopping Village. “Michael” is the cinematic portrayal of the life and legacy of one of the most influential artists the…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Darlene Koldenhoven: Live in Sedona",
+   "date": "2026-08-30",
+   "time": "16:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/darlene-koldenhoven-live-in-sedona/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Darlene-K-poster-2.jpg",
+   "summary": "Grammy Award-winning artist Darlene Koldenhoven will present Live in Sedona, an intimate live event blending memoir, music, storytelling, and conversation, on Sunday, Aug. 30, at 4:00 p.m. at the Mary D. Fisher…"
   },
   {
    "source": "Sedona Film Festival",
