@@ -1,4 +1,4 @@
-# KAZM Request Line — studio bridge
+# KAZM Song Requests — studio bridge
 
 The playout brain is **MegaSeg on the Mac Studio**. AzuraCast and Live365 are
 relays of that feed, so a request has to reach the studio itself. This kit

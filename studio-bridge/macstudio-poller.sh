@@ -33,8 +33,8 @@ for r in reqs:
         f.write(line + "\n")
     label = f"{title} — {artist}" if artist else title
     subprocess.run(["osascript", "-e",
-        f"display notification \"{label} (from {name})\" with title \"📞 KAZM Request Line\" sound name \"Glass\""])
-    subprocess.run(["say", "-v", "Samantha", f"Request line: {title}, by {artist}"])
+        f"display notification \"{label} (from {name})\" with title \"🎶 KAZM Song Request\" sound name \"Glass\""])
+    subprocess.run(["say", "-v", "Samantha", f"Song request: {title}, by {artist}"])
 ' "$LOG"
 
 # ── OPTIONAL: fully automatic MegaSeg insert ─────────────────────────────

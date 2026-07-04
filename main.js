@@ -4223,7 +4223,7 @@
      780 AM, and every relay). A request travels site -> n8n queue ->
      studio, where it pops on the playout Mac's screen and a real
      person drops it into the broadcast. The section only appears when
-     the studio bridge answers its probe — never a dead phone line.
+     the studio bridge answers its probe — never a dead form.
      ========================================================= */
   var REQUEST_HOOK = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
   function initRequests() {
@@ -4280,7 +4280,7 @@
           status.textContent = "One request per listener every 15 minutes — yours is still warm in the studio. Try again in " + Math.ceil(wait / 60000) + " min.";
           status.className = "rq-status rq-status--err"; return;
         }
-        b.disabled = true; b.textContent = "Calling…";
+        b.disabled = true; b.textContent = "Sending…";
         fetch(REQUEST_HOOK, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: s.t, artist: s.a }) })
           .then(function (r) { return r.json().catch(function () { return {}; }); })
           .then(function (d) {
@@ -4291,7 +4291,7 @@
               try { localStorage.setItem("kazm-request-at", String(Date.now())); } catch (e) {}
             } else {
               b.disabled = false; b.textContent = "Request";
-              status.textContent = d.message || "The request line is busy — give it a few minutes and try again.";
+              status.textContent = d.message || "Requests are backed up right now — give it a few minutes and try again.";
               status.className = "rq-status rq-status--err";
             }
           }).catch(function () {
