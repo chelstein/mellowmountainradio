@@ -4153,6 +4153,82 @@
     _plcTimer = setInterval(tick, 30000);
   }
   /* =========================================================
+     TODAY'S PLAYBOOK — the adventure page gets a brain. It reads the
+     same live inputs the sections below run on (temperature, UV, air
+     quality, the Oak Creek gauge, today's sun windows) and RANKS what's
+     actually worth doing right now — numbers as receipts, honest
+     warnings when the desert says no. Heuristics ours; numbers real.
+     ========================================================= */
+  function initPlaybook() {
+    var el = doc.querySelector("[data-playbook]"); if (!el) return;
+    el.innerHTML = '<p class="rss-loading">Reading the desert&hellip;</p>';
+    var wx = fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610&current=temperature_2m,weather_code,uv_index,precipitation&temperature_unit=fahrenheit&timezone=America%2FPhoenix", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    var aq = fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.8697&longitude=-111.7610&current=us_aqi&timezone=America/Phoenix", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    var ck = fetch("https://waterservices.usgs.gov/nwis/iv/?format=json&sites=09504420&parameterCd=00010,00060&siteStatus=active", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    Promise.all([wx, aq, ck]).then(function (res) {
+      if (!el.isConnected) return;
+      var w = res[0] && res[0].current, a = res[1] && res[1].current;
+      var t = w ? Math.round(w.temperature_2m) : null, uv = w ? Math.round(w.uv_index) : null, aqi = a ? Math.round(a.us_aqi) : null;
+      var flow = null, wtemp = null;
+      try {
+        (res[2].value.timeSeries || []).forEach(function (ts) {
+          var code = ts.variable.variableCode[0].value, v = parseFloat(ts.values[0].value[0].value);
+          if (code === "00060") flow = v; if (code === "00010") wtemp = Math.round(v * 9 / 5 + 32);
+        });
+      } catch (e) {}
+      var g = null, hour = new Date(Date.now() - 7 * 3600000).getUTCHours();
+      try { g = goldenTimes(new Date()); } catch (e) {}
+      function T(dt) { return skyTime(dt, -7); }
+      var dawnWin = g ? T(g.evening.b.sunrise) + "&ndash;" + T(g.evening.b.goldMornEnd) : "dawn";
+      var duskWin = g ? T(g.evening.b.goldEveStart) + "&ndash;" + T(g.evening.b.sunset) : "dusk";
+      var hot = t != null && t >= 95, warm = t != null && t >= 88, smoky = aqi != null && aqi > 150, uvHigh = uv != null && uv >= 8;
+      var plays = [];
+      if (flow != null) {
+        var swimOK = flow >= 15 && flow <= 120, s = 55;
+        if (swimOK) s += 15; else s -= 30;
+        if (warm) s += 20; if (hot) s += 10;
+        if (smoky) s += 5;   // low-exertion escape on a smoke day
+        plays.push({ s: s, ic: "🌊", n: "Get in the creek", a: "#creek",
+          why: (swimOK ? "Oak Creek is running just right (" + flow.toFixed(1) + " cfs" + (wtemp ? ", " + wtemp + "°F water" : "") + ")" : "The creek is out of its sweet spot at " + flow.toFixed(1) + " cfs") + (warm ? " and it's " + t + "° out — the water wins" : "") + ".",
+          win: "Any time — shade in the canyon all day" });
+        plays.push({ s: s - 6, ic: "🛝", n: "Slide Rock", a: "#slide-rock",
+          why: "Same sweet creek numbers up the canyon" + ([0, 6].indexOf(new Date().getDay()) > -1 ? " — it's a weekend, be at the gate early, it fills by mid-morning" : "") + ".",
+          win: "Go early — the lot fills" });
+      }
+      var hs = 72; if (hot) hs -= 35; else if (warm) hs -= 18;
+      if (smoky) hs -= 25; if (uvHigh && hour >= 10 && hour <= 16) hs -= 10;
+      plays.push({ s: hs, ic: "🥾", n: "Hike the red rocks", a: "#hiking",
+        why: (hot ? "It's " + t + "° — midday is a no; this is a dawn-patrol day" : warm ? t + "° and clear — beat the heat, go at the edges of the day" : "Great hiking weather at " + t + "°") + (smoky ? ". Air quality is rough (" + aqi + ") — keep it short and easy" : "") + ".",
+        win: "🌄 " + dawnWin + " &middot; 🌇 " + duskWin });
+      var bs = 68; if (hot) bs -= 40; else if (warm) bs -= 22; if (smoky) bs -= 30;
+      plays.push({ s: bs, ic: "🚵", n: "Ride the slickrock", a: "#biking",
+        why: (hot || warm ? "The dirt is dry and fast but " + t + "° punishes exertion — dawn window or skip" : "Dry, fast dirt and " + t + "° — prime riding") + (smoky ? "; heavy breathing + AQI " + aqi + " is a bad mix today" : "") + ".",
+        win: "Before ~9 AM &middot; or " + duskWin });
+      plays.push({ s: 62 + (warm ? 6 : 0), ic: "📷", n: "Shoot the light", a: "photography.html",
+        why: "Golden hour is computed to the minute, and heat doesn't hurt a tripod. Check tonight's sunset score before you pick the spot.",
+        win: "🌇 " + duskWin });
+      plays.sort(function (x, y) { return y.s - x.s; });
+      var medals = ["🥇", "🥈", "🥉"];
+      var warns = [];
+      if (hot) warns.push("🔥 " + t + "° — heat rules today: dawn, dusk, or water");
+      if (uvHigh) warns.push("🧴 UV " + uv + " — burn time is minutes, not hours");
+      if (smoky) warns.push("😷 AQI " + aqi + " — unhealthy air, go easy on the lungs");
+      else if (aqi != null && aqi > 100) warns.push("😐 AQI " + aqi + " — sensitive folks take it easier");
+      el.innerHTML =
+        '<div class="pb-card">' +
+          '<div class="pb-head"><span class="pb-eyebrow">Today&rsquo;s playbook &middot; computed from right now</span>' +
+            '<span class="pb-cond">' + (t != null ? t + "°" : "") + (uv != null ? " &middot; UV " + uv : "") + (aqi != null ? " &middot; AQI " + aqi : "") + (flow != null ? " &middot; creek " + flow.toFixed(0) + " cfs" : "") + '</span></div>' +
+          (warns.length ? '<div class="pb-warns">' + warns.map(function (x) { return '<span class="pb-warn">' + x + '</span>'; }).join("") + '</div>' : '') +
+          '<div class="pb-plays">' + plays.slice(0, 3).map(function (p, i) {
+            return '<a class="pb-play" href="' + p.a + '"><span class="pb-medal">' + medals[i] + '</span>' +
+              '<span class="pb-body"><b>' + p.ic + ' ' + p.n + '</b><span class="pb-why">' + p.why + '</span>' +
+              '<span class="pb-win">⏱ ' + p.win + '</span></span><span class="pb-go">&rarr;</span></a>';
+          }).join("") + '</div>' +
+          '<div class="pb-foot">Our call, your desert &mdash; every number above is live (Open-Meteo &middot; USGS gauge 09504420). Conditions change; so does this.</div>' +
+        '</div>';
+    });
+  }
+  /* =========================================================
      GEOCACHING — Sedona is world-class cache country, and since the
      big cache databases keep their APIs closed, we run our OWN hunt:
      the KAZM Signal Hunt. Five public landmarks with real coordinates
@@ -4781,6 +4857,7 @@
     initSunsetScore();
     initSpotTimes();
     initGeocache();
+    initPlaybook();
     initCosmicAudio();
     initGoldenMode();
     initSolstice();
