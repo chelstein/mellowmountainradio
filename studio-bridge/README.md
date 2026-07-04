@@ -12,7 +12,7 @@ n8n.mellowmountainradio.com  (workflow in this folder — queues it, no DB neede
         ▲
         │  GET drain (poller, every 60s, secret key)
 Mac Studio → notification + spoken alert + "KAZM Requests.txt" on the Desktop
-        → DJ drags the song into MegaSeg
+        → studio reads it (playing it stays the station's call)
 ```
 
 ## Setup (once, ~10 minutes)
@@ -36,8 +36,7 @@ Mac Studio → notification + spoken alert + "KAZM Requests.txt" on the Desktop
 
 - The queue lives in n8n workflow static data — zero credentials, zero
   database. It holds up to 50 pending requests and is drained every minute.
-- The poller keeps a human in the loop by design: a notification the DJ acts
-  on is honest; auto-inserting into a live broadcast is opt-in later (see the
+- The poller keeps a human in the loop by design: a notification the studio reads is honest; auto-inserting into a live broadcast is opt-in later (see the
   MegaSeg AppleScript notes at the bottom of the poller script).
 - Nothing in this folder contains a secret — you set your own key in two
   places during setup.
