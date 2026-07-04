@@ -4217,69 +4217,78 @@
   }
 
   /* =========================================================
-     THE REQUEST LINE — the oldest ritual in radio, rebuilt on the real
-     broadcast queue. Reads the requestable library straight from the
-     AzuraCast AutoDJ (the playout brain that feeds 106.5 FM, 780 AM,
-     and the Live365 relay) and submits requests into that same queue.
-     The section stays hidden unless the server says requests are on,
-     so flipping the AzuraCast toggle is the only deploy this needs.
+     THE REQUEST LINE — the oldest ritual in radio, wired to the real
+     playout chain. request-library.json is the actual MegaSeg library
+     exported from the studio Mac (the machine that feeds 106.5 FM,
+     780 AM, and every relay). A request travels site -> n8n queue ->
+     studio, where it pops on the playout Mac's screen and a real
+     person drops it into the broadcast. The section only appears when
+     the studio bridge answers its probe — never a dead phone line.
      ========================================================= */
-  var REQUESTS_ORIGIN = "https://streaming.mellowmountainradio.com";
-  var REQUESTS_API = REQUESTS_ORIGIN + "/api/station/mellowmountainradio/requests";
+  var REQUEST_HOOK = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
   function initRequests() {
     var el = doc.querySelector("[data-request-line]"); if (!el) return;
-    fetch(REQUESTS_API, { cache: "no-store" })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) {
-        var list = Array.isArray(d) ? d : (d && d.rows) || null;
-        if (!list || !list.length) return; // requests disabled server-side — section stays hidden
-        var songs = [];
-        list.forEach(function (it) {
-          var s = it.song || {};
-          if (s.title && it.request_url) songs.push({ url: it.request_url, t: s.title, a: s.artist || "", art: s.art || "" });
+    Promise.all([
+      fetch("request-library.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch(REQUEST_HOOK, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ probe: true }) })
+        .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    ]).then(function (res) {
+      var songs = res[0], probe = res[1];
+      if (!songs || !songs.length || !probe || probe.success !== true) return; // bridge offline — stay hidden
+      el.hidden = false;
+      var grid = el.querySelector("[data-rq-grid]"), inp = el.querySelector("[data-rq-search]"),
+          cnt = el.querySelector("[data-rq-count]"), status = el.querySelector("[data-rq-status]"),
+          shuf = el.querySelector("[data-rq-shuffle]");
+      function card(s, i) {
+        return '<div class="rq-card" data-i="' + i + '"><span class="rq-art" aria-hidden="true">&#9834;</span>' +
+          '<span class="rq-meta"><b>' + esc(s.t) + '</b><i>' + esc(s.a) + '</i></span>' +
+          '<button class="btn btn-primary rq-btn" type="button">Request</button></div>';
+      }
+      function dressArt() {
+        grid.querySelectorAll(".rq-card").forEach(function (c) {
+          var s = songs[+c.getAttribute("data-i")], artEl = c.querySelector(".rq-art");
+          fetchArtwork(s.a, s.t).then(function (meta) {
+            if (meta && meta.art && c.isConnected) { artEl.textContent = ""; artEl.style.backgroundImage = "url('" + meta.art + "')"; artEl.classList.add("has-art"); }
+          });
         });
-        if (!songs.length) return;
-        el.hidden = false;
-        var grid = el.querySelector("[data-rq-grid]"), inp = el.querySelector("[data-rq-search]"),
-            cnt = el.querySelector("[data-rq-count]"), status = el.querySelector("[data-rq-status]"),
-            shuf = el.querySelector("[data-rq-shuffle]");
-        function card(s, i) {
-          return '<div class="rq-card" data-i="' + i + '">' +
-            (s.art ? '<img class="rq-art" src="' + esc(s.art) + '" alt="" loading="lazy" width="56" height="56">' : '<span class="rq-art rq-art--blank" aria-hidden="true">&#9834;</span>') +
-            '<span class="rq-meta"><b>' + esc(s.t) + '</b><i>' + esc(s.a) + '</i></span>' +
-            '<button class="btn btn-primary rq-btn" type="button">Request</button></div>';
+      }
+      function render(ixs) { grid.innerHTML = ixs.map(function (i) { return card(songs[i], i); }).join(""); dressArt(); }
+      function renderShuffle() {
+        var pool = songs.map(function (_, i) { return i; });
+        for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp; }
+        render(pool.slice(0, 12));
+        cnt.textContent = songs.length + " songs — the actual studio library, exported straight from the playout system. A dozen at random below, or search for the one stuck in your head.";
+      }
+      function apply() {
+        var q = inp.value.trim().toLowerCase();
+        if (!q) { renderShuffle(); return; }
+        var hits = [];
+        for (var i = 0; i < songs.length && hits.length < 24; i++) {
+          if ((songs[i].t + " " + songs[i].a).toLowerCase().indexOf(q) !== -1) hits.push(i);
         }
-        function render(ixs) { grid.innerHTML = ixs.map(function (i) { return card(songs[i], i); }).join(""); }
-        function renderShuffle() {
-          var pool = songs.map(function (_, i) { return i; });
-          for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp; }
-          render(pool.slice(0, 12));
-          cnt.textContent = songs.length + " songs deep, straight from the studio library — every one is fair game. A dozen at random below, or search for the one stuck in your head.";
+        render(hits);
+        cnt.textContent = hits.length ? hits.length + (hits.length === 24 ? "+" : "") + " match" + (hits.length === 1 ? "" : "es") + " in the library." : "Nothing in the library matches “" + inp.value.trim() + "” — try the artist’s name, or hit Surprise me.";
+      }
+      var deb; inp.addEventListener("input", function () { clearTimeout(deb); deb = setTimeout(apply, 160); });
+      shuf.addEventListener("click", function () { inp.value = ""; renderShuffle(); });
+      grid.addEventListener("click", function (ev) {
+        var b = ev.target && ev.target.closest ? ev.target.closest(".rq-btn") : null; if (!b || b.disabled) return;
+        var c = b.closest(".rq-card"), s = songs[+c.getAttribute("data-i")]; if (!s) return;
+        var last = 0; try { last = +localStorage.getItem("kazm-request-at") || 0; } catch (e) {}
+        var wait = 15 * 60000 - (Date.now() - last);
+        if (wait > 0) {
+          status.textContent = "One request per listener every 15 minutes — yours is still warm in the studio. Try again in " + Math.ceil(wait / 60000) + " min.";
+          status.className = "rq-status rq-status--err"; return;
         }
-        function apply() {
-          var q = inp.value.trim().toLowerCase();
-          if (!q) { renderShuffle(); return; }
-          var hits = [];
-          for (var i = 0; i < songs.length && hits.length < 24; i++) {
-            if ((songs[i].t + " " + songs[i].a).toLowerCase().indexOf(q) !== -1) hits.push(i);
-          }
-          render(hits);
-          cnt.textContent = hits.length ? hits.length + (hits.length === 24 ? "+" : "") + " match" + (hits.length === 1 ? "" : "es") + " in the library." : "Nothing in the library matches “" + inp.value.trim() + "” — try the artist’s name, or hit Surprise me.";
-        }
-        var deb; inp.addEventListener("input", function () { clearTimeout(deb); deb = setTimeout(apply, 160); });
-        shuf.addEventListener("click", function () { inp.value = ""; renderShuffle(); });
-        grid.addEventListener("click", function (ev) {
-          var b = ev.target && ev.target.closest ? ev.target.closest(".rq-btn") : null; if (!b || b.disabled) return;
-          var c = b.closest(".rq-card"), s = songs[+c.getAttribute("data-i")]; if (!s) return;
-          b.disabled = true; b.textContent = "Calling…";
-          var u = s.url.indexOf("http") === 0 ? s.url : REQUESTS_ORIGIN + s.url;
-          fetch(u, { method: "POST" }).then(function (r) {
-            return r.json().catch(function () { return {}; }).then(function (d) { d.__ok = r.ok; return d; });
-          }).then(function (d) {
-            if (d.success === true || (d.__ok && d.success !== false)) {
-              c.classList.add("is-done"); b.textContent = "✓ In the queue";
-              status.textContent = "“" + s.t + "” is in the broadcast queue — the AutoDJ will weave it in, usually within a few songs. Turn it up: when it plays, it plays for the whole mountain.";
+        b.disabled = true; b.textContent = "Calling…";
+        fetch(REQUEST_HOOK, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: s.t, artist: s.a }) })
+          .then(function (r) { return r.json().catch(function () { return {}; }); })
+          .then(function (d) {
+            if (d.success === true) {
+              c.classList.add("is-done"); b.textContent = "✓ Sent to the studio";
+              status.textContent = "“" + s.t + "” just landed on the studio screen — a real person drops it into the broadcast. Keep it on 106.5 and listen for your song.";
               status.className = "rq-status rq-status--ok";
+              try { localStorage.setItem("kazm-request-at", String(Date.now())); } catch (e) {}
             } else {
               b.disabled = false; b.textContent = "Request";
               status.textContent = d.message || "The request line is busy — give it a few minutes and try again.";
@@ -4287,12 +4296,12 @@
             }
           }).catch(function () {
             b.disabled = false; b.textContent = "Request";
-            status.textContent = "Couldn’t reach the transmitter room — check your connection and try again.";
+            status.textContent = "Couldn’t reach the studio — check your connection and try again.";
             status.className = "rq-status rq-status--err";
           });
-        });
-        renderShuffle();
-      }).catch(function () {});
+      });
+      renderShuffle();
+    });
   }
 
   /* =========================================================

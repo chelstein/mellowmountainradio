@@ -25,12 +25,12 @@ Mac Studio → notification + spoken alert + "KAZM Requests.txt" on the Desktop
    `com.kazm.requestline.plist` to `~/Library/LaunchAgents/` and run
    `launchctl load ~/Library/LaunchAgents/com.kazm.requestline.plist`.
    Test: `bash /Users/Shared/kazm/macstudio-poller.sh` should exit quietly.
-3. **The site** — tell Claude the workflow is live. The Request Line section on
-   music.html (already built, currently hidden) gets rewired from the AzuraCast
-   API to `https://n8n.mellowmountainradio.com/webhook/kazm-request-line` and
-   goes visible. Optional but great: export the MegaSeg library
-   (File → Export) and drop the file in the repo so listeners browse the real
-   library instead of typing free-text.
+3. **The site** — nothing to do. The Request Line on music.html probes the
+   webhook on every page load and reveals itself the moment the workflow is
+   active. The browsable library is the real MegaSeg export
+   (`request-library.json`, 457 songs, source of record in
+   `studio-bridge/megaseg-library.csv`) — re-export and hand the CSV to
+   Claude whenever the library changes.
 
 ## Notes
 

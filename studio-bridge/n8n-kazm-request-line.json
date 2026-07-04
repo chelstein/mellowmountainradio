@@ -14,18 +14,24 @@
       "name": "Listener submits request",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "webhookId": "kazm-request-line"
     },
     {
       "parameters": {
-        "jsCode": "// Queue lives in workflow static data — no credentials, no database needed.\nconst store = $getWorkflowStaticData('global');\nstore.queue = store.queue || [];\nconst b = $input.first().json.body || {};\nconst title = String(b.title || '').trim().slice(0, 120);\nconst artist = String(b.artist || '').trim().slice(0, 120);\nconst name = String(b.name || '').trim().slice(0, 60);\nif (!title) {\n  return [{ json: { success: false, message: 'Tell us the song — a title is the one thing we need.' } }];\n}\nif (store.queue.length >= 50) {\n  return [{ json: { success: false, message: 'The request line is jammed — give it a little while and try again.' } }];\n}\nstore.queue.push({ title, artist, name, at: new Date().toISOString() });\nreturn [{ json: { success: true, message: 'Request received in the studio — listen for it on 106.5 and 780.' } }];"
+        "jsCode": "// Queue lives in workflow static data \u2014 no credentials, no database needed.\nconst store = $getWorkflowStaticData('global');\nstore.queue = store.queue || [];\nconst b = $input.first().json.body || {};\nif (b.probe === true) {\n  // the site pings this before showing the Request Line \u2014 answer, queue nothing\n  return [{ json: { success: true, probe: true } }];\n}\nconst title = String(b.title || '').trim().slice(0, 120);\nconst artist = String(b.artist || '').trim().slice(0, 120);\nconst name = String(b.name || '').trim().slice(0, 60);\nif (!title) {\n  return [{ json: { success: false, message: 'Tell us the song \u2014 a title is the one thing we need.' } }];\n}\nif (store.queue.length >= 50) {\n  return [{ json: { success: false, message: 'The request line is jammed \u2014 give it a little while and try again.' } }];\n}\nstore.queue.push({ title, artist, name, at: new Date().toISOString() });\nreturn [{ json: { success: true, message: 'Request received in the studio \u2014 listen for it on 106.5 and 780.' } }];"
       },
       "id": "code-submit",
       "name": "Validate + queue",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [220, 0]
+      "position": [
+        220,
+        0
+      ]
     },
     {
       "parameters": {
@@ -36,7 +42,10 @@
       "name": "Respond to listener",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [440, 0]
+      "position": [
+        440,
+        0
+      ]
     },
     {
       "parameters": {
@@ -49,7 +58,10 @@
       "name": "Mac Studio polls queue",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [0, 220],
+      "position": [
+        0,
+        220
+      ],
       "webhookId": "kazm-request-drain"
     },
     {
@@ -60,7 +72,10 @@
       "name": "Check key + drain",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [220, 220]
+      "position": [
+        220,
+        220
+      ]
     },
     {
       "parameters": {
@@ -71,15 +86,60 @@
       "name": "Respond to poller",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [440, 220]
+      "position": [
+        440,
+        220
+      ]
     }
   ],
   "connections": {
-    "Listener submits request": { "main": [[{ "node": "Validate + queue", "type": "main", "index": 0 }]] },
-    "Validate + queue": { "main": [[{ "node": "Respond to listener", "type": "main", "index": 0 }]] },
-    "Mac Studio polls queue": { "main": [[{ "node": "Check key + drain", "type": "main", "index": 0 }]] },
-    "Check key + drain": { "main": [[{ "node": "Respond to poller", "type": "main", "index": 0 }]] }
+    "Listener submits request": {
+      "main": [
+        [
+          {
+            "node": "Validate + queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate + queue": {
+      "main": [
+        [
+          {
+            "node": "Respond to listener",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mac Studio polls queue": {
+      "main": [
+        [
+          {
+            "node": "Check key + drain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check key + drain": {
+      "main": [
+        [
+          {
+            "node": "Respond to poller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "pinData": {}
 }
