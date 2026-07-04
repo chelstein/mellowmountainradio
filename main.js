@@ -1819,8 +1819,9 @@
     var gt = g ? "Best light this evening: golden hour " + almTime(g.evening.b.goldEveStart) + "&ndash;" + almTime(g.evening.b.sunset) : "";
     var day = Math.floor(Date.now() / 86400000), i = day % base.length;
     var subs = base.slice(i).concat(base.slice(0, i)).slice(0, 6);   // rotate the seasonal picks daily
+    var onPhotoPage = !!doc.querySelector("[data-photo-light]");   // no circular self-link on the photography page
     el.innerHTML = '<div class="psub-grid">' + subs.map(function (s) { return '<span class="psub">' + s + '</span>'; }).join("") + '</div>' +
-      (gt ? '<p class="psub-note">' + gt + ' &middot; <a href="photography.html">full photographer&rsquo;s guide &rarr;</a></p>' : '');
+      (gt ? '<p class="psub-note">' + gt + (onPhotoPage ? '' : ' &middot; <a href="photography.html">full photographer&rsquo;s guide &rarr;</a>') + '</p>' : '');
   }
   /* ---- Wildlife sounds — rotate the featured calls daily ---- */
   var SOUND_POOL = {
@@ -4151,6 +4152,20 @@
     if (_plcTimer) clearInterval(_plcTimer);
     _plcTimer = setInterval(tick, 30000);
   }
+  // every spot card says exactly when to be there — computed live
+  function initSpotTimes() {
+    var els = doc.querySelectorAll("[data-spot-when]"); if (!els.length) return;
+    var P; try { P = plcPhases(new Date()); } catch (e) { return; }
+    function T(dt) { return skyTime(dt, -7); }
+    var says = {
+      sunset: "🌇 Be there tonight " + T(P.goldPmStart) + "&ndash;" + T(P.sunset),
+      sunrise: "🌄 Be there at dawn " + T(P.sunrise) + "&ndash;" + T(P.goldAmEnd),
+      afternoon: "🌆 Best from mid-afternoon &middot; blue glow until " + T(P.blueDusk),
+      midday: "☀️ Shoots great right through midday — go anytime",
+      milky: "🌇 Golden " + T(P.goldPmStart) + " &middot; ✨ stars from " + T(P.darkStart)
+    };
+    els.forEach(function (el) { var k = el.getAttribute("data-spot-light"); if (says[k]) el.innerHTML = says[k]; });
+  }
   function initSunsetScore() {
     var el = doc.querySelector("[data-sunset-score]"); if (!el) return;
     el.innerHTML = '<p class="rss-loading">Reading the cloud deck&hellip;</p>';
@@ -4694,6 +4709,7 @@
     initGolden();
     initLightConsole();
     initSunsetScore();
+    initSpotTimes();
     initCosmicAudio();
     initGoldenMode();
     initSolstice();
