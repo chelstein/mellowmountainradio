@@ -4162,7 +4162,8 @@
       sunrise: "🌄 Be there at dawn " + T(P.sunrise) + "&ndash;" + T(P.goldAmEnd),
       afternoon: "🌆 Best from mid-afternoon &middot; blue glow until " + T(P.blueDusk),
       midday: "☀️ Shoots great right through midday — go anytime",
-      milky: "🌇 Golden " + T(P.goldPmStart) + " &middot; ✨ stars from " + T(P.darkStart)
+      milky: "🌇 Golden " + T(P.goldPmStart) + " &middot; ✨ stars from " + T(P.darkStart),
+      tower: "🔴 Beacons on at dusk " + T(P.sunset) + " &middot; ✨ Milky Way behind the mast from " + T(P.darkStart)
     };
     els.forEach(function (el) { var k = el.getAttribute("data-spot-light"); if (says[k]) el.innerHTML = says[k]; });
   }
