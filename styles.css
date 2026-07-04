@@ -1835,6 +1835,43 @@ body.chk-imm-open { overflow: hidden; }
 .tlib-detail p { margin: 4px 0; font-size: 13.5px; line-height: 1.55; color: #4a3a20; }
 .tlib-detail .tc-tag { font-size: 10px; }
 
+/* ===== the light console (Photography) ===== */
+.plc { margin-top: 22px; }
+.plc-card { background: radial-gradient(130% 120% at 80% 0%, #1c2647 0%, #121935 55%, #0a0e20 100%); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r); padding: 26px 28px; color: #e9edff; box-shadow: var(--shadow); }
+.plc-now { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.plc-state { font-family: var(--font-display); font-size: 1.7rem; line-height: 1.15; color: #fff; }
+.plc-count { font-size: 13.5px; font-weight: 700; color: #ffd88a; white-space: nowrap; }
+.plc-barwrap { margin-bottom: 34px; }
+.plc-bar { position: relative; height: 34px; border-radius: 10px; border: 1px solid rgba(255,255,255,.18); box-shadow: inset 0 2px 8px rgba(0,0,0,.35); }
+.plc-needle { position: absolute; top: -7px; bottom: -7px; width: 3px; background: #fff; border-radius: 2px; box-shadow: 0 0 10px rgba(255,255,255,.9), 0 0 22px rgba(255,216,138,.6); transform: translateX(-1.5px); }
+.plc-needle::after { content: "NOW"; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 900; letter-spacing: .1em; color: #fff; }
+.plc-astro { position: absolute; top: -5px; bottom: -5px; width: 2px; background: rgba(157,245,192,.8); border-radius: 2px; }
+.plc-marks { position: relative; height: 44px; margin-top: 7px; }
+.plc-marks span { position: absolute; top: 0; transform: translateX(-50%); font-size: 10.5px; font-weight: 700; letter-spacing: .03em; color: rgba(233,237,255,.6); white-space: nowrap; }
+.plc-marks span:nth-child(even) { top: 18px; }
+.plc-marks span::before { content: ""; position: absolute; top: -8px; left: 50%; width: 1px; height: 6px; background: rgba(233,237,255,.4); }
+.plc-marks span:nth-child(even)::before { top: -26px; height: 24px; }
+.plc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.plc-chip { font-size: 12.5px; font-weight: 700; border-radius: 20px; padding: 6px 13px; border: 1px solid; }
+.plc-chip--gold { color: #ffd88a; border-color: rgba(242,164,68,.45); background: rgba(242,164,68,.1); }
+.plc-chip--blue { color: #a9c4ff; border-color: rgba(87,124,213,.5); background: rgba(49,84,158,.18); }
+.plc-chip--dark { color: #9df5c0; border-color: rgba(157,245,192,.4); background: rgba(157,245,192,.07); }
+.plc-foot { margin-top: 14px; font-size: 11.5px; color: rgba(233,237,255,.5); }
+.plc-row2 { margin-top: 24px; align-items: start; }
+@media (max-width: 640px) { .plc-marks span { font-size: 9px; } .plc-marks span:nth-child(2) { display: none; } }
+
+/* sunset score */
+.ssc { background: linear-gradient(160deg, #2a1c33 0%, #171021 70%); border: 1px solid rgba(255,170,120,.25); border-radius: var(--r); padding: 22px 24px; color: #f5ecee; box-shadow: var(--shadow-sm); }
+.ssc-top { display: flex; align-items: center; gap: 18px; margin-bottom: 10px; }
+.ssc-num { font-family: var(--font-display); font-size: 3rem; line-height: 1; color: #ffb28a; text-shadow: 0 0 22px rgba(255,140,80,.4); }
+.ssc-num small { font-size: 1rem; color: rgba(245,236,238,.5); }
+.ssc-label { display: block; font-family: var(--font-display); font-size: 1.35rem; color: #fff; }
+.ssc-when { display: block; font-size: 12.5px; color: rgba(245,236,238,.6); }
+.ssc-note { margin: 0 0 12px; font-size: 13.5px; line-height: 1.6; color: rgba(245,236,238,.85); }
+.ssc-deck { display: flex; gap: 10px; margin-bottom: 12px; }
+.ssc-deck span { font-size: 11.5px; font-weight: 700; color: rgba(245,236,238,.7); background: rgba(255,255,255,.07); border-radius: 20px; padding: 4px 11px; }
+.ssc-foot { margin: 0; font-size: 11px; color: rgba(245,236,238,.45); line-height: 1.5; }
+
 /* ===== brand art gallery (About) ===== */
 .moods-hero { margin-top: 22px; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); }
 .moods-hero img { display: block; width: 100%; height: auto; }

@@ -33,7 +33,7 @@
           '<a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="events.html#photography">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
+          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="photography.html">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="vibe"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">The Vibe</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="vibe.html">Cosmic Conditions</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="soundhealing.html">Sound Healing</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a>' +
@@ -61,7 +61,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="events.html#photography">Photography</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="The Vibe"><h4>The Vibe</h4><a href="vibe.html">Cosmic Conditions</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="wildlife.html">Seen around Sedona</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
@@ -1820,7 +1820,7 @@
     var day = Math.floor(Date.now() / 86400000), i = day % base.length;
     var subs = base.slice(i).concat(base.slice(0, i)).slice(0, 6);   // rotate the seasonal picks daily
     el.innerHTML = '<div class="psub-grid">' + subs.map(function (s) { return '<span class="psub">' + s + '</span>'; }).join("") + '</div>' +
-      (gt ? '<p class="psub-note">' + gt + ' &middot; <a href="events.html#photography">full photographer&rsquo;s guide &rarr;</a></p>' : '');
+      (gt ? '<p class="psub-note">' + gt + ' &middot; <a href="photography.html">full photographer&rsquo;s guide &rarr;</a></p>' : '');
   }
   /* ---- Wildlife sounds — rotate the featured calls daily ---- */
   var SOUND_POOL = {
@@ -4063,6 +4063,126 @@
   }
 
   /* =========================================================
+     THE LIGHT CONSOLE — a photographer's day over Sedona, computed live:
+     the whole day as a light timeline (night → blue → golden → flat day
+     → golden → blue → night, with the astro-darkness markers), a NOW
+     needle that creeps in real time, the current light called out with a
+     countdown to the next window. Same validated solar math as the rest
+     of the site. Plus tonight's SUNSET SCORE — read from the actual
+     forecast cloud deck at sunset hour (mid/high clouds are the canvas
+     that catches color; low clouds block the horizon).
+     ========================================================= */
+  var _plcTimer = null;
+  function plcPhases(now) {
+    var g = goldenTimes(now), B = g.evening.b;              // full solar block for today
+    var sky = null; try { sky = computeSky(now); } catch (e) {}
+    return {
+      blueDawn: B.blueDawn, sunrise: B.sunrise, goldAmEnd: B.goldMornEnd,
+      goldPmStart: B.goldEveStart, sunset: B.sunset, blueDusk: B.blueDusk,
+      darkStart: sky && sky.dusk, darkEnd: sky && sky.dawn
+    };
+  }
+  function initLightConsole() {
+    var el = doc.querySelector("[data-photo-light]");
+    if (!el) { if (_plcTimer) { clearInterval(_plcTimer); _plcTimer = null; } return; }
+    var TZ = -7;
+    function mins(dt) { if (!dt || isNaN(dt.valueOf())) return null; var u = new Date(dt.valueOf() + TZ * 3600000); return u.getUTCHours() * 60 + u.getUTCMinutes(); }
+    function pct(m) { return (m / 1440 * 100).toFixed(2) + "%"; }
+    var P;
+    try { P = plcPhases(new Date()); } catch (e) { el.innerHTML = ""; return; }
+    var bd = mins(P.blueDawn), sr = mins(P.sunrise), ga = mins(P.goldAmEnd),
+        gp = mins(P.goldPmStart), ss = mins(P.sunset), bk = mins(P.blueDusk);
+    var NIGHT = "#0c1024", BLUE = "#31549e", GOLD = "#f2a444", DAY = "#f7e9c9";
+    var grad = "linear-gradient(90deg," +
+      NIGHT + " 0 " + pct(bd) + "," + BLUE + " " + pct(bd) + " " + pct(sr) + "," +
+      GOLD + " " + pct(sr) + " " + pct(ga) + "," + DAY + " " + pct(ga) + " " + pct(gp) + "," +
+      GOLD + " " + pct(gp) + " " + pct(ss) + "," + BLUE + " " + pct(ss) + " " + pct(bk) + "," +
+      NIGHT + " " + pct(bk) + " 100%)";
+    function T(dt) { return skyTime(dt, TZ); }
+    var marks = [[sr, "sunrise " + T(P.sunrise)], [ga, "golden ends " + T(P.goldAmEnd)], [gp, "golden " + T(P.goldPmStart)], [ss, "sunset " + T(P.sunset)]];
+    el.innerHTML =
+      '<div class="plc-card">' +
+        '<div class="plc-now"><span class="plc-state" data-plc-state>&hellip;</span><span class="plc-count" data-plc-count></span></div>' +
+        '<div class="plc-barwrap">' +
+          '<div class="plc-bar" style="background:' + grad + '">' +
+            (P.darkStart && mins(P.darkStart) != null ? '<i class="plc-astro" style="left:' + pct(mins(P.darkStart)) + '" title="astronomical darkness begins"></i>' : '') +
+            '<i class="plc-needle" data-plc-needle></i>' +
+          '</div>' +
+          '<div class="plc-marks">' + marks.map(function (m) { return '<span style="left:' + pct(m[0]) + '">' + m[1] + '</span>'; }).join("") + '</div>' +
+        '</div>' +
+        '<div class="plc-chips">' +
+          '<span class="plc-chip plc-chip--blue">🌌 Blue dawn ' + T(P.blueDawn) + '&ndash;' + T(P.sunrise) + '</span>' +
+          '<span class="plc-chip plc-chip--gold">🌄 Golden AM ' + T(P.sunrise) + '&ndash;' + T(P.goldAmEnd) + '</span>' +
+          '<span class="plc-chip plc-chip--gold">🌇 Golden PM ' + T(P.goldPmStart) + '&ndash;' + T(P.sunset) + '</span>' +
+          '<span class="plc-chip plc-chip--blue">🌆 Blue dusk ' + T(P.sunset) + '&ndash;' + T(P.blueDusk) + '</span>' +
+          (P.darkStart ? '<span class="plc-chip plc-chip--dark">✨ True dark ' + T(P.darkStart) + '&ndash;' + T(P.darkEnd) + '</span>' : '') +
+        '</div>' +
+        '<div class="plc-foot">Computed live for 34.87&deg;N 111.76&deg;W &middot; the needle moves with you</div>' +
+      '</div>';
+    var stateEl = el.querySelector("[data-plc-state]"), countEl = el.querySelector("[data-plc-count]"), needle = el.querySelector("[data-plc-needle]");
+    function phaseNow() {
+      var now = new Date(), m = mins(now);
+      var steps = [
+        [bd, "🌙 Night — long-exposure &amp; star country", NIGHT],
+        [sr, "🌌 BLUE HOUR — cobalt sky, glowing town lights", BLUE],
+        [ga, "🌄 GOLDEN LIGHT — the rocks are on fire, go", GOLD],
+        [gp, "☀️ Flat midday light — scout, or shoot the canyons &amp; creek", "#a88f5e"],
+        [ss, "🌇 GOLDEN LIGHT — the rocks are on fire, go", GOLD],
+        [bk, "🌆 BLUE HOUR — cobalt sky, silhouettes &amp; town glow", BLUE],
+        [1441, "🌙 Night — the stars are out", NIGHT]
+      ];
+      for (var i = 0; i < steps.length; i++) {
+        if (m < steps[i][0]) {
+          var left = steps[i][0] - m, next = i < steps.length - 1 ? steps[i][0] : null;
+          return { label: steps[i][1], mins: left === 1441 - m && i === steps.length - 1 ? null : left };
+        }
+      }
+      return { label: steps[0][1], mins: null };
+    }
+    function tick() {
+      if (!el.isConnected) { clearInterval(_plcTimer); _plcTimer = null; return; }
+      var now = new Date(), m = mins(now);
+      if (needle) needle.style.left = pct(m);
+      var ph = phaseNow();
+      if (stateEl) stateEl.innerHTML = ph.label;
+      if (countEl) countEl.textContent = ph.mins != null && ph.mins < 1441 ? (ph.mins >= 60 ? Math.floor(ph.mins / 60) + "h " + (ph.mins % 60) + "m" : ph.mins + "m") + " until the light changes" : "";
+    }
+    tick();
+    if (_plcTimer) clearInterval(_plcTimer);
+    _plcTimer = setInterval(tick, 30000);
+  }
+  function initSunsetScore() {
+    var el = doc.querySelector("[data-sunset-score]"); if (!el) return;
+    el.innerHTML = '<p class="rss-loading">Reading the cloud deck&hellip;</p>';
+    var P; try { P = plcPhases(new Date()); } catch (e) { el.innerHTML = ""; return; }
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.761&hourly=cloud_cover_low,cloud_cover_mid,cloud_cover_high&forecast_days=2&timezone=America%2FPhoenix", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (d) {
+        if (!el.isConnected) return;
+        var u = new Date(P.sunset.valueOf() - 7 * 3600000);
+        var key = u.toISOString().slice(0, 13).replace("T", "T");   // match local hour
+        var idx = d.hourly.time.findIndex(function (t) { return t.slice(0, 13) === key.slice(0, 13); });
+        if (idx < 0) throw 0;
+        var lo = d.hourly.cloud_cover_low[idx], mid = d.hourly.cloud_cover_mid[idx], hi = d.hourly.cloud_cover_high[idx];
+        var canvas = Math.max(mid, hi), score, label, note;
+        if (lo > 65) { score = 25; label = "Socked in"; note = "A low deck on the horizon blocks the show — shoot moody instead."; }
+        else if (canvas >= 25 && canvas <= 70) { score = 88; label = "Epic potential"; note = "Mid/high clouds overhead with a clear horizon — that's the canvas that catches fire."; }
+        else if (canvas > 85) { score = 48; label = "Heavy deck"; note = "Nearly full cloud overhead — muted and moody unless the sun finds the horizon gap."; }
+        else if (canvas > 70) { score = 68; label = "Good chance of color"; note = "A heavy but broken deck — dramatic if the sun finds a gap."; }
+        else if (canvas > 10) { score = 72; label = "Decent color likely"; note = "Some cloud to catch the light — worth being in position."; }
+        else { score = 55; label = "Clean &amp; clear"; note = "Crisp light on the rocks, simple sky — great for the classics, no fireworks overhead."; }
+        score = Math.max(15, Math.round(score - lo * 0.25));
+        el.innerHTML =
+          '<div class="ssc"><div class="ssc-top"><span class="ssc-num">' + score + '<small>/100</small></span>' +
+            '<div><span class="ssc-label">' + label + '</span><span class="ssc-when">sunset ' + skyTime(P.sunset, -7) + '</span></div></div>' +
+          '<p class="ssc-note">' + note + '</p>' +
+          '<div class="ssc-deck"><span>low ' + lo + '%</span><span>mid ' + mid + '%</span><span>high ' + hi + '%</span></div>' +
+          '<p class="ssc-foot">Read from the forecast cloud deck at sunset hour (Open-Meteo) &mdash; a forecast-based read, not a promise.</p></div>';
+      })
+      .catch(function () { if (el.isConnected) el.innerHTML = '<p class="embed-note">The cloud forecast is unavailable right now.</p>'; });
+  }
+
+  /* =========================================================
      GOLDEN HOUR MODE — the site knows the exact minute the red rocks
      catch fire. As golden hour nears it shows a countdown; during it,
      the whole site warms and the badge counts down to the sun's edge.
@@ -4572,6 +4692,8 @@
     initSoundHealing();
     initUFC();
     initGolden();
+    initLightConsole();
+    initSunsetScore();
     initCosmicAudio();
     initGoldenMode();
     initSolstice();
