@@ -4153,6 +4153,70 @@
     _plcTimer = setInterval(tick, 30000);
   }
   /* =========================================================
+     SEDONA, COMPUTED LIVE — the homepage mosaic. Eight tiles, every one
+     a real live datum: four computed on-device the instant the page
+     loads (moon, golden hour, card of the day, the sky), four fetched
+     (creek gauge, Schumann, next UFC card, your Signal Hunt progress).
+     One glance = proof this station runs on the real world.
+     ========================================================= */
+  function initHomePulse() {
+    var el = doc.querySelector("[data-home-pulse]"); if (!el) return;
+    function tile(href, ic, val, lab, sub) {
+      return '<a class="hp-tile" href="' + href + '"><span class="hp-ic">' + ic + '</span>' +
+        '<span class="hp-val">' + val + '</span><span class="hp-lab">' + lab + '</span>' +
+        (sub ? '<span class="hp-sub">' + sub + '</span>' : '') + '</a>';
+    }
+    // computed instantly, no network
+    var m = moonInfo();
+    var g = null; try { g = goldenTimes(new Date()); } catch (e) {}
+    function T(dt) { return skyTime(dt, -7); }
+    var golden = g ? T(g.evening.b.goldEveStart) + "&ndash;" + T(g.evening.b.sunset) : "—";
+    var deck = tarotDeck(), day = Math.floor((Date.now() / 86400000 + (-7 / 24)));
+    var h = day * 2654435761 % 4294967296; h = (h ^ (h >>> 13)) >>> 0;
+    var cod = deck[h % 78];
+    var sky = null, rxN = 0; try { sky = skyNow(new Date()); rxN = sky.filter(function (b) { return b.retro; }).length; } catch (e) {}
+    var sunZ = sky ? ZODIAC[sky[0].sign] : null;
+    var st = {}; try { st = JSON.parse(localStorage.getItem("kazm-signal-hunt") || "{}"); } catch (e) {}
+    var foundN = GC_WAYPOINTS.filter(function (w) { return st[w.code]; }).length;
+    el.innerHTML =
+      tile("vibe.html", m.icon, m.illum + "%", "tonight&rsquo;s moon", esc(m.name)) +
+      tile("photography.html", "🌇", golden, "golden hour tonight", "the rocks catch fire") +
+      tile("chakras.html", "🃏", esc(cod.name), "card of the day", "one card, whole canyon") +
+      (sunZ ? tile("horoscope.html", sunZ.g, "Sun in " + sunZ.n, "the sky right now", rxN ? rxN + " planet" + (rxN > 1 ? "s" : "") + " retrograde ℞" : "all planets direct") : "") +
+      tile("events.html#creek", "🌊", "<span data-hp-creek>&hellip;</span>", "oak creek", "<span data-hp-creeksub>USGS, live</span>") +
+      tile("vibe.html#schumann", "📡", "<span data-hp-schu>&hellip;</span>", "earth&rsquo;s frequency", "<span data-hp-schusub>Schumann resonance</span>") +
+      tile("sports.html#ufc", "🥊", "<span data-hp-ufc>&hellip;</span>", "next fight card", "<span data-hp-ufcsub>live from the cage</span>") +
+      tile("events.html#geocaching", "🧭", foundN ? foundN + " of 5" : "Join the hunt", "signal hunt", foundN === 5 ? "COMPLETE — call it in!" : "GPS-verified, on-air glory");
+    // the three fetched tiles
+    fetch("https://waterservices.usgs.gov/nwis/iv/?format=json&sites=09504420&parameterCd=00010,00060&siteStatus=active", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        var flow = null, wt = null;
+        (d.value.timeSeries || []).forEach(function (ts) {
+          var c = ts.variable.variableCode[0].value, v = parseFloat(ts.values[0].value[0].value);
+          if (c === "00060") flow = v; if (c === "00010") wt = Math.round(v * 9 / 5 + 32);
+        });
+        var e1 = el.querySelector("[data-hp-creek]"), e2 = el.querySelector("[data-hp-creeksub]");
+        if (e1 && flow != null) e1.innerHTML = flow.toFixed(0) + " cfs";
+        if (e2 && flow != null) e2.textContent = (flow >= 15 && flow <= 120 ? "just right" : flow < 15 ? "running low" : "running high") + (wt ? " · " + wt + "°F water" : "");
+      }).catch(function () {});
+    fetch("schumann.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      var e1 = el.querySelector("[data-hp-schu]"), e2 = el.querySelector("[data-hp-schusub]");
+      if (d && d.available !== false && e1) { e1.innerHTML = (d.detected_hz || d.nominal_hz) + " Hz"; if (e2) e2.textContent = (d.activity || "") + " · energy " + (d.energy_score != null ? d.energy_score : "—"); }
+    }).catch(function () {});
+    fetch(UFC_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      var evs = (d && d.events) || [], ev = null;
+      for (var i = 0; i < evs.length; i++) { if (!(evs[i].status && evs[i].status.type && evs[i].status.type.completed)) { ev = evs[i]; break; } }
+      var e1 = el.querySelector("[data-hp-ufc]"), e2 = el.querySelector("[data-hp-ufcsub]");
+      if (ev && e1) {
+        var days = Math.max(0, Math.ceil((new Date(ev.date) - Date.now()) / 86400000));
+        var live = ev.status.type.state === "in";
+        e1.innerHTML = live ? "🔴 LIVE NOW" : "in " + days + " day" + (days === 1 ? "" : "s");
+        if (e2) e2.textContent = ev.name.split(":")[0] + (ev.name.split(":")[1] ? " · " + ev.name.split(":")[1].trim() : "");
+      }
+    }).catch(function () {});
+  }
+
+  /* =========================================================
      TODAY'S PLAYBOOK — the adventure page gets a brain. It reads the
      same live inputs the sections below run on (temperature, UV, air
      quality, the Oak Creek gauge, today's sun windows) and RANKS what's
@@ -4968,6 +5032,7 @@
     initSpotTimes();
     initGeocache();
     initPlaybook();
+    initHomePulse();
     initCosmicAudio();
     initGoldenMode();
     initSolstice();

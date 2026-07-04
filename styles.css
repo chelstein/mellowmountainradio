@@ -2999,3 +2999,17 @@ body.podplaying .player.show { transform: translateY(180%); }
 .gc-cert-code { font-family: var(--font-display); font-size: 2rem; letter-spacing: .12em; color: #fff; background: rgba(255,216,138,.12); border: 1px dashed rgba(255,216,138,.6); border-radius: 12px; padding: 10px 18px; display: inline-block; margin-bottom: 12px; }
 .gc-cert-note { font-size: 12.5px !important; color: rgba(233,237,255,.65) !important; }
 .gc-cert-note a { color: #ffd88a; font-weight: 800; }
+
+/* ── SEDONA, COMPUTED LIVE — homepage live mosaic ── */
+.home-pulse-band { background: radial-gradient(140% 160% at 20% 0%, #1c2647 0%, #121935 55%, #0a0e20 100%); border-bottom: 1px solid rgba(255,255,255,.1); padding: 40px 0 44px; }
+.home-pulse-band .section-head h2 { color: #fff; }
+.home-pulse-band .section-head .lead { color: rgba(233,237,255,.78); }
+.home-pulse { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.hp-tile { display: flex; flex-direction: column; gap: 3px; text-decoration: none; text-align: center; align-items: center; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 18px 12px 15px; transition: transform .15s ease, border-color .15s ease, background .15s ease; min-width: 0; }
+.hp-tile:hover { transform: translateY(-4px); border-color: rgba(255,216,138,.55); background: rgba(255,255,255,.08); }
+.hp-ic { font-size: 1.7rem; line-height: 1; margin-bottom: 4px; color: #ffd88a; }
+.hp-val { font-family: var(--font-display); font-size: 1.45rem; line-height: 1.15; color: #ffe9a8; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.hp-lab { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: rgba(203,214,255,.6); margin-top: 2px; }
+.hp-sub { font-size: 12px; color: rgba(233,237,255,.75); line-height: 1.35; }
+@media (max-width: 900px) { .home-pulse { grid-template-columns: repeat(2, 1fr); } .hp-val { font-size: 1.3rem; } }
+@media (max-width: 380px) { .hp-tile { padding: 14px 8px 12px; } }
