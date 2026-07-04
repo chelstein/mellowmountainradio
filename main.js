@@ -33,7 +33,7 @@
           '<a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="photography.html">Photography</a><a role="menuitem" href="events.html">All Adventures</a>' +
+          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="photography.html">Photography</a><a role="menuitem" href="events.html#geocaching">Geocaching</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="vibe"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">The Vibe</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="vibe.html">Cosmic Conditions</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="soundhealing.html">Sound Healing</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a>' +
@@ -4152,6 +4152,75 @@
     if (_plcTimer) clearInterval(_plcTimer);
     _plcTimer = setInterval(tick, 30000);
   }
+  /* =========================================================
+     GEOCACHING — Sedona is world-class cache country, and since the
+     big cache databases keep their APIs closed, we run our OWN hunt:
+     the KAZM Signal Hunt. Five public landmarks with real coordinates
+     (shown in the N ddd° mm.mmm′ format cachers navigate by), a live
+     topo map, and a ranger: one tap and your real GPS position ranges
+     every waypoint with distance and compass bearing, like a cacher's
+     GPSr. Find all five, email the station, get your shoutout on air.
+     ========================================================= */
+  var GC_WAYPOINTS = [
+    { code: "KAZM-01", n: "Uptown Sedona", lat: 34.8697, lon: -111.7610, clue: "Start where the town hums. The dial reads 106.5 here — so does everything else." },
+    { code: "KAZM-02", n: "Chapel of the Holy Cross", lat: 34.8322, lon: -111.7666, clue: "A cross set in stone by a student of Wright. Look up from the parking switchbacks." },
+    { code: "KAZM-03", n: "Bell Rock Vista", lat: 34.8010, lon: -111.7434, clue: "The butte that rings the valley in. First light sets it on fire — you learned that on the Photography page." },
+    { code: "KAZM-04", n: "Cathedral Rock", lat: 34.8203, lon: -111.7930, clue: "The spires that pose for every postcard. The reflection shot is a short walk west." },
+    { code: "KAZM-05", n: "Airport Mesa Overlook", lat: 34.8560, lon: -111.7782, clue: "The whole basin at your feet. Stay for the beacons — ours is out there blinking." }
+  ];
+  function gcDM(dec, isLat) {
+    var hemi = isLat ? (dec >= 0 ? "N" : "S") : (dec >= 0 ? "E" : "W");
+    var a = Math.abs(dec), d = Math.floor(a), m = (a - d) * 60;
+    return hemi + " " + d + "&deg; " + (m < 10 ? "0" : "") + m.toFixed(3) + "&prime;";
+  }
+  function gcRange(lat1, lon1, lat2, lon2) {
+    var rad = Math.PI / 180, R = 3958.8;   // miles
+    var dLat = (lat2 - lat1) * rad, dLon = (lon2 - lon1) * rad;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var dist = 2 * R * Math.asin(Math.sqrt(a));
+    var y = Math.sin(dLon) * Math.cos(lat2 * rad), x = Math.cos(lat1 * rad) * Math.sin(lat2 * rad) - Math.sin(lat1 * rad) * Math.cos(lat2 * rad) * Math.cos(dLon);
+    var brg = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    var pts = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+    return { mi: dist, dir: pts[Math.round(brg / 22.5) % 16], deg: Math.round(brg) };
+  }
+  function initGeocache() {
+    var el = doc.querySelector("[data-geocache]"); if (!el) return;
+    el.innerHTML = GC_WAYPOINTS.map(function (w, i) {
+      return '<article class="gc-wp"><div class="gc-wp-top"><span class="gc-code">' + w.code + '</span><h4>' + esc(w.n) + '</h4></div>' +
+        '<p class="gc-coords">' + gcDM(w.lat, true) + ' &nbsp; ' + gcDM(w.lon, false) + '</p>' +
+        '<p class="gc-clue">' + w.clue + '</p>' +
+        '<p class="gc-range" data-gc-range="' + i + '">📡 tap &ldquo;range me&rdquo; to get distance &amp; bearing</p></article>';
+    }).join("");
+    var btn = doc.querySelector("[data-gc-locate]");
+    if (btn) btn.addEventListener("click", function () {
+      if (!navigator.geolocation) { btn.textContent = "Location not available on this device"; return; }
+      btn.textContent = "📡 Acquiring signal…";
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        var la = pos.coords.latitude, lo = pos.coords.longitude;
+        GC_WAYPOINTS.forEach(function (w, i) {
+          var r = gcRange(la, lo, w.lat, w.lon);
+          var out = el.querySelector('[data-gc-range="' + i + '"]');
+          if (out) out.innerHTML = '📡 <b>' + (r.mi < 0.19 ? Math.round(r.mi * 5280) + " ft" : r.mi.toFixed(r.mi < 10 ? 1 : 0) + " mi") + '</b> ' + r.dir + ' (' + r.deg + '&deg;)' + (r.mi < 0.03 ? ' &middot; <i class="gc-here">YOU&rsquo;RE HERE ✓</i>' : '');
+        });
+        btn.textContent = "📡 Ranged — happy hunting";
+        setTimeout(function () { btn.textContent = "📡 Range me again"; }, 2500);
+      }, function () { btn.textContent = "Location denied — enable it and try again"; });
+    });
+    // the hunt map
+    var mapEl = doc.querySelector("[data-geocache-map]");
+    if (mapEl && !mapEl._done) {
+      mapEl._done = true;
+      loadLeaflet(function (L) {
+        if (!L || !mapEl.isConnected) return;
+        var map = L.map(mapEl, { zoomControl: true, scrollWheelZoom: false }).setView([34.838, -111.768], 12);
+        L.tileLayer(TOPO_TILE, { maxZoom: 16, attribution: "USGS · The National Map" }).addTo(map);
+        GC_WAYPOINTS.forEach(function (w) {
+          L.circleMarker([w.lat, w.lon], { radius: 9, color: "#b3541e", weight: 2, fillColor: "#f2a444", fillOpacity: .85 })
+            .addTo(map).bindPopup("<b>" + w.code + "</b><br>" + w.n);
+        });
+      });
+    }
+  }
   // every spot card says exactly when to be there — computed live
   function initSpotTimes() {
     var els = doc.querySelectorAll("[data-spot-when]"); if (!els.length) return;
@@ -4711,6 +4780,7 @@
     initLightConsole();
     initSunsetScore();
     initSpotTimes();
+    initGeocache();
     initCosmicAudio();
     initGoldenMode();
     initSolstice();
