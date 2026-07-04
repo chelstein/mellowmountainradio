@@ -4259,25 +4259,135 @@
     var pts = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
     return { mi: dist, dir: pts[Math.round(brg / 22.5) % 16], deg: Math.round(brg) };
   }
+  // ---- the Signal Hunt is a real game: GPS-verified finds saved on the
+  // device, a live compass navigator, and a completion certificate you
+  // redeem on the air. No login, no server — your phone IS the GPSr.
+  var GC_KEY = "kazm-signal-hunt", gcWatch = null, gcHeading = null, gcTarget = -1;
+  function gcState() { try { return JSON.parse(localStorage.getItem(GC_KEY) || "{}"); } catch (e) { return {}; } }
+  function gcSave(st) { try { localStorage.setItem(GC_KEY, JSON.stringify(st)); } catch (e) {} }
+  function gcFmtDist(mi) { return mi < 0.19 ? Math.round(mi * 5280) + " ft" : mi.toFixed(mi < 10 ? 1 : 0) + " mi"; }
+  function gcCert(st) {
+    var times = GC_WAYPOINTS.map(function (w) { return st[w.code] || 0; });
+    var code = times.reduce(function (a, t) { return (a * 31 + Math.floor(t / 1000)) % 2176782336; }, 7).toString(36).toUpperCase();
+    while (code.length < 6) code = "0" + code;
+    return "SIGNAL-" + code;
+  }
   function initGeocache() {
     var el = doc.querySelector("[data-geocache]"); if (!el) return;
-    el.innerHTML = GC_WAYPOINTS.map(function (w, i) {
-      return '<article class="gc-wp"><div class="gc-wp-top"><span class="gc-code">' + w.code + '</span><h4>' + esc(w.n) + '</h4></div>' +
-        '<p class="gc-coords">' + gcDM(w.lat, true) + ' &nbsp; ' + gcDM(w.lon, false) + '</p>' +
-        '<p class="gc-clue">' + w.clue + '</p>' +
-        '<p class="gc-range" data-gc-range="' + i + '">📡 tap &ldquo;range me&rdquo; to get distance &amp; bearing</p></article>';
-    }).join("");
+    if (gcWatch != null) { try { navigator.geolocation.clearWatch(gcWatch); } catch (e) {} gcWatch = null; }
+    gcTarget = -1;
+    var progEl = doc.querySelector("[data-gc-progress]"), navEl = doc.querySelector("[data-gc-nav]"), certEl = doc.querySelector("[data-gc-cert]");
+    function found() { var st = gcState(), n = 0; GC_WAYPOINTS.forEach(function (w) { if (st[w.code]) n++; }); return n; }
+    function drawProgress() {
+      if (!progEl) return;
+      var st = gcState(), n = found();
+      progEl.innerHTML = '<div class="gcp-track">' + GC_WAYPOINTS.map(function (w, i) {
+        return '<span class="gcp-stamp' + (st[w.code] ? " is-found" : "") + '" title="' + esc(w.n) + '">' + (st[w.code] ? "✓" : (i + 1)) + '</span>';
+      }).join('<i class="gcp-line"></i>') + '</div>' +
+      '<span class="gcp-label">' + n + ' of 5 found' + (n > 0 && n < 5 ? ' &middot; keep hunting' : '') + '</span>' +
+      (n > 0 ? ' <button class="gcp-reset" data-gc-reset>reset hunt</button>' : '');
+      var rs = progEl.querySelector("[data-gc-reset]");
+      if (rs) rs.addEventListener("click", function () { if (confirm("Start the Signal Hunt over? Your five finds will be cleared.")) { gcSave({}); drawProgress(); drawCards(); drawCert(); } });
+    }
+    function drawCert() {
+      if (!certEl) return;
+      if (found() < 5) { certEl.innerHTML = ""; certEl.hidden = true; return; }
+      var st = gcState(), code = gcCert(st);
+      certEl.hidden = false;
+      certEl.innerHTML = '<div class="gc-cert"><span class="gc-cert-star">📡★📡</span>' +
+        '<h3>SIGNAL HUNT COMPLETE</h3>' +
+        '<p>All five waypoints, verified by GPS. Your completion code:</p>' +
+        '<div class="gc-cert-code">' + code + '</div>' +
+        '<p class="gc-cert-note">Call it in during any live show or <a href="contact.html">send it with your five photos</a> &mdash; you&rsquo;ll get your shoutout on the air, hunter.</p>' +
+        '<button class="btn btn-secondary" data-gc-copy>⧉ Copy the code</button></div>';
+      var cb = certEl.querySelector("[data-gc-copy]");
+      if (cb) cb.addEventListener("click", function () { if (navigator.clipboard) navigator.clipboard.writeText("KAZM Signal Hunt complete — code " + code).then(function () { cb.textContent = "✓ Copied"; setTimeout(function () { cb.innerHTML = "⧉ Copy the code"; }, 1600); }); });
+    }
+    function drawCards() {
+      var st = gcState();
+      el.innerHTML = GC_WAYPOINTS.map(function (w, i) {
+        var f = st[w.code];
+        return '<article class="gc-wp' + (f ? " is-found" : "") + '"><div class="gc-wp-top"><span class="gc-code">' + w.code + '</span><h4>' + esc(w.n) + '</h4>' +
+          (f ? '<span class="gc-found-badge">✓ FOUND ' + new Date(f).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + '</span>' : '') + '</div>' +
+          '<p class="gc-coords">' + gcDM(w.lat, true) + ' &nbsp; ' + gcDM(w.lon, false) + '</p>' +
+          '<p class="gc-clue">' + w.clue + '</p>' +
+          '<div class="gc-wp-foot"><p class="gc-range" data-gc-range="' + i + '">📡 range unknown &mdash; navigate to hunt it</p>' +
+          '<button class="gc-navbtn" data-gc-go="' + i + '">🎯 Navigate</button></div></article>';
+      }).join("");
+      el.querySelectorAll("[data-gc-go]").forEach(function (b) {
+        b.addEventListener("click", function () { startNav(+b.getAttribute("data-gc-go")); });
+      });
+    }
+    // --- the navigator: live compass arrow + closing distance ---
+    function startNav(i) {
+      gcTarget = i;
+      var w = GC_WAYPOINTS[i];
+      if (!navEl) return;
+      navEl.hidden = false;
+      navEl.innerHTML = '<div class="gc-navpanel">' +
+        '<div class="gc-nav-head"><span class="gc-nav-t">🎯 Hunting <b>' + w.code + '</b> &middot; ' + esc(w.n) + '</span><button class="gc-nav-x" data-gc-navx aria-label="Stop navigating">✕</button></div>' +
+        '<div class="gc-nav-main"><div class="gc-compass"><i class="gc-arrow" data-gc-arrow>➤</i></div>' +
+          '<div class="gc-nav-read"><b data-gc-dist>acquiring&hellip;</b><span data-gc-brg></span></div></div>' +
+        '<button class="btn btn-primary gc-verify" data-gc-verify disabled>✓ Verify find (get within 250 ft)</button>' +
+        '<p class="gc-nav-note">Compass needs a phone held flat; on iPhone tap Navigate again if the arrow doesn&rsquo;t move. No compass? Follow the bearing &mdash; it&rsquo;s true north.</p>' +
+      '</div>';
+      navEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      navEl.querySelector("[data-gc-navx]").addEventListener("click", stopNav);
+      var vb = navEl.querySelector("[data-gc-verify]");
+      vb.addEventListener("click", function () {
+        if (vb.disabled) return;
+        var st = gcState(); st[w.code] = Date.now(); gcSave(st);
+        drawProgress(); drawCards(); drawCert();
+        stopNav();
+        if (found() === 5 && certEl) certEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      // iOS compass permission rides the same user gesture
+      try { if (window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) DeviceOrientationEvent.requestPermission().catch(function () {}); } catch (e) {}
+      if (gcWatch == null && navigator.geolocation) {
+        gcWatch = navigator.geolocation.watchPosition(onPos, function () {
+          var d = navEl.querySelector("[data-gc-dist]"); if (d) d.textContent = "location denied";
+        }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 });
+      }
+    }
+    function stopNav() {
+      gcTarget = -1;
+      if (navEl) { navEl.hidden = true; navEl.innerHTML = ""; }
+      if (gcWatch != null) { try { navigator.geolocation.clearWatch(gcWatch); } catch (e) {} gcWatch = null; }
+    }
+    function onPos(pos) {
+      var la = pos.coords.latitude, lo = pos.coords.longitude;
+      // range every card while we're at it
+      GC_WAYPOINTS.forEach(function (w, i) {
+        var r = gcRange(la, lo, w.lat, w.lon), out = el.querySelector('[data-gc-range="' + i + '"]');
+        if (out) out.innerHTML = '📡 <b>' + gcFmtDist(r.mi) + '</b> ' + r.dir;
+      });
+      if (gcTarget < 0 || !navEl || navEl.hidden) return;
+      var w = GC_WAYPOINTS[gcTarget], r = gcRange(la, lo, w.lat, w.lon);
+      var d = navEl.querySelector("[data-gc-dist]"), bg = navEl.querySelector("[data-gc-brg]"), ar = navEl.querySelector("[data-gc-arrow]"), vb = navEl.querySelector("[data-gc-verify]");
+      if (d) d.textContent = gcFmtDist(r.mi);
+      if (bg) bg.innerHTML = r.dir + " &middot; " + r.deg + "&deg; true";
+      if (ar) { var rot = r.deg - (gcHeading != null ? gcHeading : 0); ar.style.transform = "rotate(" + (rot - 90) + "deg)"; }
+      if (vb) {
+        var close = r.mi <= 0.0473;   // ~250 ft
+        vb.disabled = !close;
+        vb.textContent = close ? "✓ VERIFY FIND — you're here!" : "✓ Verify find (" + gcFmtDist(r.mi) + " to go)";
+        vb.classList.toggle("is-ready", close);
+      }
+    }
+    function onHead(e) {
+      var h = (e.webkitCompassHeading != null) ? e.webkitCompassHeading : (e.absolute && e.alpha != null ? 360 - e.alpha : null);
+      if (h != null) gcHeading = h;
+    }
+    window.addEventListener("deviceorientationabsolute", onHead, true);
+    window.addEventListener("deviceorientation", onHead, true);
+    drawProgress(); drawCards(); drawCert();
+    // one-shot ranging for desktop scouts
     var btn = doc.querySelector("[data-gc-locate]");
     if (btn) btn.addEventListener("click", function () {
       if (!navigator.geolocation) { btn.textContent = "Location not available on this device"; return; }
       btn.textContent = "📡 Acquiring signal…";
       navigator.geolocation.getCurrentPosition(function (pos) {
-        var la = pos.coords.latitude, lo = pos.coords.longitude;
-        GC_WAYPOINTS.forEach(function (w, i) {
-          var r = gcRange(la, lo, w.lat, w.lon);
-          var out = el.querySelector('[data-gc-range="' + i + '"]');
-          if (out) out.innerHTML = '📡 <b>' + (r.mi < 0.19 ? Math.round(r.mi * 5280) + " ft" : r.mi.toFixed(r.mi < 10 ? 1 : 0) + " mi") + '</b> ' + r.dir + ' (' + r.deg + '&deg;)' + (r.mi < 0.03 ? ' &middot; <i class="gc-here">YOU&rsquo;RE HERE ✓</i>' : '');
-        });
+        onPos(pos);
         btn.textContent = "📡 Ranged — happy hunting";
         setTimeout(function () { btn.textContent = "📡 Range me again"; }, 2500);
       }, function () { btn.textContent = "Location denied — enable it and try again"; });

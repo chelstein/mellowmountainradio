@@ -2963,3 +2963,39 @@ body.podplaying .player.show { transform: translateY(180%); }
 .jumpnav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .jumpnav a { font-size: 12.5px; font-weight: 800; text-decoration: none; color: rgba(233,237,255,.8); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 20px; padding: 6px 14px; transition: all .15s ease; }
 .jumpnav a:hover { color: #0a1020; background: #8de8ff; border-color: #8de8ff; }
+
+/* signal hunt: progress, navigator, certificate */
+.gc-progress { margin: 6px 0 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.gcp-track { display: flex; align-items: center; }
+.gcp-stamp { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: var(--muted); background: var(--surface); border: 2px dashed rgba(179,84,30,.45); }
+.gcp-stamp.is-found { color: #fff; background: #4f8a4a; border: 2px solid #4f8a4a; box-shadow: 0 0 12px rgba(79,138,74,.4); }
+.gcp-line { width: 26px; height: 2px; background: rgba(179,84,30,.3); }
+.gcp-label { font-size: 13px; font-weight: 800; color: var(--ink); }
+.gcp-reset { font: inherit; font-size: 11.5px; color: var(--muted); background: none; border: none; text-decoration: underline; cursor: pointer; }
+.gc-wp.is-found { border-left-color: #4f8a4a; background: linear-gradient(120deg, rgba(79,138,74,.07), var(--surface) 55%); }
+.gc-found-badge { margin-left: auto; font-size: 10px; font-weight: 900; letter-spacing: .08em; color: #fff; background: #4f8a4a; border-radius: 20px; padding: 3px 9px; white-space: nowrap; }
+.gc-wp-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px dashed var(--line); padding-top: 9px; }
+.gc-wp-foot .gc-range { border: none; padding: 0; margin: 0; }
+.gc-navbtn { font: inherit; font-size: 12px; font-weight: 800; color: #fff; background: #b3541e; border: none; border-radius: 20px; padding: 6px 13px; cursor: pointer; white-space: nowrap; transition: transform .12s ease; }
+.gc-navbtn:hover { transform: scale(1.05); }
+.gc-nav { margin-bottom: 16px; }
+.gc-navpanel { background: radial-gradient(130% 120% at 80% 0%, #1c2647 0%, #121935 55%, #0a0e20 100%); border: 1px solid rgba(141,232,255,.3); border-radius: var(--r); padding: 20px 24px; color: #e9edff; box-shadow: var(--shadow); }
+.gc-nav-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.gc-nav-t { font-size: 14px; } .gc-nav-t b { color: #ffd88a; }
+.gc-nav-x { font: inherit; color: rgba(233,237,255,.7); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
+.gc-nav-main { display: flex; align-items: center; gap: 22px; margin-bottom: 16px; }
+.gc-compass { width: 92px; height: 92px; flex: none; border-radius: 50%; border: 2px solid rgba(141,232,255,.4); background: radial-gradient(circle, rgba(141,232,255,.1), transparent 70%); display: flex; align-items: center; justify-content: center; }
+.gc-arrow { font-style: normal; font-size: 2.2rem; color: #ffd88a; text-shadow: 0 0 14px rgba(255,216,138,.6); transition: transform .3s ease; display: block; }
+.gc-nav-read b { display: block; font-family: var(--font-display); font-size: 2.1rem; color: #fff; font-variant-numeric: tabular-nums; }
+.gc-nav-read span { font-size: 13px; color: rgba(233,237,255,.7); }
+.gc-verify { width: 100%; opacity: .55; }
+.gc-verify.is-ready { opacity: 1; animation: lunarPulse 1.4s ease-in-out infinite; }
+.gc-nav-note { margin: 10px 0 0; font-size: 11.5px; color: rgba(233,237,255,.5); line-height: 1.5; }
+.gc-certwrap { margin-bottom: 16px; }
+.gc-cert { text-align: center; background: linear-gradient(160deg, #1c2647, #0f1730); border: 2px solid #ffd88a; border-radius: var(--r); padding: 28px 26px; color: #e9edff; box-shadow: 0 0 40px rgba(255,216,138,.2), var(--shadow); }
+.gc-cert-star { font-size: 1.4rem; letter-spacing: .3em; }
+.gc-cert h3 { margin: 8px 0 6px; font-family: var(--font-display); font-size: 1.8rem; color: #ffd88a; letter-spacing: .08em; }
+.gc-cert p { margin: 0 0 10px; font-size: 14px; color: rgba(233,237,255,.85); }
+.gc-cert-code { font-family: var(--font-display); font-size: 2rem; letter-spacing: .12em; color: #fff; background: rgba(255,216,138,.12); border: 1px dashed rgba(255,216,138,.6); border-radius: 12px; padding: 10px 18px; display: inline-block; margin-bottom: 12px; }
+.gc-cert-note { font-size: 12.5px !important; color: rgba(233,237,255,.65) !important; }
+.gc-cert-note a { color: #ffd88a; font-weight: 800; }
