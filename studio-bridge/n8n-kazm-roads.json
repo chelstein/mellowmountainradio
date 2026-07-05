@@ -1,0 +1,63 @@
+{
+  "name": "KAZM Roads Relay",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "kazm-roads",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://mellowmountainradio.com"
+        }
+      },
+      "id": "wh-roads",
+      "name": "Site asks for road events",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "kazm-roads"
+    },
+    {
+      "parameters": {
+        "url": "https://az511.com/api/v2/get/event?key=PASTE-YOUR-AZ511-KEY-HERE&format=json",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "http-az511",
+      "name": "Fetch AZ511 events",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter statewide AZ511 events down to the Verde Valley box and shape\n// them for the site. Sedona sits at 34.8697, -111.761.\nconst items = $input.all().map(i => i.json);\nlet evs = [];\nif (items.length && Array.isArray(items[0])) evs = items[0];\nelse if (items.length > 1 || (items[0] && items[0].ID != null)) evs = items.filter(e => e && e.ID != null);\nif (!evs.length && items[0] && Array.isArray(items[0].data)) evs = items[0].data;\nif (!evs.length && !(items[0] && items[0].ID != null) && !Array.isArray(items[0])) {\n  return [{ json: { ok: false, error: 'az511 fetch failed' } }];\n}\nconst B = { latMin: 34.35, latMax: 35.35, lonMin: -112.35, lonMax: -111.35 };\nconst SED = [34.8697, -111.761];\nfunction mi(la, lo) {\n  const dx = (lo - SED[1]) * Math.cos(SED[0] * Math.PI / 180), dy = la - SED[0];\n  return Math.round(Math.sqrt(dx * dx + dy * dy) * 69);\n}\nconst out = evs\n  .filter(e => e.Latitude >= B.latMin && e.Latitude <= B.latMax && e.Longitude >= B.lonMin && e.Longitude <= B.lonMax)\n  .map(e => ({\n    id: e.ID,\n    type: e.EventType || '',\n    sub: e.EventSubType || '',\n    road: e.RoadwayName || '',\n    dir: e.DirectionOfTravel && e.DirectionOfTravel !== 'None' ? e.DirectionOfTravel : '',\n    desc: String(e.Description || '').slice(0, 240),\n    full: !!e.IsFullClosure,\n    lanes: e.LanesAffected || '',\n    lat: e.Latitude, lon: e.Longitude,\n    mi: mi(e.Latitude, e.Longitude),\n    updated: e.LastUpdated || e.Reported || null\n  }))\n  .sort((a, b) => a.mi - b.mi)\n  .slice(0, 30);\nreturn [{ json: { ok: true, at: new Date().toISOString(), events: out } }];"
+      },
+      "id": "code-roads",
+      "name": "Filter to Verde Valley",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "resp-roads",
+      "name": "Respond to site",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [660, 0]
+    }
+  ],
+  "connections": {
+    "Site asks for road events": { "main": [[{ "node": "Fetch AZ511 events", "type": "main", "index": 0 }]] },
+    "Fetch AZ511 events": { "main": [[{ "node": "Filter to Verde Valley", "type": "main", "index": 0 }]] },
+    "Filter to Verde Valley": { "main": [[{ "node": "Respond to site", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

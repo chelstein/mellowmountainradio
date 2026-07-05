@@ -3073,3 +3073,36 @@ body.podplaying .player.show { transform: translateY(180%); }
 .pp-btn--nah.is-on { background: #7a3b32; border-color: #a95750; }
 .pp-btn:disabled:not(.is-on) { opacity: .35; cursor: default; }
 @media (max-width: 560px) { .player-pulse { display: none; } }
+
+/* ── SEDONA ROADS — cameras, corridors, incident wire ── */
+.roads-alert { background: linear-gradient(100deg, #7a1f14, #a03222); color: #fff; font-size: 14.5px; font-weight: 700; padding: 12px 24px; text-align: center; border-bottom: 1px solid rgba(255,255,255,.25); }
+.roads-alert b { letter-spacing: .06em; }
+.corridor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .corridor-grid { grid-template-columns: 1fr; } }
+.corridor { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px; }
+.corridor-rt { align-self: flex-start; font-size: 11px; font-weight: 900; letter-spacing: .12em; color: #fff; background: var(--navy); border-radius: 6px; padding: 4px 10px; }
+.corridor h3 { margin: 2px 0 0; font-size: 1.25rem; }
+.corridor-desc { font-size: 13.5px; color: var(--muted); margin: 0; line-height: 1.55; }
+.corridor-status { font-size: 13px; font-weight: 700; margin: 2px 0 0; border-radius: 10px; padding: 8px 12px; line-height: 1.45; }
+.corridor-status--ok { color: #2e7d32; background: rgba(46,125,50,.09); border: 1px solid rgba(46,125,50,.3); }
+.corridor-status--warn { color: #8a6114; background: rgba(176,127,34,.1); border: 1px solid rgba(176,127,34,.35); }
+.corridor-status--full { color: #fff; background: #a03222; border: 1px solid #7a1f14; }
+.corridor-wx { font-size: 12.5px; color: var(--muted); margin: 0; }
+.corridor-cam { margin-top: auto; font-size: 13px; font-weight: 800; color: var(--accent-strong); text-decoration: none; }
+.corridor-cam:hover { text-decoration: underline; }
+.roadcam-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 980px) { .roadcam-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .roadcam-grid { grid-template-columns: 1fr; } }
+.roadcam { margin: 0; background: #10162e; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-sm); }
+.roadcam img { display: block; width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; background: #10162e; }
+.roadcam figcaption { font-size: 12.5px; font-weight: 700; color: #e9edff; padding: 9px 13px; line-height: 1.4; }
+.roadev { display: flex; flex-direction: column; gap: 9px; }
+.roadev-quiet { font-size: 15px; font-weight: 700; color: #2e7d32; background: rgba(46,125,50,.08); border: 1px solid rgba(46,125,50,.3); border-radius: 12px; padding: 16px 18px; margin: 0; }
+.roadev-row { display: flex; gap: 13px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 15px; box-shadow: var(--shadow-sm); }
+.roadev-row--full { border-color: #a03222; background: rgba(160,50,34,.06); }
+.roadev-ic { font-size: 1.25rem; line-height: 1.2; flex: none; }
+.roadev-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.roadev-body b { font-size: 14.5px; color: var(--ink); }
+.roadev-body i { font-style: normal; font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.roadev-body span { font-size: 13.5px; color: var(--ink); line-height: 1.5; }
+.roadev-body em { font-style: normal; font-size: 12px; color: var(--muted); }

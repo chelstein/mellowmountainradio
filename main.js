@@ -24,7 +24,7 @@
       '<nav class="primary-nav" aria-label="Primary"><ul class="nav-list">' +
         '<li data-nav="home"><a href="index.html">Home</a></li>' +
         '<li class="has-menu" data-nav="news"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">News</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="news.html#local">Local News</a><a role="menuitem" href="news.html#national">National News</a><a role="menuitem" href="news.html#world">World News</a><a role="menuitem" href="news.html#traffic">Traffic &amp; Weather</a>' +
+          '<a role="menuitem" href="news.html#local">Local News</a><a role="menuitem" href="news.html#national">National News</a><a role="menuitem" href="news.html#world">World News</a><a role="menuitem" href="roads.html">Roads &amp; Traffic</a><a role="menuitem" href="news.html#traffic">Weather</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="sports"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Sports</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="sports.html#mlb">MLB &middot; Diamondbacks</a><a role="menuitem" href="sports.html#nba">NBA &middot; Suns</a><a role="menuitem" href="sports.html#nfl">NFL &middot; Cardinals</a><a role="menuitem" href="sports.html#college">College &middot; ASU, U of A, NAU</a><a role="menuitem" href="sports.html#ufc">UFC</a>' +
@@ -61,7 +61,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="news.html#traffic">Traffic &amp; Weather</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="roads.html">Roads &amp; Traffic</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="The Vibe"><h4>The Vibe</h4><a href="vibe.html">Cosmic Conditions</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="wildlife.html">Seen around Sedona</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
@@ -2008,6 +2008,128 @@
       if (backBtn) backBtn.addEventListener("click", function () { card.classList.remove("flipped"); });
     });
   }
+  /* =========================================================
+     SEDONA ROADS — the local obsession, with receipts. Live ADOT
+     cameras (direct az511 images, refreshed every minute), real-time
+     incidents/closures via the n8n roads relay (AZ511 official API,
+     key server-side), corridor status for the three ways in and out,
+     and weather-aware canyon caution. Incident board hides itself if
+     the relay is offline — cameras and the flow map never depend on it.
+     ========================================================= */
+  var ROADS_RELAY = "https://n8n.mellowmountainradio.com/webhook/kazm-roads";
+  var ROAD_CAMS = [
+    { img: 704, n: "SR-89A — Oak Creek Canyon, lower switchbacks (MP 375)", c: "canyon" },
+    { img: 706, n: "SR-89A — Oak Creek Canyon, top (Flagstaff side)", c: "canyon" },
+    { img: 777, n: "SR-89A @ Airport Rd — West Sedona", c: "town" },
+    { img: 778, n: "SR-89A @ Andante Dr — West Sedona", c: "town" },
+    { img: 779, n: "SR-89A @ Cultural Park / Upper Red Rock Loop", c: "town" },
+    { img: 780, n: "SR-89A @ Mountain Shadow / Northview", c: "town" },
+    { img: 688, n: "SR-89A @ SR-260 — Cottonwood", c: "west" },
+    { img: 687, n: "SR-89A @ Main St — Cottonwood", c: "west" },
+    { img: 1487, n: "I-17 @ McGuireville — the Sedona exit corridor", c: "south" },
+    { img: 686, n: "SR-260 @ Rodeo Dr — Camp Verde", c: "south" },
+    { img: 1485, n: "I-17 @ Flagstaff — canyon bypass north end", c: "canyon" }
+  ];
+  function roadsAgo(ts) {
+    if (ts == null) return "";
+    var ms = typeof ts === "number" ? (ts < 1e12 ? ts * 1000 : ts) : new Date(ts).getTime();
+    var s = (Date.now() - ms) / 1000;
+    if (!(s >= 0)) return "";
+    if (s < 3600) return Math.max(1, Math.round(s / 60)) + " min ago";
+    if (s < 129600) return Math.round(s / 3600) + " hr ago";
+    return Math.round(s / 86400) + " days ago";
+  }
+  function roadCorridorOf(ev) {
+    var r = (ev.road || "").toUpperCase(), lat = ev.lat || 0, lon = ev.lon || 0;
+    if (r.indexOf("179") !== -1) return "south";
+    if (r.indexOf("I-17") !== -1 || r.indexOf("I17") !== -1) return lat >= 35.0 ? "canyon" : "south";
+    if (r.indexOf("89A") !== -1) { if (lat >= 34.878) return "canyon"; if (lon <= -111.85) return "west"; return "town"; }
+    if (r.indexOf("260") !== -1) return lon <= -111.9 ? "west" : "south";
+    return "";
+  }
+  function initRoads() {
+    var root = doc.querySelector("[data-roads]"); if (!root) return;
+
+    // live cameras — direct ADOT images, no middleman
+    var camGrid = root.querySelector("[data-road-cams]");
+    if (camGrid) {
+      camGrid.innerHTML = ROAD_CAMS.map(function (c, i) {
+        return '<figure class="roadcam" data-c="' + c.c + '"><img src="https://az511.com/map/Cctv/' + c.img + '" alt="Live ADOT traffic camera: ' + esc(c.n) + '" loading="lazy" width="640" height="360" data-cam="' + c.img + '"><figcaption>' + esc(c.n) + '</figcaption></figure>';
+      }).join("");
+      var camTimer = setInterval(function () {
+        if (!camGrid.isConnected) { clearInterval(camTimer); return; }
+        camGrid.querySelectorAll("img[data-cam]").forEach(function (im) {
+          im.src = "https://az511.com/map/Cctv/" + im.getAttribute("data-cam") + "?t=" + Date.now();
+        });
+      }, 60000);
+    }
+
+    // canyon weather caution — the sky decides whether the switchbacks are spicy
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=34.9673&longitude=-111.7396&current=temperature_2m,weather_code,wind_gusts_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FPhoenix", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (!d || !d.current) return;
+        var t = Math.round(d.current.temperature_2m), code = d.current.weather_code, gust = Math.round(d.current.wind_gusts_10m || 0);
+        root.querySelectorAll("[data-corridor]").forEach(function (card) {
+          var wx = card.querySelector("[data-corridor-wx]"); if (!wx) return;
+          var canyon = card.getAttribute("data-corridor") === "canyon";
+          var bits = [];
+          if (canyon) {
+            if (code >= 71 && code <= 86) bits.push("❄️ Snow falling in the canyon — expect closure risk on the switchbacks");
+            else if (code >= 51 && t <= 38) bits.push("🧊 Precip at " + t + "° — ice risk in the shaded curves");
+            else if (code >= 51) bits.push("🌧️ Wet canyon — " + t + "°, slow down through the switchbacks");
+            else bits.push(t + "° and dry at canyon elevation");
+            if (gust >= 35) bits.push("💨 gusts to " + gust + " mph");
+          } else {
+            if (code >= 51) bits.push("🌧️ Wet roads — " + t + "°");
+            else bits.push(t + "° and dry");
+          }
+          wx.hidden = false; wx.textContent = bits.join(" · ");
+        });
+      }).catch(function () {});
+
+    // incidents + closures via the roads relay
+    var wrap = root.querySelector("[data-road-events-wrap]"), board = root.querySelector("[data-road-events]"),
+        note = root.querySelector("[data-road-events-note]"), alertEl = root.querySelector("[data-roads-alert]");
+    function drawEvents() {
+      fetch(ROADS_RELAY, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (!d || d.ok !== true || !wrap) return; // relay offline — board stays hidden
+        var evs = d.events || [];
+        wrap.hidden = false;
+        // full closures get the red banner up top
+        var full = evs.filter(function (e) { return e.full; });
+        if (alertEl) {
+          if (full.length) {
+            alertEl.hidden = false;
+            alertEl.innerHTML = "🚧 <b>FULL CLOSURE" + (full.length > 1 ? "S" : "") + ":</b> " + full.slice(0, 2).map(function (e) { return esc(e.road) + " — " + esc(e.desc.slice(0, 140)); }).join(" &nbsp;·&nbsp; ");
+          } else alertEl.hidden = true;
+        }
+        if (!evs.length) {
+          board.innerHTML = '<p class="roadev-quiet">🟢 Quiet out there — AZ511 reports no incidents, closures, or work zones anywhere in the Verde Valley right now. Enjoy it.</p>';
+        } else {
+          board.innerHTML = evs.map(function (e) {
+            var ic = e.full ? "🚧" : (/closure|restriction/i.test(e.type + e.sub) ? "🚧" : (/construction|roadwork|maintenance/i.test(e.type + e.sub) ? "🦺" : "⚠️"));
+            return '<div class="roadev-row' + (e.full ? " roadev-row--full" : "") + '"><span class="roadev-ic">' + ic + '</span><span class="roadev-body"><b>' + esc(e.road || "Local road") + (e.dir ? " " + esc(e.dir) : "") + '</b> <i>' + e.mi + ' mi from Sedona</i><span>' + esc(e.desc) + '</span><em>' + (e.updated ? "updated " + roadsAgo(e.updated) : "") + '</em></span></div>';
+          }).join("");
+        }
+        if (note) note.textContent = "Source: AZ511 (ADOT) · refreshed " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + " · re-checks every 2 minutes.";
+        // corridor status lines
+        root.querySelectorAll("[data-corridor]").forEach(function (card) {
+          var key = card.getAttribute("data-corridor"), st = card.querySelector("[data-corridor-status]"); if (!st) return;
+          var mine = evs.filter(function (e) { return roadCorridorOf(e) === key; });
+          st.hidden = false;
+          if (!mine.length) { st.className = "corridor-status corridor-status--ok"; st.textContent = "🟢 No incidents reported on this corridor"; }
+          else {
+            var worst = mine.find(function (e) { return e.full; }) || mine[0];
+            st.className = "corridor-status " + (worst.full ? "corridor-status--full" : "corridor-status--warn");
+            st.textContent = (worst.full ? "🚧 " : "⚠️ ") + mine.length + " report" + (mine.length > 1 ? "s" : "") + " — " + worst.desc.slice(0, 110);
+          }
+        });
+      }).catch(function () {});
+    }
+    drawEvents();
+    var evTimer = setInterval(function () { if (!root.isConnected) { clearInterval(evTimer); return; } drawEvents(); }, 120000);
+  }
+
   function initTraffic() {
     var el = doc.querySelector("[data-traffic]");
     if (!el || el.getAttribute("data-init")) return;
@@ -5314,6 +5436,7 @@
     initSunsetScore();
     initSpotTimes();
     initGeocache();
+    initRoads();
     initPlaybook();
     initHomePulse();
     initRequests();

@@ -61,3 +61,16 @@ n8n, import this file again (Import from URL works:
 https://raw.githubusercontent.com/chelstein/mellowmountainradio/main/studio-bridge/n8n-kazm-request-line.json),
 set your drain secret again, activate. The site detects the wall endpoint on
 its own — v1 keeps working meanwhile, just without the wall and dedications.
+
+## Roads relay (separate workflow: n8n-kazm-roads.json)
+
+Feeds the live incident board on roads.html. Setup:
+1. Get a free AZ511 developer key: az511.com → create an account → request
+   an API key (their developer/API page). It's ADOT's official data feed.
+2. Import `n8n-kazm-roads.json` into n8n (Import from URL works:
+   https://raw.githubusercontent.com/chelstein/mellowmountainradio/main/studio-bridge/n8n-kazm-roads.json)
+3. Open the "Fetch AZ511 events" node and replace PASTE-YOUR-AZ511-KEY-HERE
+   in the URL with your key. Activate.
+The site probes the relay on page load — the incident board and corridor
+status lines appear on their own once it answers. Cameras and the flow map
+never depend on it (they're direct from ADOT).
