@@ -33,7 +33,7 @@
           '<a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="photography.html">Photography</a><a role="menuitem" href="events.html#geocaching">Geocaching</a><a role="menuitem" href="events.html">All Adventures</a>' +
+          '<a role="menuitem" href="jeeptrails.html">&#128663; Jeep Trails</a><a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="photography.html">Photography</a><a role="menuitem" href="events.html#geocaching">Geocaching</a><a role="menuitem" href="events.html">All Adventures</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="vibe"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">The Vibe</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="vibe.html">Cosmic Conditions</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="soundhealing.html">Sound Healing</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a>' +
@@ -2348,6 +2348,157 @@
       }, 750);
       if (playBtn) playBtn.addEventListener("click", function () { playing = !playing; playBtn.innerHTML = playing ? "&#10074;&#10074;" : "&#9654;"; });
       if (playBtn) playBtn.innerHTML = "&#10074;&#10074;";
+    });
+  }
+
+  /* =========================================================
+     JEEP TRAILS — Sedona's signature sport with a live brain. Eight
+     real routes (the pink-Jeep legends and the locals' backroads),
+     each judged RIGHT NOW from real inputs: 48-hour rain (slickrock
+     turns to grease), monsoon storm fuel (CAPE), heat, ridge gusts,
+     the actual USFS fire order, winter ice at rim elevation, and a
+     last-safe-start clock computed from tonight's real sunset. Plus
+     every trailhead pinned on Esri satellite imagery. Verdicts carry
+     receipts; the trail always gets the final vote.
+     ========================================================= */
+  var JEEP_TRAILS = [
+    { id: "broken-arrow", n: "Broken Arrow", fr: "FR 179F", d: 3, len: "2.5 mi", hrs: 2, climb: "≈500 ft",
+      lat: 34.8443, lon: -111.7454, slick: true,
+      sights: "Submarine Rock · Chicken Point · Devil's Dining Room",
+      note: "The one that made Sedona famous — slickrock staircases, off-camber ledges, and the Devil's Staircase drop. 4-Lo, real clearance, and a spotter you trust." },
+    { id: "schnebly", n: "Schnebly Hill Road", fr: "FR 153", d: 2, len: "12.7 mi", hrs: 3, climb: "≈2,000 ft",
+      lat: 34.8654, lon: -111.7492, winter: true, top: { lat: 34.9060, lon: -111.6800 },
+      sights: "Merry-Go-Round Rock · Schnebly Hill Vista · the Mogollon Rim",
+      note: "The 1902 cattle road to the rim, and the rockiest 'road' you'll ever love. Passenger cars are banned past the first mile for good reason. Gated in winter above the vista." },
+    { id: "soldier-pass", n: "Soldier Pass", fr: "", d: 2, len: "1.5 mi", hrs: 1.5, climb: "≈300 ft",
+      lat: 34.8880, lon: -111.7850, slick: true, gate: "Gate open 8am–6pm — tiny daily capacity, arrive early",
+      sights: "Devil's Kitchen sinkhole · Seven Sacred Pools · Soldier Pass Arches",
+      note: "Short, gorgeous, and gated — the Forest Service meters entries through a combination gate with limited daily slots. The payoff-per-mile champion." },
+    { id: "vultee", n: "Dry Creek / Vultee Arch Road", fr: "FR 152", d: 2, len: "4.3 mi", hrs: 2, climb: "≈400 ft",
+      lat: 34.9037, lon: -111.7947,
+      sights: "Devils Bridge trailhead · Van Deren Cabin · Vultee Arch",
+      note: "The washboard-and-boulder artery of Dry Creek — how the tours reach Devils Bridge. Rockier every year; high clearance is not optional past the cabin." },
+    { id: "diamondback", n: "Diamondback Gulch", fr: "FR 152C · 9528", d: 2, len: "4 mi", hrs: 2, climb: "≈450 ft",
+      lat: 34.8990, lon: -111.8650,
+      sights: "Bear Mountain views · the red gulches · Secret Canyon country",
+      note: "The west-side tour favorite — twisty descents into wine-red gulches with ledgy climbs out. Feels remote fast, gets slick even faster after rain." },
+    { id: "sycamore", n: "Sycamore Pass / Red Canyon", fr: "FR 525 · 525C", d: 1, len: "12 mi", hrs: 2.5, climb: "≈700 ft",
+      lat: 34.8330, lon: -111.9020,
+      sights: "Sycamore Canyon overlook · Robbers Roost turnoff · big empty country",
+      note: "The gentle giant — long graded dirt through open range to the edge of Arizona's other great canyon. Any high-clearance SUV runs it dry; washboard is the toll." },
+    { id: "robbers-roost", n: "Robbers Roost", fr: "FR 9530", d: 2, len: "3 mi", hrs: 1.5, climb: "≈350 ft",
+      lat: 34.8560, lon: -111.9350,
+      sights: "The Roost cave · Casner Mountain views · outlaw country",
+      note: "A rough little spur off 525C to a hideout cave with a window view outlaws allegedly used to watch for posses. Rocky enough to be fun, short enough to be casual." },
+    { id: "casner", n: "Casner Mountain", fr: "FR 761", d: 3, len: "6 mi", hrs: 3, climb: "≈2,000 ft", exposed: true,
+      lat: 34.8710, lon: -111.9480, top: { lat: 34.9280, lon: -111.9260 }, winter: true,
+      sights: "The powerline ridge · Sycamore Canyon from above · the whole Verde Valley",
+      note: "The expert's ridgeline — a narrow powerline track climbing 2,000 feet with real exposure and zero guardrails. Wind matters up here. Views that make you forget to breathe, which is also a hazard." }
+  ];
+  function jeepFmtTime(dt) { return skyTime(dt, -7); } // always Sedona clock, wherever the reader is
+  function initJeep() {
+    var root = doc.querySelector("[data-jeep]"); if (!root) return;
+    var grid = root.querySelector("[data-jeep-trails]"), desk = root.querySelector("[data-jeep-desk]");
+    var wxUrl = "https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610" +
+      "&current=temperature_2m,weather_code,wind_gusts_10m&hourly=cape,precipitation_probability&forecast_hours=25" +
+      "&daily=precipitation_sum,temperature_2m_max&past_days=2&forecast_days=1" +
+      "&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FPhoenix";
+    var rimUrl = "https://api.open-meteo.com/v1/forecast?latitude=34.906&longitude=-111.68&elevation=1830" +
+      "&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FPhoenix";
+    Promise.all([
+      fetch(wxUrl, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch(rimUrl, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch("fire.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    ]).then(function (res) {
+      var d = res[0], rim = res[1], fire = res[2];
+      var sunset = null; try { sunset = goldenTimes(new Date()).evening.b.sunset; } catch (e) {}
+      var sig = {
+        temp: d && d.current ? Math.round(d.current.temperature_2m) : null,
+        hiToday: d && d.daily ? Math.round(d.daily.temperature_2m_max[d.daily.temperature_2m_max.length - 1]) : null,
+        gusts: d && d.current ? Math.round(d.current.wind_gusts_10m || 0) : 0,
+        rain48: 0, cape: 0, popMax: 0,
+        rimTemp: rim && rim.current ? Math.round(rim.current.temperature_2m) : null,
+        rimSnow: rim && rim.current ? (rim.current.weather_code >= 71 && rim.current.weather_code <= 86) : false,
+        fireStage: fire && fire.stage != null ? fire.stage : null,
+        sunset: sunset,
+        month: new Date(Date.now() - 7 * 3600000).getUTCMonth() + 1
+      };
+      if (d && d.daily && d.daily.precipitation_sum) d.daily.precipitation_sum.forEach(function (v) { sig.rain48 += (v || 0); });
+      if (d && d.hourly) for (var i = 0; i < Math.min(25, (d.hourly.cape || []).length); i++) {
+        if (d.hourly.cape[i] > sig.cape) sig.cape = d.hourly.cape[i];
+        if ((d.hourly.precipitation_probability || [])[i] > sig.popMax) sig.popMax = d.hourly.precipitation_probability[i];
+      }
+      sig.rain48 = Math.round(sig.rain48 * 100) / 100; sig.cape = Math.round(sig.cape);
+      if (desk) jeepDesk(desk, sig);
+      if (grid) jeepGrid(grid, sig);
+    });
+    jeepMap(root);
+  }
+  function jeepVerdict(t, s) {
+    // returns [level 0 green | 1 gold | 2 red, short verdict, receipt]
+    if (s.fireStage != null && s.fireStage >= 3) return [2, "CLOSED-LEVEL RESTRICTIONS", "Stage " + s.fireStage + " fire order — forest access is restricted, check USFS before burning a drop of fuel"];
+    if (t.winter && s.rimSnow) return [2, "SNOW UP TOP", "snow falling at rim elevation right now" + (s.rimTemp != null ? " (" + s.rimTemp + "° up there)" : "")];
+    if (t.winter && s.rimTemp != null && s.rimTemp <= 34 && s.rain48 > 0.05) return [2, "ICE RISK ON TOP", s.rimTemp + "° at the rim with " + s.rain48 + "\" of recent moisture — the upper gate may be shut"];
+    if (t.slick && s.rain48 >= 0.3) return [2, "GREASED SLICKROCK", s.rain48 + "\" of rain in 48h — wet sandstone is ice with better scenery; give it a dry day"];
+    if (s.rain48 >= 0.6) return [1, "MUDDY — RUN CAREFUL", s.rain48 + "\" in 48h — expect slop in the low spots and ruts that want your sidewalls"];
+    if (t.exposed && s.gusts >= 35) return [2, "RIDGE WINDS", "gusting " + s.gusts + " mph right now — not the day for an exposed powerline climb"];
+    if (s.month >= 6 && s.month <= 9 && s.cape >= 1200) return [1, "STORMS BREWING — GO EARLY", "storm fuel at " + s.cape + " J/kg" + (s.popMax ? ", rain odds to " + s.popMax + "%" : "") + " — be off open rock by noon"];
+    if (s.hiToday != null && s.hiToday >= 100) return [1, "DAWN PATROL ONLY", "headed for " + s.hiToday + "° — run it at first light, carry double water"];
+    if (t.exposed && s.gusts >= 25) return [1, "BREEZY ON THE RIDGE", "gusts " + s.gusts + " mph — fine, but keep the speed honest up top"];
+    var why = [];
+    why.push(s.rain48 <= 0.02 ? "dry 48 hours" : "only " + s.rain48 + "\" in 48h");
+    if (s.month >= 6 && s.month <= 9) why.push("storm fuel low (" + s.cape + " J/kg)");
+    if (s.temp != null) why.push(s.temp + "° now");
+    return [0, "GOOD TO RUN", why.join(" · ")];
+  }
+  function jeepDesk(el, s) {
+    function tile(v, lab, sub) { return '<div class="jdk"><b>' + v + '</b><span>' + lab + '</span>' + (sub ? '<i>' + sub + '</i>' : '') + '</div>'; }
+    el.innerHTML =
+      tile(s.rain48 <= 0.02 ? "DRY" : s.rain48 + '"', "rain, last 48h", s.rain48 >= 0.3 ? "slickrock is greasy" : "traction weather") +
+      (s.month >= 6 && s.month <= 9 ? tile(s.cape + '<small> J/kg</small>', "storm fuel today", s.cape >= 1200 ? "cells likely — go early" : s.cape >= 300 ? "isolated buildups" : "sky off duty") : "") +
+      (s.temp != null ? tile(s.temp + "°", "in town now", s.hiToday != null ? "headed for " + s.hiToday + "°" : "") : "") +
+      (s.rimTemp != null ? tile(s.rimTemp + "°", "at the rim (6,000′)", s.rimSnow ? "❄️ snowing up top" : "") : "") +
+      tile(s.gusts + '<small> mph</small>', "gusts", s.gusts >= 35 ? "stay off the ridges" : s.gusts >= 25 ? "breezy up high" : "calm enough") +
+      (s.fireStage != null ? tile("Stage " + s.fireStage, "fire order", s.fireStage >= 2 ? "no campfires, no smoking on trail" : "restrictions posted") : "") +
+      (s.sunset ? tile(jeepFmtTime(s.sunset), "sunset tonight", "plan to be off rock before it") : "");
+  }
+  function jeepGrid(el, s) {
+    var D = { 1: ["jd-1", "GREEN · stock high-clearance"], 2: ["jd-2", "GOLD · real 4x4, low range"], 3: ["jd-3", "BLACK · lockers & humility"] };
+    el.innerHTML = JEEP_TRAILS.map(function (t) {
+      var v = jeepVerdict(t, s), dd = D[t.d];
+      var lastStart = "";
+      if (s.sunset) {
+        var start = new Date(s.sunset.getTime() - (t.hrs + 0.5) * 3600000);
+        lastStart = '<span class="jt-start">⏱ last smart start today: <b>' + jeepFmtTime(start) + '</b></span>';
+      }
+      return '<article class="jt" id="jt-' + t.id + '">' +
+        '<div class="jt-head"><h3>' + esc(t.n) + '</h3>' + (t.fr ? '<span class="jt-fr">' + esc(t.fr) + '</span>' : '') + '</div>' +
+        '<span class="jt-diff ' + dd[0] + '">' + dd[1] + '</span>' +
+        '<p class="jt-stats">' + t.len + ' · ' + t.climb + ' · ~' + (t.hrs % 1 ? t.hrs : t.hrs) + ' hr</p>' +
+        '<p class="jt-sights">' + esc(t.sights) + '</p>' +
+        '<p class="jt-note">' + esc(t.note) + '</p>' +
+        (t.gate ? '<p class="jt-gate">🚧 ' + esc(t.gate) + '</p>' : '') +
+        '<div class="jt-verdict jt-verdict--' + v[0] + '"><b>' + (v[0] === 0 ? "🟢 " : v[0] === 1 ? "🟡 " : "🔴 ") + v[1] + '</b><span>' + esc(v[2]) + '</span></div>' +
+        lastStart +
+        '</article>';
+    }).join("");
+  }
+  function jeepMap(root) {
+    var el = root.querySelector("[data-jeep-map]"); if (!el || el.getAttribute("data-init")) return;
+    el.setAttribute("data-init", "1");
+    loadLeaflet(function (L) {
+      if (!L || !el.isConnected) { if (el.isConnected) el.innerHTML = '<p class="embed-note">The satellite map is unavailable right now.</p>'; return; }
+      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true }).setView([34.873, -111.83], 11);
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 17, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics"
+      }).addTo(map);
+      var C = { 1: "#5cb860", 2: "#ffd88a", 3: "#ff6b57" };
+      JEEP_TRAILS.forEach(function (t) {
+        L.circleMarker([t.lat, t.lon], { radius: 9, color: "#10162e", weight: 2, fillColor: C[t.d], fillOpacity: .95 })
+          .addTo(map)
+          .bindPopup('<b>' + esc(t.n) + '</b><br>' + t.len + ' · ' + (t.d === 1 ? "green" : t.d === 2 ? "gold" : "black") + ' rated<br><a href="#jt-' + t.id + '">Trail card ↓</a>');
+      });
+      setTimeout(function () { map.invalidateSize(); }, 250);
     });
   }
 
@@ -5659,6 +5810,7 @@
     initGeocache();
     initRoads();
     initSkyPage();
+    initJeep();
     initPlaybook();
     initHomePulse();
     initRequests();

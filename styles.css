@@ -3200,3 +3200,53 @@ body.podplaying .player.show { transform: translateY(180%); }
 .sky-elevnote b { color: var(--accent-strong); }
 .sky-day-bar { position: relative; width: 86%; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--line) 60%, transparent); margin: 4px 0 2px; overflow: hidden; }
 .sky-day-bar i { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, #7aa5d8, #d9a53f, #c05a2e); }
+
+/* ── JEEP TRAILS — red rock by axle ── */
+.jeep-hero { background: radial-gradient(130% 150% at 72% 0%, #6e2a1a 0%, #471a10 45%, #241009 100%); }
+.jeep-hero .eyebrow { color: #ffc9a3; }
+.jeep-hero h1, .jeep-hero .lead { color: #fdf3e7; }
+.jeep-hero .lead em { font-style: normal; color: #ffd88a; font-weight: 800; }
+.jeep-band { background: radial-gradient(140% 160% at 30% 0%, #47201a 0%, #2c1310 55%, #1a0b07 100%); border-top: 1px solid rgba(255,200,160,.15); border-bottom: 1px solid rgba(255,200,160,.15); padding: 44px 0 48px; }
+.jeep-band .section-head h2 { color: #fdf3e7; }
+.jeep-band .section-head .lead { color: rgba(253,235,215,.75); }
+.jeep-desk { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+@media (max-width: 1020px) { .jeep-desk { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 620px) { .jeep-desk { grid-template-columns: repeat(2, 1fr); } }
+.jdk { background: rgba(255,255,255,.06); border: 1px solid rgba(255,200,160,.25); border-radius: 13px; padding: 12px 13px; display: flex; flex-direction: column; gap: 1px; }
+.jdk b { font-size: 1.25rem; color: #ffd88a; font-variant-numeric: tabular-nums; font-weight: 900; }
+.jdk b small { font-size: .72rem; color: rgba(255,220,190,.7); }
+.jdk span { font-size: 9.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,220,190,.6); }
+.jdk i { font-style: normal; font-size: 11.5px; color: rgba(253,235,215,.8); }
+.jd { font-weight: 900; letter-spacing: .05em; }
+.jd-1 { color: #2e7d32; } .jd-2 { color: #8a6114; } .jd-3 { color: #8c2418; }
+.jeep-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+@media (max-width: 860px) { .jeep-grid { grid-template-columns: 1fr; } }
+.jt { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 7px; }
+.jt-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.jt-head h3 { margin: 0; font-size: 1.35rem; }
+.jt-fr { font-size: 11px; font-weight: 900; letter-spacing: .08em; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; white-space: nowrap; }
+.jt-diff { align-self: flex-start; font-size: 10.5px; font-weight: 900; letter-spacing: .1em; border-radius: 20px; padding: 5px 12px; }
+.jt-diff.jd-1 { background: rgba(46,125,50,.1); border: 1px solid rgba(46,125,50,.35); }
+.jt-diff.jd-2 { background: rgba(176,127,34,.12); border: 1px solid rgba(176,127,34,.4); }
+.jt-diff.jd-3 { background: rgba(140,36,24,.1); border: 1px solid rgba(140,36,24,.4); }
+.jt-stats { margin: 0; font-size: 13px; font-weight: 800; color: var(--heading); font-variant-numeric: tabular-nums; }
+.jt-sights { margin: 0; font-size: 12.5px; font-weight: 700; color: var(--accent-strong); }
+.jt-note { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+.jt-gate { margin: 0; font-size: 12.5px; font-weight: 700; color: #8a6114; }
+.jt-verdict { display: flex; flex-direction: column; gap: 2px; border-radius: 12px; padding: 10px 14px; margin-top: 4px; }
+.jt-verdict b { font-size: 13px; letter-spacing: .05em; }
+.jt-verdict span { font-size: 12.5px; line-height: 1.5; }
+.jt-verdict--0 { background: rgba(46,125,50,.09); border: 1px solid rgba(46,125,50,.3); color: #2e7d32; }
+.jt-verdict--1 { background: rgba(176,127,34,.1); border: 1px solid rgba(176,127,34,.38); color: #8a6114; }
+.jt-verdict--2 { background: rgba(140,36,24,.09); border: 1px solid rgba(140,36,24,.4); color: #8c2418; }
+.jt-start { font-size: 12px; color: var(--muted); }
+.jt-start b { color: var(--heading); }
+.jeep-mapframe { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-sm); background: #10162e; }
+.jeep-map { height: 520px; }
+@media (max-width: 700px) { .jeep-map { height: 380px; } }
+.jeep-radio { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.jeep-radio-ic { font-size: 3rem; flex: none; }
+.jeep-radio h2 { margin: 0 0 6px; color: #fdf3e7; font-size: 1.6rem; }
+.jeep-radio p { margin: 0; color: rgba(253,235,215,.8); max-width: 62ch; line-height: 1.6; }
+.jeep-radio p a { color: #ffd88a; font-weight: 800; }
+.jeep-radio > div { flex: 1; min-width: 280px; }
