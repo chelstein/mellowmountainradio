@@ -3250,3 +3250,30 @@ body.podplaying .player.show { transform: translateY(180%); }
 .jeep-radio p { margin: 0; color: rgba(253,235,215,.8); max-width: 62ch; line-height: 1.6; }
 .jeep-radio p a { color: #ffd88a; font-weight: 800; }
 .jeep-radio > div { flex: 1; min-width: 280px; }
+
+/* ── FIRST PEOPLES — dignity first, no decoration pretending to be culture ── */
+.fp-hero { background: linear-gradient(165deg, #3d2a1e 0%, #2a1c14 55%, #191009 100%); }
+.fp-hero .eyebrow { color: #d8b48a; }
+.fp-hero h1, .fp-hero .lead { color: #f6ecdd; }
+.fp-hero .lead { max-width: 74ch; }
+.fp-prose { max-width: 76ch; }
+.fp-prose p { font-size: 16.5px; line-height: 1.85; color: var(--ink); margin: 0 0 18px; }
+.fp-prose b { color: var(--heading); }
+.fp-sites { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+@media (max-width: 1020px) { .fp-sites { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .fp-sites { grid-template-columns: 1fr; } }
+.fp-site { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid #a9714a; border-radius: var(--r); padding: 18px 18px; box-shadow: var(--shadow-sm); }
+.fp-site h3 { margin: 0 0 8px; font-size: 1.15rem; }
+.fp-site p { margin: 0; font-size: 13px; line-height: 1.65; color: var(--muted); }
+.fp-site p b { color: var(--accent-strong); }
+.fp-nations { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+@media (max-width: 860px) { .fp-nations { grid-template-columns: 1fr; } }
+.fp-nation { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 24px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px; }
+.fp-nation--radio { background: linear-gradient(150deg, rgba(34,61,110,.06), var(--surface) 55%); border-color: rgba(34,61,110,.28); }
+.fp-nation h3 { margin: 0; font-size: 1.3rem; }
+.fp-nation-where { margin: 0; font-size: 11.5px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.fp-nation p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--muted); }
+.fp-nation a { margin-top: auto; font-size: 13.5px; font-weight: 800; color: var(--accent-strong); text-decoration: none; }
+.fp-nation a:hover { text-decoration: underline; }
+.fp-band { background: linear-gradient(165deg, #3d2a1e 0%, #221610 60%, #170e08 100%); padding: 48px 0; }
+.fp-close p { max-width: 72ch; margin: 0 auto; text-align: center; font-family: var(--font-display); font-size: 1.35rem; line-height: 1.75; color: #f6ecdd; }

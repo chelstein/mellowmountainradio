@@ -39,7 +39,7 @@
           '<a role="menuitem" href="vibe.html">Cosmic Conditions</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="soundhealing.html">Sound Healing</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="advertising.html">Advertising</a><a role="menuitem" href="contact.html">Contact</a>' +
+          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="firstpeoples.html">First Peoples</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="advertising.html">Advertising</a><a role="menuitem" href="contact.html">Contact</a>' +
         '</div></li>' +
       '</ul></nav>' +
       '<div class="header-actions">' +
@@ -61,7 +61,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="weather.html">Weather</a><a href="roads.html">Roads &amp; Traffic</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="weather.html">Weather</a><a href="roads.html">Roads &amp; Traffic</a><a href="firstpeoples.html">First Peoples</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="The Vibe"><h4>The Vibe</h4><a href="vibe.html">Cosmic Conditions</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="wildlife.html">Seen around Sedona</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
@@ -553,7 +553,9 @@
     "news-national":   "https://rss.app/feeds/qAIOV2Ax8y6Qx7VS.xml",
     "news-world":      "https://rss.app/feeds/ULxiZm9ozY2weGgi.xml",
     "sports-az":       "https://news.google.com/rss/search?q=%28Arizona%20Diamondbacks%29%20OR%20%28Arizona%20Cardinals%29%20OR%20%28Phoenix%20Suns%29%20OR%20%28Arizona%20Wildcats%29%20OR%20%28Arizona%20State%20Sun%20Devils%29%20when%3A7d&hl=en-US&gl=US&ceid=US:en",
-    "sports-national": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en"
+    "sports-national": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en",
+    "native-ict":      "https://ictnews.org/feed",
+    "native-nations":  "https://news.google.com/rss/search?q=%22Navajo%20Nation%22%20OR%20%22Hopi%20Tribe%22%20OR%20%22Yavapai-Apache%22%20when%3A14d&hl=en-US&gl=US&ceid=US:en"
   };
 
   // ---- Live Arizona scoreboards (ESPN public API, CORS-open) --------
@@ -959,9 +961,13 @@
     var i = 0;
     function attempt() {
       if (i >= legs.length) return Promise.reject(new Error("feed unavailable"));
-      return fetchText(legs[i++]).catch(attempt);
+      return fetchText(legs[i++]).then(function (txt) {
+        var items = parseFeed(txt);
+        if (items && items.length) return items;  // a 200 with no parseable stories is a miss, not a win
+        throw new Error("empty feed");
+      }).catch(attempt);
     }
-    return attempt().then(parseFeed);
+    return attempt();
   }
   function renderFeed(el, items, limit) {
     if (!items || !items.length) { el.innerHTML = '<p class="embed-note">No stories posted yet.</p>'; return; }
