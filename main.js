@@ -23,8 +23,8 @@
       '</a>' +
       '<nav class="primary-nav" aria-label="Primary"><ul class="nav-list">' +
         '<li data-nav="home"><a href="index.html">Home</a></li>' +
-        '<li class="has-menu" data-nav="news"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">News</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="news.html#local">Local News</a><a role="menuitem" href="news.html#national">National News</a><a role="menuitem" href="news.html#world">World News</a><a role="menuitem" href="roads.html">Roads &amp; Traffic</a><a role="menuitem" href="weather.html">Weather</a>' +
+        '<li class="has-menu" data-nav="news"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">News &amp; Weather</button><div class="mega" role="menu">' +
+          '<a role="menuitem" href="weather.html">&#9925; Weather &amp; Radar</a><a role="menuitem" href="roads.html">&#128663; Roads &amp; Traffic</a><a role="menuitem" href="news.html#local">Local News</a><a role="menuitem" href="news.html#national">National News</a><a role="menuitem" href="news.html#world">World News</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="sports"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Sports</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="sports.html#mlb">MLB &middot; Diamondbacks</a><a role="menuitem" href="sports.html#nba">NBA &middot; Suns</a><a role="menuitem" href="sports.html#nfl">NFL &middot; Cardinals</a><a role="menuitem" href="sports.html#college">College &middot; ASU, U of A, NAU</a><a role="menuitem" href="sports.html#ufc">UFC</a>' +
@@ -2172,67 +2172,95 @@
     ]).then(function (res) {
       var d = res[0], aqi = res[1] && res[1].current && isFinite(res[1].current.us_aqi) ? Math.round(res[1].current.us_aqi) : null, spots = res[2];
       if (d && d.current) skyBoard(root, d.current, aqi);
-      if (d && d.hourly) { skyHourly(root, d.hourly); skyMonsoon(root, d.hourly); }
+      if (d && d.hourly) { skyHourly(root, d.hourly, d.daily); skyMonsoon(root, d.hourly); }
       if (d && d.daily) skyWeek(root, d.daily);
       if (spots && spots.length === SKY_SPOTS.length) skyElev(root, spots);
     });
     skyRadar(root);
   }
   function skyBoard(root, c, aqi) {
-    var el = root.querySelector("[data-sky-now]"), tag = root.querySelector("[data-sky-tag]");
+    var el = root.querySelector("[data-sky-now]") || doc.querySelector("[data-sky-now]");
+    var tag = doc.querySelector("[data-sky-tag]");
     if (!el) return;
     var info = wxInfo(c.weather_code, c.is_day), aq = aqiInfo(aqi);
     var dew = skyDewpoint(c.temperature_2m, c.relative_humidity_2m);
     var uv = c.uv_index != null ? Math.round(c.uv_index) : null;
-    if (tag) tag.textContent = info.label + ", measured over Sedona moments ago.";
-    function cell(v, lab, sub) { return '<div class="skb2"><b>' + v + '</b><span>' + lab + '</span>' + (sub ? '<i>' + sub + '</i>' : '') + '</div>'; }
+    if (tag) tag.textContent = "Measured over the red rocks moments ago — refreshed while you read.";
+    function tile(v, lab, sub) { return '<div class="skg"><b>' + v + '</b><span>' + lab + '</span>' + (sub ? '<i>' + sub + '</i>' : '') + '</div>'; }
     el.innerHTML =
-      '<div class="skynow-hero"><span class="skynow-ic">' + info.icon + '</span><span class="skynow-t">' + Math.round(c.temperature_2m) + '°</span>' +
-      '<span class="skynow-meta"><b>' + esc(info.label) + '</b><i>feels like ' + Math.round(c.apparent_temperature) + '°</i></span></div>' +
-      '<div class="skynow-grid">' +
-      cell(Math.round(c.wind_speed_10m) + ' <small>mph</small>', 'wind ' + skyDir(c.wind_direction_10m), c.wind_gusts_10m ? 'gusts ' + Math.round(c.wind_gusts_10m) : '') +
-      cell(c.relative_humidity_2m + '%', 'humidity', dew != null ? 'dewpoint ' + dew + '°' : '') +
-      (uv != null ? cell(uv, 'UV index', skyUvLabel(uv)) : '') +
-      (aq ? cell(aq.v, 'air quality', aq.label) : '') +
-      cell(c.cloud_cover + '%', 'cloud cover', c.cloud_cover <= 20 ? 'photographers rejoice' : c.cloud_cover >= 75 ? 'full deck' : 'mixed sky') +
-      cell(Math.round(c.pressure_msl) + ' <small>hPa</small>', 'pressure', c.pressure_msl < 1005 ? 'stormy side' : c.pressure_msl > 1020 ? 'high & steady' : 'seasonal') +
+      '<div class="skyhero-main"><span class="skyhero-ic">' + info.icon + '</span>' +
+      '<span class="skyhero-t">' + Math.round(c.temperature_2m) + '°</span>' +
+      '<span class="skyhero-cond"><b>' + esc(info.label) + '</b><i>feels like ' + Math.round(c.apparent_temperature) + '°</i></span></div>' +
+      '<div class="skyhero-grid">' +
+      tile(Math.round(c.wind_speed_10m) + '<small> mph ' + skyDir(c.wind_direction_10m) + '</small>', 'wind', c.wind_gusts_10m ? 'gusts ' + Math.round(c.wind_gusts_10m) + ' mph' : 'steady') +
+      tile(c.relative_humidity_2m + '<small>%</small>', 'humidity', dew != null ? 'dewpoint ' + dew + '°' : '') +
+      (uv != null ? tile(uv, 'uv index', skyUvLabel(uv)) : '') +
+      (aq ? tile(aq.v, 'air quality', aq.label) : '') +
+      tile(c.cloud_cover + '<small>%</small>', 'cloud cover', c.cloud_cover <= 20 ? 'photographers rejoice' : c.cloud_cover >= 75 ? 'full deck' : 'mixed sky') +
+      tile(Math.round(c.pressure_msl) + '<small> hPa</small>', 'pressure', c.pressure_msl < 1005 ? 'stormy side' : c.pressure_msl > 1020 ? 'high & steady' : 'seasonal') +
       '</div>';
   }
-  function skyHourly(root, h) {
+  function skyHourly(root, h, daily) {
     var cv = root.querySelector("[data-sky-hourly]"); if (!cv || !h.time) return;
     var n = Math.min(25, h.time.length);
-    var W = cv.clientWidth || 900, H = 240, dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = cv.clientWidth || cv.parentNode.clientWidth || 900, H = 270, dpr = Math.min(2, window.devicePixelRatio || 1);
     cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
     var x = cv.getContext("2d"); x.scale(dpr, dpr);
     var temps = h.temperature_2m.slice(0, n), pp = (h.precipitation_probability || []).slice(0, n);
-    var tMin = Math.min.apply(null, temps), tMax = Math.max.apply(null, temps), pad = 34;
+    var tMin = Math.min.apply(null, temps), tMax = Math.max.apply(null, temps), pad = 36;
     function X(i) { return pad + (W - pad * 2) * i / (n - 1); }
-    function Y(t) { return 30 + (H - 95) * (1 - (t - tMin) / Math.max(1, tMax - tMin)); }
+    function Y(t) { return 42 + (H - 118) * (1 - (t - tMin) / Math.max(1, tMax - tMin)); }
     x.clearRect(0, 0, W, H);
+    // night shading from real sunrise/sunset
+    var suns = [];
+    if (daily && daily.sunrise) for (var k = 0; k < daily.sunrise.length; k++) suns.push([new Date(daily.sunrise[k]).getTime(), new Date(daily.sunset[k]).getTime()]);
+    function isNight(t) {
+      var ms = new Date(t).getTime();
+      for (var k = 0; k < suns.length; k++) { if (ms >= suns[k][0] && ms <= suns[k][1]) return false; }
+      return suns.length > 0;
+    }
+    var half = (W - pad * 2) / (n - 1) / 2;
+    for (var i = 0; i < n; i++) {
+      if (!isNight(h.time[i])) continue;
+      x.fillStyle = "rgba(4,8,24,.5)";
+      x.fillRect(X(i) - half, 14, half * 2, H - 76);
+    }
+    // gradient under the temp curve
+    var grad = x.createLinearGradient(0, 42, 0, H - 76);
+    grad.addColorStop(0, "rgba(217,165,63,.34)"); grad.addColorStop(1, "rgba(217,165,63,0)");
+    x.beginPath(); x.moveTo(X(0), H - 62);
+    for (var i = 0; i < n; i++) x.lineTo(X(i), Y(temps[i]));
+    x.lineTo(X(n - 1), H - 62); x.closePath(); x.fillStyle = grad; x.fill();
     // precip probability bars
     for (var i = 0; i < n; i++) {
       var p = pp[i] || 0; if (!p) continue;
-      var bh = (H - 95) * p / 100;
-      x.fillStyle = "rgba(80,150,220," + (0.18 + p / 250) + ")";
-      x.fillRect(X(i) - 6, H - 60 - bh, 12, bh);
-      if (p >= 30) { x.fillStyle = "rgba(60,120,190,.95)"; x.font = "700 10px Lato,sans-serif"; x.textAlign = "center"; x.fillText(p + "%", X(i), H - 66 - bh); }
+      var bh = (H - 118) * p / 100;
+      x.fillStyle = "rgba(120,180,255," + (0.25 + p / 220) + ")";
+      x.fillRect(X(i) - 5, H - 62 - bh, 10, bh);
+      if (p >= 30) { x.fillStyle = "#9ecbff"; x.font = "700 10px Lato,sans-serif"; x.textAlign = "center"; x.fillText(p + "%", X(i), H - 68 - bh); }
     }
     // temp line
-    x.beginPath(); x.lineWidth = 3; x.strokeStyle = "#d9a53f"; x.lineJoin = "round";
+    x.beginPath(); x.lineWidth = 3; x.strokeStyle = "#ffd88a"; x.lineJoin = "round";
     for (var i = 0; i < n; i++) { i ? x.lineTo(X(i), Y(temps[i])) : x.moveTo(X(i), Y(temps[i])); }
     x.stroke();
-    x.fillStyle = "#b07f22"; x.font = "800 12px Lato,sans-serif"; x.textAlign = "center";
-    for (var i = 0; i < n; i += 4) x.fillText(Math.round(temps[i]) + "°", X(i), Y(temps[i]) - 9);
+    // hi / lo callouts
+    var hiI = temps.indexOf(tMax), loI = temps.indexOf(tMin);
+    x.font = "900 13px Lato,sans-serif"; x.textAlign = "center";
+    x.fillStyle = "#ffe9a8"; x.fillText(Math.round(tMax) + "°", X(hiI), Y(tMax) - 12);
+    x.fillStyle = "#9aa4c9"; x.fillText(Math.round(tMin) + "°", X(loI), Y(tMin) + 20);
+    x.font = "800 11.5px Lato,sans-serif"; x.fillStyle = "rgba(233,237,255,.85)";
+    for (var i = 4; i < n - 1; i += 4) { if (i !== hiI && i !== loI) x.fillText(Math.round(temps[i]) + "°", X(i), Y(temps[i]) - 10); }
     // now dot
-    x.beginPath(); x.arc(X(0), Y(temps[0]), 5, 0, 7); x.fillStyle = "#a95750"; x.fill();
+    x.beginPath(); x.arc(X(0), Y(temps[0]), 5.5, 0, 7); x.fillStyle = "#ff9a7a"; x.fill();
+    x.font = "900 10px Lato,sans-serif"; x.fillStyle = "#ff9a7a"; x.fillText("NOW", X(0), Y(temps[0]) - 12);
     // hour labels
-    x.fillStyle = "rgba(44,38,32,.6)"; x.font = "700 10.5px Lato,sans-serif";
+    x.fillStyle = "rgba(203,214,255,.65)"; x.font = "700 10.5px Lato,sans-serif";
     for (var i = 0; i < n; i += 4) {
-      var hh = new Date(h.time[i]).getHours(), lab = i === 0 ? "now" : ((hh % 12) || 12) + (hh < 12 ? "a" : "p");
-      x.fillText(lab, X(i), H - 40);
+      var hh = new Date(h.time[i]).getHours(), lab = i === 0 ? "now" : ((hh % 12) || 12) + (hh < 12 ? "am" : "pm");
+      x.fillText(lab, X(i), H - 42);
     }
-    x.fillStyle = "rgba(44,38,32,.45)"; x.textAlign = "left";
-    x.fillText("— temperature   ▮ chance of rain", pad, H - 16);
+    x.fillStyle = "rgba(203,214,255,.5)"; x.textAlign = "left";
+    x.fillText("— temperature    ▮ chance of rain    ▓ night", pad, H - 16);
   }
   function skyMonsoon(root, h) {
     var el = root.querySelector("[data-sky-monsoon]"); if (!el) return;
@@ -2249,29 +2277,36 @@
     el.innerHTML = '<span class="sky-mon-badge sky-mon--' + verdict[0] + '">&#9889; Monsoon meter: ' + verdict[0].toUpperCase() + '</span>' +
       '<span class="sky-mon-body"><b>Storm fuel (CAPE) peaks near ' + peak + ' J/kg in the next 24h' + (peakP ? ' · rain odds top out at ' + peakP + '%' : '') + '.</b> ' + verdict[1] + '</span>';
   }
+  var SKY_FT = [6909, 5200, 4350, 3314, 3147];
   function skyElev(root, spots) {
     var el = root.querySelector("[data-sky-elev]"), note = root.querySelector("[data-sky-elevnote]");
     if (!el) return;
+    var topFt = SKY_FT[0], botFt = SKY_FT[SKY_FT.length - 1];
     el.innerHTML = spots.map(function (d, i) {
       var s = SKY_SPOTS[i], c = d.current, info = wxInfo(c.weather_code, c.is_day);
-      return '<div class="sky-spot' + (s.n === "Sedona" ? " sky-spot--home" : "") + '"><b>' + esc(s.n) + '</b><i>' + s.e + '</i>' +
+      var drop = Math.round((topFt - SKY_FT[i]) / (topFt - botFt) * 84);
+      return '<div class="sky-spot' + (s.n === "Sedona" ? " sky-spot--home" : "") + '" style="--drop:' + drop + 'px"><b>' + esc(s.n) + '</b><i>' + s.e + '</i>' +
         '<span class="sky-spot-ic">' + info.icon + '</span><span class="sky-spot-t">' + Math.round(c.temperature_2m) + '°</span>' +
         '<em>' + Math.round(c.wind_speed_10m) + ' mph</em></div>';
     }).join("");
     var ts = spots.map(function (d) { return d.current.temperature_2m; });
     var spread = Math.round(Math.max.apply(null, ts) - Math.min.apply(null, ts));
-    if (note) note.textContent = "The elevator is running " + spread + "° top to bottom right now. Same hour, same sun — 3,800 feet of difference.";
+    if (note) note.innerHTML = 'The elevator is running <b>' + spread + '&deg; top to bottom</b> right now.';
   }
   function skyWeek(root, dl) {
     var el = root.querySelector("[data-sky-week]"); if (!el || !dl.time) return;
     var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    var wkMin = Math.min.apply(null, dl.temperature_2m_min), wkMax = Math.max.apply(null, dl.temperature_2m_max), rng = Math.max(1, wkMax - wkMin);
     function tm(s) { var d = new Date(s); var h = d.getHours(), mn = d.getMinutes(); return ((h % 12) || 12) + ":" + (mn < 10 ? "0" : "") + mn + (h < 12 ? "a" : "p"); }
     el.innerHTML = dl.time.map(function (t, i) {
       var info = wxInfo(dl.weather_code[i], 1);
       var d = new Date(t + "T12:00:00");
+      var lo = dl.temperature_2m_min[i], hi = dl.temperature_2m_max[i];
+      var left = Math.round((lo - wkMin) / rng * 100), width = Math.max(6, Math.round((hi - lo) / rng * 100));
       return '<div class="sky-day' + (i === 0 ? " sky-day--today" : "") + '"><b>' + (i === 0 ? "Today" : days[d.getDay()]) + '</b>' +
         '<span class="sky-day-ic">' + info.icon + '</span>' +
-        '<span class="sky-day-t"><em>' + Math.round(dl.temperature_2m_max[i]) + '°</em> / ' + Math.round(dl.temperature_2m_min[i]) + '°</span>' +
+        '<span class="sky-day-t"><em>' + Math.round(hi) + '°</em> / ' + Math.round(lo) + '°</span>' +
+        '<span class="sky-day-bar"><i style="left:' + left + '%;width:' + width + '%"></i></span>' +
         (dl.precipitation_probability_max[i] ? '<span class="sky-day-p">💧 ' + dl.precipitation_probability_max[i] + '%</span>' : '<span class="sky-day-p sky-day-p--dry">dry</span>') +
         '<i>☀︎ ' + tm(dl.sunrise[i]) + ' · ' + tm(dl.sunset[i]) + '</i></div>';
     }).join("");
