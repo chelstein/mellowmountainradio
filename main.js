@@ -2637,8 +2637,136 @@
     var TREES = []; var ts = 42;
     for (var i = 0; i <= 40; i++) { ts = (ts * 16807) % 2147483647; TREES.push(.6 - ((ts % 100) / 100) * .06); }
     var STONES = [[.06,.9,.09],[.16,.94,.11],[.27,.9,.08],[.12,.84,.07],[.22,.85,.06],[.35,.95,.09]];
+    // the REAL photo out the back door — when backdoor.jpg exists in the repo
+    // the window becomes the photograph itself, graded live; the drawn scene
+    // below is only the fallback until then.
+    var PHOTO = { ok: false, img: null };
+    (function () {
+      var im = new Image();
+      im.onload = function () { PHOTO.ok = true; PHOTO.img = im; };
+      im.onerror = function () {};
+      im.src = "backdoor.jpg";
+    })();
+    var TOWER_TIP = [.585, .075]; // where the beacon lives in the photograph
     var t0 = Date.now(), previewMin = null; // minutes-of-day when time-traveling, null = live
     var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0;
+    function paintPhoto(alt, el, now) {
+      // cover-fit the real photograph
+      var iw = PHOTO.img.naturalWidth, ih = PHOTO.img.naturalHeight;
+      var s = Math.max(W / iw, H / ih), dw = iw * s, dh = ih * s;
+      x.clearRect(0, 0, W, H);
+      x.drawImage(PHOTO.img, (W - dw) / 2, (H - dh) * .25, dw, dh); // bias toward the sky
+      // GRADE by the real sun: the photo is a dusk frame — lift it for day,
+      // sink it for night, let dawn/dusk ride close to what the camera saw
+      if (alt > 8) { // daylight lift
+        var day = Math.min(1, (alt - 8) / 25);
+        x.globalCompositeOperation = "screen";
+        x.fillStyle = "rgba(140,170,205," + (day * .38) + ")"; x.fillRect(0, 0, W, H);
+        x.fillStyle = "rgba(255,240,210," + (day * .22) + ")"; x.fillRect(0, 0, W, H);
+        x.globalCompositeOperation = "source-over";
+      } else if (alt < -4) { // true night sinks in
+        var nt = Math.min(1, (-4 - alt) / 10);
+        x.globalCompositeOperation = "multiply";
+        x.fillStyle = "rgba(" + Math.round(swLerp(255, 44, nt)) + "," + Math.round(swLerp(255, 54, nt)) + "," + Math.round(swLerp(255, 96, nt)) + ",1)";
+        x.fillRect(0, 0, W, H);
+        x.globalCompositeOperation = "source-over";
+      } else if (alt > -2 && alt < 8) { // golden hour warms the frame
+        x.globalCompositeOperation = "overlay";
+        x.fillStyle = "rgba(255,150,60,.18)"; x.fillRect(0, 0, W, H);
+        x.globalCompositeOperation = "source-over";
+      }
+      // stars in the real sky
+      if (alt < -8) {
+        var sa = Math.min(1, (-8 - alt) / 6);
+        stars.forEach(function (st2, i) {
+          if (st2[1] > .42) return;
+          var tw = reduced ? 1 : (.6 + .4 * Math.sin(el * 1.3 + i));
+          x.globalAlpha = sa * tw * .85; x.fillStyle = "#fff";
+          x.fillRect(st2[0] * W, st2[1] * H, st2[2] * .8, st2[2] * .8);
+        });
+        x.globalAlpha = 1;
+        // true-phase moon in the open western sky of the frame
+        var mi = moonInfo(), f = Math.max(0, Math.min(1, mi.illum / 100));
+        var waning = (mi.name || "").toLowerCase().indexOf("waning") !== -1;
+        var mx = W * .3, my = H * .14, mr = Math.max(10, W * .02);
+        x.beginPath(); x.arc(mx, my, mr, 0, 7); x.fillStyle = "rgba(60,64,88,.85)"; x.fill();
+        x.beginPath(); x.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); x.closePath(); x.fillStyle = "#f3ecd9"; x.fill();
+        x.beginPath(); x.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
+        x.fillStyle = f >= .5 ? "#f3ecd9" : "rgba(60,64,88,.85)"; x.fill();
+        // shooting star, rare
+        if (!reduced) {
+          if (!shoot && el - lastShoot > 14 && Math.random() < .006) { shoot = { t: 0, x0: .1 + Math.random() * .4, y0: .05 + Math.random() * .12 }; }
+          if (shoot) {
+            shoot.t += .06;
+            if (shoot.t >= 1) { shoot = null; lastShoot = el; }
+            else {
+              var sxp = (shoot.x0 + shoot.t * .16) * W, syp = (shoot.y0 + shoot.t * .07) * H;
+              var grd2 = x.createLinearGradient(sxp - W * .06, syp - H * .025, sxp, syp);
+              grd2.addColorStop(0, "rgba(255,255,255,0)"); grd2.addColorStop(1, "rgba(255,255,255," + (.9 - shoot.t * .8) + ")");
+              x.strokeStyle = grd2; x.lineWidth = 1.6;
+              x.beginPath(); x.moveTo(sxp - W * .06, syp - H * .025); x.lineTo(sxp, syp); x.stroke();
+            }
+          }
+        }
+      }
+      // the beacon on the REAL tower tip, breathing after sundown
+      if (alt < -2) {
+        var pulse = reduced ? .8 : (.45 + .55 * Math.abs(Math.sin(el * 1.1)));
+        var bx = TOWER_TIP[0] * W, by = TOWER_TIP[1] * H;
+        x.beginPath(); x.arc(bx, by, Math.max(2.5, W * .0035), 0, 7);
+        x.fillStyle = "rgba(255,60,40," + pulse + ")"; x.fill();
+        x.beginPath(); x.arc(bx, by, Math.max(2.5, W * .0035) * 3.2, 0, 7);
+        x.fillStyle = "rgba(255,60,40," + pulse * .16 + ")"; x.fill();
+      }
+      // rain on the glass, only when it's really raining
+      if (wx.code >= 51) {
+        x.strokeStyle = "rgba(190,210,235,.4)"; x.lineWidth = 1;
+        drops.forEach(function (d) {
+          var dy = reduced ? d[1] : ((d[1] + el * .5) % 1);
+          x.beginPath(); x.moveTo(d[0] * W, dy * H * .9); x.lineTo(d[0] * W - 2, dy * H * .9 + 9); x.stroke();
+        });
+      }
+      // notes from the doorway while the stream truly plays
+      var isOn = typeof playing !== "undefined" && playing;
+      if (isOn && !reduced) {
+        if (el - lastNote > 1.4) { lastNote = el; notes.push({ t: 0, dx: Math.random() * .02 - .01, g: Math.random() < .5 ? "♪" : "♫" }); }
+        notes = notes.filter(function (n) { return n.t < 1; });
+        notes.forEach(function (n) {
+          n.t += .004;
+          x.globalAlpha = 1 - n.t;
+          x.font = Math.round(Math.max(12, W * .015)) + "px serif";
+          x.fillStyle = "#ffe9a8"; x.textAlign = "center";
+          x.fillText(n.g, (.06 + n.dx + Math.sin(n.t * 8) * .008) * W, H * .9 - n.t * H * .35);
+        });
+        x.globalAlpha = 1;
+      }
+      // brass plate with the actual song on air
+      if (typeof lastNow !== "undefined" && lastNow && lastNow.title && lastNow.title !== "Mellow Mountain Radio") {
+        var plate = "♪  " + lastNow.title + " — " + lastNow.artist;
+        x.font = "700 " + Math.round(Math.max(11, W * .012)) + "px Lato, sans-serif";
+        var pw = Math.min(W * .55, x.measureText(plate).width + 26);
+        var px0 = W * .5 - pw / 2, py0 = H - Math.max(24, H * .075);
+        x.fillStyle = "rgba(20,14,10,.78)";
+        x.beginPath(); if (x.roundRect) x.roundRect(px0, py0, pw, Math.max(20, H * .052), 6); else x.rect(px0, py0, pw, Math.max(20, H * .052)); x.fill();
+        x.strokeStyle = "rgba(255,216,138,.5)"; x.lineWidth = 1; x.stroke();
+        x.fillStyle = "#ffe9a8"; x.textAlign = "center"; x.textBaseline = "middle";
+        x.fillText(plate, W * .5, py0 + Math.max(10, H * .026), pw - 16);
+        x.textBaseline = "alphabetic";
+      }
+      // thin window frame, no mullions over the photograph
+      x.strokeStyle = "rgba(20,14,10,.85)"; x.lineWidth = Math.max(6, W * .008);
+      x.strokeRect(x.lineWidth / 2, x.lineWidth / 2, W - x.lineWidth, H - x.lineWidth);
+      if (cap) {
+        var ph2;
+        if (previewMin != null) {
+          var hh2 = Math.floor(previewMin / 60), mm2 = previewMin % 60;
+          ph2 = "PREVIEWING " + ((hh2 % 12) || 12) + ":" + (mm2 < 10 ? "0" : "") + mm2 + (hh2 < 12 ? " AM" : " PM");
+        } else ph2 = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "America/Phoenix" }) + " in Sedona";
+        cap.textContent = ph2 + " · sun " + (alt >= 0 ? Math.round(alt) + "° up" : Math.round(-alt) + "° below the horizon") +
+          " · " + wx.cover + "% cloud" + (wx.code >= 51 ? " · raining" : "") + (wx.temp != null ? " · " + wx.temp + "°" : "") +
+          (previewMin != null ? " — time travel on the real photo; tap LIVE to come home" : " — the actual back door, graded by the real sky");
+      }
+    }
     function paint() {
       var now = new Date();
       if (previewMin != null) {
@@ -2648,6 +2776,7 @@
       }
       var alt = swSunAlt(now);
       var el = (Date.now() - t0) / 1000;
+      if (PHOTO.ok) { paintPhoto(alt, el, now); return; }
       // sky: night -> astro dawn -> golden -> day, from real solar altitude
       var top, bot;
       if (alt <= -12) { top = [8, 12, 34]; bot = [16, 20, 46]; }
