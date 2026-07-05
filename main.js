@@ -2626,7 +2626,15 @@
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var W, H, x;
     function size() {
-      W = cv.clientWidth || 900; H = Math.round(W * .42);
+      if (typeof PHOTO !== "undefined" && PHOTO && PHOTO.ok) {
+        // a real window is portrait: crop the photograph tower-tip to flagstones
+        var maxW = Math.min(680, (cv.parentNode && cv.parentNode.clientWidth) || 680);
+        W = maxW; H = Math.round(W * 1.1);
+        cv.style.width = W + "px"; cv.style.margin = "0 auto";
+      } else {
+        cv.style.width = "100%"; cv.style.margin = "0";
+        W = cv.clientWidth || 900; H = Math.round(W * .42);
+      }
       var dpr = Math.min(2, window.devicePixelRatio || 1);
       cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
       x = cv.getContext("2d"); x.scale(dpr, dpr);
@@ -2643,19 +2651,19 @@
     var PHOTO = { ok: false, img: null };
     (function () {
       var im = new Image();
-      im.onload = function () { PHOTO.ok = true; PHOTO.img = im; };
+      im.onload = function () { PHOTO.ok = true; PHOTO.img = im; if (typeof size === "function") { size(); } };
       im.onerror = function () {};
       im.src = "backdoor.jpg";
     })();
-    var TOWER_TIP = [.585, .075]; // where the beacon lives in the photograph
+    var TOWER_TIP = [.583, .034]; // the real tower tip in the cropped frame
     var t0 = Date.now(), previewMin = null; // minutes-of-day when time-traveling, null = live
     var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0;
     function paintPhoto(alt, el, now) {
       // cover-fit the real photograph
       var iw = PHOTO.img.naturalWidth, ih = PHOTO.img.naturalHeight;
-      var s = Math.max(W / iw, H / ih), dw = iw * s, dh = ih * s;
+      var s = W / iw, dh = ih * s;
       x.clearRect(0, 0, W, H);
-      x.drawImage(PHOTO.img, (W - dw) / 2, (H - dh) * .25, dw, dh); // bias toward the sky
+      x.drawImage(PHOTO.img, 0, -0.02 * dh, W, dh); // tower tip at top, flagstones at the sill
       // GRADE by the real sun: the photo is a dusk frame — lift it for day,
       // sink it for night, let dawn/dusk ride close to what the camera saw
       if (alt > 8) { // daylight lift
@@ -2680,6 +2688,7 @@
         var sa = Math.min(1, (-8 - alt) / 6);
         stars.forEach(function (st2, i) {
           if (st2[1] > .42) return;
+          if (st2[0] > .6 && st2[1] > .26) return; // the dish owns that corner
           var tw = reduced ? 1 : (.6 + .4 * Math.sin(el * 1.3 + i));
           x.globalAlpha = sa * tw * .85; x.fillStyle = "#fff";
           x.fillRect(st2[0] * W, st2[1] * H, st2[2] * .8, st2[2] * .8);
@@ -2688,7 +2697,7 @@
         // true-phase moon in the open western sky of the frame
         var mi = moonInfo(), f = Math.max(0, Math.min(1, mi.illum / 100));
         var waning = (mi.name || "").toLowerCase().indexOf("waning") !== -1;
-        var mx = W * .3, my = H * .14, mr = Math.max(10, W * .02);
+        var mx = W * .27, my = H * .2, mr = Math.max(10, W * .026);
         x.beginPath(); x.arc(mx, my, mr, 0, 7); x.fillStyle = "rgba(60,64,88,.85)"; x.fill();
         x.beginPath(); x.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); x.closePath(); x.fillStyle = "#f3ecd9"; x.fill();
         x.beginPath(); x.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
