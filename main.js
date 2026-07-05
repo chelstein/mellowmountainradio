@@ -2585,20 +2585,243 @@
      Blocks are 6h and pruned at 14 days: the statutory license terms,
      enforced by the recorder and stated on the page.
      ========================================================= */
+  /* =========================================================
+     OUT THE STATION WINDOW — a generated view of the red rocks that
+     is never faked: sky color from the sun's real altitude (computed),
+     stars and the real moon phase after dark, cloud cover and drift
+     from the actual weather feed (count = cover %, speed = wind),
+     rain when it is truly raining. The caption prints the receipts.
+     Repaints once a minute; weather refreshes every five.
+     ========================================================= */
+  function swSunAlt(date) {
+    var lat = 34.8697 * Math.PI / 180, lon = -111.761;
+    var start = Date.UTC(date.getUTCFullYear(), 0, 0);
+    var doy = (date.getTime() - start) / 86400000;
+    var decl = -23.44 * Math.cos(2 * Math.PI / 365 * (doy + 10)) * Math.PI / 180;
+    var utcH = date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600;
+    var ha = ((utcH + lon / 15) - 12) * 15 * Math.PI / 180;
+    return Math.asin(Math.sin(lat) * Math.sin(decl) + Math.cos(lat) * Math.cos(decl) * Math.cos(ha)) * 180 / Math.PI;
+  }
+  function swLerp(a, b, t) { return a + (b - a) * Math.max(0, Math.min(1, t)); }
+  function swMix(c1, c2, t) { return [swLerp(c1[0], c2[0], t), swLerp(c1[1], c2[1], t), swLerp(c1[2], c2[2], t)]; }
+  function swRGB(c) { return "rgb(" + Math.round(c[0]) + "," + Math.round(c[1]) + "," + Math.round(c[2]) + ")"; }
+  function initWindow() {
+    var cv = doc.querySelector("[data-window]"); if (!cv || cv.getAttribute("data-init")) return;
+    cv.setAttribute("data-init", "1");
+    var cap = doc.querySelector("[data-window-cap]");
+    var wx = { cover: 30, code: 0, wind: 5, temp: null };
+    function getWx() {
+      fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610&current=temperature_2m,weather_code,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FPhoenix", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+          if (d && d.current) wx = { cover: d.current.cloud_cover, code: d.current.weather_code, wind: d.current.wind_speed_10m, temp: Math.round(d.current.temperature_2m) };
+        }).catch(function () {});
+    }
+    getWx(); var wxT = setInterval(function () { if (!cv.isConnected) { clearInterval(wxT); return; } getWx(); }, 300000);
+    // stable star field, seeded by the day
+    var seed = Math.floor(Date.now() / 86400000), stars = [];
+    for (var i = 0; i < 90; i++) { seed = (seed * 16807) % 2147483647; var sx = (seed % 1000) / 1000; seed = (seed * 16807) % 2147483647; var sy = (seed % 1000) / 1000; stars.push([sx, sy * .55, (seed % 3) + 1]); }
+    var clouds = [];
+    for (var i = 0; i < 10; i++) clouds.push({ x: Math.random(), y: .08 + Math.random() * .3, s: .6 + Math.random() * .9 });
+    var drops = []; for (var i = 0; i < 90; i++) drops.push([Math.random(), Math.random()]);
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var W, H, x;
+    function size() {
+      W = cv.clientWidth || 900; H = Math.round(W * .42);
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
+      x = cv.getContext("2d"); x.scale(dpr, dpr);
+    }
+    size();
+    // the REAL view out the back door, cartooned: the AM tower and its guys,
+    // the big dish, the rain gauge, the lone pine, flagstones in red dirt
+    var TREES = []; var ts = 42;
+    for (var i = 0; i <= 40; i++) { ts = (ts * 16807) % 2147483647; TREES.push(.6 - ((ts % 100) / 100) * .06); }
+    var STONES = [[.06,.9,.09],[.16,.94,.11],[.27,.9,.08],[.12,.84,.07],[.22,.85,.06],[.35,.95,.09]];
+    var t0 = Date.now();
+    function paint() {
+      var now = new Date(), alt = swSunAlt(now);
+      var el = (Date.now() - t0) / 1000;
+      // sky: night -> astro dawn -> golden -> day, from real solar altitude
+      var top, bot;
+      if (alt <= -12) { top = [8, 12, 34]; bot = [16, 20, 46]; }
+      else if (alt <= -4) { var t = (alt + 12) / 8; top = swMix([8,12,34],[30,26,62], t); bot = swMix([16,20,46],[120,60,70], t); }
+      else if (alt <= 8) { var t = (alt + 4) / 12; top = swMix([30,26,62],[92,140,190], t); bot = swMix([228,120,64],[214,178,140], t); }
+      else if (alt <= 25) { var t = (alt - 8) / 17; top = swMix([92,140,190],[108,164,214], t); bot = swMix([214,178,140],[190,206,224], t); }
+      else { top = [108, 164, 214]; bot = [196, 212, 228]; }
+      // heavy cloud deck grays the sky honestly
+      var gr = Math.min(1, wx.cover / 100) * .55;
+      top = swMix(top, [128, 134, 148], gr); bot = swMix(bot, [168, 172, 182], gr);
+      var g = x.createLinearGradient(0, 0, 0, H * .8);
+      g.addColorStop(0, swRGB(top)); g.addColorStop(1, swRGB(bot));
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      // stars when the sun is truly down
+      if (alt < -8) {
+        var sa = Math.min(1, (-8 - alt) / 6);
+        stars.forEach(function (s, i) {
+          var tw = reduced ? 1 : (.6 + .4 * Math.sin(el * 1.3 + i));
+          x.globalAlpha = sa * tw * .9; x.fillStyle = "#fff";
+          x.fillRect(s[0] * W, s[1] * H, s[2] * .8, s[2] * .8);
+        });
+        x.globalAlpha = 1;
+        // the real moon, real phase
+        var m = moonInfo();
+        var mx = W * .78, my = H * .18, mr = Math.max(10, W * .022);
+        x.beginPath(); x.arc(mx, my, mr, 0, 7); x.fillStyle = "#f3ecd9"; x.fill();
+        var off = (1 - 2 * (m.illum / 100)) * mr * ((m.name || "").indexOf("axing") !== -1 ? 1 : -1);
+        x.beginPath(); x.arc(mx + off, my, mr * 1.02, 0, 7); x.fillStyle = swRGB(top); x.fill();
+        x.beginPath(); x.arc(mx, my, mr, 0, 7); x.strokeStyle = "rgba(243,236,217,.25)"; x.lineWidth = 1; x.stroke();
+      }
+      // low sun disk in the window during golden/dawn
+      if (alt > -2 && alt < 14) {
+        var sy = H * (.62 - alt / 14 * .5);
+        x.beginPath(); x.arc(W * .2, sy, Math.max(12, W * .026), 0, 7);
+        x.fillStyle = "rgba(255,214,140,.95)"; x.fill();
+        x.beginPath(); x.arc(W * .2, sy, Math.max(12, W * .026) * 2.4, 0, 7);
+        var sg = x.createRadialGradient(W * .2, sy, 2, W * .2, sy, W * .07);
+        sg.addColorStop(0, "rgba(255,200,120,.5)"); sg.addColorStop(1, "rgba(255,200,120,0)");
+        x.fillStyle = sg; x.fill();
+      }
+      // clouds: count from real cover, drift from real wind
+      var n = Math.round(wx.cover / 10);
+      var drift = reduced ? 0 : el * (.002 + wx.wind * .0006);
+      for (var i = 0; i < n && i < clouds.length; i++) {
+        var c = clouds[i], cxp = ((c.x + drift * (.6 + c.s * .3)) % 1.25) - .12;
+        x.fillStyle = alt < -6 ? "rgba(190,196,215,.16)" : "rgba(255,255,255," + (.35 + gr * .3) + ")";
+        for (var k = 0; k < 4; k++) {
+          x.beginPath();
+          x.ellipse((cxp + k * .028 * c.s) * W, (c.y + (k % 2) * .012) * H, W * .05 * c.s, H * .045 * c.s, 0, 0, 7);
+          x.fill();
+        }
+      }
+      // the yard — lit by the same sun as the sky
+      var lit = Math.max(0, Math.min(1, (alt + 4) / 20));
+      var gold = (alt > -2 && alt < 10) ? 1 : 0;
+      var HZ = .62;
+      // treeline on the horizon
+      var tl = swMix([18, 22, 20], [52, 74, 48], lit);
+      x.beginPath(); x.moveTo(0, H * HZ);
+      TREES.forEach(function (h, i) { x.lineTo((i / 40) * W, H * h); });
+      x.lineTo(W, H * HZ); x.lineTo(W, H * .72); x.lineTo(0, H * .72); x.closePath();
+      x.fillStyle = swRGB(tl); x.fill();
+      // the lone pine, left of the tower
+      var px = W * .2;
+      x.fillStyle = swRGB(swMix([14, 18, 16], [40, 62, 40], lit));
+      x.fillRect(px - 1.5, H * .5, 3, H * .13);
+      for (var k = 0; k < 4; k++) {
+        var pw = W * (.052 - k * .01), py = H * (.55 - k * .05);
+        x.beginPath(); x.moveTo(px - pw, py); x.lineTo(px + pw, py); x.lineTo(px, py - H * .055); x.closePath(); x.fill();
+      }
+      // red dirt + the flagstone path
+      var gnd = swMix([40, 18, 14], [128, 62, 42], lit);
+      x.fillStyle = swRGB(gnd); x.fillRect(0, H * .66, W, H * .34);
+      x.fillStyle = swRGB(swMix([58, 30, 24], [164, 96, 70], lit));
+      STONES.forEach(function (s) {
+        x.beginPath(); x.ellipse(s[0] * W, s[1] * H, s[2] * W * .55, s[2] * H * .3, .3, 0, 7); x.fill();
+      });
+      // the AM tower — thin lattice mast, guys, beacon after dark
+      var tx = W * .58, tw = Math.max(2, W * .004);
+      var steel = swMix([26, 26, 32], [110, 112, 120], lit);
+      x.strokeStyle = swRGB(steel); x.lineWidth = tw;
+      x.beginPath(); x.moveTo(tx, H * .05); x.lineTo(tx, H * .66); x.stroke();
+      x.lineWidth = Math.max(1, tw * .5);
+      for (var k = 0; k < 14; k++) { var ty = H * (.08 + k * .04); x.beginPath(); x.moveTo(tx - tw * 2.2, ty); x.lineTo(tx + tw * 2.2, ty + H * .012); x.stroke(); }
+      x.globalAlpha = .55; x.lineWidth = Math.max(1, tw * .4);
+      [[.16, .63], [.34, .645], [.9, .64], [.99, .6]].forEach(function (g) {
+        x.beginPath(); x.moveTo(tx, H * (g[0] === .9 || g[0] === .99 ? .22 : .18)); x.lineTo(W * g[0], H * g[1]); x.stroke();
+      });
+      x.globalAlpha = 1;
+      if (alt < -2) { // FAA-red beacon breathing on top after sundown
+        var pulse = reduced ? .8 : (.45 + .55 * Math.abs(Math.sin(el * 1.1)));
+        x.beginPath(); x.arc(tx, H * .05, Math.max(2.5, W * .004), 0, 7);
+        x.fillStyle = "rgba(255,60,40," + pulse + ")"; x.fill();
+        x.beginPath(); x.arc(tx, H * .05, Math.max(2.5, W * .004) * 3, 0, 7);
+        x.fillStyle = "rgba(255,60,40," + pulse * .18 + ")"; x.fill();
+      }
+      // the big dish, foreground right — catches whatever light the sky has
+      var dx = W * .86, dy = H * .55, drx = W * .13, dry = H * .3;
+      x.save(); x.translate(dx, dy); x.rotate(-.38);
+      var dishFace = swMix([70, 74, 88], [225, 222, 214], Math.max(lit, .18));
+      x.beginPath(); x.ellipse(0, 0, drx, dry, 0, 0, 7); x.fillStyle = swRGB(dishFace); x.fill();
+      x.lineWidth = Math.max(1.5, W * .002); x.strokeStyle = "rgba(30,24,20,.5)"; x.stroke();
+      x.beginPath(); x.ellipse(drx * .18, 0, drx * .82, dry * .82, 0, 0, 7);
+      x.strokeStyle = "rgba(30,24,20,.18)"; x.stroke();
+      x.strokeStyle = swRGB(swMix([40, 36, 34], [150, 140, 128], lit)); x.lineWidth = Math.max(1.5, W * .0025);
+      [[-.5, -.6], [0, -.75], [.4, -.5]].forEach(function (f) {
+        x.beginPath(); x.moveTo(drx * f[0], dry * f[1]); x.lineTo(-drx * .55, -dry * 1.05); x.stroke();
+      });
+      x.restore();
+      x.fillStyle = swRGB(swMix([32, 22, 18], [104, 78, 60], lit));
+      x.fillRect(dx - W * .006, dy + dry * .5, W * .012, H * .2);
+      // the little rain gauge on its legs — the hardest-working thing in the yard
+      var gx = W * .155, gy = H * .7;
+      x.fillStyle = swRGB(swMix([70, 72, 74], [196, 198, 192], lit));
+      x.fillRect(gx - W * .011, gy - H * .1, W * .022, H * .1);
+      x.strokeStyle = swRGB(steel); x.lineWidth = 1.2;
+      x.beginPath(); x.moveTo(gx - W * .011, gy); x.lineTo(gx - W * .02, gy + H * .05);
+      x.moveTo(gx + W * .011, gy); x.lineTo(gx + W * .02, gy + H * .05); x.stroke();
+      // rain, only when it's really raining
+      if (wx.code >= 51) {
+        x.strokeStyle = "rgba(180,200,230,.35)"; x.lineWidth = 1;
+        drops.forEach(function (d) {
+          var dy = reduced ? d[1] : ((d[1] + el * .5) % 1);
+          x.beginPath(); x.moveTo(d[0] * W, dy * H * .9); x.lineTo(d[0] * W - 2, dy * H * .9 + 9); x.stroke();
+        });
+      }
+      // the window itself
+      x.strokeStyle = "rgba(20,14,10,.85)"; x.lineWidth = Math.max(6, W * .008);
+      x.strokeRect(x.lineWidth / 2, x.lineWidth / 2, W - x.lineWidth, H - x.lineWidth);
+      x.lineWidth = Math.max(3, W * .004);
+      x.beginPath(); x.moveTo(W / 2, 0); x.lineTo(W / 2, H); x.moveTo(0, H * .5); x.lineTo(W, H * .5); x.stroke();
+      if (cap) {
+        var ph = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "America/Phoenix" });
+        cap.textContent = ph + " in Sedona · sun " + (alt >= 0 ? Math.round(alt) + "° up" : Math.round(-alt) + "° below the horizon") +
+          " · " + wx.cover + "% cloud" + (wx.code >= 51 ? " · raining" : "") + (wx.temp != null ? " · " + wx.temp + "°" : "") +
+          " — drawn from the real sky, nothing staged";
+      }
+    }
+    paint();
+    if (reduced) { var rT = setInterval(function () { if (!cv.isConnected) { clearInterval(rT); return; } paint(); }, 60000); }
+    else { (function loop() { if (!cv.isConnected) return; paint(); requestAnimationFrame(function () { setTimeout(loop, 100); }); })(); }
+    window.addEventListener("resize", function () { if (cv.isConnected) { size(); paint(); } });
+  }
+
   function initTape() {
     var root = doc.querySelector("[data-tape]"); if (!root) return;
     var off = doc.querySelector("[data-tape-off]");
     fetch("rewind.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (cfg) {
-        if (!cfg || !cfg.base) return null;
+        if (!cfg) return null;
+        if (cfg.mode === "azuracast" && cfg.podcast) {
+          // the archive lives as podcast episodes on the station's own AzuraCast
+          return fetch("https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/public/podcast/" + encodeURIComponent(cfg.podcast) + "/episodes", { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (eps) {
+              if (!eps || !eps.length) return null;
+              var blocks = [];
+              eps.forEach(function (e) {
+                var m = (e.title || "").match(/^kazm-(\d{4}-\d{2}-\d{2})-(\d{2})00$/);
+                if (!m || !e.has_media || !e.is_published) return;
+                var dl = (e.links && e.links.download) || "";
+                dl = dl.replace(/^https:\/\/op3\.dev\/e\//, "https://");
+                if (dl) blocks.push({ url: dl, date: m[1], start: +m[2] });
+              });
+              return blocks.length ? { man: { blocks: blocks } } : null;
+            });
+        }
+        if (!cfg.base) return null;
         return fetch(cfg.base.replace(/\/$/, "") + "/manifest.json", { cache: "no-store" })
           .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (man) { return man && man.blocks && man.blocks.length ? { base: cfg.base.replace(/\/$/, ""), man: man } : null; });
+          .then(function (man) {
+            if (!man || !man.blocks || !man.blocks.length) return null;
+            var base = cfg.base.replace(/\/$/, "");
+            man.blocks.forEach(function (b) { b.url = base + "/" + b.file; });
+            return { man: man };
+          });
       })
       .then(function (got) {
         if (!got) return; // recorder not rolling — the honest note stays
         root.hidden = false; if (off) off.hidden = true;
-        var base = got.base, blocks = got.man.blocks;
+        var blocks = got.man.blocks;
         var audio = root.querySelector("[data-tape-audio]"), title = root.querySelector("[data-tape-title]"),
             sub = root.querySelector("[data-tape-sub]"), shelf = root.querySelector("[data-tape-shelf]"),
             hoursEl = root.querySelector("[data-tape-hours]"), reel = root.querySelector("[data-tape-reel]");
@@ -2612,7 +2835,7 @@
         }
         shelf.innerHTML = days.map(function (d) {
           var row = byDay[d].sort(function (a, b) { return a.start - b.start; }).map(function (b) {
-            return '<button type="button" class="tape-block" data-file="' + esc(b.file) + '" data-date="' + esc(b.date) + '" data-start="' + b.start + '">' + (NAMES[b.start] || (b.start + ":00")) + '<i>' + ((b.start % 12) || 12) + (b.start < 12 ? "a" : "p") + "–" + (((b.start + 6) % 12) || 12) + ((b.start + 6) % 24 < 12 ? "a" : "p") + '</i></button>';
+            return '<button type="button" class="tape-block" data-url="' + esc(b.url) + '" data-date="' + esc(b.date) + '" data-start="' + b.start + '">' + (NAMES[b.start] || (b.start + ":00")) + '<i>' + ((b.start % 12) || 12) + (b.start < 12 ? "a" : "p") + "–" + (((b.start + 6) % 12) || 12) + ((b.start + 6) % 24 < 12 ? "a" : "p") + '</i></button>';
           }).join("");
           return '<div class="tape-day"><span class="tape-day-lab">' + fmtDay(d) + '</span><div class="tape-day-row">' + row + '</div></div>';
         }).join("");
@@ -2620,7 +2843,7 @@
           shelf.querySelectorAll(".tape-block").forEach(function (x) { x.classList.remove("is-on"); });
           btn.classList.add("is-on");
           var st = +btn.getAttribute("data-start");
-          audio.src = base + "/" + btn.getAttribute("data-file");
+          audio.src = btn.getAttribute("data-url");
           title.textContent = (NAMES[st] || st + ":00") + " — " + fmtDay(btn.getAttribute("data-date"));
           sub.textContent = "six broadcast hours · Sedona time · drag anywhere";
           hoursEl.innerHTML = "";
@@ -4947,7 +5170,7 @@
   }
   function rqChime() {
     try {
-      var C = win.AudioContext || win.webkitAudioContext, c = new C();
+      var C = window.AudioContext || window.webkitAudioContext, c = new C();
       [659.25, 880].forEach(function (f, i) {
         var o = c.createOscillator(), g = c.createGain();
         o.type = "sine"; o.frequency.value = f;
@@ -5960,6 +6183,7 @@
     initSkyPage();
     initJeep();
     initTape();
+    initWindow();
     initPlaybook();
     initHomePulse();
     initRequests();
