@@ -24,7 +24,7 @@
       '<nav class="primary-nav" aria-label="Primary"><ul class="nav-list">' +
         '<li data-nav="home"><a href="index.html">Home</a></li>' +
         '<li class="has-menu" data-nav="news"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">News</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="news.html#local">Local News</a><a role="menuitem" href="news.html#national">National News</a><a role="menuitem" href="news.html#world">World News</a><a role="menuitem" href="roads.html">Roads &amp; Traffic</a><a role="menuitem" href="news.html#traffic">Weather</a>' +
+          '<a role="menuitem" href="news.html#local">Local News</a><a role="menuitem" href="news.html#national">National News</a><a role="menuitem" href="news.html#world">World News</a><a role="menuitem" href="roads.html">Roads &amp; Traffic</a><a role="menuitem" href="weather.html">Weather</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="sports"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Sports</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="sports.html#mlb">MLB &middot; Diamondbacks</a><a role="menuitem" href="sports.html#nba">NBA &middot; Suns</a><a role="menuitem" href="sports.html#nfl">NFL &middot; Cardinals</a><a role="menuitem" href="sports.html#college">College &middot; ASU, U of A, NAU</a><a role="menuitem" href="sports.html#ufc">UFC</a>' +
@@ -61,7 +61,7 @@
         '</div>' +
       '</div>' +
       '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
-      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="roads.html">Roads &amp; Traffic</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
+      '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="weather.html">Weather</a><a href="roads.html">Roads &amp; Traffic</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="The Vibe"><h4>The Vibe</h4><a href="vibe.html">Cosmic Conditions</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="wildlife.html">Seen around Sedona</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
     '</div>' +
@@ -2128,6 +2128,192 @@
     }
     drawEvents();
     var evTimer = setInterval(function () { if (!root.isConnected) { clearInterval(evTimer); return; } drawEvents(); }, 120000);
+  }
+
+  /* =========================================================
+     THE SEDONA SKY — the dedicated weather center. Big-board current
+     conditions with dewpoint/pressure/UV/AQI, RainViewer animated
+     radar (last hour + 30-min nowcast), a 24-hour canvas chart, the
+     five-elevation strip (Camp Verde -> Flagstaff, one API call),
+     7-day outlook with sun times, and a monsoon storm-fuel meter
+     (CAPE) during the season. NWS alerts + fire restrictions reuse
+     the existing site modules via their selectors. All live, always.
+     ========================================================= */
+  function skyDewpoint(tF, rh) {
+    if (tF == null || !rh) return null;
+    var tC = (tF - 32) * 5 / 9, g = Math.log(rh / 100) + (17.27 * tC) / (237.7 + tC);
+    var td = (237.7 * g) / (17.27 - g);
+    return Math.round(td * 9 / 5 + 32);
+  }
+  function skyUvLabel(u) { return u == null ? null : u < 3 ? "Low" : u < 6 ? "Moderate" : u < 8 ? "High" : u < 11 ? "Very high" : "Extreme"; }
+  function skyDir(deg) { return ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(deg / 22.5) % 16]; }
+  var SKY_SPOTS = [
+    { n: "Flagstaff", e: "6,909′", lat: 35.1983, lon: -111.6513 },
+    { n: "Oak Creek Canyon", e: "5,200′", lat: 34.9673, lon: -111.7396 },
+    { n: "Sedona", e: "4,350′", lat: 34.8697, lon: -111.7610 },
+    { n: "Cottonwood", e: "3,314′", lat: 34.7390, lon: -112.0116 },
+    { n: "Camp Verde", e: "3,147′", lat: 34.5636, lon: -111.8543 }
+  ];
+  function initSkyPage() {
+    var root = doc.querySelector("[data-sky]"); if (!root) return;
+    var wx = "https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610" +
+      "&current=temperature_2m,apparent_temperature,weather_code,is_day,relative_humidity_2m,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m,wind_direction_10m,uv_index,precipitation" +
+      "&hourly=temperature_2m,precipitation_probability,weather_code,cape&forecast_hours=25" +
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&forecast_days=7" +
+      "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FPhoenix";
+    var lats = SKY_SPOTS.map(function (s) { return s.lat; }).join(","), lons = SKY_SPOTS.map(function (s) { return s.lon; }).join(",");
+    var multi = "https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lons +
+      "&current=temperature_2m,weather_code,is_day,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FPhoenix";
+    var aq = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.8697&longitude=-111.7610&current=us_aqi&timezone=America/Phoenix";
+    Promise.all([
+      fetch(wx, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch(aq, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch(multi, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    ]).then(function (res) {
+      var d = res[0], aqi = res[1] && res[1].current && isFinite(res[1].current.us_aqi) ? Math.round(res[1].current.us_aqi) : null, spots = res[2];
+      if (d && d.current) skyBoard(root, d.current, aqi);
+      if (d && d.hourly) { skyHourly(root, d.hourly); skyMonsoon(root, d.hourly); }
+      if (d && d.daily) skyWeek(root, d.daily);
+      if (spots && spots.length === SKY_SPOTS.length) skyElev(root, spots);
+    });
+    skyRadar(root);
+  }
+  function skyBoard(root, c, aqi) {
+    var el = root.querySelector("[data-sky-now]"), tag = root.querySelector("[data-sky-tag]");
+    if (!el) return;
+    var info = wxInfo(c.weather_code, c.is_day), aq = aqiInfo(aqi);
+    var dew = skyDewpoint(c.temperature_2m, c.relative_humidity_2m);
+    var uv = c.uv_index != null ? Math.round(c.uv_index) : null;
+    if (tag) tag.textContent = info.label + ", measured over Sedona moments ago.";
+    function cell(v, lab, sub) { return '<div class="skb2"><b>' + v + '</b><span>' + lab + '</span>' + (sub ? '<i>' + sub + '</i>' : '') + '</div>'; }
+    el.innerHTML =
+      '<div class="skynow-hero"><span class="skynow-ic">' + info.icon + '</span><span class="skynow-t">' + Math.round(c.temperature_2m) + '°</span>' +
+      '<span class="skynow-meta"><b>' + esc(info.label) + '</b><i>feels like ' + Math.round(c.apparent_temperature) + '°</i></span></div>' +
+      '<div class="skynow-grid">' +
+      cell(Math.round(c.wind_speed_10m) + ' <small>mph</small>', 'wind ' + skyDir(c.wind_direction_10m), c.wind_gusts_10m ? 'gusts ' + Math.round(c.wind_gusts_10m) : '') +
+      cell(c.relative_humidity_2m + '%', 'humidity', dew != null ? 'dewpoint ' + dew + '°' : '') +
+      (uv != null ? cell(uv, 'UV index', skyUvLabel(uv)) : '') +
+      (aq ? cell(aq.v, 'air quality', aq.label) : '') +
+      cell(c.cloud_cover + '%', 'cloud cover', c.cloud_cover <= 20 ? 'photographers rejoice' : c.cloud_cover >= 75 ? 'full deck' : 'mixed sky') +
+      cell(Math.round(c.pressure_msl) + ' <small>hPa</small>', 'pressure', c.pressure_msl < 1005 ? 'stormy side' : c.pressure_msl > 1020 ? 'high & steady' : 'seasonal') +
+      '</div>';
+  }
+  function skyHourly(root, h) {
+    var cv = root.querySelector("[data-sky-hourly]"); if (!cv || !h.time) return;
+    var n = Math.min(25, h.time.length);
+    var W = cv.clientWidth || 900, H = 240, dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
+    var x = cv.getContext("2d"); x.scale(dpr, dpr);
+    var temps = h.temperature_2m.slice(0, n), pp = (h.precipitation_probability || []).slice(0, n);
+    var tMin = Math.min.apply(null, temps), tMax = Math.max.apply(null, temps), pad = 34;
+    function X(i) { return pad + (W - pad * 2) * i / (n - 1); }
+    function Y(t) { return 30 + (H - 95) * (1 - (t - tMin) / Math.max(1, tMax - tMin)); }
+    x.clearRect(0, 0, W, H);
+    // precip probability bars
+    for (var i = 0; i < n; i++) {
+      var p = pp[i] || 0; if (!p) continue;
+      var bh = (H - 95) * p / 100;
+      x.fillStyle = "rgba(80,150,220," + (0.18 + p / 250) + ")";
+      x.fillRect(X(i) - 6, H - 60 - bh, 12, bh);
+      if (p >= 30) { x.fillStyle = "rgba(60,120,190,.95)"; x.font = "700 10px Lato,sans-serif"; x.textAlign = "center"; x.fillText(p + "%", X(i), H - 66 - bh); }
+    }
+    // temp line
+    x.beginPath(); x.lineWidth = 3; x.strokeStyle = "#d9a53f"; x.lineJoin = "round";
+    for (var i = 0; i < n; i++) { i ? x.lineTo(X(i), Y(temps[i])) : x.moveTo(X(i), Y(temps[i])); }
+    x.stroke();
+    x.fillStyle = "#b07f22"; x.font = "800 12px Lato,sans-serif"; x.textAlign = "center";
+    for (var i = 0; i < n; i += 4) x.fillText(Math.round(temps[i]) + "°", X(i), Y(temps[i]) - 9);
+    // now dot
+    x.beginPath(); x.arc(X(0), Y(temps[0]), 5, 0, 7); x.fillStyle = "#a95750"; x.fill();
+    // hour labels
+    x.fillStyle = "rgba(44,38,32,.6)"; x.font = "700 10.5px Lato,sans-serif";
+    for (var i = 0; i < n; i += 4) {
+      var hh = new Date(h.time[i]).getHours(), lab = i === 0 ? "now" : ((hh % 12) || 12) + (hh < 12 ? "a" : "p");
+      x.fillText(lab, X(i), H - 40);
+    }
+    x.fillStyle = "rgba(44,38,32,.45)"; x.textAlign = "left";
+    x.fillText("— temperature   ▮ chance of rain", pad, H - 16);
+  }
+  function skyMonsoon(root, h) {
+    var el = root.querySelector("[data-sky-monsoon]"); if (!el) return;
+    var m = new Date(Date.now() - 7 * 3600000).getUTCMonth() + 1;
+    if (m < 6 || m > 9 || !h.cape) return; // monsoon season only — no theater off-season
+    var peak = 0, peakP = 0;
+    for (var i = 0; i < Math.min(25, h.cape.length); i++) { if (h.cape[i] > peak) peak = h.cape[i]; if ((h.precipitation_probability || [])[i] > peakP) peakP = h.precipitation_probability[i]; }
+    peak = Math.round(peak);
+    var verdict = peak < 300 ? ["quiet", "Not enough fuel for storms today — the sky is off duty."]
+      : peak < 1000 ? ["stirring", "Some fuel in the column — isolated buildups over the rim are possible."]
+      : peak < 2000 ? ["primed", "Real storm fuel out there — watch the radar from early afternoon."]
+      : ["loaded", "The atmosphere is loaded — expect cells to fire and check the radar before any canyon plans."];
+    el.hidden = false;
+    el.innerHTML = '<span class="sky-mon-badge sky-mon--' + verdict[0] + '">&#9889; Monsoon meter: ' + verdict[0].toUpperCase() + '</span>' +
+      '<span class="sky-mon-body"><b>Storm fuel (CAPE) peaks near ' + peak + ' J/kg in the next 24h' + (peakP ? ' · rain odds top out at ' + peakP + '%' : '') + '.</b> ' + verdict[1] + '</span>';
+  }
+  function skyElev(root, spots) {
+    var el = root.querySelector("[data-sky-elev]"), note = root.querySelector("[data-sky-elevnote]");
+    if (!el) return;
+    el.innerHTML = spots.map(function (d, i) {
+      var s = SKY_SPOTS[i], c = d.current, info = wxInfo(c.weather_code, c.is_day);
+      return '<div class="sky-spot' + (s.n === "Sedona" ? " sky-spot--home" : "") + '"><b>' + esc(s.n) + '</b><i>' + s.e + '</i>' +
+        '<span class="sky-spot-ic">' + info.icon + '</span><span class="sky-spot-t">' + Math.round(c.temperature_2m) + '°</span>' +
+        '<em>' + Math.round(c.wind_speed_10m) + ' mph</em></div>';
+    }).join("");
+    var ts = spots.map(function (d) { return d.current.temperature_2m; });
+    var spread = Math.round(Math.max.apply(null, ts) - Math.min.apply(null, ts));
+    if (note) note.textContent = "The elevator is running " + spread + "° top to bottom right now. Same hour, same sun — 3,800 feet of difference.";
+  }
+  function skyWeek(root, dl) {
+    var el = root.querySelector("[data-sky-week]"); if (!el || !dl.time) return;
+    var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    function tm(s) { var d = new Date(s); var h = d.getHours(), mn = d.getMinutes(); return ((h % 12) || 12) + ":" + (mn < 10 ? "0" : "") + mn + (h < 12 ? "a" : "p"); }
+    el.innerHTML = dl.time.map(function (t, i) {
+      var info = wxInfo(dl.weather_code[i], 1);
+      var d = new Date(t + "T12:00:00");
+      return '<div class="sky-day' + (i === 0 ? " sky-day--today" : "") + '"><b>' + (i === 0 ? "Today" : days[d.getDay()]) + '</b>' +
+        '<span class="sky-day-ic">' + info.icon + '</span>' +
+        '<span class="sky-day-t"><em>' + Math.round(dl.temperature_2m_max[i]) + '°</em> / ' + Math.round(dl.temperature_2m_min[i]) + '°</span>' +
+        (dl.precipitation_probability_max[i] ? '<span class="sky-day-p">💧 ' + dl.precipitation_probability_max[i] + '%</span>' : '<span class="sky-day-p sky-day-p--dry">dry</span>') +
+        '<i>☀︎ ' + tm(dl.sunrise[i]) + ' · ' + tm(dl.sunset[i]) + '</i></div>';
+    }).join("");
+  }
+  function skyRadar(root) {
+    var el = root.querySelector("[data-radar]"); if (!el || el.getAttribute("data-init")) return;
+    el.setAttribute("data-init", "1");
+    var timeEl = root.querySelector("[data-radar-time]"), playBtn = root.querySelector("[data-radar-play]");
+    Promise.all([
+      new Promise(function (res) { loadLeaflet(res); }),
+      fetch("https://api.rainviewer.com/public/weather-maps.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    ]).then(function (res) {
+      var L = res[0], rv = res[1];
+      if (!L || !el.isConnected) { el.innerHTML = '<p class="embed-note">The radar map is unavailable right now.</p>'; return; }
+      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true }).setView([34.8697, -111.761], 8);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { maxZoom: 12, subdomains: "abcd", attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(map);
+      L.circleMarker([34.8697, -111.761], { radius: 6, color: "#ffd88a", fillColor: "#ffd88a", fillOpacity: .9 }).addTo(map).bindTooltip("Sedona");
+      setTimeout(function () { map.invalidateSize(); }, 250);
+      if (!rv || !rv.radar) { if (timeEl) timeEl.textContent = "radar feed unavailable"; return; }
+      var frames = (rv.radar.past || []).slice(-8).concat(rv.radar.nowcast || []);
+      if (!frames.length) { if (timeEl) timeEl.textContent = "no precipitation frames"; return; }
+      var layers = frames.map(function (f) {
+        return L.tileLayer(rv.host + f.path + "/256/{z}/{x}/{y}/2/1_1.png", { opacity: 0, maxZoom: 12, attribution: "Radar &copy; RainViewer" }).addTo(map);
+      });
+      var idx = 0, playing = true, nowSec = rv.generated || Math.floor(Date.now() / 1000);
+      function show(i) {
+        layers.forEach(function (l, k) { l.setOpacity(k === i ? 0.72 : 0); });
+        if (timeEl) {
+          var f = frames[i], dt = new Date(f.time * 1000);
+          var lab = dt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+          timeEl.textContent = lab + (f.time > nowSec ? " · forecast" : "");
+        }
+      }
+      show(idx);
+      var timer = setInterval(function () {
+        if (!el.isConnected) { clearInterval(timer); return; }
+        if (!playing) return;
+        idx = (idx + 1) % frames.length; show(idx);
+      }, 750);
+      if (playBtn) playBtn.addEventListener("click", function () { playing = !playing; playBtn.innerHTML = playing ? "&#10074;&#10074;" : "&#9654;"; });
+      if (playBtn) playBtn.innerHTML = "&#10074;&#10074;";
+    });
   }
 
   function initTraffic() {
@@ -5437,6 +5623,7 @@
     initSpotTimes();
     initGeocache();
     initRoads();
+    initSkyPage();
     initPlaybook();
     initHomePulse();
     initRequests();

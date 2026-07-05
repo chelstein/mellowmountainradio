@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sedona Weather Live — Radar, Forecast &amp; Monsoon Watch | KAZM Mellow Mountain Radio</title>
+  <meta name="description" content="Sedona weather with receipts: live conditions, animated rain radar, hour-by-hour and 7-day forecasts, NWS alerts, fire restrictions, monsoon storm fuel, and the temperature elevator from Camp Verde to Flagstaff. Computed live." />
+  <link rel="canonical" href="https://mellowmountainradio.com/weather.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="KAZM Mellow Mountain Radio" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://mellowmountainradio.com/weather.html" />
+  <meta property="og:title" content="Sedona Weather Live — Radar, Forecast &amp; Monsoon Watch | KAZM" />
+  <meta property="og:description" content="Live conditions, animated rain radar, hourly and 7-day forecasts, NWS alerts, fire restrictions, and monsoon storm fuel — Sedona's sky, computed." />
+  <meta property="og:image" content="https://mellowmountainradio.com/Color%20logo%20with%20background.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Sedona Weather Live — Radar, Forecast &amp; Monsoon Watch | KAZM" />
+  <meta name="twitter:description" content="Live conditions, animated rain radar, hourly and 7-day forecasts, NWS alerts, fire restrictions, and monsoon storm fuel — Sedona's sky, computed." />
+  <meta name="twitter:image" content="https://mellowmountainradio.com/Color%20logo%20with%20background.png" />
+  <meta name="theme-color" content="#223d6e" />
+  <link rel="icon" type="image/svg+xml" href="Color%20logo%20-%20no%20background.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=38" />
+</head>
+<body data-page="news">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div data-site-header></div>
+  <main id="main">
+<section class="page-hero page-hero--stars"><div class="wrap"><p class="eyebrow">NWS + Open-Meteo + live radar &middot; refreshed continuously</p><h1>The Sedona sky, computed</h1><p class="lead">Desert weather doesn&rsquo;t drift in &mdash; it ambushes. Monsoon cells build over the rim in an hour, the canyon ices while town stays dry, and the valley runs eleven degrees hotter than Flagstaff all summer. This page watches all of it, live, so you don&rsquo;t have to guess.</p><div class="page-hero-cta"><button class="btn btn-primary" data-listen aria-pressed="false"><svg viewBox="0 0 256 256" width="18" height="18" aria-hidden="true"><path d="M232.4 114.5 88.3 26.6a16 16 0 0 0-24.3 13.5v175.8a16 16 0 0 0 24.3 13.5l144.1-87.9a15.9 15.9 0 0 0 0-27z"/></svg><span data-listen-label>Listen Live</span></button><a class="btn btn-ghost btn-ghost--light" href="#radar">Jump to the radar</a></div></div></section>
+<div data-sky>
+<section class="page-section"><div class="wrap">
+  <div class="wx-alerts" data-alerts></div>
+  <div class="fire" data-fire></div>
+  <div class="section-head"><h2>Right now</h2><p class="lead" data-sky-tag>Reading the sky over the red rocks&hellip;</p></div>
+  <div class="skynow" data-sky-now></div>
+</div></section>
+<section class="page-section page-section--tint" id="radar"><div class="wrap">
+  <div class="section-head"><h2>&#127785;&#65039; Live radar</h2><p class="lead">The last hour of rain and the next half hour of nowcast, animated over the Verde Valley. When a monsoon cell pops over the rim, you&rsquo;ll see it here before you hear it.</p></div>
+  <div class="radar-frame"><div class="radar-map" data-radar aria-label="Animated precipitation radar over Sedona"></div><div class="radar-bar"><button class="radar-play" type="button" data-radar-play aria-label="Play or pause radar animation">&#9654;</button><span class="radar-time" data-radar-time>&mdash;</span><span class="radar-src">Radar &copy; RainViewer &middot; NWS network</span></div></div>
+</div></section>
+<section class="page-section"><div class="wrap">
+  <div class="section-head"><h2>The next 24 hours</h2><p class="lead">Temperature curve and rain odds, hour by hour &mdash; drawn from the same feed the forecast desks use.</p></div>
+  <canvas class="sky-hourly" data-sky-hourly aria-label="24-hour temperature and precipitation chart"></canvas>
+  <div class="sky-monsoon" data-sky-monsoon hidden></div>
+</div></section>
+<section class="page-section page-section--tint"><div class="wrap">
+  <div class="section-head"><h2>&#127956;&#65039; One valley, five skies</h2><p class="lead">Sedona sits on a 3,800-foot elevator between Camp Verde and Flagstaff &mdash; same moment, five different skies. Measured right now:</p></div>
+  <div class="sky-elev" data-sky-elev></div>
+  <p class="micro-note" data-sky-elevnote></p>
+</div></section>
+<section class="page-section"><div class="wrap">
+  <div class="section-head"><h2>The week ahead</h2><p class="lead">Seven days out, with sunrise and sunset for each &mdash; plan the hikes and the golden hours in one look.</p></div>
+  <div class="sky-week" data-sky-week></div>
+</div></section>
+<section class="page-section page-section--tint"><div class="wrap">
+  <div class="section-head"><h2>When it turns bad</h2><p class="lead">The whole reason a mountain town keeps a 5,000-watt AM station.</p></div>
+  <div class="card-grid">
+    <div class="info-card"><h3>&#128251; Keep the dial handy</h3><p>Cell coverage dies in the canyon and power flickers in storms &mdash; 780 AM doesn&rsquo;t. When weather gets serious, KAZM carries emergency information the moment it moves. That&rsquo;s been the job since 1974.</p></div>
+    <div class="info-card"><h3>&#128663; Storm on the roads?</h3><p>The <a href="roads.html">Roads &amp; Traffic center</a> has live canyon cameras and every AZ511 incident &mdash; snow on the switchbacks shows up there before it shows up under your tires.</p></div>
+    <div class="info-card"><h3>&#127754; Flash flood country</h3><p>Slot canyons and creek crossings turn deadly fast in monsoon season. Check the <a href="events.html#creek">live Oak Creek gauge</a> before you swim, and never drive through running water &mdash; not even in the big truck.</p></div>
+  </div>
+</div></section>
+</div>
+  </main>
+  <div data-site-footer></div>
+  <script src="main.js?v=38" defer></script>
+</body>
+</html>
