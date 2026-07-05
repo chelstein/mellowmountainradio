@@ -2637,9 +2637,16 @@
     var TREES = []; var ts = 42;
     for (var i = 0; i <= 40; i++) { ts = (ts * 16807) % 2147483647; TREES.push(.6 - ((ts % 100) / 100) * .06); }
     var STONES = [[.06,.9,.09],[.16,.94,.11],[.27,.9,.08],[.12,.84,.07],[.22,.85,.06],[.35,.95,.09]];
-    var t0 = Date.now();
+    var t0 = Date.now(), previewMin = null; // minutes-of-day when time-traveling, null = live
+    var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0;
     function paint() {
-      var now = new Date(), alt = swSunAlt(now);
+      var now = new Date();
+      if (previewMin != null) {
+        // same date, chosen Sedona time — sun math wants UTC, Sedona is UTC-7
+        var utcMin = (previewMin + 7 * 60) % 1440;
+        now = new Date(now); now.setUTCHours(Math.floor(utcMin / 60), utcMin % 60, 0, 0);
+      }
+      var alt = swSunAlt(now);
       var el = (Date.now() - t0) / 1000;
       // sky: night -> astro dawn -> golden -> day, from real solar altitude
       var top, bot;
@@ -2663,13 +2670,17 @@
           x.fillRect(s[0] * W, s[1] * H, s[2] * .8, s[2] * .8);
         });
         x.globalAlpha = 1;
-        // the real moon, real phase
-        var m = moonInfo();
+        // the real moon, real phase — semicircle + terminator ellipse, the honest way
+        var mi = moonInfo(), f = Math.max(0, Math.min(1, mi.illum / 100));
+        var waning = (mi.name || "").toLowerCase().indexOf("waning") !== -1;
         var mx = W * .78, my = H * .18, mr = Math.max(10, W * .022);
-        x.beginPath(); x.arc(mx, my, mr, 0, 7); x.fillStyle = "#f3ecd9"; x.fill();
-        var off = (1 - 2 * (m.illum / 100)) * mr * ((m.name || "").indexOf("axing") !== -1 ? 1 : -1);
-        x.beginPath(); x.arc(mx + off, my, mr * 1.02, 0, 7); x.fillStyle = swRGB(top); x.fill();
-        x.beginPath(); x.arc(mx, my, mr, 0, 7); x.strokeStyle = "rgba(243,236,217,.25)"; x.lineWidth = 1; x.stroke();
+        var moonLit = "#f3ecd9", moonDark = "rgba(60,64,88,.9)";
+        x.beginPath(); x.arc(mx, my, mr, 0, 7); x.fillStyle = moonDark; x.fill();
+        x.beginPath(); x.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); x.closePath();
+        x.fillStyle = moonLit; x.fill();
+        x.beginPath(); x.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
+        x.fillStyle = f >= .5 ? moonLit : moonDark; x.fill();
+        x.beginPath(); x.arc(mx, my, mr, 0, 7); x.strokeStyle = "rgba(243,236,217,.3)"; x.lineWidth = 1; x.stroke();
       }
       // low sun disk in the window during golden/dawn
       if (alt > -2 && alt < 14) {
@@ -2759,6 +2770,71 @@
       x.strokeStyle = swRGB(steel); x.lineWidth = 1.2;
       x.beginPath(); x.moveTo(gx - W * .011, gy); x.lineTo(gx - W * .02, gy + H * .05);
       x.moveTo(gx + W * .011, gy); x.lineTo(gx + W * .02, gy + H * .05); x.stroke();
+      // a raven now and then, gliding the length of the sky
+      if (!reduced) {
+        if (!raven && el - lastRaven > 18 && Math.random() < .01) { raven = { t: 0, y: .12 + Math.random() * .2, dir: Math.random() < .5 ? 1 : -1 }; }
+        if (raven) {
+          raven.t += .0035;
+          var rx2 = raven.dir > 0 ? raven.t : 1 - raven.t;
+          if (raven.t >= 1) { raven = null; lastRaven = el; }
+          else {
+            var ry = (raven.y + Math.sin(raven.t * 9) * .012) * H, rxp = rx2 * W;
+            var flap = Math.sin(el * 7) * H * .012;
+            x.strokeStyle = alt < -6 ? "rgba(200,205,220,.5)" : "rgba(24,18,14,.75)"; x.lineWidth = 2; x.lineCap = "round";
+            x.beginPath(); x.moveTo(rxp - W * .012, ry - flap); x.quadraticCurveTo(rxp, ry + H * .008, rxp + W * .012, ry - flap); x.stroke();
+          }
+        }
+        // shooting star, night only, rare
+        if (alt < -10) {
+          if (!shoot && el - lastShoot > 14 && Math.random() < .006) { shoot = { t: 0, x0: .15 + Math.random() * .5, y0: .06 + Math.random() * .15 }; }
+          if (shoot) {
+            shoot.t += .06;
+            if (shoot.t >= 1) { shoot = null; lastShoot = el; }
+            else {
+              var sxp = (shoot.x0 + shoot.t * .16) * W, syp = (shoot.y0 + shoot.t * .07) * H;
+              var grd = x.createLinearGradient(sxp - W * .06, syp - H * .025, sxp, syp);
+              grd.addColorStop(0, "rgba(255,255,255,0)"); grd.addColorStop(1, "rgba(255,255,255," + (.9 - shoot.t * .8) + ")");
+              x.strokeStyle = grd; x.lineWidth = 1.6;
+              x.beginPath(); x.moveTo(sxp - W * .06, syp - H * .025); x.lineTo(sxp, syp); x.stroke();
+            }
+          }
+        }
+      }
+      // the windowsill radio — notes drift out while the stream is really playing
+      var rx0 = W * .07, ry0 = H * .93;
+      x.fillStyle = swRGB(swMix([50, 34, 26], [130, 96, 70], lit));
+      x.beginPath(); if (x.roundRect) x.roundRect(rx0 - W * .028, ry0 - H * .055, W * .056, H * .05, 4); else x.rect(rx0 - W * .028, ry0 - H * .055, W * .056, H * .05); x.fill();
+      x.fillStyle = "rgba(255,233,168,.9)";
+      x.fillRect(rx0 - W * .018, ry0 - H * .043, W * .022, H * .016);
+      x.beginPath(); x.arc(rx0 + W * .016, ry0 - H * .032, Math.max(2, W * .005), 0, 7); x.fill();
+      x.strokeStyle = "rgba(24,18,14,.8)"; x.lineWidth = 1;
+      x.beginPath(); x.moveTo(rx0 + W * .02, ry0 - H * .055); x.lineTo(rx0 + W * .028, ry0 - H * .085); x.stroke();
+      var isOn = typeof playing !== "undefined" && playing;
+      if (isOn && !reduced) {
+        if (el - lastNote > 1.4) { lastNote = el; notes.push({ t: 0, dx: Math.random() * .02 - .01, g: Math.random() < .5 ? "♪" : "♫" }); }
+        notes = notes.filter(function (n) { return n.t < 1; });
+        notes.forEach(function (n) {
+          n.t += .004;
+          x.globalAlpha = 1 - n.t;
+          x.font = Math.round(Math.max(11, W * .014)) + "px serif";
+          x.fillStyle = "#ffe9a8"; x.textAlign = "center";
+          x.fillText(n.g, (rx0 / W + n.dx + Math.sin(n.t * 8) * .008) * W, ry0 - H * .08 - n.t * H * .3);
+        });
+        x.globalAlpha = 1;
+      }
+      // the brass plate: what the transmitter is actually singing
+      if (typeof lastNow !== "undefined" && lastNow && lastNow.title && lastNow.title !== "Mellow Mountain Radio") {
+        var plate = "♪  " + lastNow.title + " — " + lastNow.artist;
+        x.font = "700 " + Math.round(Math.max(11, W * .012)) + "px Lato, sans-serif";
+        var pw = Math.min(W * .55, x.measureText(plate).width + 26);
+        var px0 = W * .5 - pw / 2, py0 = H - Math.max(24, H * .075);
+        x.fillStyle = "rgba(20,14,10,.78)";
+        x.beginPath(); if (x.roundRect) x.roundRect(px0, py0, pw, Math.max(20, H * .052), 6); else x.rect(px0, py0, pw, Math.max(20, H * .052)); x.fill();
+        x.strokeStyle = "rgba(255,216,138,.5)"; x.lineWidth = 1; x.stroke();
+        x.fillStyle = "#ffe9a8"; x.textAlign = "center"; x.textBaseline = "middle";
+        x.fillText(plate, W * .5, py0 + Math.max(10, H * .026), pw - 16);
+        x.textBaseline = "alphabetic";
+      }
       // rain, only when it's really raining
       if (wx.code >= 51) {
         x.strokeStyle = "rgba(180,200,230,.35)"; x.lineWidth = 1;
@@ -2773,12 +2849,28 @@
       x.lineWidth = Math.max(3, W * .004);
       x.beginPath(); x.moveTo(W / 2, 0); x.lineTo(W / 2, H); x.moveTo(0, H * .5); x.lineTo(W, H * .5); x.stroke();
       if (cap) {
-        var ph = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "America/Phoenix" });
-        cap.textContent = ph + " in Sedona · sun " + (alt >= 0 ? Math.round(alt) + "° up" : Math.round(-alt) + "° below the horizon") +
+        var ph;
+        if (previewMin != null) {
+          var hh = Math.floor(previewMin / 60), mm = previewMin % 60;
+          ph = "PREVIEWING " + ((hh % 12) || 12) + ":" + (mm < 10 ? "0" : "") + mm + (hh < 12 ? " AM" : " PM");
+        } else ph = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "America/Phoenix" }) + " in Sedona";
+        cap.textContent = ph + " · sun " + (alt >= 0 ? Math.round(alt) + "° up" : Math.round(-alt) + "° below the horizon") +
           " · " + wx.cover + "% cloud" + (wx.code >= 51 ? " · raining" : "") + (wx.temp != null ? " · " + wx.temp + "°" : "") +
-          " — drawn from the real sky, nothing staged";
+          (previewMin != null ? " — time travel; tap LIVE to come home" : " — drawn from the real sky, nothing staged");
       }
     }
+    var scrub = doc.querySelector("[data-window-scrub]"), liveBtn = doc.querySelector("[data-window-live]");
+    if (scrub) scrub.addEventListener("input", function () {
+      previewMin = (+scrub.value) * 15;
+      if (liveBtn) liveBtn.classList.add("is-armed");
+      if (reduced) paint();
+    });
+    if (liveBtn) liveBtn.addEventListener("click", function () {
+      previewMin = null; liveBtn.classList.remove("is-armed");
+      if (scrub) { var n2 = new Date(); var pmin = (n2.getUTCHours() * 60 + n2.getUTCMinutes() - 7 * 60 + 1440) % 1440; scrub.value = Math.round(pmin / 15); }
+      if (reduced) paint();
+    });
+    if (scrub) { var n3 = new Date(); scrub.value = Math.round(((n3.getUTCHours() * 60 + n3.getUTCMinutes() - 7 * 60 + 1440) % 1440) / 15); }
     paint();
     if (reduced) { var rT = setInterval(function () { if (!cv.isConnected) { clearInterval(rT); return; } paint(); }, 60000); }
     else { (function loop() { if (!cv.isConnected) return; paint(); requestAnimationFrame(function () { setTimeout(loop, 100); }); })(); }
