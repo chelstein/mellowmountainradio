@@ -38,8 +38,8 @@ Mac Studio → notification + spoken alert + "KAZM Requests.txt" on the Desktop
 
 - The queue lives in n8n workflow static data — zero credentials, zero
   database. It holds up to 50 pending requests and is drained every minute.
-- The poller keeps a human in the loop by design: a notification the studio reads is honest; auto-inserting into a live broadcast is opt-in later (see the
-  MegaSeg AppleScript notes at the bottom of the poller script).
+- Requests are a log for the studio, by design. Nothing here touches MegaSeg
+  or the playout system — the broadcast is never overridden.
 - Nothing in this folder contains a secret — you set your own key in two
   places during setup.
 
