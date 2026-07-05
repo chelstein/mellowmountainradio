@@ -37,14 +37,5 @@ for r in reqs:
     subprocess.run(["say", "-v", "Samantha", f"Song request: {title}, by {artist}"])
 ' "$LOG"
 
-# ── OPTIONAL: fully automatic MegaSeg insert ─────────────────────────────
-# MegaSeg (Pro) exposes an AppleScript dictionary, but the exact commands
-# vary by version. To wire auto-insert:
-#   1. On the Mac Studio open Script Editor → File → Open Dictionary → MegaSeg
-#   2. Find the command that adds/queues a track (and how it matches by
-#      title/artist in your library)
-#   3. Replace the notification block above with an `osascript` call using
-#      that command
-# Until you have verified the dictionary on YOUR MegaSeg version, leave this
-# off — a notification the DJ acts on is honest; a script that silently
-# fails is not.
+# Requests are a log for the studio, by design — this script never touches
+# MegaSeg or the playout system.

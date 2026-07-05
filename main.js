@@ -4221,8 +4221,8 @@
      playout chain. request-library.json is the actual MegaSeg library
      exported from the studio Mac (the machine that feeds 106.5 FM,
      780 AM, and every relay). A request travels site -> n8n queue ->
-     studio, where it pops on the playout Mac's screen. Requests are
-     accepted and read — never auto-queued; the playlist stays ours. The section only appears when
+     studio. Requests are accepted and logged, nothing more — the
+     playout system is never touched by anything on this site. The section only appears when
      the studio bridge answers its probe — never a dead form.
      ========================================================= */
   var REQUEST_HOOK = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
@@ -4286,7 +4286,7 @@
           .then(function (d) {
             if (d.success === true) {
               c.classList.add("is-done"); b.textContent = "✓ Sent to the studio";
-              status.textContent = "“" + s.t + "” is on the studio screen. No promises on air time — the playlist stays ours — but every request gets read, and yours just got heard.";
+              status.textContent = "“" + s.t + "” is logged for the studio. No promises on air time — the playout stays ours — but every request gets read, and yours just got heard.";
               status.className = "rq-status rq-status--ok";
               try { localStorage.setItem("kazm-request-at", String(Date.now())); } catch (e) {}
             } else {
