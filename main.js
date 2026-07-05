@@ -365,6 +365,7 @@
       setAll("[data-now-track]", song.title || "Mellow Mountain Radio");
       setAll("[data-now-artist]", song.artist || "106.5 FM & 780 AM");
       lastNow = { title: song.title || "Mellow Mountain Radio", artist: song.artist || "KAZM" };
+      rqOnAir(song);
       highlightOnAir(song.artist);
       updateTabTitle();
       fetchArtwork(song.artist, song.title).then(function (meta) {
@@ -4222,23 +4223,94 @@
      exported from the studio Mac (the machine that feeds 106.5 FM,
      780 AM, and every relay). A request travels site -> n8n queue ->
      studio. Requests are accepted and logged, nothing more — the
-     playout system is never touched by anything on this site. The section only appears when
-     the studio bridge answers its probe — never a dead form.
+     playout system is never touched by anything on this site. The
+     section only appears when the studio bridge answers its probe.
+     Extras, all real: a public jukebox wall of recent requests, mood
+     suggestions computed from live Sedona conditions, a just-played
+     guard read from the actual song history, and an on-air moment —
+     the site notices when your requested song is really playing.
      ========================================================= */
   var REQUEST_HOOK = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
+  var REQUEST_BOARD = "https://n8n.mellowmountainradio.com/webhook/kazm-request-board";
+  function rqNorm(x) { return String(x || "").toLowerCase().replace(/\(.*?\)|\[.*?\]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
+  function rqOnAir(song) {
+    if (!song || !song.title) return;
+    var saved; try { saved = JSON.parse(localStorage.getItem("kazm-request-song") || "null"); } catch (e) { saved = null; }
+    if (!saved || !saved.t || Date.now() - saved.at > 172800000) return;
+    var key = saved.t + "|" + saved.a;
+    try { if (localStorage.getItem("kazm-request-played") === key) return; } catch (e) {}
+    var nt = rqNorm(song.title), st = rqNorm(saved.t);
+    if (!nt || !st || (nt.indexOf(st) === -1 && st.indexOf(nt) === -1)) return;
+    if (saved.a) {
+      var na = rqNorm(song.artist), sa = rqNorm(saved.a);
+      if (na && sa && na.indexOf(sa) === -1 && sa.indexOf(na) === -1) return;
+    }
+    try { localStorage.setItem("kazm-request-played", key); } catch (e) {}
+    var t = doc.createElement("div"); t.className = "rq-onair"; t.setAttribute("role", "status");
+    t.innerHTML = '<span class="rq-onair-ic">🎉</span><span class="rq-onair-t"><b>Your request is ON THE AIR</b>' +
+      '“' + esc(saved.t) + '” — ' + esc(saved.a) + ' · playing right now on 106.5 FM &amp; 780 AM</span>' +
+      '<button type="button" aria-label="Dismiss">&times;</button>';
+    doc.body.appendChild(t);
+    requestAnimationFrame(function () { t.classList.add("is-in"); });
+    t.querySelector("button").addEventListener("click", function () { t.remove(); });
+    setTimeout(function () { if (t.isConnected) { t.classList.remove("is-in"); setTimeout(function () { t.remove(); }, 500); } }, 45000);
+  }
+  function rqChime() {
+    try {
+      var C = win.AudioContext || win.webkitAudioContext, c = new C();
+      [659.25, 880].forEach(function (f, i) {
+        var o = c.createOscillator(), g = c.createGain();
+        o.type = "sine"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, c.currentTime + i * 0.12);
+        g.gain.exponentialRampToValueAtTime(0.06, c.currentTime + i * 0.12 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + i * 0.12 + 0.5);
+        o.connect(g); g.connect(c.destination);
+        o.start(c.currentTime + i * 0.12); o.stop(c.currentTime + i * 0.12 + 0.55);
+      });
+      setTimeout(function () { c.close(); }, 1500);
+    } catch (e) {}
+  }
+  function rqAgo(iso) {
+    var s = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (!(s >= 0)) return "";
+    if (s < 90) return "just now";
+    if (s < 5400) return Math.round(s / 60) + " min ago";
+    if (s < 129600) return Math.round(s / 3600) + " hr ago";
+    return Math.round(s / 86400) + " days ago";
+  }
   function initRequests() {
     var el = doc.querySelector("[data-request-line]"); if (!el) return;
     Promise.all([
       fetch("request-library.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       fetch(REQUEST_HOOK, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ probe: true }) })
+        .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch(NOWPLAYING_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FPhoenix", { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
     ]).then(function (res) {
-      var songs = res[0], probe = res[1];
+      var songs = res[0], probe = res[1], np = res[2], wx = res[3];
       if (!songs || !songs.length || !probe || probe.success !== true) return; // bridge offline — stay hidden
       el.hidden = false;
       var grid = el.querySelector("[data-rq-grid]"), inp = el.querySelector("[data-rq-search]"),
           cnt = el.querySelector("[data-rq-count]"), status = el.querySelector("[data-rq-status]"),
-          shuf = el.querySelector("[data-rq-shuffle]");
+          shuf = el.querySelector("[data-rq-shuffle]"), live = el.querySelector("[data-rq-live]"),
+          mood = el.querySelector("[data-rq-mood]"), nameIn = el.querySelector("[data-rq-name]"),
+          noteIn = el.querySelector("[data-rq-note]"), wallWrap = el.querySelector("[data-rq-wallwrap]"),
+          wall = el.querySelector("[data-rq-wall]");
+
+      // live listener count — same feed the player runs on
+      var lc = np && np.listeners ? (np.listeners.current != null ? np.listeners.current : np.listeners.total) : null;
+      if (live && lc != null && lc > 0) {
+        live.hidden = false;
+        live.innerHTML = '<i></i>' + lc + (lc === 1 ? " person is" : " people are") + " listening across the mountain right now — a request plays to all of them.";
+      }
+
+      // what actually aired lately, for the just-played guard
+      var aired = {};
+      ((np && np.song_history) || []).forEach(function (h) {
+        if (h && h.song) aired[rqNorm(h.song.title) + "|" + rqNorm(h.song.artist)] = (h.played_at || 0) * 1000;
+      });
+
       function card(s, i) {
         return '<div class="rq-card" data-i="' + i + '"><span class="rq-art" aria-hidden="true">&#9834;</span>' +
           '<span class="rq-meta"><b>' + esc(s.t) + '</b><i>' + esc(s.a) + '</i></span>' +
@@ -4269,6 +4341,53 @@
         render(hits);
         cnt.textContent = hits.length ? hits.length + (hits.length === 24 ? "+" : "") + " match" + (hits.length === 1 ? "" : "es") + " in the library." : "Nothing in the library matches “" + inp.value.trim() + "” — try the artist’s name, or hit Surprise me.";
       }
+
+      // THE MOUNTAIN'S MOOD — suggestions computed from real conditions,
+      // matched against real library titles. Receipts in the label.
+      (function () {
+        if (!mood) return;
+        var hour = new Date(Date.now() - 7 * 3600000).getUTCHours();
+        var code = wx && wx.current ? wx.current.weather_code : null;
+        var temp = wx && wx.current ? Math.round(wx.current.temperature_2m) : null;
+        var g = null; try { g = goldenTimes(new Date()); } catch (e) {}
+        var now = Date.now(), pick = null;
+        function T(dt) { return skyTime(dt, -7); }
+        if (code != null && code >= 51) pick = { why: "Weather says rain on the rocks right now", terms: ["rain", "storm", "water", "thunder"] };
+        else if (g && now >= g.evening.b.goldEveStart.getTime() && now <= g.evening.b.sunset.getTime() + 1200000) pick = { why: "Golden hour is on — sunset at " + T(g.evening.b.sunset), terms: ["sun", "gold", "sail", "light", "horizon"] };
+        else if (hour >= 21 || hour < 5) pick = { why: "Sedona after dark — " + (temp != null ? temp + "° and " : "") + "stars out", terms: ["night", "moon", "star", "dream", "midnight"] };
+        else if (temp != null && temp >= 95) pick = { why: "It’s " + temp + "° out there — songs for the heat", terms: ["heat", "summer", "sun", "water", "shade"] };
+        else if (hour < 11) pick = { why: "First light on the mesa" + (temp != null ? " — " + temp + "° and climbing" : ""), terms: ["morning", "day", "light", "easy"] };
+        else pick = { why: "Blue-sky Sedona" + (temp != null ? " — " + temp + "° right now" : ""), terms: ["sky", "free", "easy", "ride", "highway", "wind"] };
+        var m = [];
+        for (var i = 0; i < songs.length && m.length < 6; i++) {
+          var tl = songs[i].t.toLowerCase();
+          for (var k = 0; k < pick.terms.length; k++) { if (tl.indexOf(pick.terms[k]) !== -1) { m.push(i); break; } }
+        }
+        if (m.length < 3) return;
+        mood.hidden = false;
+        mood.innerHTML = '<span class="rq-mood-why">' + esc(pick.why) + ' &mdash; the library agrees:</span>' +
+          m.map(function (i) { return '<button type="button" class="rq-mood-chip" data-t="' + esc(songs[i].t) + '">' + esc(songs[i].t) + '</button>'; }).join("");
+        mood.addEventListener("click", function (ev) {
+          var b = ev.target.closest ? ev.target.closest(".rq-mood-chip") : null; if (!b) return;
+          inp.value = b.getAttribute("data-t"); apply();
+        });
+      })();
+
+      // THE JUKEBOX WALL — recent real requests, public by design
+      function drawWall() {
+        fetch(REQUEST_BOARD, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+          var reqs = d && d.requests;
+          if (!reqs || !reqs.length || !wallWrap) return;
+          wallWrap.hidden = false;
+          wall.innerHTML = reqs.map(function (r) {
+            return '<div class="rq-wcard"><b>' + esc(r.title) + '</b><i>' + esc(r.artist || "") + '</i>' +
+              '<span class="rq-wby">' + (r.name ? "— " + esc(r.name) : "— a listener") + (r.at ? ' · ' + rqAgo(r.at) : '') + '</span>' +
+              (r.note ? '<span class="rq-wnote">“' + esc(r.note) + '”</span>' : '') + '</div>';
+          }).join("");
+        }).catch(function () {});
+      }
+      drawWall();
+
       var deb; inp.addEventListener("input", function () { clearTimeout(deb); deb = setTimeout(apply, 160); });
       shuf.addEventListener("click", function () { inp.value = ""; renderShuffle(); });
       grid.addEventListener("click", function (ev) {
@@ -4280,15 +4399,29 @@
           status.textContent = "One request per listener every 15 minutes — yours is still warm in the studio. Try again in " + Math.ceil(wait / 60000) + " min.";
           status.className = "rq-status rq-status--err"; return;
         }
+        // just-played guard: this is the real broadcast history talking
+        var when = aired[rqNorm(s.t) + "|" + rqNorm(s.a)];
+        if (when && Date.now() - when < 5400000 && !b.dataset.sure) {
+          b.dataset.sure = "1"; b.textContent = "Request anyway";
+          status.textContent = "Good ear — “" + s.t + "” actually aired " + rqAgo(new Date(when).toISOString()) + ". Tap again if you want it back, or dig for a deeper cut.";
+          status.className = "rq-status rq-status--err"; return;
+        }
         b.disabled = true; b.textContent = "Sending…";
-        fetch(REQUEST_HOOK, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: s.t, artist: s.a }) })
+        fetch(REQUEST_HOOK, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: s.t, artist: s.a, name: nameIn ? nameIn.value.trim().slice(0, 60) : "", note: noteIn ? noteIn.value.trim().slice(0, 140) : "" }) })
           .then(function (r) { return r.json().catch(function () { return {}; }); })
           .then(function (d) {
             if (d.success === true) {
               c.classList.add("is-done"); b.textContent = "✓ Sent to the studio";
-              status.textContent = "“" + s.t + "” is logged for the studio. No promises on air time — the playout stays ours — but every request gets read, and yours just got heard.";
+              status.textContent = "“" + s.t + "” is logged for the studio. No promises on air time — the playout stays ours — but every request gets read, and yours just got heard. Leave this site open: if it airs, we’ll tell you the moment it does.";
               status.className = "rq-status rq-status--ok";
-              try { localStorage.setItem("kazm-request-at", String(Date.now())); } catch (e) {}
+              rqChime();
+              try {
+                localStorage.setItem("kazm-request-at", String(Date.now()));
+                localStorage.setItem("kazm-request-song", JSON.stringify({ t: s.t, a: s.a, at: Date.now() }));
+                localStorage.removeItem("kazm-request-played");
+              } catch (e) {}
+              setTimeout(drawWall, 800);
             } else {
               b.disabled = false; b.textContent = "Request";
               status.textContent = d.message || "Requests are backed up right now — give it a few minutes and try again.";

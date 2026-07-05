@@ -8,7 +8,9 @@ carries it there:
 listener on mellowmountainradio.com/music.html
         │  POST {title, artist, name}
         ▼
-n8n.mellowmountainradio.com  (workflow in this folder — queues it, no DB needed)
+n8n.mellowmountainradio.com  (workflow in this folder — queues it, no DB needed;
+        also serves the public "jukebox wall" of recent requests at
+        GET /webhook/kazm-request-board)
         ▲
         │  GET drain (poller, every 60s, secret key)
 Mac Studio → notification + spoken alert + "KAZM Requests.txt" on the Desktop
@@ -40,3 +42,12 @@ Mac Studio → notification + spoken alert + "KAZM Requests.txt" on the Desktop
   MegaSeg AppleScript notes at the bottom of the poller script).
 - Nothing in this folder contains a secret — you set your own key in two
   places during setup.
+
+## Upgrading from workflow v1
+
+The v2 workflow in this folder adds dedications and the public jukebox-wall
+endpoint. To upgrade a running v1: deactivate + delete the old workflow in
+n8n, import this file again (Import from URL works:
+https://raw.githubusercontent.com/chelstein/mellowmountainradio/main/studio-bridge/n8n-kazm-request-line.json),
+set your drain secret again, activate. The site detects the wall endpoint on
+its own — v1 keeps working meanwhile, just without the wall and dedications.
