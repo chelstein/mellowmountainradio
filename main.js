@@ -2630,9 +2630,9 @@
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var W, H, x;
     function size() {
-      // a real window is portrait: tower tip to flagstones
-      var maxW = Math.min(680, (cv.parentNode && cv.parentNode.clientWidth) || 680);
-      W = maxW; H = Math.round(W * 1.1);
+      // widescreen, like the streams it grew up on
+      var maxW = Math.min(940, (cv.parentNode && cv.parentNode.clientWidth) || 940);
+      W = maxW; H = Math.round(W * .6);
       cv.style.width = W + "px"; cv.style.margin = "0 auto";
       var dpr = Math.min(2, window.devicePixelRatio || 1);
       cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
@@ -2661,9 +2661,10 @@
     // midday frame while the sun is high.
     // the plates are PAINTED from the real photographs — the chillhop look,
     // the real yard: same framing, same masks, every live system still runs
-    // ONE painting. The real sun and the real weather do all the acting.
+    // ONE painting, widescreen — the yard at moonrise, the dog mid-rounds,
+    // the tower on the right. The real sun and weather do all the acting.
     var PLATES = [
-      { src: "paint-dusk.jpg", mk: "skymask-dusk.png", pool: "dusk", prim: 1, full: 1, hz: .72, beacon: [.583, .034], nightOk: 1, name: "the back door, painted" }
+      { src: "paint-wide.jpg", mk: "skymask-wide.png", pool: "dusk", prim: 1, hz: .58, nightOk: 1, name: "the yard, painted" }
     ];
     function ensurePlate(p) {
       if (p.loading) return;
@@ -2782,7 +2783,7 @@
     })();
     var TOWER_TIP = [.583, .034]; // the real tower tip in the cropped frame
     var t0 = Date.now(), previewMin = null; // minutes-of-day when time-traveling, null = live
-    var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0, flashT = 0, lastFlash = 0;
+    var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0, flashT = 0, lastFlash = 0, eqZero = 0;
     function paintPhoto(alt, el, now) {
       // cover-fit the real photograph
       var iw = PHOTO.img.naturalWidth, ih = PHOTO.img.naturalHeight;
@@ -2840,14 +2841,14 @@
       // GRADE by the real sun: the dusk frame is lifted for day only as far
       // as the real midday plate hasn't already taken over
       if (alt > 8 && dayMix < 1) { // daylight lift — calibrated to the real midday frames (IMG_6128-31)
-        var day = Math.min(1, (alt - 8) / 25) * (1 - dayMix);
+        var day = Math.min(1, (alt - 8) / 55) * (1 - dayMix);
         x.globalCompositeOperation = "screen";
-        x.fillStyle = "rgba(140,170,205," + (day * .24) + ")"; x.fillRect(0, 0, W, H);
+        x.fillStyle = "rgba(140,170,205," + (day * .16) + ")"; x.fillRect(0, 0, W, H);
         x.fillStyle = "rgba(255,240,210," + (day * .08) + ")"; x.fillRect(0, 0, W, H);
         // re-deepen the lifted sky to Sedona's real saturated blue
         x.globalCompositeOperation = "multiply";
         var db = x.createLinearGradient(0, 0, 0, H * .55);
-        db.addColorStop(0, "rgba(74,126,212," + (day * .55) + ")");
+        db.addColorStop(0, "rgba(74,126,212," + (day * .38) + ")");
         db.addColorStop(1, "rgba(74,126,212,0)");
         x.fillStyle = db; x.fillRect(0, 0, W, H * .55);
         x.globalCompositeOperation = "source-over";
@@ -2872,7 +2873,7 @@
       if (alt > 0) {
         var flm = Math.min(1, alt / 20);
         x.globalCompositeOperation = "screen";
-        x.fillStyle = "rgba(18,14,26," + (.38 * flm) + ")"; x.fillRect(0, 0, W, H);
+        x.fillStyle = "rgba(18,14,26," + (.26 * flm) + ")"; x.fillRect(0, 0, W, H);
         x.globalCompositeOperation = "source-over";
       }
       // warm analog room tone + soft vignette — the record sounds like this
@@ -2884,12 +2885,12 @@
       x.fillStyle = vg; x.fillRect(0, 0, W, H);
       // the cloud deck flattens the real sky, exactly as much as it's covered
       var deck = Math.max(0, Math.min(1, wx.cover / 100));
-      if (deck > .25) {
-        var g2 = x.createLinearGradient(0, 0, 0, H * .55);
-        var washA = (deck - .25) * (alt < -4 ? .45 : .6);
-        g2.addColorStop(0, "rgba(" + (alt < -4 ? "60,66,84" : "168,172,182") + "," + washA + ")");
-        g2.addColorStop(1, "rgba(" + (alt < -4 ? "60,66,84" : "168,172,182") + ",0)");
-        x.fillStyle = g2; x.fillRect(0, 0, W, H * .55);
+      if (deck > .45) {
+        var g2 = x.createLinearGradient(0, 0, 0, H * .5);
+        var washA = (deck - .45) * (alt < -4 ? .22 : .18);
+        g2.addColorStop(0, "rgba(" + (alt < -4 ? "70,72,100" : "172,166,188") + "," + washA + ")");
+        g2.addColorStop(1, "rgba(" + (alt < -4 ? "70,72,100" : "172,166,188") + ",0)");
+        x.fillStyle = g2; x.fillRect(0, 0, W, H * .5);
       }
       // fog on the ground when the codes say fog
       if (wx.code === 45 || wx.code === 48) {
@@ -2899,8 +2900,11 @@
       }
       // fire-season smoke haze when the air itself says so
       if (wx.aqi != null && wx.aqi >= 150) {
-        x.fillStyle = "rgba(150,110,70," + Math.min(.32, (wx.aqi - 150) / 400 + .12) + ")";
-        x.fillRect(0, 0, W, H);
+        var smA = Math.min(.14, (wx.aqi - 150) / 900 + .07);
+        var smg = x.createLinearGradient(0, H * .3, 0, H * .62);
+        smg.addColorStop(0, "rgba(214,150,92,0)");
+        smg.addColorStop(1, "rgba(214,150,92," + smA + ")");
+        x.fillStyle = smg; x.fillRect(0, 0, W, H * .62);
       }
       // EVERYTHING that lives in the sky — stars, the moon, the clouds —
       // is drawn on a scratch layer and clipped by the baked sky mask, so
@@ -2959,26 +2963,24 @@
       // the sky as it really is: cloud forms drift through the real frame,
       // counted from live cover, pushed by the live wind, lit by the hour
       // (even "clear" Sedona carries a wisp or two — cover above 3% shows one)
-      var nClouds = deck <= .03 ? 0 : Math.max(1, Math.round(deck * 9));
+      // clouds painted in the plate's own language: flat poster lozenges,
+      // counted from the real cover, drifting on the real wind
+      var nClouds = deck <= .03 ? 0 : Math.max(1, Math.min(5, Math.round(deck * 6)));
       if (nClouds > 0) {
         skyDrew = true;
         var cdrift = reduced ? 0 : el * (.0018 + wx.wind * .0005);
-        var cCol = alt < -6 ? [46, 52, 72] : (alt < 8 ? [232, 190, 168] : [255, 255, 255]);
-        var cA = alt < -6 ? .3 : .34 + deck * .2;
+        var cCol = alt < -6 ? [58, 54, 86] : (alt < 8 ? [236, 198, 172] : [244, 240, 234]);
+        var cA = alt < -6 ? .5 : .8;
         for (var ci = 0; ci < nClouds && ci < clouds.length; ci++) {
           var c2 = clouds[ci], cxp2 = ((c2.x + cdrift * (.6 + c2.s * .3)) % 1.3) - .15;
-          var cAp = cA * (0.55 + c2.s * .3);
-          for (var ck = 0; ck < 6; ck++) {
-            var pcx = (cxp2 + (ck - 2.5) * .024 * c2.s) * W, pcy = (c2.y * .8 + Math.sin(ck * 2.1 + ci) * .014) * H;
-            var pr = W * (.05 + (ck === 2 || ck === 3 ? .022 : 0)) * c2.s;
-            fxx.save(); fxx.translate(pcx, pcy); fxx.scale(1, .42);
-            var cg = fxx.createRadialGradient(0, 0, 0, 0, 0, pr);
-            cg.addColorStop(0, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + "," + cAp + ")");
-            cg.addColorStop(.55, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + "," + (cAp * .5) + ")");
-            cg.addColorStop(1, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + ",0)");
-            fxx.fillStyle = cg;
-            fxx.beginPath(); fxx.arc(0, 0, pr, 0, 7); fxx.fill(); fxx.restore();
-          }
+          var pcx = cxp2 * W, pcy = c2.y * .7 * H, cs2 = c2.s;
+          fxx.fillStyle = "rgba(" + cCol.join(",") + "," + (cA * (0.7 + c2.s * .2)) + ")";
+          fxx.beginPath();
+          fxx.ellipse(pcx, pcy, W * .055 * cs2, H * .016 * cs2, 0, 0, 7);
+          fxx.ellipse(pcx + W * .04 * cs2, pcy - H * .008 * cs2, W * .038 * cs2, H * .014 * cs2, 0, 0, 7);
+          fxx.ellipse(pcx - W * .042 * cs2, pcy + H * .002 * cs2, W * .036 * cs2, H * .012 * cs2, 0, 0, 7);
+          fxx.ellipse(pcx + W * .008 * cs2, pcy - H * .012 * cs2, W * .032 * cs2, H * .013 * cs2, 0, 0, 7);
+          fxx.fill();
         }
       }
       // a raven crosses the yard now and then — they really do live out there
@@ -3189,6 +3191,27 @@
           x.fillText(n.g, (.06 + n.dx + Math.sin(n.t * 8) * .008) * W, H * .9 - n.t * H * .35);
         });
         x.globalAlpha = 1;
+      }
+      // the EQ rolls — the REAL spectrum of the live stream, painted amber
+      var eqOn = typeof analyser !== "undefined" && analyser && typeof playing !== "undefined" && playing && typeof freqData !== "undefined" && freqData;
+      if (eqOn && !reduced) {
+        try { analyser.getByteFrequencyData(freqData); } catch (e) { eqOn = false; }
+      }
+      if (eqOn && !reduced && eqZero < 300) {
+        var bars = 24, bw2 = Math.max(4, W * .011), gap2 = bw2 * .55;
+        var totW = bars * bw2 + (bars - 1) * gap2, ex0 = W / 2 - totW / 2;
+        var ey0 = H - Math.max(30, H * .062) - 6;
+        var sum2 = 0;
+        for (var eb = 0; eb < bars; eb++) {
+          var bin = 2 + Math.floor(eb * (freqData.length - 4) / bars);
+          var v2 = freqData[bin] / 255; sum2 += v2;
+          var bh2 = Math.max(2, v2 * H * .075);
+          x.fillStyle = "rgba(255,205,138," + (.3 + v2 * .6) + ")";
+          if (x.roundRect) { x.beginPath(); x.roundRect(ex0 + eb * (bw2 + gap2), ey0 - bh2, bw2, bh2, 2); x.fill(); }
+          else x.fillRect(ex0 + eb * (bw2 + gap2), ey0 - bh2, bw2, bh2);
+        }
+        // CORS-tainted or dead-silent stream: hide rather than fake
+        if (sum2 < .01) eqZero++; else eqZero = 0;
       }
       // brass plate with the actual song on air
       if (typeof lastNow !== "undefined" && lastNow && lastNow.title && lastNow.title !== "Mellow Mountain Radio") {
