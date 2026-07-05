@@ -2630,22 +2630,17 @@
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var W, H, x;
     function size() {
-      if (typeof PHOTO !== "undefined" && PHOTO && PHOTO.ok) {
-        // a real window is portrait: crop the photograph tower-tip to flagstones
-        var maxW = Math.min(680, (cv.parentNode && cv.parentNode.clientWidth) || 680);
-        W = maxW; H = Math.round(W * 1.1);
-        cv.style.width = W + "px"; cv.style.margin = "0 auto";
-      } else {
-        cv.style.width = "100%"; cv.style.margin = "0";
-        W = cv.clientWidth || 900; H = Math.round(W * .42);
-      }
+      // a real window is portrait: crop the photograph tower-tip to flagstones
+      var maxW = Math.min(680, (cv.parentNode && cv.parentNode.clientWidth) || 680);
+      W = maxW; H = Math.round(W * 1.1);
+      cv.style.width = W + "px"; cv.style.margin = "0 auto";
       var dpr = Math.min(2, window.devicePixelRatio || 1);
       cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
       x = cv.getContext("2d"); x.scale(dpr, dpr);
       if (typeof fx !== "undefined") { fx.width = cv.width; fx.height = cv.height; }
       if (typeof fogC !== "undefined") { fogC.width = Math.round(cv.width / 2); fogC.height = Math.round(cv.height / 2); fogSeeded = false; }
       if (typeof miniC !== "undefined") { miniC.width = Math.max(80, Math.round(cv.width / 5)); miniC.height = Math.max(88, Math.round(cv.height / 5)); }
-      if (typeof LAYERS !== "undefined") LAYERS.stale = true;
+      if (typeof PLATES !== "undefined") PLATES.forEach(function (p) { p.layers = null; });
     }
     size();
     // the REAL view out the back door, cartooned: the AM tower and its guys,
@@ -2657,29 +2652,36 @@
     // the window becomes the photograph itself, graded live; the drawn scene
     // below is only the fallback until then.
     var PHOTO = { ok: false, img: null, dayOk: false, day: null };
-    (function () {
+    // ALL of Chuck's real photographs of the yard, stitched into one living
+    // scene: the window tours them slowly, each pool honest to its hour —
+    // midday frames while the sun is high, dusk frames as it falls
+    var PLATES = [
+      { src: "backdoor.jpg", mk: "skymask-dusk.png", pool: "dusk", full: 1, hz: .72, beacon: [.583, .034], nightOk: 1, name: "the back door" },
+      { src: "duskplate2.jpg", mk: "skymask-dusk2.png", pool: "dusk", hz: .62, nightOk: 1, name: "the big dish, dusk" },
+      { src: "duskplate3.jpg", mk: "skymask-dusk3.png", pool: "dusk", hz: .60, noMoon: 1, name: "moonrise — the dog doing the rounds" },
+      { src: "dayplate.jpg", mk: "skymask-day.png", pool: "day", hz: .66, name: "the tower and the lone pine" },
+      { src: "dayplate2.jpg", mk: "skymask-day2.png", pool: "day", hz: .64, name: "the red rocks past the tower" },
+      { src: "dayplate3.jpg", mk: "skymask-day3.png", pool: "day", hz: .60, name: "toward Thunder Mountain" },
+      { src: "dayplate4.jpg", mk: "skymask-day4.png", pool: "day", hz: .55, name: "the fence line" }
+    ];
+    function ensurePlate(p) {
+      if (p.loading) return;
+      p.loading = true;
       var im = new Image();
-      im.onload = function () { PHOTO.ok = true; PHOTO.img = im; if (typeof size === "function") { size(); } };
+      im.onload = function () {
+        p.img = im; p.ok = true; p.layers = null;
+        if (p.src === "backdoor.jpg") { PHOTO.ok = true; PHOTO.img = im; if (typeof size === "function") size(); }
+        if (p.src === "dayplate.jpg") { PHOTO.dayOk = true; PHOTO.day = im; }
+      };
       im.onerror = function () {};
-      im.src = "backdoor.jpg";
-      // the second real plate: the same yard at true midday (IMG_6129) —
-      // high sun crossfades to the photograph actually taken in high sun
-      var dm = new Image();
-      dm.onload = function () { PHOTO.dayOk = true; PHOTO.day = dm; };
-      dm.onerror = function () {};
-      dm.src = "dayplate.jpg";
-    })();
-    // sky masks baked from the real plates: where the sky truly is, so the
-    // moon, stars and clouds pass BEHIND the tower, the trees and the dish
-    var MASK = { dusk: null, day: null };
-    (function () {
-      ["dusk", "day"].forEach(function (k) {
-        var mi = new Image();
-        mi.onload = function () { MASK[k] = mi; LAYERS.stale = true; };
-        mi.onerror = function () {};
-        mi.src = "skymask-" + k + ".png";
-      });
-    })();
+      im.src = p.src;
+      var mi = new Image();
+      mi.onload = function () { p.mimg = mi; p.mok = true; p.layers = null; };
+      mi.onerror = function () {};
+      mi.src = p.mk;
+    }
+    ensurePlate(PLATES[0]); ensurePlate(PLATES[3]);
+    setTimeout(function () { if (cv.isConnected) PLATES.forEach(ensurePlate); }, 2500);
     // parallax: the window looks INTO a place — mouse or phone-tilt shifts
     // the near ground more than the trees, and the sky not at all
     var par = { tx: 0, ty: 0, cx: 0, cy: 0, lastIn: -99, asked: false };
@@ -2708,35 +2710,31 @@
       wipeAt(e);
     });
     // parallax layer cache: per plate, the sky slice and the near-ground
-    // slice, cut with the baked masks and a feathered horizon
-    var LAYERS = { stale: true, dusk: null, day: null };
-    function cutLayers(img, mask, horizon, drawY, drawH) {
-      var mk = function () { var c = document.createElement("canvas"); c.width = cv.width; c.height = cv.height; return c; };
-      var full = mk(), fc = full.getContext("2d");
-      fc.setTransform(cv.width / W, 0, 0, cv.width / W, 0, 0);
-      fc.drawImage(img, 0, drawY, W, drawH);
-      var sky = null;
-      if (mask) {
-        sky = mk(); var sc = sky.getContext("2d");
-        sc.drawImage(full, 0, 0);
-        sc.globalCompositeOperation = "destination-in";
-        sc.setTransform(cv.width / W, 0, 0, cv.width / W, 0, 0);
-        sc.drawImage(mask, 0, drawY, W, drawH);
-      }
-      var gnd = mk(); var gc = gnd.getContext("2d");
-      gc.drawImage(full, 0, 0);
-      gc.globalCompositeOperation = "destination-in";
-      var gg = gc.createLinearGradient(0, (horizon - .05) * cv.height, 0, (horizon + .03) * cv.height);
-      gg.addColorStop(0, "rgba(0,0,0,0)"); gg.addColorStop(1, "rgba(0,0,0,1)");
-      gc.fillStyle = gg; gc.fillRect(0, 0, cv.width, cv.height);
-      return { full: full, sky: sky, gnd: gnd };
+    // slice, cut with the baked masks and a feathered horizon. Layers are
+    // capped in resolution and evicted when a plate leaves the tour, so
+    // seven plates never weigh more than a few active ones.
+    function plateGeom(p) {
+      var dh2 = p.img.naturalHeight * (W / p.img.naturalWidth);
+      return p.full ? { y: -0.02 * dh2, h: dh2 } : { y: 0, h: dh2 };
     }
-    function buildLayers() {
-      if (!PHOTO.ok) return;
-      var dh0 = PHOTO.img.naturalHeight * (W / PHOTO.img.naturalWidth);
-      LAYERS.dusk = cutLayers(PHOTO.img, MASK.dusk, .72, -0.02 * dh0, dh0);
-      if (PHOTO.dayOk) LAYERS.day = cutLayers(PHOTO.day, MASK.day, .68, 0, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth));
-      LAYERS.stale = false;
+    function cutLayers(p) {
+      var g = plateGeom(p);
+      var lw = Math.min(cv.width, Math.round(W * 1.25)), lh = Math.round(lw * H / W), sc = lw / W;
+      var mk = function () { var c = document.createElement("canvas"); c.width = lw; c.height = lh; return c; };
+      var full = mk(), fc = full.getContext("2d");
+      fc.setTransform(sc, 0, 0, sc, 0, 0); fc.drawImage(p.img, 0, g.y, W, g.h);
+      var sky = null;
+      if (p.mok) {
+        sky = mk(); var s2 = sky.getContext("2d"); s2.drawImage(full, 0, 0);
+        s2.globalCompositeOperation = "destination-in";
+        s2.setTransform(sc, 0, 0, sc, 0, 0); s2.drawImage(p.mimg, 0, g.y, W, g.h);
+      }
+      var gnd = mk(), gc = gnd.getContext("2d"); gc.drawImage(full, 0, 0);
+      gc.globalCompositeOperation = "destination-in";
+      var gg = gc.createLinearGradient(0, (p.hz - .07) * lh, 0, (p.hz + .02) * lh);
+      gg.addColorStop(0, "rgba(0,0,0,0)"); gg.addColorStop(1, "rgba(0,0,0,1)");
+      gc.fillStyle = gg; gc.fillRect(0, 0, lw, lh);
+      p.layers = { full: full, sky: sky, gnd: gnd, lw: lw, lh: lh };
     }
     // the sky-effects scratch canvas (stars, moon, clouds — masked to real sky)
     var fx = document.createElement("canvas"), fxx = fx.getContext("2d");
@@ -2771,6 +2769,17 @@
     }
     // clinging raindrops that refract the scene upside-down, like real glass
     var gdrops = [], miniC = document.createElement("canvas"), miniX = miniC.getContext("2d"), miniAt = -99;
+    // film grain, pre-rendered once — the analog hiss of the picture
+    var grainC = document.createElement("canvas"), grainP = null;
+    (function () {
+      grainC.width = grainC.height = 160;
+      var g = grainC.getContext("2d"), id = g.createImageData(160, 160);
+      for (var gi = 0; gi < id.data.length; gi += 4) {
+        var v = (Math.random() * 255) | 0;
+        id.data[gi] = id.data[gi + 1] = id.data[gi + 2] = v; id.data[gi + 3] = 20;
+      }
+      g.putImageData(id, 0, 0);
+    })();
     var TOWER_TIP = [.583, .034]; // the real tower tip in the cropped frame
     var t0 = Date.now(), previewMin = null; // minutes-of-day when time-traveling, null = live
     var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0, flashT = 0, lastFlash = 0;
@@ -2779,37 +2788,55 @@
       var iw = PHOTO.img.naturalWidth, ih = PHOTO.img.naturalHeight;
       var s = W / iw, dh = ih * s;
       x.clearRect(0, 0, W, H);
-      // TWO real plates: high sun crossfades the dusk frame into the
-      // photograph actually taken at midday — no grade pretends to be noon
-      var dayMix = (!PHOTO.dayOk || alt <= 4) ? 0 : (alt >= 12 ? 1 : (alt - 4) / 8);
+      // the plate pools: the sun decides whether we're touring the midday
+      // frames or the dusk frames — no photograph pretends to be another hour
+      var dayList = PLATES.filter(function (p) { return p.pool === "day" && p.ok; });
+      var duskAll = PLATES.filter(function (p) { return p.pool === "dusk" && p.ok; });
+      var duskList = alt < -8 ? duskAll.filter(function (p) { return p.nightOk; }) : duskAll;
+      if (!duskList.length) duskList = duskAll;
+      var dayMix = (!dayList.length || alt <= 4) ? 0 : (alt >= 12 ? 1 : (alt - 4) / 8);
+      // the tour: linger on each view, then a long soft crossfade to the next
+      function tour(list, off) {
+        if (!list.length) return null;
+        if (list.length === 1 || reduced || previewMin != null) return { a: list[0], b: null, mix: 0 };
+        var cyc = el / 38 + off, idx = Math.floor(cyc) % list.length, frac = cyc - Math.floor(cyc);
+        return { a: list[idx], b: list[(idx + 1) % list.length], mix: frac > .88 ? (frac - .88) / .12 : 0 };
+      }
+      var duskT = tour(duskList, 0), dayT = tour(dayList, .5);
       // parallax offsets: ease toward pointer/tilt; the camera never stops
       // breathing — a slow drift when idle, like someone standing at the glass
       if (!reduced && el - par.lastIn > 4) { par.tx = Math.sin(el * .09) * .55; par.ty = Math.cos(el * .06) * .22; }
       par.cx += (par.tx - par.cx) * .06; par.cy += (par.ty - par.cy) * .06;
       var mx2 = reduced ? 0 : par.cx, my2 = reduced ? 0 : par.cy;
-      if (LAYERS.stale) buildLayers();
       // filmic breath: the frame leans in and out over the better part of a minute
       var breathe = reduced ? 0 : .012 * (.5 + .5 * Math.sin(el * .045));
-      function plateStack(Lr, img, drawY, drawH, a) {
-        // far to near: sky pinned still, the yard eases, the near ground leads
+      function drawPlate(p, a) {
+        if (!p || !p.ok || a <= 0) return;
         x.globalAlpha = a;
-        var sc2 = 1.03 + breathe, ox = W * (1 - sc2) / 2, oy = H * (1 - sc2) / 2;
-        x.drawImage(img, ox + mx2 * 6, oy + drawY * sc2 + my2 * 3, W * sc2, drawH * sc2);
-        if (Lr && Lr.sky) x.drawImage(Lr.sky, 0, 0, fx.width, fx.height, ox, oy, W * sc2, H * sc2);
-        if (Lr) x.drawImage(Lr.gnd, 0, 0, fx.width, fx.height, ox + mx2 * 14, oy + my2 * 7, W * sc2, H * sc2);
+        var g = plateGeom(p);
+        // each view gets its own slow wander across the frame
+        var kb = reduced ? 0 : Math.sin(el * .026 + PLATES.indexOf(p) * 2.4) * W * .016;
+        var sc2 = 1.05 + breathe, ox = W * (1 - sc2) / 2 + kb, oy = H * (1 - sc2) / 2;
+        if (!reduced && !p.layers && p.img) cutLayers(p);
+        p.lastUse = el;
+        x.drawImage(p.img, ox + mx2 * 6, oy + g.y * sc2 + my2 * 3, W * sc2, g.h * sc2);
+        if (!reduced && p.layers) {
+          var Lr = p.layers;
+          if (Lr.sky) x.drawImage(Lr.sky, 0, 0, Lr.lw, Lr.lh, ox, oy, W * sc2, H * sc2);
+          x.drawImage(Lr.gnd, 0, 0, Lr.lw, Lr.lh, ox + mx2 * 14, oy + my2 * 7, W * sc2, H * sc2);
+        }
         x.globalAlpha = 1;
       }
-      if (LAYERS.dusk && !reduced) {
-        plateStack(LAYERS.dusk, PHOTO.img, -0.02 * dh, dh, 1);
-        if (dayMix > 0 && LAYERS.day) plateStack(LAYERS.day, PHOTO.day, 0, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth), dayMix);
-      } else {
-        x.drawImage(PHOTO.img, 0, -0.02 * dh, W, dh); // tower tip at top, flagstones at the sill
-        if (dayMix > 0) {
-          x.globalAlpha = dayMix;
-          x.drawImage(PHOTO.day, 0, 0, W, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth));
-          x.globalAlpha = 1;
-        }
-      }
+      if (duskT) { drawPlate(duskT.a, 1); drawPlate(duskT.b, duskT.mix); }
+      if (dayT && dayMix > 0) { drawPlate(dayT.a, dayMix); drawPlate(dayT.b, dayMix * dayT.mix); }
+      // the plate that owns the frame right now — masks, beacon, moon and
+      // sway all follow it
+      var dom = dayMix >= .5
+        ? (dayT ? (dayT.mix >= .5 ? dayT.b : dayT.a) : null)
+        : (duskT ? (duskT.mix >= .5 ? duskT.b : duskT.a) : null);
+      if (!dom) dom = PLATES[0];
+      // housekeeping: plates that left the tour drop their layer canvases
+      PLATES.forEach(function (p) { if (p.layers && el - (p.lastUse || 0) > 30) p.layers = null; });
       // GRADE by the real sun: the dusk frame is lifted for day only as far
       // as the real midday plate hasn't already taken over
       if (alt > 8 && dayMix < 1) { // daylight lift — calibrated to the real midday frames (IMG_6128-31)
@@ -2840,6 +2867,21 @@
         x.fillStyle = gh; x.fillRect(0, 0, W, H * .62);
         x.globalCompositeOperation = "source-over";
       }
+      // filmic day grade — lifted blacks and warmth, so noon reads like a
+      // record sleeve instead of a phone photo; the night keeps its own dark
+      if (alt > 0) {
+        var flm = Math.min(1, alt / 20);
+        x.globalCompositeOperation = "screen";
+        x.fillStyle = "rgba(18,14,26," + (.55 * flm) + ")"; x.fillRect(0, 0, W, H);
+        x.globalCompositeOperation = "source-over";
+      }
+      // warm analog room tone + soft vignette — the record sounds like this
+      x.globalCompositeOperation = "overlay";
+      x.fillStyle = "rgba(255,182,110," + (alt > 0 ? .11 : .06) + ")"; x.fillRect(0, 0, W, H);
+      x.globalCompositeOperation = "source-over";
+      var vg = x.createRadialGradient(W / 2, H * .55, Math.min(W, H) * .45, W / 2, H * .55, Math.max(W, H) * .8);
+      vg.addColorStop(0, "rgba(12,7,4,0)"); vg.addColorStop(1, "rgba(12,7,4,.2)");
+      x.fillStyle = vg; x.fillRect(0, 0, W, H);
       // the cloud deck flattens the real sky, exactly as much as it's covered
       var deck = Math.max(0, Math.min(1, wx.cover / 100));
       if (deck > .25) {
@@ -2879,22 +2921,25 @@
           fxx.fillRect(st2[0] * W, st2[1] * H, st2[2] * .8, st2[2] * .8);
         });
         fxx.globalAlpha = 1;
-        // true-phase moon in the open western sky of the frame
-        var mi = moonInfo(), f = Math.max(0, Math.min(1, mi.illum / 100));
-        var waning = (mi.name || "").toLowerCase().indexOf("waning") !== -1;
-        var mx = W * .27, my = H * .2, mr = Math.max(10, W * .026);
-        fxx.globalAlpha = Math.max(.12, 1 - deck * .85); // the deck veils the moon too
-        // the glare halo the camera really catches out there (IMG_6099)
-        var halo = fxx.createRadialGradient(mx, my, mr * .6, mx, my, mr * 6.5);
-        halo.addColorStop(0, "rgba(205,218,255," + (.24 * f + .06) + ")");
-        halo.addColorStop(.4, "rgba(185,200,245," + (.09 * f + .02) + ")");
-        halo.addColorStop(1, "rgba(185,200,245,0)");
-        fxx.fillStyle = halo; fxx.beginPath(); fxx.arc(mx, my, mr * 6.5, 0, 7); fxx.fill();
-        fxx.beginPath(); fxx.arc(mx, my, mr, 0, 7); fxx.fillStyle = "rgba(60,64,88,.85)"; fxx.fill();
-        fxx.beginPath(); fxx.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); fxx.closePath(); fxx.fillStyle = "#f3ecd9"; fxx.fill();
-        fxx.beginPath(); fxx.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
-        fxx.fillStyle = f >= .5 ? "#f3ecd9" : "rgba(60,64,88,.85)"; fxx.fill();
-        fxx.globalAlpha = 1;
+        // true-phase moon in the open western sky of the frame (skipped on
+        // the plate that already carries the real moon in the photograph)
+        if (!dom.noMoon) {
+          var mi = moonInfo(), f = Math.max(0, Math.min(1, mi.illum / 100));
+          var waning = (mi.name || "").toLowerCase().indexOf("waning") !== -1;
+          var mx = W * .27, my = H * .2, mr = Math.max(10, W * .026);
+          fxx.globalAlpha = Math.max(.12, 1 - deck * .85); // the deck veils the moon too
+          // the glare halo the camera really catches out there (IMG_6099)
+          var halo = fxx.createRadialGradient(mx, my, mr * .6, mx, my, mr * 6.5);
+          halo.addColorStop(0, "rgba(205,218,255," + (.24 * f + .06) + ")");
+          halo.addColorStop(.4, "rgba(185,200,245," + (.09 * f + .02) + ")");
+          halo.addColorStop(1, "rgba(185,200,245,0)");
+          fxx.fillStyle = halo; fxx.beginPath(); fxx.arc(mx, my, mr * 6.5, 0, 7); fxx.fill();
+          fxx.beginPath(); fxx.arc(mx, my, mr, 0, 7); fxx.fillStyle = "rgba(60,64,88,.85)"; fxx.fill();
+          fxx.beginPath(); fxx.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); fxx.closePath(); fxx.fillStyle = "#f3ecd9"; fxx.fill();
+          fxx.beginPath(); fxx.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
+          fxx.fillStyle = f >= .5 ? "#f3ecd9" : "rgba(60,64,88,.85)"; fxx.fill();
+          fxx.globalAlpha = 1;
+        }
         // shooting star, rare
         if (!reduced) {
           if (!shoot && el - lastShoot > 14 && Math.random() < .006) { shoot = { t: 0, x0: .1 + Math.random() * .4, y0: .05 + Math.random() * .12 }; }
@@ -2961,19 +3006,19 @@
         }
       }
       if (skyDrew) {
-        var mim = dayMix >= .5 ? MASK.day : MASK.dusk;
-        if (mim) {
+        if (dom.mok) {
+          var gm = plateGeom(dom);
           fxx.globalCompositeOperation = "destination-in";
-          if (dayMix >= .5) fxx.drawImage(mim, 0, 0, W, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth));
-          else fxx.drawImage(mim, 0, -0.02 * dh, W, dh);
+          fxx.drawImage(dom.mimg, 0, gm.y, W, gm.h);
           fxx.globalCompositeOperation = "source-over";
         }
         x.drawImage(fx, 0, 0, W, H);
       }
-      // the beacon on the REAL tower tip, breathing after sundown
-      if (alt < -2) {
+      // the beacon on the REAL tower tip, breathing after sundown — only on
+      // the plate whose frame actually holds the tip
+      if (alt < -2 && dom.beacon) {
         var pulse = reduced ? .8 : (.45 + .55 * Math.abs(Math.sin(el * 1.1)));
-        var bx = TOWER_TIP[0] * W, by = TOWER_TIP[1] * H;
+        var bx = dom.beacon[0] * W, by = dom.beacon[1] * H;
         x.beginPath(); x.arc(bx, by, Math.max(2.5, W * .0035), 0, 7);
         x.fillStyle = "rgba(255,60,40," + pulse + ")"; x.fill();
         x.beginPath(); x.arc(bx, by, Math.max(2.5, W * .0035) * 3.2, 0, 7);
@@ -3015,7 +3060,7 @@
       // but the air out there is never truly dead, so neither are the pines
       if (!reduced) {
         var amp = (.5 + Math.min(4.5, wx.wind * .13)) * (1 + .45 * Math.sin(el * .7) + .2 * Math.sin(el * 2.3));
-        if (dayMix >= .5) {
+        if (dom.src === "dayplate.jpg") {
           // midday plate: the big pine on the left edge
           for (var fd = 0; fd < 6; fd++) {
             var fdy = H * (.4 + fd * .034);
@@ -3026,7 +3071,7 @@
             var fdy2 = H * (.5 + fd2 * .028);
             sway(W * .18, fdy2, W * .82, H * .026, Math.sin(el * 1.3 + fd2 + 3) * amp * .5);
           }
-        } else {
+        } else if (dom.src === "backdoor.jpg") {
           // the pines over the dish (right), above the dish rim
           for (var fs = 0; fs < 7; fs++) {
             var fy = H * (.02 + fs * .028);
@@ -3041,6 +3086,12 @@
           for (var fs3 = 0; fs3 < 3; fs3++) {
             var fy3 = H * (.46 + fs3 * .026);
             sway(W * .3, fy3, W * .3, H * .024, Math.sin(el * 1.2 + fs3 + 4) * amp * .4);
+          }
+        } else {
+          // every other view: the treeline band above its own horizon
+          for (var fg2 = 0; fg2 < 5; fg2++) {
+            var fgy = H * (dom.hz - .17 + fg2 * .032);
+            sway(0, fgy, W, H * .03, Math.sin(el * 1.4 + fg2 * 1.1) * amp * .65);
           }
         }
       }
@@ -3116,6 +3167,15 @@
         x.drawImage(fogC, 0, 0, W, H);
         x.globalAlpha = 1;
       }
+      // a breath of film grain, drifting — analog, never digital-still
+      if (!reduced) {
+        if (!grainP) grainP = x.createPattern(grainC, "repeat");
+        x.save();
+        x.globalAlpha = .5;
+        x.translate(-((el * 91) % 160), -((el * 53) % 160));
+        x.fillStyle = grainP; x.fillRect(0, 0, W + 160, H + 160);
+        x.restore();
+      }
       // notes from the doorway while the stream truly plays
       var isOn = typeof playing !== "undefined" && playing;
       if (isOn && !reduced) {
@@ -3165,7 +3225,8 @@
           " · " + wx.cover + "% cloud" + (mood.length ? " · " + mood.join(" · ") : "") +
           (wx.temp != null ? " · " + wx.temp + "°" : "") + (wx.wind >= 15 ? " · wind " + Math.round(wx.wind) + " mph" : "") +
           (fogA > .2 ? " — the glass has fogged up; wipe it with your finger" :
-          (previewMin != null ? " — time travel on the real photo; tap LIVE to come home" : " — the actual back door, matched to the real sky, exactly"));
+          (previewMin != null ? " — time travel on the real photo; tap LIVE to come home" :
+            " — " + (dom && dom.name ? dom.name : "the back door") + " · matched to the real sky, exactly"));
       }
     }
     function paint() {
@@ -3178,6 +3239,18 @@
       var alt = swSunAlt(now);
       var el = (Date.now() - t0) / 1000;
       if (PHOTO.ok) { paintPhoto(alt, el, now); return; }
+      // no cartoon, ever: until the first photograph arrives, the window is
+      // simply dark glass waking up
+      x.clearRect(0, 0, W, H);
+      var wk = x.createLinearGradient(0, 0, 0, H);
+      wk.addColorStop(0, "#0d1526"); wk.addColorStop(1, "#1b2740");
+      x.fillStyle = wk; x.fillRect(0, 0, W, H);
+      x.fillStyle = "rgba(255,233,168,.55)"; x.textAlign = "center";
+      x.font = "italic " + Math.round(Math.max(13, W * .022)) + "px Alice, serif";
+      x.fillText("opening the window…", W / 2, H / 2);
+      x.strokeStyle = "rgba(20,14,10,.85)"; x.lineWidth = Math.max(6, W * .008);
+      x.strokeRect(x.lineWidth / 2, x.lineWidth / 2, W - x.lineWidth, H - x.lineWidth);
+      return;
       // sky: night -> astro dawn -> golden -> day, from real solar altitude
       var top, bot;
       if (alt <= -12) { top = [8, 12, 34]; bot = [16, 20, 46]; }
