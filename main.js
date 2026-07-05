@@ -2661,9 +2661,9 @@
     // midday frame while the sun is high.
     // the plates are PAINTED from the real photographs — the chillhop look,
     // the real yard: same framing, same masks, every live system still runs
+    // ONE painting. The real sun and the real weather do all the acting.
     var PLATES = [
-      { src: "paint-dusk.jpg", mk: "skymask-dusk.png", pool: "dusk", prim: 1, full: 1, hz: .72, beacon: [.583, .034], nightOk: 1, name: "the back door, painted" },
-      { src: "paint-day.jpg", mk: "skymask-day.png", pool: "day", prim: 1, hz: .66, name: "the back door in high sun, painted" }
+      { src: "paint-dusk.jpg", mk: "skymask-dusk.png", pool: "dusk", prim: 1, full: 1, hz: .72, beacon: [.583, .034], nightOk: 1, name: "the back door, painted" }
     ];
     function ensurePlate(p) {
       if (p.loading) return;
@@ -2842,8 +2842,8 @@
       if (alt > 8 && dayMix < 1) { // daylight lift — calibrated to the real midday frames (IMG_6128-31)
         var day = Math.min(1, (alt - 8) / 25) * (1 - dayMix);
         x.globalCompositeOperation = "screen";
-        x.fillStyle = "rgba(140,170,205," + (day * .38) + ")"; x.fillRect(0, 0, W, H);
-        x.fillStyle = "rgba(255,240,210," + (day * .15) + ")"; x.fillRect(0, 0, W, H);
+        x.fillStyle = "rgba(140,170,205," + (day * .24) + ")"; x.fillRect(0, 0, W, H);
+        x.fillStyle = "rgba(255,240,210," + (day * .08) + ")"; x.fillRect(0, 0, W, H);
         // re-deepen the lifted sky to Sedona's real saturated blue
         x.globalCompositeOperation = "multiply";
         var db = x.createLinearGradient(0, 0, 0, H * .55);
@@ -2872,7 +2872,7 @@
       if (alt > 0) {
         var flm = Math.min(1, alt / 20);
         x.globalCompositeOperation = "screen";
-        x.fillStyle = "rgba(18,14,26," + (.55 * flm) + ")"; x.fillRect(0, 0, W, H);
+        x.fillStyle = "rgba(18,14,26," + (.38 * flm) + ")"; x.fillRect(0, 0, W, H);
         x.globalCompositeOperation = "source-over";
       }
       // warm analog room tone + soft vignette — the record sounds like this
