@@ -14,6 +14,8 @@ n8n.mellowmountainradio.com  (workflow in this folder — queues it, no DB neede
         ▲
         │  GET drain (poller, every 60s, secret key)
 Mac Studio → notification + spoken alert + "KAZM Requests.txt" on the Desktop
+        → plus "KAZM Nudge Sheet.txt": aggregate pulse votes, request
+          tallies, and current weather — advice from the audience
         → studio reads it (playing it stays the station's call)
 ```
 
@@ -42,6 +44,14 @@ Mac Studio → notification + spoken alert + "KAZM Requests.txt" on the Desktop
   or the playout system — the broadcast is never overridden.
 - Nothing in this folder contains a secret — you set your own key in two
   places during setup.
+
+## The Pulse (workflow v3)
+
+Listeners tap a pulse (more like this) or flatline (not my vibe) on the site
+player as songs air. Votes aggregate per song — nobody's identity, just
+tallies — and surface on the Nudge Sheet next to request counts. The same
+votes tune that listener's own suggestions in their browser. The playlist
+never changes by itself; the sheet is advice, the studio is the DJ.
 
 ## Upgrading from workflow v1
 

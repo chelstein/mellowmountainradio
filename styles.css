@@ -3064,3 +3064,12 @@ body.podplaying .player.show { transform: translateY(180%); }
 .rq-onair-t b { display: block; font-size: 14.5px; letter-spacing: .04em; color: #ffe9a8; }
 .rq-onair button { font-size: 1.2rem; line-height: 1; background: none; border: 0; color: rgba(243,236,217,.7); cursor: pointer; padding: 4px; flex: none; }
 @media (prefers-reduced-motion: reduce) { .rq-onair { transition: opacity .3s ease; transform: translate(-50%, 0); } }
+
+/* ── THE PULSE — per-song vote on the player ── */
+.player-pulse { display: flex; gap: 7px; margin-left: 12px; flex: none; }
+.pp-btn { display: flex; align-items: center; justify-content: center; width: 34px; height: 30px; padding: 0; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.28); border-radius: 9px; color: rgba(255,255,255,.85); cursor: pointer; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+.pp-btn:hover:not(:disabled) { background: rgba(255,255,255,.18); border-color: rgba(255,233,168,.7); color: #ffe9a8; }
+.pp-btn.is-on { background: #2e7d32; border-color: #4caf50; color: #fff; }
+.pp-btn--nah.is-on { background: #7a3b32; border-color: #a95750; }
+.pp-btn:disabled:not(.is-on) { opacity: .35; cursor: default; }
+@media (max-width: 560px) { .player-pulse { display: none; } }

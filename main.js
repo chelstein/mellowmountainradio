@@ -80,6 +80,7 @@
         '<span class="player-eq eq" data-eq aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' +
         '<span class="player-onair"><span class="onair-dot" aria-hidden="true"></span> On air <span class="player-listeners" data-listeners></span></span>' +
         '<span class="player-track"><span class="player-title" data-now-track>Mellow Mountain Radio</span><span class="player-artist" data-now-artist>106.5 FM &amp; 780 AM</span></span>' +
+        '<span class="player-pulse" data-pulse hidden><button class="pp-btn" type="button" data-pulse-love aria-label="Feed the pulse — more like this, nudges the station playlist" title="Feed the pulse — more like this"><svg viewBox="0 0 24 12" width="20" height="11" aria-hidden="true"><polyline points="0,6 6,6 9,1 13,11 16,6 24,6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button><button class="pp-btn pp-btn--nah" type="button" data-pulse-nah aria-label="Flatline — not my vibe, nudges the station playlist" title="Flatline — not my vibe"><svg viewBox="0 0 24 12" width="20" height="11" aria-hidden="true"><line x1="0" y1="6" x2="24" y2="6" stroke="currentColor" stroke-width="2"/></svg></button></span>' +
       '</div>' +
       '<button class="player-btn" data-listen aria-pressed="false" aria-label="Play or pause the live stream">' + ICON_PLAY + ICON_PAUSE + '<span class="player-btn-label" data-listen-label>Listen Live</span></button>' +
     '</div></div>' +
@@ -366,6 +367,7 @@
       setAll("[data-now-artist]", song.artist || "106.5 FM & 780 AM");
       lastNow = { title: song.title || "Mellow Mountain Radio", artist: song.artist || "KAZM" };
       rqOnAir(song);
+      pulseSync(song);
       highlightOnAir(song.artist);
       updateTabTitle();
       fetchArtwork(song.artist, song.title).then(function (meta) {
@@ -4230,6 +4232,52 @@
      guard read from the actual song history, and an on-air moment —
      the site notices when your requested song is really playing.
      ========================================================= */
+  /* THE PULSE — one tap per song on the player: "more like this" or "not my
+     vibe". Votes aggregate on the studio's nudge sheet (never touch playout)
+     and, locally, tune this listener's own suggestions. */
+  var PULSE_API = "https://n8n.mellowmountainradio.com/webhook/kazm-pulse";
+  function pulseStore() { try { return JSON.parse(localStorage.getItem("kazm-pulse") || "{}"); } catch (e) { return {}; } }
+  function pulseSave(st) {
+    try {
+      var keys = Object.keys(st);
+      if (keys.length > 200) { keys.sort(function (x, y) { return (st[x].at || 0) - (st[y].at || 0); }); delete st[keys[0]]; }
+      localStorage.setItem("kazm-pulse", JSON.stringify(st));
+    } catch (e) {}
+  }
+  function pulseLovedArtists() {
+    var st = pulseStore(), out = {};
+    Object.keys(st).forEach(function (k) { if (st[k].v === 1 && st[k].ar) out[st[k].ar] = 1; });
+    return out;
+  }
+  var pulseKey = "", pulseBound = false;
+  function pulseSync(song) {
+    var box = doc.querySelector("[data-pulse]"); if (!box) return;
+    var t = song && song.title, a = (song && song.artist) || "";
+    if (!t || rqNorm(t) === rqNorm("Mellow Mountain Radio")) { box.hidden = true; return; }
+    pulseKey = rqNorm(t) + "|" + rqNorm(a);
+    box.hidden = false;
+    var st = pulseStore(), v = st[pulseKey] ? st[pulseKey].v : 0;
+    var lb = box.querySelector("[data-pulse-love]"), nb = box.querySelector("[data-pulse-nah]");
+    lb.classList.toggle("is-on", v === 1); nb.classList.toggle("is-on", v === -1);
+    lb.disabled = nb.disabled = v !== 0;
+    if (!pulseBound) {
+      pulseBound = true;
+      function vote(dir) {
+        if (!pulseKey) return;
+        var cur = pulseStore(); if (cur[pulseKey]) return;
+        var now = lastNow || {};
+        cur[pulseKey] = { v: dir, ar: rqNorm(now.artist), at: Date.now() };
+        pulseSave(cur);
+        lb.classList.toggle("is-on", dir === 1); nb.classList.toggle("is-on", dir === -1);
+        lb.disabled = nb.disabled = true;
+        fetch(PULSE_API, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: now.title, artist: now.artist, vote: dir === 1 ? "love" : "nah" }) }).catch(function () {});
+      }
+      lb.addEventListener("click", function () { vote(1); });
+      nb.addEventListener("click", function () { vote(-1); });
+    }
+  }
+
   var REQUEST_HOOK = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
   var REQUEST_BOARD = "https://n8n.mellowmountainradio.com/webhook/kazm-request-board";
   function rqNorm(x) { return String(x || "").toLowerCase().replace(/\(.*?\)|\[.*?\]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
@@ -4328,8 +4376,17 @@
       function renderShuffle() {
         var pool = songs.map(function (_, i) { return i; });
         for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp; }
+        var loved = pulseLovedArtists(), tuned = false;
+        if (Object.keys(loved).length) {
+          var fav = pool.filter(function (i) { return loved[rqNorm(songs[i].a)]; });
+          if (fav.length) {
+            tuned = true;
+            var rest = pool.filter(function (i) { return !loved[rqNorm(songs[i].a)]; });
+            pool = fav.slice(0, 4).concat(rest);
+          }
+        }
         render(pool.slice(0, 12));
-        cnt.textContent = songs.length + " songs — the actual studio library, exported straight from the playout system. A dozen at random below, or search for the one stuck in your head.";
+        cnt.textContent = songs.length + " songs — the actual studio library, exported straight from the playout system. A dozen at random below, or search for the one stuck in your head." + (tuned ? " Tuned a little to your pulse." : "");
       }
       function apply() {
         var q = inp.value.trim().toLowerCase();
@@ -4359,11 +4416,16 @@
         else if (hour < 11) pick = { why: "First light on the mesa" + (temp != null ? " — " + temp + "° and climbing" : ""), terms: ["morning", "day", "light", "easy"] };
         else pick = { why: "Blue-sky Sedona" + (temp != null ? " — " + temp + "° right now" : ""), terms: ["sky", "free", "easy", "ride", "highway", "wind"] };
         var m = [];
-        for (var i = 0; i < songs.length && m.length < 6; i++) {
+        for (var i = 0; i < songs.length && m.length < 20; i++) {
           var tl = songs[i].t.toLowerCase();
           for (var k = 0; k < pick.terms.length; k++) { if (tl.indexOf(pick.terms[k]) !== -1) { m.push(i); break; } }
         }
         if (m.length < 3) return;
+        var lovedM = pulseLovedArtists();
+        if (Object.keys(lovedM).length) {
+          m = m.filter(function (i) { return lovedM[rqNorm(songs[i].a)]; }).concat(m.filter(function (i) { return !lovedM[rqNorm(songs[i].a)]; }));
+        }
+        m = m.slice(0, 6);
         mood.hidden = false;
         mood.innerHTML = '<span class="rq-mood-why">' + esc(pick.why) + ' &mdash; the library agrees:</span>' +
           m.map(function (i) { return '<button type="button" class="rq-mood-chip" data-t="' + esc(songs[i].t) + '">' + esc(songs[i].t) + '</button>'; }).join("");

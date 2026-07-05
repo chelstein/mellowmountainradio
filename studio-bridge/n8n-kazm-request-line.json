@@ -22,7 +22,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Queue lives in workflow static data \u2014 no credentials, no database needed.\nconst store = $getWorkflowStaticData('global');\nstore.queue = store.queue || [];\nstore.recent = store.recent || [];\nconst b = $input.first().json.body || {};\nif (b.probe === true) {\n  // the site pings this before showing the request section \u2014 answer, queue nothing\n  return [{ json: { success: true, probe: true, board: true } }];\n}\nconst title = String(b.title || '').trim().slice(0, 120);\nconst artist = String(b.artist || '').trim().slice(0, 120);\nconst name = String(b.name || '').trim().slice(0, 60);\nconst note = String(b.note || '').trim().slice(0, 140);\nif (!title) {\n  return [{ json: { success: false, message: 'Tell us the song \u2014 a title is the one thing we need.' } }];\n}\nif (store.queue.length >= 50) {\n  return [{ json: { success: false, message: 'The request box is full \u2014 give it a little while and try again.' } }];\n}\nconst entry = { title, artist, name, note, at: new Date().toISOString() };\nstore.queue.push(entry);\nstore.recent.unshift(entry);\nstore.recent = store.recent.slice(0, 12);\nreturn [{ json: { success: true, message: 'Request received \u2014 the studio reads every one.' } }];"
+        "jsCode": "// Queue lives in workflow static data \u2014 no credentials, no database needed.\nconst store = $getWorkflowStaticData('global');\nstore.queue = store.queue || [];\nstore.recent = store.recent || [];\nconst b = $input.first().json.body || {};\nif (b.probe === true) {\n  // the site pings this before showing the request section \u2014 answer, queue nothing\n  return [{ json: { success: true, probe: true, board: true } }];\n}\nconst title = String(b.title || '').trim().slice(0, 120);\nconst artist = String(b.artist || '').trim().slice(0, 120);\nconst name = String(b.name || '').trim().slice(0, 60);\nconst note = String(b.note || '').trim().slice(0, 140);\nif (!title) {\n  return [{ json: { success: false, message: 'Tell us the song \u2014 a title is the one thing we need.' } }];\n}\nif (store.queue.length >= 50) {\n  return [{ json: { success: false, message: 'The request box is full \u2014 give it a little while and try again.' } }];\n}\nconst entry = { title, artist, name, note, at: new Date().toISOString() };\nstore.queue.push(entry);\nstore.tally = store.tally || {};\nconst tk = (title + '|' + artist).toLowerCase();\nconst te = store.tally[tk] || { title, artist, n: 0 };\nte.n++; te.at = entry.at; store.tally[tk] = te;\nconst tks = Object.keys(store.tally);\nif (tks.length > 400) { tks.sort((x, y) => (store.tally[x].at < store.tally[y].at ? -1 : 1)); delete store.tally[tks[0]]; }\nstore.recent.unshift(entry);\nstore.recent = store.recent.slice(0, 12);\nreturn [{ json: { success: true, message: 'Request received \u2014 the studio reads every one.' } }];"
       },
       "id": "code-submit",
       "name": "Validate + queue",
@@ -136,6 +136,96 @@
         440,
         440
       ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kazm-pulse",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://mellowmountainradio.com"
+        }
+      },
+      "id": "wh-pulse",
+      "name": "Listener pulse vote",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        660
+      ],
+      "webhookId": "kazm-pulse"
+    },
+    {
+      "parameters": {
+        "jsCode": "// One vote per song per listener (the site enforces that side).\nconst store = $getWorkflowStaticData('global');\nstore.pulse = store.pulse || {};\nconst b = $input.first().json.body || {};\nconst t = String(b.title || '').trim().slice(0, 120);\nconst a = String(b.artist || '').trim().slice(0, 120);\nconst v = b.vote === 'love' ? 1 : (b.vote === 'nah' ? -1 : 0);\nif (!t || !v) return [{ json: { success: false } }];\nconst key = (t + '|' + a).toLowerCase();\nconst e = store.pulse[key] || { title: t, artist: a, love: 0, nah: 0 };\nif (v > 0) e.love++; else e.nah++;\ne.at = new Date().toISOString();\nstore.pulse[key] = e;\nconst keys = Object.keys(store.pulse);\nif (keys.length > 400) { keys.sort((x, y) => (store.pulse[x].at < store.pulse[y].at ? -1 : 1)); delete store.pulse[keys[0]]; }\nreturn [{ json: { success: true } }];"
+      },
+      "id": "code-pulse",
+      "name": "Tally the vote",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "resp-pulse",
+      "name": "Respond to voter",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "kazm-nudge",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-nudge",
+      "name": "Studio pulls nudge sheet",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        880
+      ],
+      "webhookId": "kazm-nudge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The nudge sheet: aggregate listener signal for the studio's eyes.\n// Set the SAME secret you used in the drain node.\nconst SECRET = 'CHANGE-ME-BEFORE-ACTIVATING';\nconst store = $getWorkflowStaticData('global');\nconst key = ($input.first().json.query || {}).key;\nif (key !== SECRET || SECRET === 'CHANGE-ME-BEFORE-ACTIVATING') {\n  return [{ json: { error: 'unauthorized' } }];\n}\nconst P = Object.values(store.pulse || {});\nconst leanInto = P.filter(e => e.love - e.nah > 0).sort((x, y) => (y.love - y.nah) - (x.love - x.nah)).slice(0, 12);\nconst easeOff = P.filter(e => e.nah - e.love > 0).sort((x, y) => (y.nah - y.love) - (x.nah - x.love)).slice(0, 8);\nconst mostRequested = Object.values(store.tally || {}).sort((x, y) => y.n - x.n).slice(0, 10);\nconst votes = P.reduce((s, e) => s + e.love + e.nah, 0);\nreturn [{ json: { leanInto, easeOff, mostRequested, votes } }];"
+      },
+      "id": "code-nudge",
+      "name": "Build nudge sheet",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "resp-nudge",
+      "name": "Respond with sheet",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        880
+      ]
     }
   ],
   "connections": {
@@ -199,6 +289,50 @@
         [
           {
             "node": "Respond with wall",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listener pulse vote": {
+      "main": [
+        [
+          {
+            "node": "Tally the vote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tally the vote": {
+      "main": [
+        [
+          {
+            "node": "Respond to voter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Studio pulls nudge sheet": {
+      "main": [
+        [
+          {
+            "node": "Build nudge sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build nudge sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond with sheet",
             "type": "main",
             "index": 0
           }
