@@ -3300,3 +3300,26 @@ body.podplaying .player.show { transform: translateY(180%); }
 .fp-now { background: rgba(255,255,255,.05); border: 1px solid rgba(216,180,138,.3); border-left: 3px solid #d8b48a; border-radius: 14px; padding: 20px 22px; }
 .fp-now h3 { margin: 0 0 8px; font-size: 1.2rem; color: #f6ecdd; }
 .fp-now p { margin: 0; font-size: 14px; line-height: 1.75; color: rgba(246,236,221,.85); }
+
+/* ── THE TAPE — the listening room ── */
+.tape-player { background: radial-gradient(140% 160% at 30% 0%, #1c2647 0%, #121935 55%, #0a0e20 100%); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r); padding: 20px 22px; margin-bottom: 22px; }
+.tape-nowrow { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.tape-reel { font-size: 1.8rem; color: #ffd88a; line-height: 1; }
+.tape-reel.is-spin { animation: tapespin 2.4s linear infinite; display: inline-block; }
+@keyframes tapespin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .tape-reel.is-spin { animation: none; } }
+.tape-nowmeta { display: flex; flex-direction: column; gap: 1px; }
+.tape-nowmeta b { color: #fff; font-size: 1.1rem; }
+.tape-nowmeta span { color: rgba(203,214,255,.65); font-size: 12.5px; }
+.tape-audio { width: 100%; margin-bottom: 12px; }
+.tape-hours { display: flex; gap: 8px; flex-wrap: wrap; }
+.tape-hr { font: inherit; font-size: 12.5px; font-weight: 800; color: #ffe9a8; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.22); border-radius: 20px; padding: 6px 13px; cursor: pointer; }
+.tape-hr:hover { background: rgba(255,255,255,.15); }
+.tape-day { display: flex; align-items: center; gap: 14px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
+.tape-day-lab { flex: none; width: 84px; font-size: 12.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tape-day-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tape-block { font: inherit; display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 13px; font-weight: 800; color: var(--heading); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; cursor: pointer; transition: border-color .15s ease, transform .15s ease; }
+.tape-block i { font-style: normal; font-size: 10.5px; font-weight: 700; color: var(--muted); }
+.tape-block:hover { border-color: var(--accent-soft); transform: translateY(-1px); }
+.tape-block.is-on { background: var(--navy); color: #ffe9a8; border-color: var(--navy); }
+.tape-block.is-on i { color: rgba(233,237,255,.7); }

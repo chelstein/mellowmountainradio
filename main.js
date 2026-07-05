@@ -2575,6 +2575,81 @@
     });
   }
 
+  /* =========================================================
+     THE TAPE — two weeks of KAZM, rewindable. Reads rewind.json
+     (same-origin config pointing at the archive Space) then the
+     archive's manifest.json; renders a shelf of days, four 6-hour
+     blocks each, an HTML5 player with hour-jump buttons, and deep
+     links (#b=2026-07-05-06&h=3). The whole page shows its honest
+     "not rolling yet" state until the recorder exists — no fakes.
+     Blocks are 6h and pruned at 14 days: the statutory license terms,
+     enforced by the recorder and stated on the page.
+     ========================================================= */
+  function initTape() {
+    var root = doc.querySelector("[data-tape]"); if (!root) return;
+    var off = doc.querySelector("[data-tape-off]");
+    fetch("rewind.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (cfg) {
+        if (!cfg || !cfg.base) return null;
+        return fetch(cfg.base.replace(/\/$/, "") + "/manifest.json", { cache: "no-store" })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (man) { return man && man.blocks && man.blocks.length ? { base: cfg.base.replace(/\/$/, ""), man: man } : null; });
+      })
+      .then(function (got) {
+        if (!got) return; // recorder not rolling — the honest note stays
+        root.hidden = false; if (off) off.hidden = true;
+        var base = got.base, blocks = got.man.blocks;
+        var audio = root.querySelector("[data-tape-audio]"), title = root.querySelector("[data-tape-title]"),
+            sub = root.querySelector("[data-tape-sub]"), shelf = root.querySelector("[data-tape-shelf]"),
+            hoursEl = root.querySelector("[data-tape-hours]"), reel = root.querySelector("[data-tape-reel]");
+        var NAMES = { 0: "Overnight", 6: "Morning", 12: "Afternoon", 18: "Evening" };
+        var byDay = {};
+        blocks.forEach(function (b) { (byDay[b.date] = byDay[b.date] || []).push(b); });
+        var days = Object.keys(byDay).sort().reverse();
+        function fmtDay(d) {
+          var dt = new Date(d + "T12:00:00");
+          return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][dt.getDay()] + " " + (dt.getMonth() + 1) + "/" + dt.getDate();
+        }
+        shelf.innerHTML = days.map(function (d) {
+          var row = byDay[d].sort(function (a, b) { return a.start - b.start; }).map(function (b) {
+            return '<button type="button" class="tape-block" data-file="' + esc(b.file) + '" data-date="' + esc(b.date) + '" data-start="' + b.start + '">' + (NAMES[b.start] || (b.start + ":00")) + '<i>' + ((b.start % 12) || 12) + (b.start < 12 ? "a" : "p") + "–" + (((b.start + 6) % 12) || 12) + ((b.start + 6) % 24 < 12 ? "a" : "p") + '</i></button>';
+          }).join("");
+          return '<div class="tape-day"><span class="tape-day-lab">' + fmtDay(d) + '</span><div class="tape-day-row">' + row + '</div></div>';
+        }).join("");
+        function play(btn, hour) {
+          shelf.querySelectorAll(".tape-block").forEach(function (x) { x.classList.remove("is-on"); });
+          btn.classList.add("is-on");
+          var st = +btn.getAttribute("data-start");
+          audio.src = base + "/" + btn.getAttribute("data-file");
+          title.textContent = (NAMES[st] || st + ":00") + " — " + fmtDay(btn.getAttribute("data-date"));
+          sub.textContent = "six broadcast hours · Sedona time · drag anywhere";
+          hoursEl.innerHTML = "";
+          for (var k = 0; k < 6; k++) {
+            (function (k) {
+              var h = (st + k) % 24, lab = ((h % 12) || 12) + (h < 12 ? " AM" : " PM");
+              var hb = doc.createElement("button"); hb.type = "button"; hb.className = "tape-hr"; hb.textContent = lab;
+              hb.addEventListener("click", function () { audio.currentTime = k * 3600; audio.play().catch(function () {}); });
+              hoursEl.appendChild(hb);
+            })(k);
+          }
+          audio.play().catch(function () {});
+          try { history.replaceState(null, "", "#b=" + btn.getAttribute("data-date") + "-" + ("0" + st).slice(-2) + (hour ? "&h=" + hour : "")); } catch (e) {}
+          if (hour) { audio.addEventListener("loadedmetadata", function once() { audio.removeEventListener("loadedmetadata", once); audio.currentTime = hour * 3600; }); }
+        }
+        shelf.addEventListener("click", function (ev) {
+          var b = ev.target.closest ? ev.target.closest(".tape-block") : null; if (b) play(b, 0);
+        });
+        audio.addEventListener("play", function () { if (reel) reel.classList.add("is-spin"); });
+        audio.addEventListener("pause", function () { if (reel) reel.classList.remove("is-spin"); });
+        // deep link: #b=YYYY-MM-DD-HH&h=N
+        var m = (location.hash || "").match(/b=(\d{4}-\d{2}-\d{2})-(\d{2})(?:&h=(\d))?/);
+        if (m) {
+          var want = shelf.querySelector('.tape-block[data-date="' + m[1] + '"][data-start="' + (+m[2]) + '"]');
+          if (want) play(want, m[3] ? +m[3] : 0);
+        }
+      });
+  }
+
   function initTraffic() {
     var el = doc.querySelector("[data-traffic]");
     if (!el || el.getAttribute("data-init")) return;
@@ -5884,6 +5959,7 @@
     initRoads();
     initSkyPage();
     initJeep();
+    initTape();
     initPlaybook();
     initHomePulse();
     initRequests();

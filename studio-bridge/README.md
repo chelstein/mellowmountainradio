@@ -74,3 +74,14 @@ Feeds the live incident board on roads.html. Setup:
 The site probes the relay on page load — the incident board and corridor
 status lines appear on their own once it answers. Cameras and the flow map
 never depend on it (they're direct from ADOT).
+
+## The Tape (broadcast archive: tape-recorder.sh)
+
+Records the stream in 6-hour blocks, keeps exactly 14 days (both numbers are
+the statutory-license rules for archived programs), uploads to a
+DigitalOcean Space, maintains manifest.json. Setup is in the header of
+`tape-recorder.sh` — Space + s3cmd + CORS + launchd (Mac) or systemd. When
+it's rolling, give Claude the Space's CDN URL; the site's Listeners' Lounge (rewind.html)
+reveals itself the moment rewind.json points at a live manifest. Confirm
+your webcast/SoundExchange licensing covers the direct AzuraCast stream —
+the archive rides the same license as the stream itself.
