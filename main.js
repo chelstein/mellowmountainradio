@@ -2609,11 +2609,11 @@
     var cv = doc.querySelector("[data-window]"); if (!cv || cv.getAttribute("data-init")) return;
     cv.setAttribute("data-init", "1");
     var cap = doc.querySelector("[data-window-cap]");
-    var wx = { cover: 30, code: 0, wind: 5, temp: null, aqi: null };
+    var wx = { cover: 30, code: 0, wind: 5, temp: null, aqi: null, dew: null };
     function getWx() {
-      fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610&current=temperature_2m,weather_code,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FPhoenix", { cache: "no-store" })
+      fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610&current=temperature_2m,weather_code,cloud_cover,wind_speed_10m,dew_point_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FPhoenix", { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-          if (d && d.current) { wx.cover = d.current.cloud_cover; wx.code = d.current.weather_code; wx.wind = d.current.wind_speed_10m; wx.temp = Math.round(d.current.temperature_2m); }
+          if (d && d.current) { wx.cover = d.current.cloud_cover; wx.code = d.current.weather_code; wx.wind = d.current.wind_speed_10m; wx.temp = Math.round(d.current.temperature_2m); if (isFinite(d.current.dew_point_2m)) wx.dew = Math.round(d.current.dew_point_2m); }
         }).catch(function () {});
       fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.8697&longitude=-111.7610&current=us_aqi&timezone=America/Phoenix", { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
@@ -2642,6 +2642,10 @@
       var dpr = Math.min(2, window.devicePixelRatio || 1);
       cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
       x = cv.getContext("2d"); x.scale(dpr, dpr);
+      if (typeof fx !== "undefined") { fx.width = cv.width; fx.height = cv.height; }
+      if (typeof fogC !== "undefined") { fogC.width = Math.round(cv.width / 2); fogC.height = Math.round(cv.height / 2); fogSeeded = false; }
+      if (typeof miniC !== "undefined") { miniC.width = Math.max(80, Math.round(cv.width / 5)); miniC.height = Math.max(88, Math.round(cv.height / 5)); }
+      if (typeof LAYERS !== "undefined") LAYERS.stale = true;
     }
     size();
     // the REAL view out the back door, cartooned: the AM tower and its guys,
@@ -2665,6 +2669,108 @@
       dm.onerror = function () {};
       dm.src = "dayplate.jpg";
     })();
+    // sky masks baked from the real plates: where the sky truly is, so the
+    // moon, stars and clouds pass BEHIND the tower, the trees and the dish
+    var MASK = { dusk: null, day: null };
+    (function () {
+      ["dusk", "day"].forEach(function (k) {
+        var mi = new Image();
+        mi.onload = function () { MASK[k] = mi; LAYERS.stale = true; };
+        mi.onerror = function () {};
+        mi.src = "skymask-" + k + ".png";
+      });
+    })();
+    // parallax: the window looks INTO a place — mouse or phone-tilt shifts
+    // the near ground more than the trees, and the sky not at all
+    var par = { tx: 0, ty: 0, cx: 0, cy: 0, lastIn: -99, asked: false };
+    function parSet(nx, ny, el2) { par.tx = Math.max(-1, Math.min(1, nx)); par.ty = Math.max(-1, Math.min(1, ny)); par.lastIn = el2; }
+    cv.addEventListener("pointermove", function (e) {
+      var r = cv.getBoundingClientRect();
+      parSet(((e.clientX - r.left) / r.width - .5) * 2, ((e.clientY - r.top) / r.height - .5) * 2, (Date.now() - t0) / 1000);
+      wipeAt(e);
+    });
+    var tiltBase = null;
+    function onTilt(e) {
+      if (e.beta == null || e.gamma == null) return;
+      var g = e.gamma, b = e.beta;
+      if (window.screen && screen.orientation && Math.abs(screen.orientation.angle) === 90) { var sw2 = g; g = b * (screen.orientation.angle === 90 ? -1 : 1); b = sw2 * (screen.orientation.angle === 90 ? 1 : -1); }
+      if (!tiltBase) tiltBase = [g, b];
+      parSet((g - tiltBase[0]) / 14, (b - tiltBase[1]) / 14, (Date.now() - t0) / 1000);
+    }
+    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission !== "function") {
+      window.addEventListener("deviceorientation", onTilt);
+    }
+    cv.addEventListener("pointerdown", function (e) {
+      if (!par.asked && typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+        par.asked = true;
+        DeviceOrientationEvent.requestPermission().then(function (g) { if (g === "granted") window.addEventListener("deviceorientation", onTilt); }).catch(function () {});
+      }
+      wipeAt(e);
+    });
+    // parallax layer cache: per plate, the sky slice and the near-ground
+    // slice, cut with the baked masks and a feathered horizon
+    var LAYERS = { stale: true, dusk: null, day: null };
+    function cutLayers(img, mask, horizon, drawY, drawH) {
+      var mk = function () { var c = document.createElement("canvas"); c.width = cv.width; c.height = cv.height; return c; };
+      var full = mk(), fc = full.getContext("2d");
+      fc.setTransform(cv.width / W, 0, 0, cv.width / W, 0, 0);
+      fc.drawImage(img, 0, drawY, W, drawH);
+      var sky = null;
+      if (mask) {
+        sky = mk(); var sc = sky.getContext("2d");
+        sc.drawImage(full, 0, 0);
+        sc.globalCompositeOperation = "destination-in";
+        sc.setTransform(cv.width / W, 0, 0, cv.width / W, 0, 0);
+        sc.drawImage(mask, 0, drawY, W, drawH);
+      }
+      var gnd = mk(); var gc = gnd.getContext("2d");
+      gc.drawImage(full, 0, 0);
+      gc.globalCompositeOperation = "destination-in";
+      var gg = gc.createLinearGradient(0, (horizon - .05) * cv.height, 0, (horizon + .03) * cv.height);
+      gg.addColorStop(0, "rgba(0,0,0,0)"); gg.addColorStop(1, "rgba(0,0,0,1)");
+      gc.fillStyle = gg; gc.fillRect(0, 0, cv.width, cv.height);
+      return { full: full, sky: sky, gnd: gnd };
+    }
+    function buildLayers() {
+      if (!PHOTO.ok) return;
+      var dh0 = PHOTO.img.naturalHeight * (W / PHOTO.img.naturalWidth);
+      LAYERS.dusk = cutLayers(PHOTO.img, MASK.dusk, .72, -0.02 * dh0, dh0);
+      if (PHOTO.dayOk) LAYERS.day = cutLayers(PHOTO.day, MASK.day, .68, 0, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth));
+      LAYERS.stale = false;
+    }
+    // the sky-effects scratch canvas (stars, moon, clouds — masked to real sky)
+    var fx = document.createElement("canvas"), fxx = fx.getContext("2d");
+    // the fogged-glass layer: condensation you can wipe with a finger
+    var fogC = document.createElement("canvas"), fogX = fogC.getContext("2d"), fogA = 0, fogSeeded = false;
+    function seedFog() {
+      fogX.setTransform(1, 0, 0, 1, 0, 0);
+      fogX.globalCompositeOperation = "source-over";
+      fogX.clearRect(0, 0, fogC.width, fogC.height);
+      fogX.fillStyle = "rgba(216,224,232,.92)"; fogX.fillRect(0, 0, fogC.width, fogC.height);
+      for (var fi = 0; fi < 130; fi++) {
+        var fxp = Math.random() * fogC.width, fyp = Math.random() * fogC.height, fr = 12 + Math.random() * 60;
+        var fgd = fogX.createRadialGradient(fxp, fyp, 0, fxp, fyp, fr);
+        var lite = Math.random() < .5;
+        fgd.addColorStop(0, lite ? "rgba(255,255,255,.10)" : "rgba(170,182,196,.10)");
+        fgd.addColorStop(1, "rgba(200,210,220,0)");
+        fogX.fillStyle = fgd; fogX.beginPath(); fogX.arc(fxp, fyp, fr, 0, 7); fogX.fill();
+      }
+      fogSeeded = true;
+    }
+    function wipeAt(e) {
+      if (fogA < .05) return;
+      var r = cv.getBoundingClientRect();
+      var wxp = (e.clientX - r.left) / r.width * fogC.width, wyp = (e.clientY - r.top) / r.height * fogC.height;
+      var br = fogC.width * .085;
+      fogX.setTransform(1, 0, 0, 1, 0, 0);
+      fogX.globalCompositeOperation = "destination-out";
+      var wg = fogX.createRadialGradient(wxp, wyp, 0, wxp, wyp, br);
+      wg.addColorStop(0, "rgba(0,0,0,.9)"); wg.addColorStop(.7, "rgba(0,0,0,.55)"); wg.addColorStop(1, "rgba(0,0,0,0)");
+      fogX.fillStyle = wg; fogX.beginPath(); fogX.arc(wxp, wyp, br, 0, 7); fogX.fill();
+      fogX.globalCompositeOperation = "source-over";
+    }
+    // clinging raindrops that refract the scene upside-down, like real glass
+    var gdrops = [], miniC = document.createElement("canvas"), miniX = miniC.getContext("2d"), miniAt = -99;
     var TOWER_TIP = [.583, .034]; // the real tower tip in the cropped frame
     var t0 = Date.now(), previewMin = null; // minutes-of-day when time-traveling, null = live
     var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0, flashT = 0, lastFlash = 0;
@@ -2673,14 +2779,33 @@
       var iw = PHOTO.img.naturalWidth, ih = PHOTO.img.naturalHeight;
       var s = W / iw, dh = ih * s;
       x.clearRect(0, 0, W, H);
-      x.drawImage(PHOTO.img, 0, -0.02 * dh, W, dh); // tower tip at top, flagstones at the sill
       // TWO real plates: high sun crossfades the dusk frame into the
       // photograph actually taken at midday — no grade pretends to be noon
       var dayMix = (!PHOTO.dayOk || alt <= 4) ? 0 : (alt >= 12 ? 1 : (alt - 4) / 8);
-      if (dayMix > 0) {
-        x.globalAlpha = dayMix;
-        x.drawImage(PHOTO.day, 0, 0, W, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth));
+      // parallax offsets: ease toward pointer/tilt; drift gently when idle
+      if (!reduced && el - par.lastIn > 6) { par.tx = Math.sin(el * .07) * .3; par.ty = Math.cos(el * .05) * .12; }
+      par.cx += (par.tx - par.cx) * .05; par.cy += (par.ty - par.cy) * .05;
+      var mx2 = reduced ? 0 : par.cx, my2 = reduced ? 0 : par.cy;
+      if (LAYERS.stale) buildLayers();
+      function plateStack(Lr, img, drawY, drawH, a) {
+        // far to near: sky pinned still, the yard eases, the near ground leads
+        x.globalAlpha = a;
+        var sc2 = 1.03, ox = -W * .015, oy = -H * .015;
+        x.drawImage(img, ox + mx2 * 4, oy + drawY * sc2 + my2 * 2, W * sc2, drawH * sc2);
+        if (Lr && Lr.sky) x.drawImage(Lr.sky, 0, 0, fx.width, fx.height, ox, oy, W * sc2, H * sc2);
+        if (Lr) x.drawImage(Lr.gnd, 0, 0, fx.width, fx.height, ox + mx2 * 9, oy + my2 * 5, W * sc2, H * sc2);
         x.globalAlpha = 1;
+      }
+      if (LAYERS.dusk && !reduced) {
+        plateStack(LAYERS.dusk, PHOTO.img, -0.02 * dh, dh, 1);
+        if (dayMix > 0 && LAYERS.day) plateStack(LAYERS.day, PHOTO.day, 0, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth), dayMix);
+      } else {
+        x.drawImage(PHOTO.img, 0, -0.02 * dh, W, dh); // tower tip at top, flagstones at the sill
+        if (dayMix > 0) {
+          x.globalAlpha = dayMix;
+          x.drawImage(PHOTO.day, 0, 0, W, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth));
+          x.globalAlpha = 1;
+        }
       }
       // GRADE by the real sun: the dusk frame is lifted for day only as far
       // as the real midday plate hasn't already taken over
@@ -2732,33 +2857,41 @@
         x.fillStyle = "rgba(150,110,70," + Math.min(.32, (wx.aqi - 150) / 400 + .12) + ")";
         x.fillRect(0, 0, W, H);
       }
-      // stars in the real sky — and the real deck hides them, exactly
+      // EVERYTHING that lives in the sky — stars, the moon, the clouds —
+      // is drawn on a scratch layer and clipped by the baked sky mask, so
+      // it all passes truly BEHIND the tower, the trees and the dish
+      var dprF = cv.width / W;
+      fxx.setTransform(1, 0, 0, 1, 0, 0);
+      fxx.globalCompositeOperation = "source-over";
+      fxx.clearRect(0, 0, fx.width, fx.height);
+      fxx.setTransform(dprF, 0, 0, dprF, 0, 0);
+      var skyDrew = false;
       if (alt < -8) {
+        skyDrew = true;
         var sa = Math.min(1, (-8 - alt) / 6) * (1 - deck * .92);
         stars.forEach(function (st2, i) {
-          if (st2[1] > .42) return;
-          if (st2[0] > .6 && st2[1] > .26) return; // the dish owns that corner
+          if (st2[1] > .5) return;
           var tw = reduced ? 1 : (.6 + .4 * Math.sin(el * 1.3 + i));
-          x.globalAlpha = sa * tw * .85; x.fillStyle = "#fff";
-          x.fillRect(st2[0] * W, st2[1] * H, st2[2] * .8, st2[2] * .8);
+          fxx.globalAlpha = sa * tw * .85; fxx.fillStyle = "#fff";
+          fxx.fillRect(st2[0] * W, st2[1] * H, st2[2] * .8, st2[2] * .8);
         });
-        x.globalAlpha = 1;
+        fxx.globalAlpha = 1;
         // true-phase moon in the open western sky of the frame
         var mi = moonInfo(), f = Math.max(0, Math.min(1, mi.illum / 100));
         var waning = (mi.name || "").toLowerCase().indexOf("waning") !== -1;
         var mx = W * .27, my = H * .2, mr = Math.max(10, W * .026);
-        x.globalAlpha = Math.max(.12, 1 - deck * .85); // the deck veils the moon too
+        fxx.globalAlpha = Math.max(.12, 1 - deck * .85); // the deck veils the moon too
         // the glare halo the camera really catches out there (IMG_6099)
-        var halo = x.createRadialGradient(mx, my, mr * .6, mx, my, mr * 6.5);
+        var halo = fxx.createRadialGradient(mx, my, mr * .6, mx, my, mr * 6.5);
         halo.addColorStop(0, "rgba(205,218,255," + (.24 * f + .06) + ")");
         halo.addColorStop(.4, "rgba(185,200,245," + (.09 * f + .02) + ")");
         halo.addColorStop(1, "rgba(185,200,245,0)");
-        x.fillStyle = halo; x.beginPath(); x.arc(mx, my, mr * 6.5, 0, 7); x.fill();
-        x.beginPath(); x.arc(mx, my, mr, 0, 7); x.fillStyle = "rgba(60,64,88,.85)"; x.fill();
-        x.beginPath(); x.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); x.closePath(); x.fillStyle = "#f3ecd9"; x.fill();
-        x.beginPath(); x.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
-        x.fillStyle = f >= .5 ? "#f3ecd9" : "rgba(60,64,88,.85)"; x.fill();
-        x.globalAlpha = 1;
+        fxx.fillStyle = halo; fxx.beginPath(); fxx.arc(mx, my, mr * 6.5, 0, 7); fxx.fill();
+        fxx.beginPath(); fxx.arc(mx, my, mr, 0, 7); fxx.fillStyle = "rgba(60,64,88,.85)"; fxx.fill();
+        fxx.beginPath(); fxx.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); fxx.closePath(); fxx.fillStyle = "#f3ecd9"; fxx.fill();
+        fxx.beginPath(); fxx.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
+        fxx.fillStyle = f >= .5 ? "#f3ecd9" : "rgba(60,64,88,.85)"; fxx.fill();
+        fxx.globalAlpha = 1;
         // shooting star, rare
         if (!reduced) {
           if (!shoot && el - lastShoot > 14 && Math.random() < .006) { shoot = { t: 0, x0: .1 + Math.random() * .4, y0: .05 + Math.random() * .12 }; }
@@ -2767,13 +2900,47 @@
             if (shoot.t >= 1) { shoot = null; lastShoot = el; }
             else {
               var sxp = (shoot.x0 + shoot.t * .16) * W, syp = (shoot.y0 + shoot.t * .07) * H;
-              var grd2 = x.createLinearGradient(sxp - W * .06, syp - H * .025, sxp, syp);
+              var grd2 = fxx.createLinearGradient(sxp - W * .06, syp - H * .025, sxp, syp);
               grd2.addColorStop(0, "rgba(255,255,255,0)"); grd2.addColorStop(1, "rgba(255,255,255," + (.9 - shoot.t * .8) + ")");
-              x.strokeStyle = grd2; x.lineWidth = 1.6;
-              x.beginPath(); x.moveTo(sxp - W * .06, syp - H * .025); x.lineTo(sxp, syp); x.stroke();
+              fxx.strokeStyle = grd2; fxx.lineWidth = 1.6;
+              fxx.beginPath(); fxx.moveTo(sxp - W * .06, syp - H * .025); fxx.lineTo(sxp, syp); fxx.stroke();
             }
           }
         }
+      }
+      // the sky as it really is: cloud forms drift through the real frame,
+      // counted from live cover, pushed by the live wind, lit by the hour
+      var nClouds = Math.round(deck * 9);
+      if (nClouds > 0) {
+        skyDrew = true;
+        var cdrift = reduced ? 0 : el * (.0018 + wx.wind * .0005);
+        var cCol = alt < -6 ? [46, 52, 72] : (alt < 8 ? [232, 190, 168] : [255, 255, 255]);
+        var cA = alt < -6 ? .3 : .34 + deck * .2;
+        for (var ci = 0; ci < nClouds && ci < clouds.length; ci++) {
+          var c2 = clouds[ci], cxp2 = ((c2.x + cdrift * (.6 + c2.s * .3)) % 1.3) - .15;
+          var cAp = cA * (0.55 + c2.s * .3);
+          for (var ck = 0; ck < 6; ck++) {
+            var pcx = (cxp2 + (ck - 2.5) * .024 * c2.s) * W, pcy = (c2.y * .8 + Math.sin(ck * 2.1 + ci) * .014) * H;
+            var pr = W * (.05 + (ck === 2 || ck === 3 ? .022 : 0)) * c2.s;
+            fxx.save(); fxx.translate(pcx, pcy); fxx.scale(1, .42);
+            var cg = fxx.createRadialGradient(0, 0, 0, 0, 0, pr);
+            cg.addColorStop(0, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + "," + cAp + ")");
+            cg.addColorStop(.55, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + "," + (cAp * .5) + ")");
+            cg.addColorStop(1, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + ",0)");
+            fxx.fillStyle = cg;
+            fxx.beginPath(); fxx.arc(0, 0, pr, 0, 7); fxx.fill(); fxx.restore();
+          }
+        }
+      }
+      if (skyDrew) {
+        var mim = dayMix >= .5 ? MASK.day : MASK.dusk;
+        if (mim) {
+          fxx.globalCompositeOperation = "destination-in";
+          if (dayMix >= .5) fxx.drawImage(mim, 0, 0, W, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth));
+          else fxx.drawImage(mim, 0, -0.02 * dh, W, dh);
+          fxx.globalCompositeOperation = "source-over";
+        }
+        x.drawImage(fx, 0, 0, W, H);
       }
       // the beacon on the REAL tower tip, breathing after sundown
       if (alt < -2) {
@@ -2847,29 +3014,6 @@
           }
         }
       }
-      // the sky as it really is: cloud forms drift through the real frame,
-      // counted from live cover, pushed by the live wind, lit by the hour
-      var nClouds = Math.round(deck * 9);
-      if (nClouds > 0) {
-        var cdrift = reduced ? 0 : el * (.0018 + wx.wind * .0005);
-        var cCol = alt < -6 ? [46, 52, 72] : (alt < 8 ? [232, 190, 168] : [255, 255, 255]);
-        var cA = alt < -6 ? .3 : .34 + deck * .2;
-        for (var ci = 0; ci < nClouds && ci < clouds.length; ci++) {
-          var c2 = clouds[ci], cxp2 = ((c2.x + cdrift * (.6 + c2.s * .3)) % 1.3) - .15;
-          var cAp = cA * (0.55 + c2.s * .3);
-          for (var ck = 0; ck < 6; ck++) {
-            var pcx = (cxp2 + (ck - 2.5) * .024 * c2.s) * W, pcy = (c2.y * .8 + Math.sin(ck * 2.1 + ci) * .014) * H;
-            var pr = W * (.05 + (ck === 2 || ck === 3 ? .022 : 0)) * c2.s;
-            x.save(); x.translate(pcx, pcy); x.scale(1, .42);
-            var cg = x.createRadialGradient(0, 0, 0, 0, 0, pr);
-            cg.addColorStop(0, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + "," + cAp + ")");
-            cg.addColorStop(.55, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + "," + (cAp * .5) + ")");
-            cg.addColorStop(1, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + ",0)");
-            x.fillStyle = cg;
-            x.beginPath(); x.arc(0, 0, pr, 0, 7); x.fill(); x.restore();
-          }
-        }
-      }
       // real thunderstorm on the codes -> lightning cracks the frame
       if (wx.code >= 95 && !reduced) {
         if (!flashT && el - lastFlash > 9 && Math.random() < .012) { flashT = el; }
@@ -2878,6 +3022,69 @@
           if (ft > .45) { flashT = 0; lastFlash = el; }
           else { x.fillStyle = "rgba(240,244,255," + (.55 * Math.max(0, 1 - ft / .45) * (ft < .08 || (ft > .15 && ft < .22) ? 1 : .3)) + ")"; x.fillRect(0, 0, W, H); }
         }
+      }
+      // clinging drops on the glass — each one refracts the real scene,
+      // upside-down, the way water actually bends light
+      var raining = wx.code >= 51 && !snowing;
+      if (raining && !reduced) {
+        if (el - miniAt > 1.5) { // refresh the refraction miniature from the live frame
+          miniAt = el;
+          miniX.setTransform(1, 0, 0, 1, 0, 0);
+          miniX.clearRect(0, 0, miniC.width, miniC.height);
+          miniX.save(); miniX.translate(0, miniC.height); miniX.scale(1, -1);
+          miniX.drawImage(cv, 0, 0, miniC.width, miniC.height);
+          miniX.restore();
+        }
+        if (gdrops.length < 16 && Math.random() < .09) {
+          gdrops.push({ x: Math.random(), y: Math.random() * .8, r: 7 + Math.random() * 13, v: 0, born: el });
+        }
+        gdrops = gdrops.filter(function (d) { return d.y < 1.05 && d.r > 1.6; });
+        cv._gd = gdrops.length;
+        var sc3 = miniC.width / cv.width;
+        gdrops.forEach(function (d, i) {
+          if (d.r > 12) { d.v = Math.min(.0035, d.v + .00003 * d.r); d.y += d.v; d.x += Math.sin(el * 2 + i) * .0003; }
+          else d.r -= .0022; // little ones dry up
+          var dxp = d.x * W, dyp = d.y * H, dr = d.r;
+          var ry2 = dr * (d.r > 12 ? 1.25 : 1.08); // sliders stretch as they run
+          x.save();
+          x.beginPath(); x.ellipse(dxp, dyp, dr * .9, ry2, 0, 0, 7); x.clip();
+          // the refracted world in the drop: the whole flipped scene, minified
+          var sw3 = dr * 14 * sc3 * (cv.width / W);
+          x.drawImage(miniC, d.x * miniC.width - sw3 / 2, (1 - d.y) * miniC.height - sw3 / 2, sw3, sw3, dxp - dr, dyp - ry2, dr * 2, ry2 * 2);
+          // lensing: a shade darker toward the rim, wet all through
+          var lg = x.createRadialGradient(dxp, dyp, dr * .35, dxp, dyp, ry2);
+          lg.addColorStop(0, "rgba(255,255,255,.04)");
+          lg.addColorStop(.8, "rgba(20,30,50,.08)");
+          lg.addColorStop(1, "rgba(10,18,34,.22)");
+          x.fillStyle = lg; x.fillRect(dxp - dr, dyp - ry2, dr * 2, ry2 * 2);
+          x.restore();
+          x.strokeStyle = "rgba(255,255,255,.22)"; x.lineWidth = .9;
+          x.beginPath(); x.ellipse(dxp, dyp, dr * .9 - .5, ry2 - .5, 0, -2.5, -.7); x.stroke();
+          x.strokeStyle = "rgba(20,30,50,.22)"; x.lineWidth = .9;
+          x.beginPath(); x.ellipse(dxp, dyp, dr * .9, ry2, 0, .5, 2.5); x.stroke();
+          // the faint gleam every real drop wears
+          x.fillStyle = "rgba(255,255,255,.4)";
+          x.beginPath(); x.arc(dxp - dr * .3, dyp - ry2 * .42, Math.max(.8, dr * .1), 0, 7); x.fill();
+        });
+      } else if (gdrops.length) gdrops = [];
+      // condensation on the cold glass — when the real air is at the dew
+      // point, the window fogs, and you can wipe it with a finger
+      var fogTarget = 0;
+      if (wx.code === 45 || wx.code === 48) fogTarget = .8;
+      else if (wx.temp != null && wx.dew != null && wx.temp - wx.dew <= 4) fogTarget = .55 * (1 - Math.max(0, wx.temp - wx.dew) / 4);
+      fogA += (fogTarget - fogA) * .01;
+      if (fogA > .04) {
+        if (!fogSeeded) seedFog();
+        else if (!reduced && Math.random() < .25) { // the glass slowly fogs back over
+          fogX.setTransform(1, 0, 0, 1, 0, 0);
+          fogX.globalCompositeOperation = "source-over";
+          fogX.globalAlpha = .01;
+          fogX.fillStyle = "rgba(216,224,232,.9)"; fogX.fillRect(0, 0, fogC.width, fogC.height);
+          fogX.globalAlpha = 1;
+        }
+        x.globalAlpha = Math.min(.85, fogA);
+        x.drawImage(fogC, 0, 0, W, H);
+        x.globalAlpha = 1;
       }
       // notes from the doorway while the stream truly plays
       var isOn = typeof playing !== "undefined" && playing;
@@ -2927,7 +3134,8 @@
         cap.textContent = ph2 + " · sun " + (alt >= 0 ? Math.round(alt) + "° up" : Math.round(-alt) + "° below the horizon") +
           " · " + wx.cover + "% cloud" + (mood.length ? " · " + mood.join(" · ") : "") +
           (wx.temp != null ? " · " + wx.temp + "°" : "") + (wx.wind >= 15 ? " · wind " + Math.round(wx.wind) + " mph" : "") +
-          (previewMin != null ? " — time travel on the real photo; tap LIVE to come home" : " — the actual back door, matched to the real sky, exactly");
+          (fogA > .2 ? " — the glass has fogged up; wipe it with your finger" :
+          (previewMin != null ? " — time travel on the real photo; tap LIVE to come home" : " — the actual back door, matched to the real sky, exactly"));
       }
     }
     function paint() {
