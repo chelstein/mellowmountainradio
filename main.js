@@ -2782,18 +2782,21 @@
       // TWO real plates: high sun crossfades the dusk frame into the
       // photograph actually taken at midday — no grade pretends to be noon
       var dayMix = (!PHOTO.dayOk || alt <= 4) ? 0 : (alt >= 12 ? 1 : (alt - 4) / 8);
-      // parallax offsets: ease toward pointer/tilt; drift gently when idle
-      if (!reduced && el - par.lastIn > 6) { par.tx = Math.sin(el * .07) * .3; par.ty = Math.cos(el * .05) * .12; }
-      par.cx += (par.tx - par.cx) * .05; par.cy += (par.ty - par.cy) * .05;
+      // parallax offsets: ease toward pointer/tilt; the camera never stops
+      // breathing — a slow drift when idle, like someone standing at the glass
+      if (!reduced && el - par.lastIn > 4) { par.tx = Math.sin(el * .09) * .55; par.ty = Math.cos(el * .06) * .22; }
+      par.cx += (par.tx - par.cx) * .06; par.cy += (par.ty - par.cy) * .06;
       var mx2 = reduced ? 0 : par.cx, my2 = reduced ? 0 : par.cy;
       if (LAYERS.stale) buildLayers();
+      // filmic breath: the frame leans in and out over the better part of a minute
+      var breathe = reduced ? 0 : .012 * (.5 + .5 * Math.sin(el * .045));
       function plateStack(Lr, img, drawY, drawH, a) {
         // far to near: sky pinned still, the yard eases, the near ground leads
         x.globalAlpha = a;
-        var sc2 = 1.03, ox = -W * .015, oy = -H * .015;
-        x.drawImage(img, ox + mx2 * 4, oy + drawY * sc2 + my2 * 2, W * sc2, drawH * sc2);
+        var sc2 = 1.03 + breathe, ox = W * (1 - sc2) / 2, oy = H * (1 - sc2) / 2;
+        x.drawImage(img, ox + mx2 * 6, oy + drawY * sc2 + my2 * 3, W * sc2, drawH * sc2);
         if (Lr && Lr.sky) x.drawImage(Lr.sky, 0, 0, fx.width, fx.height, ox, oy, W * sc2, H * sc2);
-        if (Lr) x.drawImage(Lr.gnd, 0, 0, fx.width, fx.height, ox + mx2 * 9, oy + my2 * 5, W * sc2, H * sc2);
+        if (Lr) x.drawImage(Lr.gnd, 0, 0, fx.width, fx.height, ox + mx2 * 14, oy + my2 * 7, W * sc2, H * sc2);
         x.globalAlpha = 1;
       }
       if (LAYERS.dusk && !reduced) {
@@ -2910,7 +2913,8 @@
       }
       // the sky as it really is: cloud forms drift through the real frame,
       // counted from live cover, pushed by the live wind, lit by the hour
-      var nClouds = Math.round(deck * 9);
+      // (even "clear" Sedona carries a wisp or two — cover above 3% shows one)
+      var nClouds = deck <= .03 ? 0 : Math.max(1, Math.round(deck * 9));
       if (nClouds > 0) {
         skyDrew = true;
         var cdrift = reduced ? 0 : el * (.0018 + wx.wind * .0005);
@@ -2929,6 +2933,30 @@
             cg.addColorStop(1, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + ",0)");
             fxx.fillStyle = cg;
             fxx.beginPath(); fxx.arc(0, 0, pr, 0, 7); fxx.fill(); fxx.restore();
+          }
+        }
+      }
+      // a raven crosses the yard now and then — they really do live out there
+      if (!reduced && alt > -4) {
+        if (!raven && el - lastRaven > 35 && Math.random() < .008) {
+          raven = { t: 0, y0: .08 + Math.random() * .3, dir: Math.random() < .5 ? 1 : -1, sp: .0022 + Math.random() * .0015, ph: Math.random() * 7 };
+        }
+        if (raven) {
+          raven.t += raven.sp;
+          if (raven.t >= 1) { raven = null; lastRaven = el; }
+          else {
+            skyDrew = true;
+            var rvx = (raven.dir > 0 ? raven.t : 1 - raven.t) * 1.2 * W - W * .1;
+            var rvy = (raven.y0 + Math.sin(raven.t * 9 + raven.ph) * .012) * H;
+            var rs = W * .011, flap = Math.sin(el * 7 + raven.ph);
+            if (Math.sin(raven.t * 14 + raven.ph) > .2) flap *= .25; // gliding, mostly
+            fxx.strokeStyle = alt < 2 ? "rgba(16,16,20,.8)" : "rgba(24,24,30,.85)";
+            fxx.lineWidth = Math.max(1.2, rs * .16); fxx.lineCap = "round";
+            fxx.beginPath();
+            fxx.moveTo(rvx - rs, rvy - flap * rs * .5);
+            fxx.quadraticCurveTo(rvx - rs * .4, rvy + rs * .18, rvx, rvy);
+            fxx.quadraticCurveTo(rvx + rs * .4, rvy + rs * .18, rvx + rs, rvy - flap * rs * .5);
+            fxx.stroke();
           }
         }
       }
@@ -2976,15 +3004,17 @@
       function sway(rx, ry, rw, rh, off) {
         x.drawImage(cv, rx * dpr2, ry * dpr2, rw * dpr2, rh * dpr2, rx + off, ry, rw, rh);
       }
-      if (wx.temp != null && wx.temp >= 98 && alt > 5 && !reduced) {
+      if (wx.temp != null && wx.temp >= 90 && alt > 8 && !reduced) {
+        var heatA = Math.min(1, (wx.temp - 88) / 14);
         for (var hs = 0; hs < 4; hs++) {
           var band = H * (.62 + hs * .04);
-          sway(0, band, W, H * .012, Math.sin(el * 2.2 + hs * 1.7) * (1.2 + hs * .4));
+          sway(0, band, W, H * .012, Math.sin(el * 2.2 + hs * 1.7) * (1.2 + hs * .4) * heatA);
         }
       }
-      // the real wind moves the real trees — amplitude straight from the mph
-      if (wx.wind >= 4 && !reduced) {
-        var amp = Math.min(4.5, wx.wind * .13) * (1 + .45 * Math.sin(el * .7) + .2 * Math.sin(el * 2.3));
+      // the real wind moves the real trees — amplitude straight from the mph,
+      // but the air out there is never truly dead, so neither are the pines
+      if (!reduced) {
+        var amp = (.5 + Math.min(4.5, wx.wind * .13)) * (1 + .45 * Math.sin(el * .7) + .2 * Math.sin(el * 2.3));
         if (dayMix >= .5) {
           // midday plate: the big pine on the left edge
           for (var fd = 0; fd < 6; fd++) {
