@@ -2657,7 +2657,7 @@
     })();
     var TOWER_TIP = [.583, .034]; // the real tower tip in the cropped frame
     var t0 = Date.now(), previewMin = null; // minutes-of-day when time-traveling, null = live
-    var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0;
+    var notes = [], raven = null, shoot = null, lastNote = 0, lastRaven = 0, lastShoot = 0, flashT = 0, lastFlash = 0;
     function paintPhoto(alt, el, now) {
       // cover-fit the real photograph
       var iw = PHOTO.img.naturalWidth, ih = PHOTO.img.naturalHeight;
@@ -2727,13 +2727,32 @@
         x.beginPath(); x.arc(bx, by, Math.max(2.5, W * .0035) * 3.2, 0, 7);
         x.fillStyle = "rgba(255,60,40," + pulse * .16 + ")"; x.fill();
       }
-      // rain on the glass, only when it's really raining
-      if (wx.code >= 51) {
+      // weather on the glass — only the weather that's really happening
+      var snowing = (wx.code >= 71 && wx.code <= 77) || wx.code === 85 || wx.code === 86;
+      if (snowing) {
+        x.fillStyle = "rgba(255,255,255,.85)";
+        drops.forEach(function (d, i) {
+          var dy = reduced ? d[1] : ((d[1] + el * .045 * (1 + (i % 3) * .3)) % 1);
+          var dx2 = d[0] + (reduced ? 0 : Math.sin(el * .8 + i) * .008);
+          x.globalAlpha = .5 + (i % 4) * .12;
+          x.beginPath(); x.arc(dx2 * W, dy * H, 1 + (i % 3), 0, 7); x.fill();
+        });
+        x.globalAlpha = 1;
+      } else if (wx.code >= 51) {
         x.strokeStyle = "rgba(190,210,235,.4)"; x.lineWidth = 1;
         drops.forEach(function (d) {
           var dy = reduced ? d[1] : ((d[1] + el * .5) % 1);
           x.beginPath(); x.moveTo(d[0] * W, dy * H * .9); x.lineTo(d[0] * W - 2, dy * H * .9 + 9); x.stroke();
         });
+      }
+      // real thunderstorm on the codes -> lightning cracks the frame
+      if (wx.code >= 95 && !reduced) {
+        if (!flashT && el - lastFlash > 9 && Math.random() < .012) { flashT = el; }
+        if (flashT) {
+          var ft = el - flashT;
+          if (ft > .45) { flashT = 0; lastFlash = el; }
+          else { x.fillStyle = "rgba(240,244,255," + (.55 * Math.max(0, 1 - ft / .45) * (ft < .08 || (ft > .15 && ft < .22) ? 1 : .3)) + ")"; x.fillRect(0, 0, W, H); }
+        }
       }
       // notes from the doorway while the stream truly plays
       var isOn = typeof playing !== "undefined" && playing;
@@ -2752,14 +2771,17 @@
       // brass plate with the actual song on air
       if (typeof lastNow !== "undefined" && lastNow && lastNow.title && lastNow.title !== "Mellow Mountain Radio") {
         var plate = "♪  " + lastNow.title + " — " + lastNow.artist;
-        x.font = "700 " + Math.round(Math.max(11, W * .012)) + "px Lato, sans-serif";
-        var pw = Math.min(W * .55, x.measureText(plate).width + 26);
-        var px0 = W * .5 - pw / 2, py0 = H - Math.max(24, H * .075);
+        var lcEl = doc.querySelector("[data-listeners]");
+        var lcm = lcEl && lcEl.textContent ? lcEl.textContent.match(/\d+/) : null;
+        if (lcm && +lcm[0] > 0) plate += "  ·  " + lcm[0] + " listening with you";
+        x.font = "700 " + Math.round(Math.max(11, W * .014)) + "px Lato, sans-serif";
+        var pw = Math.min(W * .8, x.measureText(plate).width + 26);
+        var px0 = W * .5 - pw / 2, py0 = H - Math.max(26, H * .06);
         x.fillStyle = "rgba(20,14,10,.78)";
-        x.beginPath(); if (x.roundRect) x.roundRect(px0, py0, pw, Math.max(20, H * .052), 6); else x.rect(px0, py0, pw, Math.max(20, H * .052)); x.fill();
+        x.beginPath(); if (x.roundRect) x.roundRect(px0, py0, pw, Math.max(22, H * .042), 6); else x.rect(px0, py0, pw, Math.max(22, H * .042)); x.fill();
         x.strokeStyle = "rgba(255,216,138,.5)"; x.lineWidth = 1; x.stroke();
         x.fillStyle = "#ffe9a8"; x.textAlign = "center"; x.textBaseline = "middle";
-        x.fillText(plate, W * .5, py0 + Math.max(10, H * .026), pw - 16);
+        x.fillText(plate, W * .5, py0 + Math.max(11, H * .021), pw - 16);
         x.textBaseline = "alphabetic";
       }
       // thin window frame, no mullions over the photograph
