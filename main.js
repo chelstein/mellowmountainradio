@@ -2630,9 +2630,9 @@
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var W, H, x;
     function size() {
-      // the lounge is widescreen, like the streams it grew up on
-      var maxW = Math.min(940, (cv.parentNode && cv.parentNode.clientWidth) || 940);
-      W = maxW; H = Math.round(W * .62);
+      // a real window is portrait: tower tip to flagstones
+      var maxW = Math.min(680, (cv.parentNode && cv.parentNode.clientWidth) || 680);
+      W = maxW; H = Math.round(W * 1.1);
       cv.style.width = W + "px"; cv.style.margin = "0 auto";
       var dpr = Math.min(2, window.devicePixelRatio || 1);
       cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
@@ -2659,9 +2659,11 @@
     // sources (angles, colors, the real night), not a slideshow. Only the
     // prim plates ever show: the back door for dusk and night, the true
     // midday frame while the sun is high.
+    // the plates are PAINTED from the real photographs — the chillhop look,
+    // the real yard: same framing, same masks, every live system still runs
     var PLATES = [
-      { src: "backdoor.jpg", mk: "skymask-dusk.png", pool: "dusk", prim: 1, full: 1, hz: .72, beacon: [.583, .034], nightOk: 1, name: "the back door" },
-      { src: "dayplate.jpg", mk: "skymask-day.png", pool: "day", prim: 1, hz: .66, name: "the back door, high sun" }
+      { src: "paint-dusk.jpg", mk: "skymask-dusk.png", pool: "dusk", prim: 1, full: 1, hz: .72, beacon: [.583, .034], nightOk: 1, name: "the back door, painted" },
+      { src: "paint-day.jpg", mk: "skymask-day.png", pool: "day", prim: 1, hz: .66, name: "the back door in high sun, painted" }
     ];
     function ensurePlate(p) {
       if (p.loading) return;
@@ -2669,8 +2671,8 @@
       var im = new Image();
       im.onload = function () {
         p.img = im; p.ok = true; p.layers = null;
-        if (p.src === "backdoor.jpg") { PHOTO.ok = true; PHOTO.img = im; if (typeof size === "function") size(); }
-        if (p.src === "dayplate.jpg") { PHOTO.dayOk = true; PHOTO.day = im; }
+        if (p.pool === "dusk") { PHOTO.ok = true; PHOTO.img = im; if (typeof size === "function") size(); }
+        if (p.pool === "day") { PHOTO.dayOk = true; PHOTO.day = im; }
       };
       im.onerror = function () {};
       im.src = p.src;
@@ -3058,7 +3060,7 @@
       // but the air out there is never truly dead, so neither are the pines
       if (!reduced) {
         var amp = (.5 + Math.min(4.5, wx.wind * .13)) * (1 + .45 * Math.sin(el * .7) + .2 * Math.sin(el * 2.3));
-        if (dom.src === "dayplate.jpg") {
+        if (dom.src === "paint-day.jpg") {
           // midday plate: the big pine on the left edge
           for (var fd = 0; fd < 6; fd++) {
             var fdy = H * (.4 + fd * .034);
@@ -3069,7 +3071,7 @@
             var fdy2 = H * (.5 + fd2 * .028);
             sway(W * .18, fdy2, W * .82, H * .026, Math.sin(el * 1.3 + fd2 + 3) * amp * .5);
           }
-        } else if (dom.src === "backdoor.jpg") {
+        } else if (dom.src === "paint-dusk.jpg") {
           // the pines over the dish (right), above the dish rim
           for (var fs = 0; fs < 7; fs++) {
             var fy = H * (.02 + fs * .028);
@@ -3584,7 +3586,6 @@
       }
       var alt = swSunAlt(now);
       var el = (Date.now() - t0) / 1000;
-      paintLofi(alt, el, now); if (true) return;
       if (PHOTO.ok) { paintPhoto(alt, el, now); return; }
       // no cartoon, ever: until the first photograph arrives, the window is
       // simply dark glass waking up
