@@ -2414,9 +2414,10 @@
     Promise.all([
       fetch(wxUrl, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       fetch(rimUrl, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-      fetch("fire.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      fetch("fire.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      fetch("jeeptrails-geo.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
     ]).then(function (res) {
-      var d = res[0], rim = res[1], fire = res[2];
+      var d = res[0], rim = res[1], fire = res[2], geo = res[3] || {};
       var sunset = null; try { sunset = goldenTimes(new Date()).evening.b.sunset; } catch (e) {}
       var sig = {
         temp: d && d.current ? Math.round(d.current.temperature_2m) : null,
@@ -2436,9 +2437,43 @@
       }
       sig.rain48 = Math.round(sig.rain48 * 100) / 100; sig.cape = Math.round(sig.cape);
       if (desk) jeepDesk(desk, sig);
-      if (grid) jeepGrid(grid, sig);
+      if (grid) jeepGrid(grid, sig, geo);
+      jeepMellow(root, sig);
+      jeepMap(root, geo);
     });
-    jeepMap(root);
+  }
+  /* THE MELLOW METER™ — the official KAZM measurement of how mellow the
+     mountain is right now. 100 minus everything the desert is doing to
+     un-mellow it, receipts itemized. */
+  function jeepMellow(root, s) {
+    var el = root.querySelector("[data-mellow]"); if (!el) return;
+    var score = 100, why = [];
+    if (s.gusts > 15) { var w1 = Math.min(20, Math.round((s.gusts - 15) * 1.2)); score -= w1; why.push("wind −" + w1); }
+    if (s.month >= 6 && s.month <= 9 && s.cape >= 300) { var w2 = Math.min(25, Math.round(s.cape / 100)); score -= w2; why.push("storm fuel −" + w2); }
+    if (s.rain48 > 0.05) { var w3 = Math.min(20, Math.round(s.rain48 * 30)); score -= w3; why.push("wet rock −" + w3); }
+    if (s.hiToday != null && s.hiToday >= 95) { var w4 = Math.min(20, (s.hiToday - 95) * 2); score -= w4; why.push("heat −" + w4); }
+    if (s.temp != null && s.temp < 45) { var w5 = Math.min(15, 45 - s.temp); score -= w5; why.push("cold −" + w5); }
+    if (s.fireStage) { var w6 = s.fireStage * 5; score -= w6; why.push("fire order −" + w6); }
+    var dow = new Date(Date.now() - 7 * 3600000).getUTCDay();
+    if (dow === 0 || dow === 5 || dow === 6) { score -= 10; why.push("weekend crowds −10"); }
+    score = Math.max(5, Math.min(100, Math.round(score)));
+    var label = score >= 85 ? "FULL MELLOW" : score >= 65 ? "MOSTLY MELLOW" : score >= 45 ? "SLIGHTLY SPICY" : "NOT MELLOW TODAY";
+    el.hidden = false;
+    el.innerHTML = '<div class="mm-head"><span class="mm-tm">THE MELLOW METER&trade;</span><span class="mm-sub">the official KAZM measurement of how mellow the mountain is right now</span></div>' +
+      '<div class="mm-body"><canvas class="mm-gauge" width="240" height="140" aria-label="Mellow Meter gauge reading ' + score + ' out of 100"></canvas>' +
+      '<div class="mm-read"><b>' + score + '</b><span class="mm-label">' + label + '</span>' +
+      '<i>' + (why.length ? "docked for: " + why.join(" · ") : "the desert has no complaints") + '</i></div></div>';
+    var cv = el.querySelector(".mm-gauge"), x = cv.getContext("2d");
+    var cx = 120, cy = 124, R = 96;
+    function arc(a0, a1, color) {
+      x.beginPath(); x.lineWidth = 17; x.strokeStyle = color; x.lineCap = "butt";
+      x.arc(cx, cy, R, Math.PI * (1 + a0), Math.PI * (1 + a1)); x.stroke();
+    }
+    arc(0, .45, "rgba(200,74,58,.85)"); arc(.45, .65, "rgba(217,165,63,.9)"); arc(.65, .85, "rgba(140,190,110,.9)"); arc(.85, 1, "rgba(72,160,90,.95)");
+    var ang = Math.PI * (1 + score / 100);
+    x.beginPath(); x.lineWidth = 4; x.strokeStyle = "#fdf3e7"; x.lineCap = "round";
+    x.moveTo(cx, cy); x.lineTo(cx + Math.cos(ang) * (R - 24), cy + Math.sin(ang) * (R - 24)); x.stroke();
+    x.beginPath(); x.arc(cx, cy, 7, 0, 7); x.fillStyle = "#fdf3e7"; x.fill();
   }
   function jeepVerdict(t, s) {
     // returns [level 0 green | 1 gold | 2 red, short verdict, receipt]
@@ -2468,7 +2503,7 @@
       (s.fireStage != null ? tile("Stage " + s.fireStage, "fire order", s.fireStage >= 2 ? "no campfires, no smoking on trail" : "restrictions posted") : "") +
       (s.sunset ? tile(jeepFmtTime(s.sunset), "sunset tonight", "plan to be off rock before it") : "");
   }
-  function jeepGrid(el, s) {
+  function jeepGrid(el, s, geo) {
     var D = { 1: ["jd-1", "GREEN · stock high-clearance"], 2: ["jd-2", "GOLD · real 4x4, low range"], 3: ["jd-3", "BLACK · lockers & humility"] };
     el.innerHTML = JEEP_TRAILS.map(function (t) {
       var v = jeepVerdict(t, s), dd = D[t.d];
@@ -2480,25 +2515,57 @@
       return '<article class="jt" id="jt-' + t.id + '">' +
         '<div class="jt-head"><h3>' + esc(t.n) + '</h3>' + (t.fr ? '<span class="jt-fr">' + esc(t.fr) + '</span>' : '') + '</div>' +
         '<span class="jt-diff ' + dd[0] + '">' + dd[1] + '</span>' +
-        '<p class="jt-stats">' + t.len + ' · ' + t.climb + ' · ~' + (t.hrs % 1 ? t.hrs : t.hrs) + ' hr</p>' +
+        (geo && geo[t.id]
+          ? '<p class="jt-stats">' + geo[t.id].len_mi + ' mi measured · ' + geo[t.id].gain_ft.toLocaleString() + ' ft gain · ' + geo[t.id].bot_ft.toLocaleString() + '–' + geo[t.id].top_ft.toLocaleString() + ' ft · ~' + t.hrs + ' hr</p>'
+          : '<p class="jt-stats">' + t.len + ' · ' + t.climb + ' · ~' + t.hrs + ' hr</p>') +
         '<p class="jt-sights">' + esc(t.sights) + '</p>' +
         '<p class="jt-note">' + esc(t.note) + '</p>' +
         (t.gate ? '<p class="jt-gate">🚧 ' + esc(t.gate) + '</p>' : '') +
+        (geo && geo[t.id] ? '<canvas class="jt-prof" data-prof="' + t.id + '" aria-label="Real elevation profile of ' + esc(t.n) + '"></canvas>' : '') +
         '<div class="jt-verdict jt-verdict--' + v[0] + '"><b>' + (v[0] === 0 ? "🟢 " : v[0] === 1 ? "🟡 " : "🔴 ") + v[1] + '</b><span>' + esc(v[2]) + '</span></div>' +
         lastStart +
         '</article>';
     }).join("");
+    // draw the real elevation profiles — measured from OSM geometry + elevation model
+    if (geo) el.querySelectorAll(".jt-prof").forEach(function (cv) {
+      var g = geo[cv.getAttribute("data-prof")]; if (!g) return;
+      var W = cv.clientWidth || 420, H = 74, dpr = Math.min(2, window.devicePixelRatio || 1);
+      cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
+      var x = cv.getContext("2d"); x.scale(dpr, dpr);
+      var e = g.p.e, d = g.p.d, n = e.length, lo = g.bot_ft, hi = g.top_ft, pad = 4;
+      function X(i) { return pad + (W - pad * 2) * (d[i] / d[n - 1]); }
+      function Y(v) { return 8 + (H - 26) * (1 - (v - lo) / Math.max(1, hi - lo)); }
+      var grad = x.createLinearGradient(0, 8, 0, H - 18);
+      grad.addColorStop(0, "rgba(169,87,80,.4)"); grad.addColorStop(1, "rgba(169,87,80,.04)");
+      x.beginPath(); x.moveTo(X(0), H - 18);
+      for (var i = 0; i < n; i++) x.lineTo(X(i), Y(e[i]));
+      x.lineTo(X(n - 1), H - 18); x.closePath(); x.fillStyle = grad; x.fill();
+      x.beginPath(); x.lineWidth = 2.5; x.strokeStyle = "#a95750"; x.lineJoin = "round";
+      for (var i = 0; i < n; i++) { i ? x.lineTo(X(i), Y(e[i])) : x.moveTo(X(i), Y(e[i])); }
+      x.stroke();
+      x.font = "700 9.5px Lato,sans-serif"; x.fillStyle = "rgba(44,38,32,.55)";
+      x.textAlign = "left"; x.fillText(e[0].toLocaleString() + " ft", pad + 2, H - 6);
+      x.textAlign = "right"; x.fillText(e[n - 1].toLocaleString() + " ft · " + d[n - 1] + " mi", W - pad - 2, H - 6);
+    });
   }
-  function jeepMap(root) {
+  function jeepMap(root, geo) {
     var el = root.querySelector("[data-jeep-map]"); if (!el || el.getAttribute("data-init")) return;
     el.setAttribute("data-init", "1");
     loadLeaflet(function (L) {
       if (!L || !el.isConnected) { if (el.isConnected) el.innerHTML = '<p class="embed-note">The satellite map is unavailable right now.</p>'; return; }
       var map = L.map(el, { scrollWheelZoom: false, zoomControl: true }).setView([34.873, -111.83], 11);
       L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-        maxZoom: 17, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics"
+        maxZoom: 17, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics · Trail lines &copy; OpenStreetMap contributors"
       }).addTo(map);
       var C = { 1: "#5cb860", 2: "#ffd88a", 3: "#ff6b57" };
+      // real trail lines from OpenStreetMap
+      JEEP_TRAILS.forEach(function (t) {
+        var g = geo && geo[t.id]; if (!g || !g.c) return;
+        g.c.forEach(function (seg) {
+          L.polyline(seg, { color: C[t.d], weight: 3.5, opacity: .95 }).addTo(map)
+            .bindPopup('<b>' + esc(t.n) + '</b><br>' + g.len_mi + ' mi · ' + g.gain_ft.toLocaleString() + ' ft gain<br><a href="#jt-' + t.id + '">Trail card ↓</a>');
+        });
+      });
       JEEP_TRAILS.forEach(function (t) {
         L.circleMarker([t.lat, t.lon], { radius: 9, color: "#10162e", weight: 2, fillColor: C[t.d], fillOpacity: .95 })
           .addTo(map)

@@ -3277,3 +3277,16 @@ body.podplaying .player.show { transform: translateY(180%); }
 .fp-nation a:hover { text-decoration: underline; }
 .fp-band { background: linear-gradient(165deg, #3d2a1e 0%, #221610 60%, #170e08 100%); padding: 48px 0; }
 .fp-close p { max-width: 72ch; margin: 0 auto; text-align: center; font-family: var(--font-display); font-size: 1.35rem; line-height: 1.75; color: #f6ecdd; }
+
+/* ── MELLOW METER + real elevation profiles ── */
+.mellow { background: rgba(255,255,255,.05); border: 1px solid rgba(255,200,160,.3); border-radius: var(--r); padding: 18px 22px 12px; margin-bottom: 26px; }
+.mm-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.mm-tm { font-family: var(--font-display); font-size: 1.4rem; letter-spacing: .06em; color: #ffd88a; }
+.mm-sub { font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,220,190,.6); }
+.mm-body { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+.mm-gauge { flex: none; }
+.mm-read { display: flex; flex-direction: column; gap: 2px; min-width: 220px; }
+.mm-read b { font-family: var(--font-display); font-size: 3.4rem; line-height: 1; color: #fdf3e7; font-variant-numeric: tabular-nums; }
+.mm-label { font-size: 14px; font-weight: 900; letter-spacing: .14em; color: #ffd88a; }
+.mm-read i { font-style: normal; font-size: 12.5px; color: rgba(253,235,215,.75); line-height: 1.5; }
+.jt-prof { display: block; width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); margin-top: 2px; }
