@@ -2630,9 +2630,9 @@
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var W, H, x;
     function size() {
-      // a real window is portrait: crop the photograph tower-tip to flagstones
-      var maxW = Math.min(680, (cv.parentNode && cv.parentNode.clientWidth) || 680);
-      W = maxW; H = Math.round(W * 1.1);
+      // the lounge is widescreen, like the streams it grew up on
+      var maxW = Math.min(940, (cv.parentNode && cv.parentNode.clientWidth) || 940);
+      W = maxW; H = Math.round(W * .62);
       cv.style.width = W + "px"; cv.style.margin = "0 auto";
       var dpr = Math.min(2, window.devicePixelRatio || 1);
       cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px";
@@ -3227,6 +3227,354 @@
             " — " + (dom && dom.name ? dom.name : "the back door") + " · matched to the real sky, exactly"));
       }
     }
+    // ── THE LOUNGE ──────────────────────────────────────────────────────
+    // The chillhop treatment: a hand-drawn warm room, a big window on a
+    // stylized Sedona, and the real world still runs it — the real sun
+    // grades the sky, the real weather rains on the glass, the real song
+    // scrolls on the radio dial, the beacon really blinks after dark.
+    function lofiPal(alt) {
+      var NIGHT = { top: [11, 15, 36], hor: [44, 32, 66], b3: [30, 22, 48], b2: [40, 27, 55], b1: [52, 32, 60], gnd: [24, 16, 30], cl: [58, 52, 88] };
+      var DUSK = { top: [62, 40, 96], hor: [232, 138, 82], b3: [102, 48, 70], b2: [130, 58, 72], b1: [164, 74, 74], gnd: [58, 30, 40], cl: [214, 130, 110] };
+      var GOLD = { top: [110, 82, 136], hor: [248, 178, 98], b3: [134, 62, 68], b2: [172, 80, 68], b1: [206, 102, 72], gnd: [76, 40, 42], cl: [246, 182, 140] };
+      var DAY = { top: [126, 160, 200], hor: [240, 216, 180], b3: [146, 88, 78], b2: [182, 108, 84], b1: [214, 132, 90], gnd: [94, 56, 46], cl: [250, 246, 238] };
+      function mixPal(A, B, t) { var o = {}; for (var k in A) o[k] = swMix(A[k], B[k], t); return o; }
+      if (alt <= -8) return NIGHT;
+      if (alt <= -2) return mixPal(NIGHT, DUSK, (alt + 8) / 6);
+      if (alt <= 6) return mixPal(DUSK, GOLD, (alt + 2) / 8);
+      if (alt <= 20) return mixPal(GOLD, DAY, (alt - 6) / 14);
+      return DAY;
+    }
+    function smoothPath(c, pts, px, py, pw, ph) {
+      c.beginPath();
+      c.moveTo(px + pts[0][0] * pw, py + pts[0][1] * ph);
+      for (var i = 1; i < pts.length - 1; i++) {
+        var xm = px + (pts[i][0] + pts[i + 1][0]) / 2 * pw, ym = py + (pts[i][1] + pts[i + 1][1]) / 2 * ph;
+        c.quadraticCurveTo(px + pts[i][0] * pw, py + pts[i][1] * ph, xm, ym);
+      }
+      var L = pts[pts.length - 1];
+      c.lineTo(px + L[0] * pw, py + L[1] * ph);
+    }
+    var BUT_FAR = [[0, .60], [.07, .52], [.15, .52], [.2, .58], [.33, .56], [.4, .49], [.47, .49], [.52, .56], [.66, .54], [.74, .58], [.86, .55], [1, .59], [1.05, 1.2], [-.05, 1.2]];
+    var BUT_MID = [[0, .74], [.06, .70], [.12, .55], [.145, .42], [.165, .42], [.18, .52], [.2, .50], [.215, .56], [.26, .64], [.36, .68], [.46, .66], [.54, .52], [.565, .44], [.585, .44], [.6, .5], [.63, .48], [.66, .58], [.75, .66], [.88, .63], [1, .70], [1.05, 1.2], [-.05, 1.2]];
+    var BUT_NEAR = [[.52, 1.2], [.58, .84], [.66, .70], [.71, .62], [.74, .60], [.82, .60], [.86, .64], [.92, .76], [.98, .88], [1.05, 1.2]];
+    function paintLofi(alt, el, now) {
+      var night = Math.max(0, Math.min(1, (-alt - 2) / 8));
+      var P0 = lofiPal(alt), P = {}; for (var pk in P0) P[pk] = P0[pk];
+      // heavy real cloud cover mutes the whole land, not just the sky
+      var deckG = Math.max(0, Math.min(1, wx.cover / 100));
+      if (deckG > 0) {
+        var gcol = night > .5 ? [30, 32, 44] : [116, 112, 114];
+        ["b1", "b2", "b3", "gnd"].forEach(function (k) { P[k] = swMix(P[k], gcol, deckG * .38); });
+      }
+      x.clearRect(0, 0, W, H);
+      // room wall behind everything
+      x.fillStyle = "rgb(30,19,13)"; x.fillRect(0, 0, W, H);
+      var fr = Math.max(8, W * .018);
+      var px = fr * 1.6, py = fr * 1.6, pw = W - fr * 3.2, sillY = H * .76, ph = sillY - py;
+      // ── the world through the pane ──
+      x.save();
+      x.beginPath(); x.rect(px, py, pw, ph); x.clip();
+      // the real cloud deck greys the sky before anything else does
+      var deck0 = Math.max(0, Math.min(1, wx.cover / 100));
+      var greyT = night > .5 ? [38, 42, 56] : [104, 110, 122], greyH = night > .5 ? [46, 48, 62] : [146, 148, 156];
+      var topC = swMix(P.top, greyT, deck0 * .75), horC = swMix(P.hor, greyH, deck0 * .65);
+      var sky = x.createLinearGradient(0, py, 0, py + ph);
+      sky.addColorStop(0, "rgb(" + topC.map(Math.round).join(",") + ")");
+      sky.addColorStop(.72, "rgb(" + horC.map(Math.round).join(",") + ")");
+      sky.addColorStop(1, "rgb(" + horC.map(Math.round).join(",") + ")");
+      x.fillStyle = sky; x.fillRect(px, py, pw, ph);
+      // golden glow low in the west while the sun crosses the horizon band
+      if (alt > -6 && alt < 14) {
+        var gA2 = 1 - Math.abs(alt - 2) / (alt < 2 ? 8 : 12);
+        if (gA2 > 0) {
+          var gg2 = x.createRadialGradient(px + pw * .72, py + ph * .62, 0, px + pw * .72, py + ph * .62, pw * .5);
+          gg2.addColorStop(0, "rgba(255,196,110," + (.5 * gA2) + ")");
+          gg2.addColorStop(1, "rgba(255,196,110,0)");
+          x.fillStyle = gg2; x.fillRect(px, py, pw, ph);
+        }
+      }
+      // stars & the true-phase moon after dark — the real deck veils both
+      var deck = Math.max(0, Math.min(1, wx.cover / 100));
+      if (night > 0) {
+        var sa2 = night * (1 - deck * .9);
+        stars.forEach(function (st, i) {
+          if (st[1] > .5) return;
+          var tw2 = reduced ? 1 : (.55 + .45 * Math.sin(el * 1.2 + i));
+          x.globalAlpha = sa2 * tw2 * .9;
+          x.fillStyle = "#ffeedd";
+          x.fillRect(px + st[0] * pw, py + st[1] * ph, st[2] * .8, st[2] * .8);
+        });
+        x.globalAlpha = 1;
+        var mi2 = moonInfo(), mf = Math.max(0, Math.min(1, mi2.illum / 100));
+        var wan = (mi2.name || "").toLowerCase().indexOf("waning") !== -1;
+        var mx2b = px + pw * .18, my2b = py + ph * .2, mr2 = Math.max(9, pw * .022);
+        x.globalAlpha = night * Math.max(.15, 1 - deck * .85);
+        var mh = x.createRadialGradient(mx2b, my2b, mr2 * .5, mx2b, my2b, mr2 * 6);
+        mh.addColorStop(0, "rgba(255,236,200," + (.22 * mf + .05) + ")");
+        mh.addColorStop(1, "rgba(255,236,200,0)");
+        x.fillStyle = mh; x.beginPath(); x.arc(mx2b, my2b, mr2 * 6, 0, 7); x.fill();
+        x.beginPath(); x.arc(mx2b, my2b, mr2, 0, 7); x.fillStyle = "rgba(70,60,96,.9)"; x.fill();
+        x.beginPath(); x.arc(mx2b, my2b, mr2, -Math.PI / 2, Math.PI / 2, wan); x.closePath(); x.fillStyle = "#f6ecd2"; x.fill();
+        x.beginPath(); x.ellipse(mx2b, my2b, mr2 * Math.abs(1 - 2 * mf), mr2, 0, 0, 7);
+        x.fillStyle = mf >= .5 ? "#f6ecd2" : "rgba(70,60,96,.9)"; x.fill();
+        x.globalAlpha = 1;
+        // shooting star, rare
+        if (!reduced) {
+          if (!shoot && el - lastShoot > 16 && Math.random() < .005) shoot = { t: 0, x0: .15 + Math.random() * .5, y0: .06 + Math.random() * .15 };
+          if (shoot) {
+            shoot.t += .05;
+            if (shoot.t >= 1) { shoot = null; lastShoot = el; }
+            else {
+              var ssx = px + (shoot.x0 + shoot.t * .14) * pw, ssy = py + (shoot.y0 + shoot.t * .06) * ph;
+              var sg2 = x.createLinearGradient(ssx - pw * .05, ssy - ph * .02, ssx, ssy);
+              sg2.addColorStop(0, "rgba(255,244,220,0)"); sg2.addColorStop(1, "rgba(255,244,220," + (.85 * (1 - shoot.t) * night) + ")");
+              x.strokeStyle = sg2; x.lineWidth = 1.4;
+              x.beginPath(); x.moveTo(ssx - pw * .05, ssy - ph * .02); x.lineTo(ssx, ssy); x.stroke();
+            }
+          }
+        }
+      }
+      // lofi clouds: soft flat lozenges, count from the real cover,
+      // drifting on the real wind
+      var nCl = deck <= .03 ? 0 : Math.max(1, Math.round(deck * 7));
+      var clC = swMix(P.cl, night > .5 ? [34, 38, 56] : [172, 174, 184], deck * .6);
+      var clCol = "rgba(" + clC.map(Math.round).join(",") + ",";
+      var clA = (night > .5 ? .4 : .55 + deck * .25);
+      for (var ci2 = 0; ci2 < nCl && ci2 < clouds.length; ci2++) {
+        var cD = clouds[ci2];
+        var cxx = px + ((cD.x + (reduced ? 0 : el * (.0016 + wx.wind * .0004) * (.5 + cD.s * .4))) % 1.25 - .12) * pw;
+        var cyy = py + cD.y * .58 * ph, cs = cD.s;
+        x.fillStyle = clCol + clA + ")";
+        x.beginPath();
+        x.ellipse(cxx, cyy, pw * .052 * cs, ph * .03 * cs, 0, 0, 7);
+        x.ellipse(cxx + pw * .038 * cs, cyy - ph * .014 * cs, pw * .036 * cs, ph * .026 * cs, 0, 0, 7);
+        x.ellipse(cxx - pw * .04 * cs, cyy + ph * .002 * cs, pw * .034 * cs, ph * .022 * cs, 0, 0, 7);
+        x.ellipse(cxx + pw * .01 * cs, cyy - ph * .02 * cs, pw * .03 * cs, ph * .024 * cs, 0, 0, 7);
+        x.fill();
+      }
+      // the buttes, three depths, each with a rim of horizon light
+      function butte(pts, col, rim) {
+        smoothPath(x, pts, px, py, pw, ph);
+        x.closePath();
+        var bg = x.createLinearGradient(0, py + ph * .38, 0, py + ph);
+        bg.addColorStop(0, "rgb(" + col.map(function (v) { return Math.round(Math.min(255, v * 1.18)); }).join(",") + ")");
+        bg.addColorStop(1, "rgb(" + col.map(Math.round).join(",") + ")");
+        x.fillStyle = bg; x.fill();
+        if (rim) {
+          x.strokeStyle = "rgba(" + P.hor.map(Math.round).join(",") + "," + rim + ")";
+          x.lineWidth = 1.4; x.stroke();
+        }
+      }
+      butte(BUT_FAR, P.b3, .18);
+      butte(BUT_MID, P.b2, .28);
+      // the ridge that carries the KAZM tower
+      var ridgeY = py + ph * .78;
+      x.fillStyle = "rgb(" + P.gnd.map(function (v) { return Math.round(v * 1.25); }).join(",") + ")";
+      x.beginPath();
+      x.moveTo(px, ridgeY + ph * .06);
+      x.quadraticCurveTo(px + pw * .2, ridgeY - ph * .05, px + pw * .42, ridgeY + ph * .02);
+      x.quadraticCurveTo(px + pw * .6, ridgeY + ph * .07, px + pw, ridgeY + ph * .05);
+      x.lineTo(px + pw, py + ph); x.lineTo(px, py + ph); x.closePath(); x.fill();
+      // the tower — thin mast, guys, and the beacon that truly blinks at night
+      var twx = px + pw * .3, twTop = ridgeY - ph * .34, twBase = ridgeY - ph * .01;
+      x.strokeStyle = "rgba(20,12,18,.9)"; x.lineWidth = Math.max(1.5, pw * .0028);
+      x.beginPath(); x.moveTo(twx, twBase); x.lineTo(twx, twTop); x.stroke();
+      x.lineWidth = Math.max(.7, pw * .001);
+      x.beginPath();
+      x.moveTo(twx, twTop + (twBase - twTop) * .15); x.lineTo(twx - pw * .06, twBase);
+      x.moveTo(twx, twTop + (twBase - twTop) * .15); x.lineTo(twx + pw * .06, twBase);
+      x.moveTo(twx, twTop + (twBase - twTop) * .55); x.lineTo(twx - pw * .045, twBase);
+      x.moveTo(twx, twTop + (twBase - twTop) * .55); x.lineTo(twx + pw * .045, twBase);
+      x.stroke();
+      if (alt < 0) {
+        var bk = reduced ? .8 : (.35 + .65 * Math.abs(Math.sin(el * 1.05)));
+        x.fillStyle = "rgba(255,64,44," + bk + ")";
+        x.beginPath(); x.arc(twx, twTop, Math.max(2, pw * .004), 0, 7); x.fill();
+        x.fillStyle = "rgba(255,64,44," + bk * .18 + ")";
+        x.beginPath(); x.arc(twx, twTop, Math.max(2, pw * .004) * 3, 0, 7); x.fill();
+      }
+      butte(BUT_NEAR, P.b1, .22);
+      // the yard in front
+      x.fillStyle = "rgb(" + P.gnd.map(Math.round).join(",") + ")";
+      x.beginPath();
+      x.moveTo(px, py + ph * .9);
+      x.quadraticCurveTo(px + pw * .3, py + ph * .84, px + pw * .62, py + ph * .9);
+      x.quadraticCurveTo(px + pw * .82, py + ph * .94, px + pw, py + ph * .9);
+      x.lineTo(px + pw, py + ph); x.lineTo(px, py + ph); x.closePath(); x.fill();
+      // weather in the world: rain, snow, lightning, fog band — all real
+      var snowing2 = (wx.code >= 71 && wx.code <= 77) || wx.code === 85 || wx.code === 86;
+      if (snowing2) {
+        x.fillStyle = "rgba(255,255,255,.85)";
+        drops.forEach(function (d, i) {
+          var dy2 = reduced ? d[1] : ((d[1] + el * .04 * (1 + (i % 3) * .3)) % 1);
+          x.globalAlpha = .4 + (i % 4) * .12;
+          x.beginPath(); x.arc(px + (d[0] + Math.sin(el * .7 + i) * .008) * pw, py + dy2 * ph, 1 + (i % 3) * .8, 0, 7); x.fill();
+        });
+        x.globalAlpha = 1;
+      } else if (wx.code >= 51) {
+        var sl2 = Math.min(12, 2 + wx.wind * .4);
+        x.strokeStyle = "rgba(200,214,240,.35)"; x.lineWidth = 1;
+        drops.forEach(function (d) {
+          var dy3 = reduced ? d[1] : ((d[1] + el * .5) % 1);
+          x.beginPath(); x.moveTo(px + d[0] * pw, py + dy3 * ph * .92); x.lineTo(px + d[0] * pw - sl2, py + dy3 * ph * .92 + 9); x.stroke();
+        });
+      }
+      if (wx.code === 45 || wx.code === 48) {
+        var fgb = x.createLinearGradient(0, py + ph * .5, 0, py + ph);
+        fgb.addColorStop(0, "rgba(210,208,220,0)"); fgb.addColorStop(1, "rgba(210,208,220,.5)");
+        x.fillStyle = fgb; x.fillRect(px, py, pw, ph);
+      }
+      if (wx.code >= 95 && !reduced) {
+        if (!flashT && el - lastFlash > 8 && Math.random() < .014) flashT = el;
+        if (flashT) {
+          var ft2 = el - flashT;
+          if (ft2 > .4) { flashT = 0; lastFlash = el; }
+          else { x.fillStyle = "rgba(240,244,255," + (.5 * Math.max(0, 1 - ft2 / .4) * (ft2 < .07 || (ft2 > .14 && ft2 < .2) ? 1 : .3)) + ")"; x.fillRect(px, py, pw, ph); }
+        }
+      }
+      x.restore();
+      // ── the room ──
+      // window frame
+      x.strokeStyle = "rgb(46,28,17)"; x.lineWidth = fr;
+      x.strokeRect(px - fr / 2, py - fr / 2, pw + fr, ph + fr);
+      x.strokeStyle = "rgba(70,44,26,.9)"; x.lineWidth = Math.max(2, fr * .18);
+      x.strokeRect(px + 1, py + 1, pw - 2, ph - 2);
+      // sill board and wall below
+      x.fillStyle = "rgb(38,23,14)"; x.fillRect(0, sillY, W, H - sillY);
+      x.fillStyle = "rgb(52,32,19)"; x.fillRect(0, sillY, W, Math.max(5, H * .016));
+      // rug
+      x.fillStyle = "rgba(94,42,34,.55)";
+      x.beginPath(); x.ellipse(W * .34, H * .95, W * .2, H * .05, 0, 0, 7); x.fill();
+      // the dog, asleep and breathing — she really does the rounds out there
+      var br = 1 + (reduced ? 0 : Math.sin(el * .8) * .025);
+      x.fillStyle = "rgb(24,13,8)";
+      x.save(); x.translate(W * .33, H * .93); x.scale(1, br);
+      x.beginPath(); x.ellipse(0, 0, W * .085, H * .038, 0, 0, 7); x.fill();          // body
+      x.beginPath(); x.arc(-W * .075, -H * .012, W * .032, 0, 7); x.fill();          // head tucked
+      x.beginPath(); x.moveTo(-W * .095, -H * .036); x.lineTo(-W * .075, -H * .052); x.lineTo(-W * .062, -H * .03); x.closePath(); x.fill(); // ear
+      x.beginPath(); x.ellipse(W * .07, H * .012, W * .045, H * .012, -.5, 0, 7); x.fill(); // tail curled
+      x.restore();
+      // plant on the left of the sill, fronds on the real breeze
+      var potX = W * .09, potY = sillY;
+      x.fillStyle = "rgb(112,52,38)";
+      x.beginPath(); x.moveTo(potX - W * .028, potY - H * .001); x.lineTo(potX + W * .028, potY - H * .001); x.lineTo(potX + W * .02, potY - H * .052); x.lineTo(potX - W * .02, potY - H * .052); x.closePath(); x.fill();
+      var swy = reduced ? 0 : (.4 + Math.min(1.6, wx.wind * .08));
+      x.strokeStyle = "rgb(52,84,62)"; x.lineCap = "round";
+      for (var fr2 = 0; fr2 < 6; fr2++) {
+        var fa = -1.35 + fr2 * .5, fl = H * (.1 + (fr2 % 3) * .02);
+        var tipx = potX + Math.sin(fa) * fl + (reduced ? 0 : Math.sin(el * 1.1 + fr2) * swy * 3);
+        var tipy = potY - H * .05 - Math.abs(Math.cos(fa)) * fl;
+        x.lineWidth = Math.max(2, W * .004);
+        x.beginPath(); x.moveTo(potX, potY - H * .05);
+        x.quadraticCurveTo(potX + Math.sin(fa) * fl * .4, potY - H * .05 - Math.abs(Math.cos(fa)) * fl * .7, tipx, tipy);
+        x.stroke();
+      }
+      // the mug, steaming
+      var mgX = W * .56, mgY = sillY - H * .002;
+      x.fillStyle = "rgb(168,74,52)";
+      if (x.roundRect) { x.beginPath(); x.roundRect(mgX - W * .017, mgY - H * .045, W * .034, H * .045, 3); x.fill(); }
+      else x.fillRect(mgX - W * .017, mgY - H * .045, W * .034, H * .045);
+      x.strokeStyle = "rgb(168,74,52)"; x.lineWidth = Math.max(2, W * .0035);
+      x.beginPath(); x.arc(mgX + W * .022, mgY - H * .024, W * .011, -1.3, 1.3); x.stroke();
+      if (!reduced) {
+        x.strokeStyle = "rgba(255,244,230,.26)"; x.lineWidth = Math.max(1.5, W * .0022);
+        for (var st2 = 0; st2 < 2; st2++) {
+          var sbx = mgX - W * .006 + st2 * W * .011, sph = el * .9 + st2 * 2.1;
+          x.beginPath();
+          x.moveTo(sbx, mgY - H * .048);
+          x.bezierCurveTo(
+            sbx + Math.sin(sph) * 3, mgY - H * .065,
+            sbx + Math.sin(sph + 1.1) * 4, mgY - H * .082,
+            sbx + Math.sin(sph + 2.1) * 3, mgY - H * .102);
+          x.stroke();
+        }
+      }
+      // the radio — dial glowing, the actual song on air scrolling across it
+      var rdX = W * .68, rdW = W * .24, rdY = sillY - H * .085, rdH = H * .082;
+      var dialGlow = x.createRadialGradient(rdX + rdW / 2, rdY + rdH / 2, 0, rdX + rdW / 2, rdY + rdH / 2, rdW * .9);
+      dialGlow.addColorStop(0, "rgba(255,190,110," + (.14 + night * .22) + ")");
+      dialGlow.addColorStop(1, "rgba(255,190,110,0)");
+      x.fillStyle = dialGlow; x.fillRect(rdX - rdW * .5, rdY - rdH * 1.6, rdW * 2, rdH * 3.4);
+      x.fillStyle = "rgb(58,36,24)";
+      if (x.roundRect) { x.beginPath(); x.roundRect(rdX, rdY, rdW, rdH, 6); x.fill(); } else x.fillRect(rdX, rdY, rdW, rdH);
+      x.strokeStyle = "rgba(20,12,8,.8)"; x.lineWidth = Math.max(1.2, W * .0015);
+      x.beginPath(); x.moveTo(rdX + rdW * .12, rdY); x.lineTo(rdX + rdW * .3, rdY - rdH * .75); x.stroke(); // antenna
+      var dlX = rdX + rdW * .07, dlY = rdY + rdH * .18, dlW = rdW * .64, dlH = rdH * .42;
+      x.fillStyle = "rgba(255,205,138," + (.85 + night * .15) + ")";
+      if (x.roundRect) { x.beginPath(); x.roundRect(dlX, dlY, dlW, dlH, 3); x.fill(); } else x.fillRect(dlX, dlY, dlW, dlH);
+      var isOn2 = typeof playing !== "undefined" && playing;
+      var dial = (typeof lastNow !== "undefined" && lastNow && lastNow.title && lastNow.title !== "Mellow Mountain Radio")
+        ? lastNow.title + " — " + lastNow.artist + "   ·   KAZM 106.5 FM · 780 AM   ·   "
+        : "KAZM · MELLOW MOUNTAIN RADIO · 106.5 FM · 780 AM   ·   ";
+      x.save();
+      x.beginPath(); x.rect(dlX + 2, dlY, dlW - 4, dlH); x.clip();
+      x.fillStyle = "rgb(74,38,16)"; x.textAlign = "left"; x.textBaseline = "middle";
+      x.font = "700 " + Math.round(Math.max(9, dlH * .58)) + "px Lato, sans-serif";
+      var dtw = x.measureText(dial).width;
+      var off2 = reduced ? 0 : (el * 22) % dtw;
+      x.fillText(dial, dlX + 4 - off2, dlY + dlH / 2);
+      x.fillText(dial, dlX + 4 - off2 + dtw, dlY + dlH / 2);
+      x.restore();
+      // VU bars breathe while the stream truly plays
+      for (var vb = 0; vb < 3; vb++) {
+        var vh = rdH * .28 * (isOn2 && !reduced ? (.35 + .65 * Math.abs(Math.sin(el * (2.1 + vb * .7) + vb))) : .2);
+        x.fillStyle = "rgba(255,205,138," + (isOn2 ? .8 : .3) + ")";
+        x.fillRect(rdX + rdW * (.78 + vb * .06), rdY + rdH * .62 - vh, rdW * .035, vh);
+      }
+      // knobs
+      x.fillStyle = "rgb(30,18,12)";
+      x.beginPath(); x.arc(rdX + rdW * .82, rdY + rdH * .28, rdH * .1, 0, 7); x.fill();
+      x.beginPath(); x.arc(rdX + rdW * .92, rdY + rdH * .28, rdH * .1, 0, 7); x.fill();
+      // notes drift up from the radio while it plays
+      if (isOn2 && !reduced) {
+        if (el - lastNote > 1.6) { lastNote = el; notes.push({ t: 0, dx: Math.random() * .02 - .01, g: Math.random() < .5 ? "♪" : "♫" }); }
+        notes = notes.filter(function (n) { return n.t < 1; });
+        notes.forEach(function (n) {
+          n.t += .005;
+          x.globalAlpha = (1 - n.t) * .9;
+          x.font = Math.round(Math.max(11, W * .014)) + "px serif";
+          x.fillStyle = "#ffd9a0"; x.textAlign = "center";
+          x.fillText(n.g, rdX + rdW * .2 + (n.dx + Math.sin(n.t * 7) * .01) * W, rdY - rdH * .3 - n.t * H * .3);
+        });
+        x.globalAlpha = 1;
+      }
+      // lamp warmth over the room after dark
+      if (night > 0) {
+        x.globalCompositeOperation = "screen";
+        var lamp = x.createRadialGradient(rdX + rdW * .4, sillY, 0, rdX + rdW * .4, sillY, W * .5);
+        lamp.addColorStop(0, "rgba(255,170,90," + (.14 * night) + ")");
+        lamp.addColorStop(1, "rgba(255,170,90,0)");
+        x.fillStyle = lamp; x.fillRect(0, 0, W, H);
+        x.globalCompositeOperation = "source-over";
+      }
+      // vignette + drifting grain — the room tone
+      var vg2 = x.createRadialGradient(W / 2, H * .5, Math.min(W, H) * .4, W / 2, H * .5, Math.max(W, H) * .75);
+      vg2.addColorStop(0, "rgba(14,8,4,0)"); vg2.addColorStop(1, "rgba(14,8,4,.32)");
+      x.fillStyle = vg2; x.fillRect(0, 0, W, H);
+      if (!reduced) {
+        if (!grainP) grainP = x.createPattern(grainC, "repeat");
+        x.save(); x.globalAlpha = .45;
+        x.translate(-((el * 91) % 160), -((el * 53) % 160));
+        x.fillStyle = grainP; x.fillRect(0, 0, W + 160, H + 160);
+        x.restore();
+      }
+      if (cap) {
+        var ph3;
+        if (previewMin != null) {
+          var hh3 = Math.floor(previewMin / 60), mm3 = previewMin % 60;
+          ph3 = "PREVIEWING " + ((hh3 % 12) || 12) + ":" + (mm3 < 10 ? "0" : "") + mm3 + (hh3 < 12 ? " AM" : " PM");
+        } else ph3 = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "America/Phoenix" }) + " in Sedona";
+        var mood2 = [];
+        if (wx.code === 45 || wx.code === 48) mood2.push("fog");
+        if (snowing2) mood2.push("snowing");
+        else if (wx.code >= 95) mood2.push("thunderstorm");
+        else if (wx.code >= 51) mood2.push("raining");
+        cap.textContent = ph3 + " · sun " + (alt >= 0 ? Math.round(alt) + "° up" : Math.round(-alt) + "° below the horizon") +
+          " · " + wx.cover + "% cloud" + (mood2.length ? " · " + mood2.join(" · ") : "") +
+          (wx.temp != null ? " · " + wx.temp + "°" : "") +
+          (previewMin != null ? " — spin the day; tap LIVE to come home" : " — the lounge runs on the real sky, exactly");
+      }
+    }
     function paint() {
       var now = new Date();
       if (previewMin != null) {
@@ -3236,6 +3584,7 @@
       }
       var alt = swSunAlt(now);
       var el = (Date.now() - t0) / 1000;
+      paintLofi(alt, el, now); if (true) return;
       if (PHOTO.ok) { paintPhoto(alt, el, now); return; }
       // no cartoon, ever: until the first photograph arrives, the window is
       // simply dark glass waking up
