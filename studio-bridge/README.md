@@ -85,3 +85,14 @@ it's rolling, give Claude the Space's CDN URL; the site's Listeners' Lounge (rew
 reveals itself the moment rewind.json points at a live manifest. Confirm
 your webcast/SoundExchange licensing covers the direct AzuraCast stream —
 the archive rides the same license as the stream itself.
+
+## Window sources (window-sources/)
+
+Chuck's real photographs of the back-door yard — the tower, the dish, the
+fence line — at midday (IMG_6128–6131), dusk (IMG_6092/6093, and
+IMG_6138 above), and true night (IMG_6099: moon glare, sparse stars,
+blue-charcoal sky), plus ground detail (IMG_6134/6137). These are the
+calibration references for the Station Window on rewind.html: the canvas
+grades the base photo (backdoor.jpg) to match whichever of these skies the
+real sun and weather currently call for. Not served by any page — kept in
+the repo as the source of truth for how the yard actually looks.

@@ -2670,21 +2670,31 @@
       x.drawImage(PHOTO.img, 0, -0.02 * dh, W, dh); // tower tip at top, flagstones at the sill
       // GRADE by the real sun: the photo is a dusk frame — lift it for day,
       // sink it for night, let dawn/dusk ride close to what the camera saw
-      if (alt > 8) { // daylight lift
+      if (alt > 8) { // daylight lift — calibrated to the real midday frames (IMG_6128-31)
         var day = Math.min(1, (alt - 8) / 25);
         x.globalCompositeOperation = "screen";
         x.fillStyle = "rgba(140,170,205," + (day * .38) + ")"; x.fillRect(0, 0, W, H);
-        x.fillStyle = "rgba(255,240,210," + (day * .22) + ")"; x.fillRect(0, 0, W, H);
+        x.fillStyle = "rgba(255,240,210," + (day * .15) + ")"; x.fillRect(0, 0, W, H);
+        // re-deepen the lifted sky to Sedona's real saturated blue
+        x.globalCompositeOperation = "multiply";
+        var db = x.createLinearGradient(0, 0, 0, H * .55);
+        db.addColorStop(0, "rgba(74,126,212," + (day * .55) + ")");
+        db.addColorStop(1, "rgba(74,126,212,0)");
+        x.fillStyle = db; x.fillRect(0, 0, W, H * .55);
         x.globalCompositeOperation = "source-over";
-      } else if (alt < -4) { // true night sinks in
+      } else if (alt < -4) { // true night sinks in — deep blue-charcoal like IMG_6099, never black
         var nt = Math.min(1, (-4 - alt) / 10);
         x.globalCompositeOperation = "multiply";
         x.fillStyle = "rgba(" + Math.round(swLerp(255, 44, nt)) + "," + Math.round(swLerp(255, 54, nt)) + "," + Math.round(swLerp(255, 96, nt)) + ",1)";
         x.fillRect(0, 0, W, H);
         x.globalCompositeOperation = "source-over";
-      } else if (alt > -2 && alt < 8) { // golden hour warms the frame
+      } else if (alt > -2 && alt < 8) { // golden hour, graded like IMG_6138: gold low, steel-lavender high
         x.globalCompositeOperation = "overlay";
-        x.fillStyle = "rgba(255,150,60,.18)"; x.fillRect(0, 0, W, H);
+        var gh = x.createLinearGradient(0, 0, 0, H * .62);
+        gh.addColorStop(0, "rgba(160,150,200,.16)");
+        gh.addColorStop(.62, "rgba(255,175,85,.26)");
+        gh.addColorStop(1, "rgba(255,175,85,0)");
+        x.fillStyle = gh; x.fillRect(0, 0, W, H * .62);
         x.globalCompositeOperation = "source-over";
       }
       // the cloud deck flattens the real sky, exactly as much as it's covered
@@ -2723,6 +2733,12 @@
         var waning = (mi.name || "").toLowerCase().indexOf("waning") !== -1;
         var mx = W * .27, my = H * .2, mr = Math.max(10, W * .026);
         x.globalAlpha = Math.max(.12, 1 - deck * .85); // the deck veils the moon too
+        // the glare halo the camera really catches out there (IMG_6099)
+        var halo = x.createRadialGradient(mx, my, mr * .6, mx, my, mr * 6.5);
+        halo.addColorStop(0, "rgba(205,218,255," + (.24 * f + .06) + ")");
+        halo.addColorStop(.4, "rgba(185,200,245," + (.09 * f + .02) + ")");
+        halo.addColorStop(1, "rgba(185,200,245,0)");
+        x.fillStyle = halo; x.beginPath(); x.arc(mx, my, mr * 6.5, 0, 7); x.fill();
         x.beginPath(); x.arc(mx, my, mr, 0, 7); x.fillStyle = "rgba(60,64,88,.85)"; x.fill();
         x.beginPath(); x.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); x.closePath(); x.fillStyle = "#f3ecd9"; x.fill();
         x.beginPath(); x.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
