@@ -2609,11 +2609,15 @@
     var cv = doc.querySelector("[data-window]"); if (!cv || cv.getAttribute("data-init")) return;
     cv.setAttribute("data-init", "1");
     var cap = doc.querySelector("[data-window-cap]");
-    var wx = { cover: 30, code: 0, wind: 5, temp: null };
+    var wx = { cover: 30, code: 0, wind: 5, temp: null, aqi: null };
     function getWx() {
       fetch("https://api.open-meteo.com/v1/forecast?latitude=34.8697&longitude=-111.7610&current=temperature_2m,weather_code,cloud_cover,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FPhoenix", { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-          if (d && d.current) wx = { cover: d.current.cloud_cover, code: d.current.weather_code, wind: d.current.wind_speed_10m, temp: Math.round(d.current.temperature_2m) };
+          if (d && d.current) { wx.cover = d.current.cloud_cover; wx.code = d.current.weather_code; wx.wind = d.current.wind_speed_10m; wx.temp = Math.round(d.current.temperature_2m); }
+        }).catch(function () {});
+      fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=34.8697&longitude=-111.7610&current=us_aqi&timezone=America/Phoenix", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+          if (d && d.current && isFinite(d.current.us_aqi)) wx.aqi = Math.round(d.current.us_aqi);
         }).catch(function () {});
     }
     getWx(); var wxT = setInterval(function () { if (!cv.isConnected) { clearInterval(wxT); return; } getWx(); }, 300000);
@@ -2683,9 +2687,29 @@
         x.fillStyle = "rgba(255,150,60,.18)"; x.fillRect(0, 0, W, H);
         x.globalCompositeOperation = "source-over";
       }
-      // stars in the real sky
+      // the cloud deck flattens the real sky, exactly as much as it's covered
+      var deck = Math.max(0, Math.min(1, wx.cover / 100));
+      if (deck > .25) {
+        var g2 = x.createLinearGradient(0, 0, 0, H * .55);
+        var washA = (deck - .25) * (alt < -4 ? .45 : .6);
+        g2.addColorStop(0, "rgba(" + (alt < -4 ? "60,66,84" : "168,172,182") + "," + washA + ")");
+        g2.addColorStop(1, "rgba(" + (alt < -4 ? "60,66,84" : "168,172,182") + ",0)");
+        x.fillStyle = g2; x.fillRect(0, 0, W, H * .55);
+      }
+      // fog on the ground when the codes say fog
+      if (wx.code === 45 || wx.code === 48) {
+        var fg = x.createLinearGradient(0, H * .35, 0, H);
+        fg.addColorStop(0, "rgba(210,214,220,0)"); fg.addColorStop(.6, "rgba(210,214,220,.4)"); fg.addColorStop(1, "rgba(210,214,220,.55)");
+        x.fillStyle = fg; x.fillRect(0, 0, W, H);
+      }
+      // fire-season smoke haze when the air itself says so
+      if (wx.aqi != null && wx.aqi >= 150) {
+        x.fillStyle = "rgba(150,110,70," + Math.min(.32, (wx.aqi - 150) / 400 + .12) + ")";
+        x.fillRect(0, 0, W, H);
+      }
+      // stars in the real sky — and the real deck hides them, exactly
       if (alt < -8) {
-        var sa = Math.min(1, (-8 - alt) / 6);
+        var sa = Math.min(1, (-8 - alt) / 6) * (1 - deck * .92);
         stars.forEach(function (st2, i) {
           if (st2[1] > .42) return;
           if (st2[0] > .6 && st2[1] > .26) return; // the dish owns that corner
@@ -2698,10 +2722,12 @@
         var mi = moonInfo(), f = Math.max(0, Math.min(1, mi.illum / 100));
         var waning = (mi.name || "").toLowerCase().indexOf("waning") !== -1;
         var mx = W * .27, my = H * .2, mr = Math.max(10, W * .026);
+        x.globalAlpha = Math.max(.12, 1 - deck * .85); // the deck veils the moon too
         x.beginPath(); x.arc(mx, my, mr, 0, 7); x.fillStyle = "rgba(60,64,88,.85)"; x.fill();
         x.beginPath(); x.arc(mx, my, mr, -Math.PI / 2, Math.PI / 2, waning); x.closePath(); x.fillStyle = "#f3ecd9"; x.fill();
         x.beginPath(); x.ellipse(mx, my, mr * Math.abs(1 - 2 * f), mr, 0, 0, 7);
         x.fillStyle = f >= .5 ? "#f3ecd9" : "rgba(60,64,88,.85)"; x.fill();
+        x.globalAlpha = 1;
         // shooting star, rare
         if (!reduced) {
           if (!shoot && el - lastShoot > 14 && Math.random() < .006) { shoot = { t: 0, x0: .1 + Math.random() * .4, y0: .05 + Math.random() * .12 }; }
@@ -2739,11 +2765,66 @@
         });
         x.globalAlpha = 1;
       } else if (wx.code >= 51) {
+        var slant = Math.min(14, 2 + wx.wind * .5); // the wind leans the rain
         x.strokeStyle = "rgba(190,210,235,.4)"; x.lineWidth = 1;
         drops.forEach(function (d) {
           var dy = reduced ? d[1] : ((d[1] + el * .5) % 1);
-          x.beginPath(); x.moveTo(d[0] * W, dy * H * .9); x.lineTo(d[0] * W - 2, dy * H * .9 + 9); x.stroke();
+          x.beginPath(); x.moveTo(d[0] * W, dy * H * .9); x.lineTo(d[0] * W - slant, dy * H * .9 + 10); x.stroke();
         });
+      }
+      // slices of the photograph itself, nudged sideways — how a still
+      // picture breathes: heat shimmer over the dirt, wind in the leaves
+      var dpr2 = cv.width / W;
+      function sway(rx, ry, rw, rh, off) {
+        x.drawImage(cv, rx * dpr2, ry * dpr2, rw * dpr2, rh * dpr2, rx + off, ry, rw, rh);
+      }
+      if (wx.temp != null && wx.temp >= 98 && alt > 5 && !reduced) {
+        for (var hs = 0; hs < 4; hs++) {
+          var band = H * (.62 + hs * .04);
+          sway(0, band, W, H * .012, Math.sin(el * 2.2 + hs * 1.7) * (1.2 + hs * .4));
+        }
+      }
+      // the real wind moves the real trees — amplitude straight from the mph
+      if (wx.wind >= 4 && !reduced) {
+        var amp = Math.min(4.5, wx.wind * .13) * (1 + .45 * Math.sin(el * .7) + .2 * Math.sin(el * 2.3));
+        // the pines over the dish (right), above the dish rim
+        for (var fs = 0; fs < 7; fs++) {
+          var fy = H * (.02 + fs * .028);
+          sway(W * .62, fy, W * .38, H * .026, Math.sin(el * 1.6 + fs * .9) * amp);
+        }
+        // the lone pine and west treeline
+        for (var fs2 = 0; fs2 < 5; fs2++) {
+          var fy2 = H * (.37 + fs2 * .032);
+          sway(0, fy2, W * .34, H * .03, Math.sin(el * 1.4 + fs2 * 1.2 + 2) * amp * .8);
+        }
+        // the far treeline, a whisper
+        for (var fs3 = 0; fs3 < 3; fs3++) {
+          var fy3 = H * (.46 + fs3 * .026);
+          sway(W * .3, fy3, W * .3, H * .024, Math.sin(el * 1.2 + fs3 + 4) * amp * .4);
+        }
+      }
+      // the sky as it really is: cloud forms drift through the real frame,
+      // counted from live cover, pushed by the live wind, lit by the hour
+      var nClouds = Math.round(deck * 9);
+      if (nClouds > 0) {
+        var cdrift = reduced ? 0 : el * (.0018 + wx.wind * .0005);
+        var cCol = alt < -6 ? [46, 52, 72] : (alt < 8 ? [232, 190, 168] : [255, 255, 255]);
+        var cA = alt < -6 ? .3 : .34 + deck * .2;
+        for (var ci = 0; ci < nClouds && ci < clouds.length; ci++) {
+          var c2 = clouds[ci], cxp2 = ((c2.x + cdrift * (.6 + c2.s * .3)) % 1.3) - .15;
+          var cAp = cA * (0.55 + c2.s * .3);
+          for (var ck = 0; ck < 6; ck++) {
+            var pcx = (cxp2 + (ck - 2.5) * .024 * c2.s) * W, pcy = (c2.y * .8 + Math.sin(ck * 2.1 + ci) * .014) * H;
+            var pr = W * (.05 + (ck === 2 || ck === 3 ? .022 : 0)) * c2.s;
+            x.save(); x.translate(pcx, pcy); x.scale(1, .42);
+            var cg = x.createRadialGradient(0, 0, 0, 0, 0, pr);
+            cg.addColorStop(0, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + "," + cAp + ")");
+            cg.addColorStop(.55, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + "," + (cAp * .5) + ")");
+            cg.addColorStop(1, "rgba(" + cCol[0] + "," + cCol[1] + "," + cCol[2] + ",0)");
+            x.fillStyle = cg;
+            x.beginPath(); x.arc(0, 0, pr, 0, 7); x.fill(); x.restore();
+          }
+        }
       }
       // real thunderstorm on the codes -> lightning cracks the frame
       if (wx.code >= 95 && !reduced) {
@@ -2793,9 +2874,16 @@
           var hh2 = Math.floor(previewMin / 60), mm2 = previewMin % 60;
           ph2 = "PREVIEWING " + ((hh2 % 12) || 12) + ":" + (mm2 < 10 ? "0" : "") + mm2 + (hh2 < 12 ? " AM" : " PM");
         } else ph2 = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "America/Phoenix" }) + " in Sedona";
+        var mood = [];
+        if (wx.code === 45 || wx.code === 48) mood.push("fog");
+        if ((wx.code >= 71 && wx.code <= 77) || wx.code === 85 || wx.code === 86) mood.push("snowing");
+        else if (wx.code >= 95) mood.push("thunderstorm");
+        else if (wx.code >= 51) mood.push("raining");
+        if (wx.aqi != null && wx.aqi >= 150) mood.push("smoke, AQI " + wx.aqi);
         cap.textContent = ph2 + " · sun " + (alt >= 0 ? Math.round(alt) + "° up" : Math.round(-alt) + "° below the horizon") +
-          " · " + wx.cover + "% cloud" + (wx.code >= 51 ? " · raining" : "") + (wx.temp != null ? " · " + wx.temp + "°" : "") +
-          (previewMin != null ? " — time travel on the real photo; tap LIVE to come home" : " — the actual back door, graded by the real sky");
+          " · " + wx.cover + "% cloud" + (mood.length ? " · " + mood.join(" · ") : "") +
+          (wx.temp != null ? " · " + wx.temp + "°" : "") + (wx.wind >= 15 ? " · wind " + Math.round(wx.wind) + " mph" : "") +
+          (previewMin != null ? " — time travel on the real photo; tap LIVE to come home" : " — the actual back door, matched to the real sky, exactly");
       }
     }
     function paint() {
