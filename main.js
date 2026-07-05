@@ -2652,12 +2652,18 @@
     // the REAL photo out the back door — when backdoor.jpg exists in the repo
     // the window becomes the photograph itself, graded live; the drawn scene
     // below is only the fallback until then.
-    var PHOTO = { ok: false, img: null };
+    var PHOTO = { ok: false, img: null, dayOk: false, day: null };
     (function () {
       var im = new Image();
       im.onload = function () { PHOTO.ok = true; PHOTO.img = im; if (typeof size === "function") { size(); } };
       im.onerror = function () {};
       im.src = "backdoor.jpg";
+      // the second real plate: the same yard at true midday (IMG_6129) —
+      // high sun crossfades to the photograph actually taken in high sun
+      var dm = new Image();
+      dm.onload = function () { PHOTO.dayOk = true; PHOTO.day = dm; };
+      dm.onerror = function () {};
+      dm.src = "dayplate.jpg";
     })();
     var TOWER_TIP = [.583, .034]; // the real tower tip in the cropped frame
     var t0 = Date.now(), previewMin = null; // minutes-of-day when time-traveling, null = live
@@ -2668,10 +2674,18 @@
       var s = W / iw, dh = ih * s;
       x.clearRect(0, 0, W, H);
       x.drawImage(PHOTO.img, 0, -0.02 * dh, W, dh); // tower tip at top, flagstones at the sill
-      // GRADE by the real sun: the photo is a dusk frame — lift it for day,
-      // sink it for night, let dawn/dusk ride close to what the camera saw
-      if (alt > 8) { // daylight lift — calibrated to the real midday frames (IMG_6128-31)
-        var day = Math.min(1, (alt - 8) / 25);
+      // TWO real plates: high sun crossfades the dusk frame into the
+      // photograph actually taken at midday — no grade pretends to be noon
+      var dayMix = (!PHOTO.dayOk || alt <= 4) ? 0 : (alt >= 12 ? 1 : (alt - 4) / 8);
+      if (dayMix > 0) {
+        x.globalAlpha = dayMix;
+        x.drawImage(PHOTO.day, 0, 0, W, PHOTO.day.naturalHeight * (W / PHOTO.day.naturalWidth));
+        x.globalAlpha = 1;
+      }
+      // GRADE by the real sun: the dusk frame is lifted for day only as far
+      // as the real midday plate hasn't already taken over
+      if (alt > 8 && dayMix < 1) { // daylight lift — calibrated to the real midday frames (IMG_6128-31)
+        var day = Math.min(1, (alt - 8) / 25) * (1 - dayMix);
         x.globalCompositeOperation = "screen";
         x.fillStyle = "rgba(140,170,205," + (day * .38) + ")"; x.fillRect(0, 0, W, H);
         x.fillStyle = "rgba(255,240,210," + (day * .15) + ")"; x.fillRect(0, 0, W, H);
@@ -2689,10 +2703,11 @@
         x.fillRect(0, 0, W, H);
         x.globalCompositeOperation = "source-over";
       } else if (alt > -2 && alt < 8) { // golden hour, graded like IMG_6138: gold low, steel-lavender high
+        var gA = 1 - dayMix;
         x.globalCompositeOperation = "overlay";
         var gh = x.createLinearGradient(0, 0, 0, H * .62);
-        gh.addColorStop(0, "rgba(160,150,200,.16)");
-        gh.addColorStop(.62, "rgba(255,175,85,.26)");
+        gh.addColorStop(0, "rgba(160,150,200," + (.16 * gA) + ")");
+        gh.addColorStop(.62, "rgba(255,175,85," + (.26 * gA) + ")");
         gh.addColorStop(1, "rgba(255,175,85,0)");
         x.fillStyle = gh; x.fillRect(0, 0, W, H * .62);
         x.globalCompositeOperation = "source-over";
@@ -2803,20 +2818,33 @@
       // the real wind moves the real trees — amplitude straight from the mph
       if (wx.wind >= 4 && !reduced) {
         var amp = Math.min(4.5, wx.wind * .13) * (1 + .45 * Math.sin(el * .7) + .2 * Math.sin(el * 2.3));
-        // the pines over the dish (right), above the dish rim
-        for (var fs = 0; fs < 7; fs++) {
-          var fy = H * (.02 + fs * .028);
-          sway(W * .62, fy, W * .38, H * .026, Math.sin(el * 1.6 + fs * .9) * amp);
-        }
-        // the lone pine and west treeline
-        for (var fs2 = 0; fs2 < 5; fs2++) {
-          var fy2 = H * (.37 + fs2 * .032);
-          sway(0, fy2, W * .34, H * .03, Math.sin(el * 1.4 + fs2 * 1.2 + 2) * amp * .8);
-        }
-        // the far treeline, a whisper
-        for (var fs3 = 0; fs3 < 3; fs3++) {
-          var fy3 = H * (.46 + fs3 * .026);
-          sway(W * .3, fy3, W * .3, H * .024, Math.sin(el * 1.2 + fs3 + 4) * amp * .4);
+        if (dayMix >= .5) {
+          // midday plate: the big pine on the left edge
+          for (var fd = 0; fd < 6; fd++) {
+            var fdy = H * (.4 + fd * .034);
+            sway(0, fdy, W * .2, H * .032, Math.sin(el * 1.5 + fd * 1.1) * amp * .9);
+          }
+          // the treeline behind the fence, full width
+          for (var fd2 = 0; fd2 < 3; fd2++) {
+            var fdy2 = H * (.5 + fd2 * .028);
+            sway(W * .18, fdy2, W * .82, H * .026, Math.sin(el * 1.3 + fd2 + 3) * amp * .5);
+          }
+        } else {
+          // the pines over the dish (right), above the dish rim
+          for (var fs = 0; fs < 7; fs++) {
+            var fy = H * (.02 + fs * .028);
+            sway(W * .62, fy, W * .38, H * .026, Math.sin(el * 1.6 + fs * .9) * amp);
+          }
+          // the lone pine and west treeline
+          for (var fs2 = 0; fs2 < 5; fs2++) {
+            var fy2 = H * (.37 + fs2 * .032);
+            sway(0, fy2, W * .34, H * .03, Math.sin(el * 1.4 + fs2 * 1.2 + 2) * amp * .8);
+          }
+          // the far treeline, a whisper
+          for (var fs3 = 0; fs3 < 3; fs3++) {
+            var fy3 = H * (.46 + fs3 * .026);
+            sway(W * .3, fy3, W * .3, H * .024, Math.sin(el * 1.2 + fs3 + 4) * amp * .4);
+          }
         }
       }
       // the sky as it really is: cloud forms drift through the real frame,
