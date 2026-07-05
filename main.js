@@ -2655,14 +2655,13 @@
     // ALL of Chuck's real photographs of the yard, stitched into one living
     // scene: the window tours them slowly, each pool honest to its hour —
     // midday frames while the sun is high, dusk frames as it falls
+    // ONE view, enhanced — the other photographs of the yard are reference
+    // sources (angles, colors, the real night), not a slideshow. Only the
+    // prim plates ever show: the back door for dusk and night, the true
+    // midday frame while the sun is high.
     var PLATES = [
-      { src: "backdoor.jpg", mk: "skymask-dusk.png", pool: "dusk", full: 1, hz: .72, beacon: [.583, .034], nightOk: 1, name: "the back door" },
-      { src: "duskplate2.jpg", mk: "skymask-dusk2.png", pool: "dusk", hz: .62, nightOk: 1, name: "the big dish, dusk" },
-      { src: "duskplate3.jpg", mk: "skymask-dusk3.png", pool: "dusk", hz: .60, noMoon: 1, name: "moonrise — the dog doing the rounds" },
-      { src: "dayplate.jpg", mk: "skymask-day.png", pool: "day", hz: .66, name: "the tower and the lone pine" },
-      { src: "dayplate2.jpg", mk: "skymask-day2.png", pool: "day", hz: .64, name: "the red rocks past the tower" },
-      { src: "dayplate3.jpg", mk: "skymask-day3.png", pool: "day", hz: .60, name: "toward Thunder Mountain" },
-      { src: "dayplate4.jpg", mk: "skymask-day4.png", pool: "day", hz: .55, name: "the fence line" }
+      { src: "backdoor.jpg", mk: "skymask-dusk.png", pool: "dusk", prim: 1, full: 1, hz: .72, beacon: [.583, .034], nightOk: 1, name: "the back door" },
+      { src: "dayplate.jpg", mk: "skymask-day.png", pool: "day", prim: 1, hz: .66, name: "the back door, high sun" }
     ];
     function ensurePlate(p) {
       if (p.loading) return;
@@ -2680,8 +2679,7 @@
       mi.onerror = function () {};
       mi.src = p.mk;
     }
-    ensurePlate(PLATES[0]); ensurePlate(PLATES[3]);
-    setTimeout(function () { if (cv.isConnected) PLATES.forEach(ensurePlate); }, 2500);
+    PLATES.forEach(ensurePlate);
     // parallax: the window looks INTO a place — mouse or phone-tilt shifts
     // the near ground more than the trees, and the sky not at all
     var par = { tx: 0, ty: 0, cx: 0, cy: 0, lastIn: -99, asked: false };
