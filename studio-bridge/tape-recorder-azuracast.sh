@@ -2,41 +2,46 @@
 # KAZM — THE LISTENERS' LOUNGE recorder, AzuraCast edition
 #
 # Uses the server the station already owns: records the stream in 6-hour
-# blocks (statutory archived-program minimum is 5 hours) and publishes each
-# block as an episode of an AzuraCast PODCAST via the API. Prunes episodes
-# older than 14 days (the statutory maximum). The website reads the podcast's
-# public episode API — no extra hosting, no S3, no new bills.
+# blocks (statutory archived-program minimum is 5 hours), uploads each block
+# straight into AzuraCast's own media library (the same place songs live —
+# NOT the Podcasts feature), and prunes anything older than 14 days (the
+# statutory maximum). The block is added to a disabled, on-demand-only
+# playlist so it's playable but never scheduled into live rotation.
 #
 # ── SETUP (once) ───────────────────────────────────────────────────────────
-# 1. In AzuraCast: Podcasts → Add Podcast → title "The Listeners' Lounge"
-#    (manual episodes, not playlist-sourced). Copy its ID from the URL or
-#    from /api/station/mellowmountainradio/public/podcasts
-# 2. In AzuraCast: your avatar → My API Keys → new key. Paste below.
-# 3. Best home for this script: the AzuraCast droplet itself
-#    (systemd unit below) — it records from localhost. The Mac Studio with
-#    the launchd plist works too.
-# 4. Check droplet disk: 14 days × 4 blocks × ~330 MB ≈ 19 GB needed.
-# 5. Tell Claude the podcast ID — the site's Lounge reveals itself once
-#    rewind.json points at it.
+# 1. API_KEY below needs "Podcasts"... no — just station media permissions.
+#    Your existing AzuraCast API key already works for this.
+# 2. PLAYLIST_ID below is "Lounge Archive" (id 16) — already created,
+#    is_enabled:false, include_in_on_demand:true. Confirm in AzuraCast that
+#    a disabled custom playlist with no schedule truly never airs live
+#    before this starts running for real — that's your call to make with
+#    eyes on the dashboard, not something to assume from outside.
+# 3. Run this on the AzuraCast box itself (records from localhost — no
+#    extra bandwidth) via cron or systemd. Needs ffmpeg installed.
+# 4. Check disk: 14 days x 4 blocks/day x ~330MB (128kbps) ≈ 19GB needed.
 #
-# systemd (on the droplet): /etc/systemd/system/kazm-tape.service
-#   [Unit]
-#   Description=KAZM Listeners Lounge recorder
-#   After=network-online.target
-#   [Service]
-#   ExecStart=/usr/local/bin/tape-recorder-azuracast.sh
-#   Restart=always
-#   RestartSec=30
-#   [Install]
-#   WantedBy=multi-user.target
-# then: systemctl enable --now kazm-tape
+# Cron (every 6 hours, on the hour):
+#   0 */6 * * * /usr/local/bin/tape-recorder-azuracast.sh >> /var/log/kazm-tape.log 2>&1
+#
+# systemd timer instead, if you'd rather:
+#   /etc/systemd/system/kazm-tape.service
+#     [Unit]
+#     Description=KAZM Listeners Lounge recorder
+#     [Service]
+#     ExecStart=/usr/local/bin/tape-recorder-azuracast.sh
+#   /etc/systemd/system/kazm-tape.timer
+#     [Timer]
+#     OnCalendar=*-*-* 00,06,12,18:00:00
+#     [Install]
+#     WantedBy=timers.target
+#   then: systemctl enable --now kazm-tape.timer
 
 AZURA="https://streaming.mellowmountainradio.com"
 STATION="mellowmountainradio"
 API_KEY="CHANGE-ME-API-KEY"
-PODCAST_ID="CHANGE-ME-PODCAST-ID"
-STREAM="$AZURA/listen/$STATION/radio.mp3"
+PLAYLIST_ID=16
 
+STREAM="$AZURA/listen/$STATION/radio.mp3"
 WORK="${HOME}/kazm-tape"; mkdir -p "$WORK"
 export TZ="America/Phoenix"
 
@@ -44,40 +49,56 @@ NOW_H=$(date +%H)
 BLOCK_START_H=$(( (10#$NOW_H / 6) * 6 ))
 BLOCK=$(printf "%02d" $BLOCK_START_H)
 STAMP=$(date +%Y-%m-%d)
-TITLE="kazm-${STAMP}-${BLOCK}00"
-NAME="${TITLE}.mp3"
+TITLE="Lounge Archive ${STAMP} ${BLOCK}:00"
+NAME="lounge-${STAMP}-${BLOCK}00.mp3"
 NOW_S=$(( 10#$NOW_H * 3600 + 10#$(date +%M) * 60 + 10#$(date +%S) ))
 DUR=$(( (BLOCK_START_H + 6) * 3600 - NOW_S ))
 [ "$DUR" -lt 60 ] && sleep "$DUR" && exit 0
 
 echo "[tape] recording $NAME for ${DUR}s"
 ffmpeg -hide_banner -loglevel error -i "$STREAM" -t "$DUR" -c copy -y "$WORK/$NAME"
-[ -s "$WORK/$NAME" ] || exit 0
+[ -s "$WORK/$NAME" ] || { echo "[tape] recording came out empty, skipping upload"; exit 0; }
 
-# create the episode, then attach the media
-EP=$(curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
-  -d "{\"title\":\"$TITLE\",\"description\":\"Six broadcast hours of KAZM, ${STAMP}, starting ${BLOCK}:00 Sedona time. Auto-archived; deleted after 14 days per the statutory license.\",\"explicit\":false}" \
-  "$AZURA/api/station/$STATION/podcast/$PODCAST_ID/episodes")
-EP_ID=$(echo "$EP" | python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
-if [ -z "$EP_ID" ]; then echo "[tape] episode create failed: $EP" >&2; exit 1; fi
+# base64-encode the finished block and drop it straight into the station's
+# own media library — no podcasts, no separate storage bill.
+python3 - "$WORK/$NAME" "$TITLE" <<'PYEOF'
+import sys, json, base64, subprocess
 
-curl -s -X POST -H "X-API-Key: $API_KEY" \
-  -F "media=@$WORK/$NAME;type=audio/mpeg" \
-  "$AZURA/api/station/$STATION/podcast/$PODCAST_ID/episode/$EP_ID/media" > /dev/null \
-  && rm -f "$WORK/$NAME" && echo "[tape] $TITLE published"
-# (if the upload 4xx's on your AzuraCast version, change the form field
-#  name from "media" to "file" — it changed between releases)
+path, title = sys.argv[1], sys.argv[2]
+with open(path, "rb") as f:
+    b64 = base64.b64encode(f.read()).decode()
 
-# prune: anything older than 14 days, deleted via the same API
-CUTOFF=$(date -v-14d +%Y-%m-%d 2>/dev/null || date -d "14 days ago" +%Y-%m-%d)
-curl -s "$AZURA/api/station/$STATION/public/podcast/$PODCAST_ID/episodes" | \
+payload = json.dumps({"path": f"Archive/{path.split('/')[-1]}", "file": b64})
+print(f"[tape] uploading {len(b64)} b64 chars for {title}")
+with open("/tmp/kazm_upload_payload.json", "w") as out:
+    out.write(payload)
+PYEOF
+
+RESP=$(curl -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+  --data @/tmp/kazm_upload_payload.json \
+  "$AZURA/api/station/$STATION/files")
+rm -f /tmp/kazm_upload_payload.json
+FILE_ID=$(echo "$RESP" | python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
+if [ -z "$FILE_ID" ]; then echo "[tape] upload failed: $RESP" >&2; exit 1; fi
+
+# tag the title/artist so the archive feed can read it back cleanly, and
+# associate with the disabled on-demand playlist
+curl -s -X PUT -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
+  -d "{\"playlists\":[{\"id\":$PLAYLIST_ID}]}" \
+  "$AZURA/api/station/$STATION/file/$FILE_ID" > /dev/null
+
+rm -f "$WORK/$NAME"
+echo "[tape] $TITLE published as file $FILE_ID"
+
+# prune: anything in Archive/ older than 14 days
+CUTOFF=$(date -v-14d +%s 2>/dev/null || date -d "14 days ago" +%s)
+curl -s -H "X-API-Key: $API_KEY" "$AZURA/api/station/$STATION/files?searchPhrase=Archive/" | \
 python3 -c "
 import json, sys
-for e in json.load(sys.stdin):
-    t = e.get('title','')
-    if t.startswith('kazm-') and t[5:15] < '$CUTOFF':
-        print(e['id'])
+for f in json.load(sys.stdin):
+    if f.get('path','').startswith('Archive/') and f.get('uploaded_at', 0) < $CUTOFF:
+        print(f['id'])
 " | while read -r old; do
-  echo "[tape] pruning episode $old"
-  curl -s -X DELETE -H "X-API-Key: $API_KEY" "$AZURA/api/station/$STATION/podcast/$PODCAST_ID/episode/$old" > /dev/null
+  echo "[tape] pruning file $old"
+  curl -s -X DELETE -H "X-API-Key: $API_KEY" "$AZURA/api/station/$STATION/file/$old" > /dev/null
 done

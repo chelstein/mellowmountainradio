@@ -1,0 +1,98 @@
+{
+  "name": "KAZM Lounge Archive Feed",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "kazm-rewind",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://mellowmountainradio.com"
+        }
+      },
+      "id": "wh-rewind",
+      "name": "Site asks for archive",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "kazm-rewind"
+    },
+    {
+      "parameters": {
+        "url": "https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/files?searchPhrase=Archive/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "X-API-Key", "value": "PASTE-YOUR-AZURACAST-API-KEY" }]
+        },
+        "options": { "timeout": 10000 }
+      },
+      "id": "http-list",
+      "name": "List archive files",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Shape uploaded archive blocks into what the site's tape module expects.\n// Filenames come from tape-recorder-azuracast.sh: Archive/lounge-YYYY-MM-DD-HH00.ext\n// AzuraCast's Files API returns a JSON array, which n8n splits into one\n// item per file — handle both that and the unsplit-array shape.\nconst rows = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (Array.isArray(j)) rows.push(...j);\n  else if (j && j.path) rows.push(j);\n}\nconst blocks = [];\nfor (const f of rows) {\n  if (!f.path || !f.path.startsWith('Archive/')) continue;\n  const m = f.path.match(/lounge-(\\d{4}-\\d{2}-\\d{2})-(\\d{2})00/);\n  if (!m || !f.unique_id) continue;\n  blocks.push({\n    url: 'https://streaming.mellowmountainradio.com/api/station/1/ondemand/download/' + f.unique_id,\n    date: m[1],\n    start: +m[2],\n  });\n}\nreturn [{ json: { ok: true, blocks } }];"
+      },
+      "id": "code-shape",
+      "name": "Shape into blocks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, -80]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "resp-rewind",
+      "name": "Respond with archive",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [660, -80]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Anything in Archive/ past 14 days gets pruned — the statutory maximum.\nconst rows = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (Array.isArray(j)) rows.push(...j);\n  else if (j && j.path) rows.push(j);\n}\nconst cutoff = Math.floor(Date.now() / 1000) - 14 * 24 * 3600;\nconst stale = [];\nfor (const f of rows) {\n  if (!f.path || !f.path.startsWith('Archive/')) continue;\n  if ((f.uploaded_at || 0) < cutoff) stale.push({ id: f.id });\n}\nreturn stale;"
+      },
+      "id": "code-stale",
+      "name": "Find stale blocks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 100]
+    },
+    {
+      "parameters": {
+        "url": "=https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/file/{{ $json.id }}",
+        "method": "DELETE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "X-API-Key", "value": "PASTE-YOUR-AZURACAST-API-KEY" }]
+        },
+        "options": { "timeout": 10000 }
+      },
+      "id": "http-delete",
+      "name": "Prune stale block",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 100],
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Site asks for archive": { "main": [[{ "node": "List archive files", "type": "main", "index": 0 }]] },
+    "List archive files": {
+      "main": [[
+        { "node": "Shape into blocks", "type": "main", "index": 0 },
+        { "node": "Find stale blocks", "type": "main", "index": 0 }
+      ]]
+    },
+    "Shape into blocks": { "main": [[{ "node": "Respond with archive", "type": "main", "index": 0 }]] },
+    "Find stale blocks": { "main": [[{ "node": "Prune stale block", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

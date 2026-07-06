@@ -7,7 +7,7 @@ import { getSkyState } from "./astronomy.js";
 import { fetchWeather, CALM_FALLBACK } from "./weather.js";
 import { createParticleSystem } from "./particles.js";
 import { fetchAircraft, createAircraftLayer } from "./aircraft.js";
-import { mountDeer } from "./wildlife.js";
+import { mountWildlife } from "./wildlife.js";
 
 function drawSky(canvas, skyState, stars) {
   const ctx = canvas.getContext("2d");
@@ -47,6 +47,7 @@ export function initLivingScene(root) {
   if (!root) return;
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const scene = root.querySelector("[data-lounge-scene]");
   const tint = root.querySelector("[data-ls-tint]");
   const midday = root.querySelector("[data-ls-midday]");
   const cloudVeil = root.querySelector("[data-ls-clouds]");
@@ -64,7 +65,7 @@ export function initLivingScene(root) {
   const aircraftLayer = airCanvas ? createAircraftLayer(airCanvas) : null;
   if (!reduce) { if (particles) particles.start(); if (aircraftLayer) aircraftLayer.start(); }
 
-  mountDeer(root);
+  mountWildlife(scene || root);
 
   let skyRaf = null;
   function renderSkyFrame() {

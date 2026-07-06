@@ -75,16 +75,36 @@ The site probes the relay on page load — the incident board and corridor
 status lines appear on their own once it answers. Cameras and the flow map
 never depend on it (they're direct from ADOT).
 
-## The Tape (broadcast archive: tape-recorder.sh)
+## The Tape (broadcast archive: tape-recorder-azuracast.sh)
 
 Records the stream in 6-hour blocks, keeps exactly 14 days (both numbers are
-the statutory-license rules for archived programs), uploads to a
-DigitalOcean Space, maintains manifest.json. Setup is in the header of
-`tape-recorder.sh` — Space + s3cmd + CORS + launchd (Mac) or systemd. When
-it's rolling, give Claude the Space's CDN URL; the site's Listeners' Lounge (rewind.html)
-reveals itself the moment rewind.json points at a live manifest. Confirm
-your webcast/SoundExchange licensing covers the direct AzuraCast stream —
-the archive rides the same license as the stream itself.
+the statutory-license rules for archived programs). Uses infrastructure the
+station already owns — no new storage bill:
+
+- Each finished block uploads straight into AzuraCast's own media library
+  (the same place songs live), NOT the Podcasts feature.
+- The file is added to a disabled, on-demand-only playlist ("Lounge Archive",
+  id 16 — `is_enabled:false`, `include_in_on_demand:true`) so it's publicly
+  playable via AzuraCast's on-demand download URL but never scheduled into
+  live rotation.
+- The `KAZM Lounge Archive Feed` n8n workflow (`n8n-kazm-rewind.json`) lists
+  those files, shapes them into blocks, prunes anything past 14 days, and
+  serves it all at `/webhook/kazm-rewind`. The site's `rewind.json` already
+  points at it — the Lounge reveals itself the moment real blocks exist.
+
+**Before this runs for real:** confirm in the AzuraCast dashboard that a
+disabled custom playlist with no schedule truly never bleeds into live
+rotation. That's a call to make with eyes on your own setup, not something
+to assume from outside — a wrong guess here means real airtime.
+
+Setup is in the header of `tape-recorder-azuracast.sh` — needs ffmpeg,
+your AzuraCast API key, runs via cron or systemd on whatever box is already
+on 24/7 (the AzuraCast box itself is the natural choice — it records from
+localhost). Confirm your webcast/SoundExchange licensing covers the direct
+AzuraCast stream — the archive rides the same license as the stream itself.
+
+(`tape-recorder.sh` is the older DigitalOcean Space-based version, kept
+around only in case you ever want the archive on separate storage instead.)
 
 ## Window sources (window-sources/)
 

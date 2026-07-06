@@ -3943,6 +3943,15 @@
               return blocks.length ? { man: { blocks: blocks } } : null;
             });
         }
+        if (cfg.mode === "webhook" && cfg.endpoint) {
+          // the archive lives as files in the station's own media library;
+          // an n8n webhook shapes them into ready-to-play blocks
+          return fetch(cfg.endpoint, { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              return d && d.ok && d.blocks && d.blocks.length ? { man: { blocks: d.blocks } } : null;
+            });
+        }
         if (!cfg.base) return null;
         return fetch(cfg.base.replace(/\/$/, "") + "/manifest.json", { cache: "no-store" })
           .then(function (r) { return r.ok ? r.json() : null; })
