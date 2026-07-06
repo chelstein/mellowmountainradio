@@ -7485,20 +7485,31 @@
       timeIn.value = t; setReadout();
     });
     if (timeRange) timeRange.addEventListener("change", function () { renderAnswer(); });
-    fetch(CHARTS, { cache: "no-store" })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (c) {
-        if (!c || !c.ok) throw new Error("off");
-        root.hidden = false;
-        renderCharts(c);
-        if (c.since) D.since = c.since;
-        var qs = new URLSearchParams(location.search);
-        var d0 = qs.get("d"), t0 = qs.get("t");
-        if (t0 && /^\d{2}:\d{2}$/.test(t0)) setTime(t0);
-        else setTime(new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "America/Phoenix" }));
-        loadDay(d0 && /^\d{4}-\d{2}-\d{2}$/.test(d0) ? d0 : null, t0 ? renderAnswer : null);
-      })
-      .catch(function () { if (off) off.hidden = false; });
+    var probeN = 0;
+    function probe() {
+      probeN++;
+      fetch(CHARTS, { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (c) {
+          if (!c || !c.ok) throw new Error("off");
+          if (off) off.hidden = true;
+          root.hidden = false;
+          renderCharts(c);
+          if (c.since) D.since = c.since;
+          var qs = new URLSearchParams(location.search);
+          var d0 = qs.get("d"), t0 = qs.get("t");
+          if (t0 && /^\d{2}:\d{2}$/.test(t0)) setTime(t0);
+          else setTime(new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "America/Phoenix" }));
+          loadDay(d0 && /^\d{4}-\d{2}-\d{2}$/.test(d0) ? d0 : null, t0 ? renderAnswer : null);
+        })
+        .catch(function () {
+          // a blip is not an outage: retry quickly, then keep listening
+          if (probeN < 3) { setTimeout(probe, 2500 * probeN); return; }
+          if (off) off.hidden = false;
+          if (probeN < 23 && root.isConnected) setTimeout(probe, 30000);
+        });
+    }
+    probe();
   }
 
   function initPage() {
