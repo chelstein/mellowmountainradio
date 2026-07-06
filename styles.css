@@ -3450,14 +3450,16 @@ body.podplaying .player.show { transform: translateY(180%); }
    ========================================================= */
 .lounge-band{background:linear-gradient(180deg,#0b0f1e 0%,#12162b 60%,#171c33 100%);padding:calc(var(--header-h) + 44px) 0 52px;color:#efe8da}
 .lounge-band .wrap{display:flex;flex-direction:column;align-items:center}
-.lounge-window{position:relative;width:min(100%,calc(80vh * 1.5));margin:0 auto;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px -28px rgba(0,0,0,.85),0 2px 0 rgba(255,255,255,.05) inset;background:#0a0d18}
+.lounge-window{position:relative;aspect-ratio:1536/1024;width:min(100%,calc(80vh * 1.5));margin:0 auto;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px -28px rgba(0,0,0,.85),0 2px 0 rgba(255,255,255,.05) inset;background:#0a0d18}
 .lounge-window::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:18px;box-shadow:0 0 120px 12px rgba(0,0,0,.55) inset,0 0 0 1px rgba(255,214,150,.12) inset;z-index:3}
-.lounge-scene{aspect-ratio:1536/1024;background-image:var(--lounge-img);background-size:cover;background-position:center;transform:scale(1.06);transform-origin:center;will-change:transform}
-.lounge-tint,.lounge-midday,.lounge-clouds,.lounge-sky,.lounge-precip,.lounge-air{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.lounge-tint{background:linear-gradient(180deg,#04060e 0%,#080b18 45%,#0c0a13 100%);opacity:0;transition:opacity 1.2s linear;z-index:1}
-.lounge-midday{background:linear-gradient(180deg,#3f7ec2 0%,#7fa8d0 38%,#dce6e2 72%,#efe8d8 100%);opacity:0;transition:opacity 2.5s linear;z-index:1}
-.lounge-clouds{background:#98a4b8;opacity:0;transition:opacity 2s linear;z-index:1}
-.lounge-sky{z-index:1}
+.lounge-gradient,.lounge-clouds,.lounge-sky,.lounge-scene,.lounge-precip,.lounge-air{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+/* Real sky, drawn behind a transparent-sky foreground cutout (lounge-
+   foreground.webp) instead of tinted on top of a painted sky — see
+   living-scene/sky.js (skyGradientCSS) and ASSET-BACKLOG-v85.md. */
+.lounge-gradient{transition:background 2.5s linear;z-index:0}
+.lounge-clouds{background:#98a4b8;opacity:0;transition:opacity 2s linear;z-index:0}
+.lounge-sky{z-index:0}
+.lounge-scene{background-image:var(--lounge-img);background-size:cover;background-position:center;transform:scale(1.06);transform-origin:center;will-change:transform;z-index:1}
 .lounge-precip{z-index:2}
 .lounge-air{z-index:2}
 .lounge-gauge-glow{position:absolute;left:38%;top:61.5%;width:5.4%;height:17%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(150,205,255,.85) 0%,rgba(120,180,255,.35) 45%,rgba(120,180,255,0) 75%);opacity:0;transition:opacity 1.6s ease;pointer-events:none;z-index:2;filter:blur(1px)}

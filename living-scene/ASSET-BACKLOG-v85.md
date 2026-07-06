@@ -35,7 +35,15 @@ Option A has proven the direction is worth it.
 
 ## The layers
 
-### 1. `foreground-plate.png` — sky removed, everything else intact
+### 1. `foreground-plate.png` — sky removed, everything else intact — **SHIPPED as `lounge-foreground.webp`**
+
+Built via OpenCV GrabCut (seeded with known object/sky regions from the
+positions below), not a hand-drawn mask — see the git history for the
+segmentation script. Known simplifications from that process: the tower
+is a solid recolored silhouette (its real lattice was too thin for
+GrabCut to hold onto reliably) and the fence/equipment enclosure is a
+solid panel (its mesh has the same problem) — both still real
+opportunities for rows 5/9 below if someone wants to improve on this.
 | | |
 |---|---|
 | Position | left 0%, top 0%, width 100%, height 100% (full canvas) |

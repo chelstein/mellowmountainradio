@@ -1,63 +1,49 @@
-// The sky itself: the slow CSS wash (day/twilight/night/cloud tint — see
-// tintOpacities) plus the canvas-drawn sun and moon discs, both positioned
-// by real altitude/azimuth (see config.js's projectAltAz). The painted
-// horizon sun in lounge-window.jpg is only ever "correct" right at real
-// golden hour; drawSun crossfades a real moving sun in for the rest of
-// the day and softly covers the painted one so there's never a double sun.
-//
-// TODO(art): the base image still has the sky painted into it (clouds,
-// horizon glow) because cutting the foreground (trees/tower/dish/car/deer)
-// into a transparent PNG needs real image segmentation — soft branch
-// edges and gaps in the tree canopy make a naive brightness-threshold mask
-// look worse than this overlay approach, and no such tool is available in
-// this environment. Once a proper foreground cutout exists, sky.js's wash
-// can become the *only* sky (real gradient, no painted clouds underneath)
-// instead of a cover layer over painted art.
+// The sky itself: a real CSS gradient (skyGradientCSS) plus the canvas-
+// drawn sun, moon, stars, and planets, all positioned by real altitude/
+// azimuth (see config.js's projectAltAz). `lounge-foreground.webp` is a
+// transparent-sky cutout of the original painting (see
+// living-scene/ASSET-BACKLOG-v85.md for how it was made and its known
+// simplifications — the tower in particular is a solid recolored
+// silhouette, not its real see-through lattice), so this sky renders
+// truly *behind* the trees/tower/dish rather than tinted on top of them.
 import { SKY, projectAltAz } from "./config.js";
 
-/** Opacity for the three CSS wash layers, derived from real sun altitude. */
-export function tintOpacities(skyState) {
-  return {
-    night: skyState.nightAmount,
-    midday: skyState.middayAmount * 0.42,
-    cloudCap: 0.28,
-  };
+// Real sky-gradient color stops (percent, [r,g,b]) at 0/15/40/65/100%
+// down the frame. GOLDEN was sampled directly from the actual painting's
+// sky (the one real moment it depicts); NIGHT/DAY are the same tuned
+// tones the old CSS tint/midday overlays used, now driving an actual
+// gradient instead of a translucent layer stacked on top of painted art.
+const GOLDEN = [[61, 59, 111], [80, 53, 87], [133, 90, 120], [205, 95, 56], [247, 153, 59]];
+const NIGHT = [[4, 6, 14], [6, 8, 18], [8, 11, 24], [10, 10, 21], [12, 10, 19]];
+const DAY = [[63, 126, 194], [90, 145, 200], [127, 168, 208], [180, 205, 218], [239, 232, 216]];
+const STOP_PCT = [0, 15, 40, 65, 100];
+
+function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
+function lerpRGB(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; }
+
+/** Real CSS gradient for the sky itself, blended from real sun altitude —
+ *  golden hour is the painting's own true colors; day and night blend in
+ *  from there via middayAmount/nightAmount, same axes the old tint used. */
+export function skyGradientCSS(skyState) {
+  const stops = STOP_PCT.map((pct, i) => {
+    const rgb = skyState.nightAmount > 0
+      ? lerpRGB(GOLDEN[i], NIGHT[i], skyState.nightAmount)
+      : lerpRGB(GOLDEN[i], DAY[i], skyState.middayAmount);
+    return "rgb(" + rgb.join(",") + ") " + pct + "%";
+  });
+  return "linear-gradient(180deg," + stops.join(",") + ")";
 }
 
-// The painted horizon sun's fixed spot in the source art (measured in the
-// 1536x1024 painting; .lounge-scene shares that exact aspect ratio via
-// background-size:cover, so the fraction maps straight onto the canvas).
-const PAINTED_SUN_X = 0.4232, PAINTED_SUN_Y = 0.5811;
-
-/** Soft cover over the painted horizon sun once the real sun has climbed
- *  well clear of it — otherwise the moving sun and the painted one would
- *  both be visible at once. */
-export function drawPaintedSunCover(ctx, w, h, skyState) {
-  const coverA = Math.min(1, skyState.middayAmount * 1.4) * 0.85;
-  if (coverA <= 0.01) return;
-  const cx = w * PAINTED_SUN_X, cy = h * PAINTED_SUN_Y, cr = w * 0.3;
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.scale(1.6, 1); // wider than tall — the painted glow spans a horizon band, not a circle
-  const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, cr);
-  grad.addColorStop(0, "rgba(150,168,196," + coverA.toFixed(3) + ")");
-  grad.addColorStop(1, "rgba(150,168,196,0)");
-  ctx.fillStyle = grad;
-  ctx.beginPath(); ctx.arc(0, 0, cr, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
-}
-
-/** The real, moving sun. Fades in once middayAmount lifts it clear of the
- *  painted horizon sun, fades back into the painting at the other end of
- *  the day — see drawPaintedSunCover, which uses the same middayAmount
- *  axis so the crossfade is always in sync. */
+/** The real, moving sun — the only sun now that the painted one has been
+ *  cut out of the foreground plate along with the rest of the sky, so
+ *  there's nothing left to crossfade against. Fades in/out only right at
+ *  the horizon (rise/set), full strength any time it's actually up. */
 export function drawSun(ctx, w, h, skyState) {
-  if (skyState.sunAltitudeDeg <= -4 || skyState.middayAmount <= 0.01) return;
+  if (skyState.sunAltitudeDeg <= -4) return;
   const proj = projectAltAz(skyState.sunAltitudeDeg, skyState.sunAzimuthDeg, -4);
   if (!proj.visible) return;
   const sx = proj.xFrac * w, sy = proj.yFrac * h;
-  const horizonFade = Math.max(0, Math.min(1, (skyState.sunAltitudeDeg + 4) / 6));
-  const sunA = horizonFade * skyState.middayAmount;
+  const sunA = Math.max(0, Math.min(1, (skyState.sunAltitudeDeg + 4) / 6));
   // Capped well short of 1 and kept out of the green/blue channels near
   // white — this needs to read as unmistakably the sun, never a second
   // moon, at any altitude from horizon glow to high noon.

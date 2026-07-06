@@ -5,18 +5,38 @@ painting of the KAZM transmitter site, brought to life with real data —
 never simulated data presented as real. Every layer here either shows the
 truth or shows nothing.
 
-## 1. Current (v84) architecture
+## 1. Current (v85) architecture
 
-The base is still one flattened painting, `lounge-window.jpg`
-(1536×1024, sky baked in). Everything real is drawn *on top of* it as
-DOM/canvas layers:
+The sky is now real, not painted. `lounge-window.jpg` (the original
+flattened painting) has been replaced as the live base with
+`lounge-foreground.webp` — the same painting with its sky masked to
+transparent (via OpenCV GrabCut segmentation; see
+`ASSET-BACKLOG-v85.md` §"Option A" for exactly how, and its known
+simplifications — the tower in particular is a solid recolored
+silhouette, not its real see-through lattice). Stacking order, back to
+front:
+
+```
+.lounge-gradient   real CSS sky gradient (skyGradientCSS, sky.js)
+.lounge-clouds     real cloud-cover haze (Open-Meteo)
+.lounge-sky        canvas: real sun/moon/stars/planets
+.lounge-scene      lounge-foreground.webp (transparent sky, opaque ground/trees/tower/dish/etc.)
+.lounge-precip/-air  rain/snow, aircraft (canvas, in front)
+.lounge-gauge-glow/-beacon/-eq  small decorative/data overlays (in front)
+```
+
+The sun/moon/stars/planets now render **truly behind** the trees, tower,
+and dish instead of composited on top of the whole flattened scene —
+real depth, not just a real position projected onto a flat plane over
+painted art.
 
 | Layer | Source | Network? |
 |---|---|---|
-| Sun/moon/planet position, star field, day/night/twilight tint | `astronomy.js` (Sun/Moon + Venus/Mars/Jupiter/Saturn via the vendored Astronomy Engine, `living-scene/vendor/`) with automatic fallback to hand-rolled low-precision formulas (the math behind SunCalc) if the engine script fails to load | None once loaded — pure math, computed client-side for the real transmitter-site coordinates (34.8697, -111.7610) |
+| Real sky gradient (day/twilight/night, blended from the painting's own real golden-hour colors) | `sky.js`'s `skyGradientCSS`, driven by real sun altitude | None |
+| Sun/moon/planet position, star field | `astronomy.js` (Sun/Moon + Venus/Mars/Jupiter/Saturn via the vendored Astronomy Engine, `living-scene/vendor/`) with automatic fallback to hand-rolled low-precision formulas (the math behind SunCalc) if the engine script fails to load | None once loaded — pure math, computed client-side for the real transmitter-site coordinates (34.8697, -111.7610) |
 | Real bright-star field (257 stars, Hipparcos-derived, mag ≤ 3.4) | `stars.js` + `stars-catalog.js`, positions from real RA/Dec converted to live altitude/azimuth | None |
 | Real Venus/Mars/Jupiter/Saturn | `planets.js`, real positions + real apparent magnitude (brightness) from the engine | None (requires the engine; no engine → no planets, never a guessed position) |
-| The moving sun + painted-sun crossfade, moon glow, star/planet canvas rendering | `sky.js` — real altitude/azimuth projected onto the fixed painted vantage via `config.js`'s `projectAltAz` | None |
+| The moving sun disc, moon glow, star/planet canvas rendering | `sky.js`, positioned via `config.js`'s `projectAltAz` | None |
 | Cloud veil, rain/snow, wind | `weather.js` — Open-Meteo current conditions, same endpoint/coords the rest of the site already uses | `api.open-meteo.com` |
 | NOAA gauge glow | Driven by the same Open-Meteo `precipitation` field | (shares the weather fetch) |
 | Aircraft dots + contrails | `aircraft.js` — adsb.lol, proxied through n8n (see below) | `n8n.mellowmountainradio.com/webhook/kazm-aircraft` |
@@ -52,44 +72,47 @@ no traffic — it never fabricates planes.
   deliberately mocked to 404, and with the engine script blocked entirely
   — zero console errors, zero page errors, sky still correct either way.
 
-## 2. Known limitation: the sky is still painted into the base art
+## 2. Known limitation: everything except the sky is still one flattened image
 
-`lounge-window.jpg` is one flattened image — clouds, horizon glow, and
-the sun itself are painted into it, not separate elements. Every "real
-sky" layer above (tint, moving sun, moon, stars, planets) is drawn *on
-top of* that fixed painting, not in place of it. Concretely:
+`lounge-foreground.webp` solves the sky (see §1) but it's still a single
+cutout, not separate objects — the ground/trees/tower/dish/jeep/deer are
+all pixels of the same flattened image, just with the sky masked out
+around them. Concretely:
 
-- The tint/cover system in `sky.js` can dim, cool, and partially hide the
-  painted sun and clouds, but it can't remove them — a single fixed
-  golden-hour composition has a hard ceiling on how much a CSS/canvas
-  overlay can make it read as, say, a clear blue noon. This was tested
-  exhaustively against real reference photos earlier this project (see
-  git history) before landing on the current tint curve as the honest
-  maximum.
-- There is no real depth in the scene — the moving sun/moon/planets/
-  aircraft are drawn on a single flat plane in front of the artwork, so a
-  planet can appear to render "in front of" the dish or trees even though
-  it should be far behind them (see `planets.js`/`config.js`'s
-  `projectAltAz` — explicitly an artistic projection onto one fixed
-  vantage, not a literal planetarium).
 - No parallax, no wind-driven motion on the trees/dish, no independent
-  animation per element, because the trees/tower/dish/jeep/deer/ground
-  are all pixels of the same flattened JPEG, not separate objects.
+  animation per element, no real depth — the moving sun/moon/planets/
+  aircraft render behind this one plate as a whole, not behind individual
+  elements at their own depth, so a planet can still appear "in front of"
+  the dish or trees even though it should be far behind them (see
+  `planets.js`/`config.js`'s `projectAltAz` — explicitly an artistic
+  projection onto one fixed vantage, not a literal planetarium).
+- The ground, jeep, dish, fence, etc. all still carry the original
+  painting's golden-hour lighting regardless of the real time of day —
+  only the sky itself changes now. A bright noon sky over dusk-lit dirt
+  is an intentional, honest first step (Option A in the backlog below),
+  not a bug.
+- The tower is a solid recolored silhouette (see `ASSET-BACKLOG-v85.md`),
+  not its real see-through lattice — it was too thin for automatic
+  segmentation to hold onto reliably; a genuine lattice cutout needs
+  either manual tracing or new source art.
+- The chain-link fence/equipment enclosure is likewise a solid cutout,
+  not a mesh you can see real sky through.
 
-Fixing this needs new art assets, not more code — see §3 and
-`ASSET-BACKLOG-v85.md`.
+Fixing the rest of this needs new art assets (or manual tracing/relighting
+work), not more code — see §3 and `ASSET-BACKLOG-v85.md`.
 
-## 3. Desired v85 architecture: layered transparent PNGs
+## 3. Desired v85+ architecture: fully layered transparent PNGs
 
-The correct fix (this is how real-time scenes with a dynamic sky are
-built) is to stop treating `lounge-window.jpg` as one image and instead
-split it into a transparent-sky foreground plate plus independent
-element sprites, rendered in this order (back to front):
+§1/§2 above is "Option A" from the backlog below — one transparent-sky
+plate, real gradient behind it, shipped. The next step (the backlog's
+"Option B") is to stop treating even the foreground as one image and
+split it into independent element sprites, rendered in this order (back
+to front):
 
 ```
-Dynamic sky (gradient + real clouds + moon + stars)   <- already real, canvas-drawn, no PNG
+Dynamic sky (gradient + real clouds + moon + stars)   <- already real, canvas-drawn, no PNG, DONE
 ==================================
-Foreground PNGs (sky masked to transparent):
+Foreground PNGs (still one flattened plate today; split into these next):
   ground · tree-left · tree-right · tower · tower-beacon ·
   dish · jeep · deer · fence-enclosure · rain-gauge · foreground-rocks
 ```
@@ -136,33 +159,28 @@ instead of 2D canvas — and should be scoped and planned as its own
 project if it's ever pursued, not folded into a routine session. Noting
 it here so the direction is on record, not because it's scheduled.
 
-## 5. What's needed before v85 can be implemented
+## 5. What's needed before full (Option B) v85 can be implemented
 
-None of §3 can be built yet — it needs the actual cutout assets, which
-require either real image-editing software or an AI image-generation
-tool capable of producing alpha-transparent layers, neither of which is
-available in a plain coding session. Concretely, before any v85 code
-changes:
+Option A (§1/§2) is done — it needed real image segmentation (OpenCV
+GrabCut, seeded with known object regions), which this session did have
+available. Option B (full per-element sprites) needs more than that:
 
-1. Produce the PNG assets specified in `ASSET-BACKLOG-v85.md` — at
-   minimum `foreground-plate.png` (Option A, the cheap win), ideally the
-   full per-element set (Option B). Source options: manual cutout in
-   real image-editing software (Photoshop/GIMP/etc.) against the actual
-   `lounge-window.jpg`, or regenerating each element from scratch with
-   native alpha transparency via whichever AI art tool produced the
-   original painting (more reliable than segmenting an already-flattened
-   image after the fact, especially for the tree canopies and chain-link
-   fence — see those rows' notes in the backlog for why).
+1. Produce the remaining PNG assets specified in `ASSET-BACKLOG-v85.md`
+   — the tower's real lattice and the fence's real mesh in particular
+   are too thin/fine for GrabCut to hold onto reliably (see §2 above and
+   the backlog's per-row notes); those two need either manual tracing in
+   real image-editing software or regenerating from scratch with native
+   alpha transparency via whichever AI art tool produced the original
+   painting.
 2. Each PNG should be delivered at the same 1536×1024 canvas space (or a
    documented scale factor) so the percent-based positions in the
    backlog line up without re-measuring.
 3. Once assets exist, wiring them in is comparatively quick: swap
-   `.lounge-scene`'s single background image for a stack of positioned
+   `.lounge-scene`'s single foreground image for a stack of positioned
    `<img>`/canvas layers (the pattern `wildlife.js` already uses for
-   `deer-sprite.png` extends directly to the rest), delete the CSS
-   tint/cover system in `sky.js` that exists only to fight the painted
-   sky, and let the already-real astronomy/weather data drive full
-   layers instead of overlays.
+   `deer-sprite.png` extends directly to the rest), and let the
+   already-real astronomy/weather data drive independent per-element
+   animation instead of one static plate.
 
 ## Files
 
@@ -176,8 +194,8 @@ changes:
   altitude/azimuth filtering (`getVisibleStars`).
 - `planets.js` — real Venus/Mars/Jupiter/Saturn positions + magnitude-
   driven visibility (`getVisiblePlanets`).
-- `sky.js` — canvas rendering for the moving sun, painted-sun cover,
-  moon, stars, planets; `tintOpacities` for the CSS day/night/cloud wash.
+- `sky.js` — `skyGradientCSS` (the real day/twilight/night sky gradient)
+  plus canvas rendering for the moving sun, moon, stars, planets.
 - `vendor/astronomy-engine.browser.min.js` — vendored Astronomy Engine
   (github.com/cosinekitty/astronomy, MIT), loaded lazily via a plain
   `<script>` tag since this site has no build step.
@@ -193,6 +211,8 @@ changes:
   script, not a module, so `import()` is used as an expression rather
   than a static import).
 - `ASSET-BACKLOG-v85.md` — the full layered-PNG asset spec (§3/§5 above).
+- `../lounge-foreground.webp` (repo root, alongside the original
+  `lounge-window.jpg`) — the shipped Option A transparent-sky cutout.
 
 ## TODO / next real-data wiring
 

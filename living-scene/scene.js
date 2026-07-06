@@ -7,7 +7,7 @@ import { CONFIG } from "./config.js";
 import { getSkyState, getRiseSetTimes, initAstronomyEngine, engineAvailable } from "./astronomy.js";
 import { getVisibleStars } from "./stars.js";
 import { getVisiblePlanets } from "./planets.js";
-import { drawSun, drawMoon, drawStars, drawPlanets, drawPaintedSunCover } from "./sky.js";
+import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS } from "./sky.js";
 import { fetchWeather, CALM_FALLBACK } from "./weather.js";
 import { createParticleSystem } from "./particles.js";
 import { fetchAircraft, createAircraftLayer } from "./aircraft.js";
@@ -32,7 +32,6 @@ function createSkyCanvas(canvas) {
   // recomputed — along with a forced layout read — 60 times a second.
   return function draw(skyState, stars, planets) {
     ctx.clearRect(0, 0, w, h);
-    drawPaintedSunCover(ctx, w, h, skyState);
     drawSun(ctx, w, h, skyState);
     drawStars(ctx, stars);
     drawPlanets(ctx, planets);
@@ -61,8 +60,7 @@ export function initLivingScene(root) {
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const scene = root.querySelector("[data-lounge-scene]");
-  const tint = root.querySelector("[data-ls-tint]");
-  const midday = root.querySelector("[data-ls-midday]");
+  const gradientEl = root.querySelector("[data-ls-gradient]");
   const cloudVeil = root.querySelector("[data-ls-clouds]");
   const skyCanvas = root.querySelector("[data-ls-sky]");
   const precipCanvas = root.querySelector("[data-ls-precip]");
@@ -71,8 +69,8 @@ export function initLivingScene(root) {
 
   // Appended to root, not `scene` — `.lounge-scene` has its own CSS
   // transform (the pointer-parallax scale), which creates a stacking
-  // context that sits *beneath* the tint/sky layers appended later in the
-  // DOM, so a panel nested in there would vanish under the night tint.
+  // context that sits *beneath* the sky layers appended later in the DOM,
+  // so a panel nested in there would vanish under a dark night sky.
   const debugEl = createDebugPanel(root);
 
   const particles = precipCanvas ? createParticleSystem(precipCanvas) : null;
@@ -90,7 +88,7 @@ export function initLivingScene(root) {
 
   const drawSky = skyCanvas ? createSkyCanvas(skyCanvas) : null;
   let lastSkyState = null, lastStars = [], lastPlanets = [];
-  let lastTintOpacity = null, lastMiddayOpacity = null;
+  let lastGradient = null;
 
   // Astronomy changes over seconds, not milliseconds — recomputing it,
   // and writing to element style, 60 times a second was real, measurable
@@ -102,14 +100,8 @@ export function initLivingScene(root) {
     lastStars = getVisibleStars(now, CONFIG.lat, CONFIG.lon, lastSkyState.sunAltitudeDeg, lastSkyState.moonAltitudeDeg, lastSkyState.moonFraction);
     lastPlanets = getVisiblePlanets(now, CONFIG.lat, CONFIG.lon, CONFIG.elevationM, lastSkyState.sunAltitudeDeg);
 
-    const nightOp = lastSkyState.nightAmount.toFixed(3);
-    // Plain alpha (no mix-blend-mode — see the compositing-cost note in
-    // living-scene/README.md) doesn't preserve underlying detail the way
-    // soft-light did, so the same 0-1 range would wash the painting out
-    // solid at high middayAmount.
-    const middayOp = (lastSkyState.middayAmount * 0.42).toFixed(3);
-    if (tint && nightOp !== lastTintOpacity) { tint.style.opacity = nightOp; lastTintOpacity = nightOp; }
-    if (midday && middayOp !== lastMiddayOpacity) { midday.style.opacity = middayOp; lastMiddayOpacity = middayOp; }
+    const gradient = skyGradientCSS(lastSkyState);
+    if (gradientEl && gradient !== lastGradient) { gradientEl.style.background = gradient; lastGradient = gradient; }
 
     if (debugEl) {
       const rs = getRiseSetTimes(now, CONFIG.lat, CONFIG.lon, CONFIG.elevationM);
