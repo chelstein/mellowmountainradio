@@ -48,6 +48,7 @@ export function initLivingScene(root) {
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const tint = root.querySelector("[data-ls-tint]");
+  const midday = root.querySelector("[data-ls-midday]");
   const cloudVeil = root.querySelector("[data-ls-clouds]");
   const skyCanvas = root.querySelector("[data-ls-sky]");
   const precipCanvas = root.querySelector("[data-ls-precip]");
@@ -69,6 +70,7 @@ export function initLivingScene(root) {
   function renderSkyFrame() {
     const skyState = getSkyState(new Date(), CONFIG.lat, CONFIG.lon);
     if (tint) tint.style.opacity = skyState.nightAmount.toFixed(3);
+    if (midday) midday.style.opacity = skyState.middayAmount.toFixed(3);
     if (skyCanvas) drawSky(skyCanvas, skyState, stars);
     return skyState;
   }

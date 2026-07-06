@@ -85,6 +85,15 @@ export function getSkyState(date, lat, lng) {
 
   // 0 at +6deg (bright day) fading to 1 at -18deg (full dark), smooth.
   const nightAmount = Math.max(0, Math.min(1, (6 - altDeg) / 24));
+
+  // The painting is one fixed golden-hour composition — its sun can't
+  // physically move. So instead of pretending the disc tracks the real
+  // sun, we track real altitude through LIGHT: the golden tone is left
+  // untouched near actual sunrise/sunset (where it's literally correct),
+  // and cools/brightens in proportion to how high the real sun actually
+  // is the rest of the day, so noon doesn't read as frozen dusk.
+  const middayAmount = Math.max(0, Math.min(1, (altDeg - 10) / 45));
+
   const moon = getMoonIllumination(date);
   const moonPos = getMoonPosition(date, lat, lng);
   return {
@@ -92,6 +101,7 @@ export function getSkyState(date, lat, lng) {
     sunAzimuthDeg: sun.azimuth / rad + 180,
     band,
     nightAmount,
+    middayAmount,
     moonPhase: moon.phase,
     moonFraction: moon.fraction,
     moonUp: moonPos.altitude > 0,
