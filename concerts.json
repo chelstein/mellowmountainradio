@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-06T15:39:45.671Z",
+ "updated": "2026-07-06T20:02:18.321Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -1427,6 +1427,21 @@
    "price": 29,
    "status": "onsale",
    "saleStart": "2026-04-11T22:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "17AYv0G6CGx7H_q",
+   "artist": "Player",
+   "date": "2027-02-13",
+   "time": "19:00:00",
+   "venue": "Westgate Las Vegas Resort & Casino",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-players-las-vegas-nevada-02-13-2027/event/170064E32213C65D",
+   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-07-10T17:00:00Z",
    "lineup": []
   }
  ]
