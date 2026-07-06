@@ -39,13 +39,32 @@ export const CONFIG = {
 // azimuth sweeps left(east)-to-right(west) through the visible half of the
 // sky in front of the window, altitude maps to height above the horizon
 // line. Not a literal planetarium — real math driving a calm illustration.
+//
+// Anchored to a real fact, not an arbitrary "south = center" guess: the
+// source painting's own reference photo (IMG_6037, Oct 12 2025 5:25:46 PM
+// MST) has a real, computed sun position of azimuth 256.83°, altitude
+// 5.35° — and the painting's horizon vanishing point (where the road
+// disappears into the treeline, also the real sun's spot before the sky
+// was cut transparent) sits at x-fraction 0.4232, y-fraction 0.5811 of
+// the frame. Anchoring both axes there means the real sun lands exactly
+// on that point at the real moment the painting depicts, instead of
+// drifting off to wherever "south"/an arbitrary horizon line happens to
+// map. horizonY is solved (not guessed) so altitude 5.35° -> y 0.5811
+// given zenithY below.
+const CAMERA_AZIMUTH_DEG = 256.83; // real azimuth the painted camera faces
+const CAMERA_X = 0.4232; // real horizon vanishing point, measured in the source art
+const CAMERA_ALT_DEG = 5.35321006934902;
+const CAMERA_Y = 0.5811;
+const ZENITH_Y = 0.05;
+const HORIZON_Y = (CAMERA_Y - (CAMERA_ALT_DEG / 90) * ZENITH_Y) / (1 - CAMERA_ALT_DEG / 90);
+
 export const SKY = {
-  horizonY: 0.72,
-  zenithY: 0.05,
+  horizonY: HORIZON_Y,
+  zenithY: ZENITH_Y,
   eastX: 0.05,
-  southX: 0.5,
+  cameraX: CAMERA_X,
   westX: 0.95,
-  visibleAzimuthCenter: 180,
+  visibleAzimuthCenter: CAMERA_AZIMUTH_DEG,
   visibleAzimuthWidth: 180,
 };
 
@@ -60,8 +79,8 @@ export function projectAltAz(altitudeDeg, azimuthDeg, minAltDeg) {
   let d = ((azimuthDeg - SKY.visibleAzimuthCenter + 540) % 360) - 180; // (-180,180]
   const visible = altitudeDeg >= minAltDeg && Math.abs(d) <= half;
   const xFrac = d >= 0
-    ? SKY.southX + (d / half) * (SKY.westX - SKY.southX)
-    : SKY.southX + (d / half) * (SKY.southX - SKY.eastX);
+    ? SKY.cameraX + (d / half) * (SKY.westX - SKY.cameraX)
+    : SKY.cameraX + (d / half) * (SKY.cameraX - SKY.eastX);
   const t = Math.max(0, Math.min(1, altitudeDeg / 90));
   const yFrac = SKY.horizonY - t * (SKY.horizonY - SKY.zenithY);
   return { xFrac, yFrac, visible };
