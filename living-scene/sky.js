@@ -32,9 +32,15 @@ function lerpRGB(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), le
  *  since that's the one moment the painted lighting is already correct.
  */
 export function groundFilterCSS(skyState) {
-  const brightness = 1 + 0.22 * skyState.middayAmount - 0.4 * skyState.nightAmount;
-  const saturate = 1 - 0.2 * skyState.middayAmount - 0.25 * skyState.nightAmount;
-  const contrast = 1 + 0.05 * skyState.middayAmount;
+  // Real report against the live site: 4:30pm (sun at 37 deg, well short
+  // of solar noon) still read as too dark/dusky against a correctly
+  // bright sky. The first pass (0.22/0.2/0.05 coefficients) was too
+  // timid to sell "mid-afternoon" against ground painted for near-
+  // sunset shadows — retuned and checked visually up to full midday
+  // intensity (brightness 1.7) before landing here.
+  const brightness = 1 + 0.7 * skyState.middayAmount - 0.4 * skyState.nightAmount;
+  const saturate = 1 - 0.33 * skyState.middayAmount - 0.25 * skyState.nightAmount;
+  const contrast = 1 + 0.13 * skyState.middayAmount;
   return "brightness(" + brightness.toFixed(3) + ") saturate(" + saturate.toFixed(3) + ") contrast(" + contrast.toFixed(3) + ")";
 }
 
