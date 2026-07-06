@@ -3443,3 +3443,20 @@ body.podplaying .player.show { transform: translateY(180%); }
 
 .tm-studio{scroll-margin-top:84px}
 #charts{scroll-margin-top:84px}
+
+/* =========================================================
+   THE LOUNGE WINDOW — the painted view, framed like a dim room
+   ========================================================= */
+.lounge-band{background:linear-gradient(180deg,#0b0f1e 0%,#12162b 60%,#171c33 100%);padding:44px 0 52px;color:#efe8da}
+.lounge-band .wrap{display:flex;flex-direction:column;align-items:center}
+.lounge-window{position:relative;width:min(100%,calc(80vh * 1.5));margin:0 auto;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px -28px rgba(0,0,0,.85),0 2px 0 rgba(255,255,255,.05) inset;background:#0a0d18}
+.lounge-window::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:18px;box-shadow:0 0 120px 12px rgba(0,0,0,.55) inset,0 0 0 1px rgba(255,214,150,.12) inset;z-index:3}
+.lounge-scene{aspect-ratio:1536/1024;background-image:var(--lounge-img);background-size:cover;background-position:center;transform:scale(1.06);transform-origin:center;will-change:transform}
+.lounge-eq{position:absolute;left:0;right:0;bottom:0;width:100%;height:16%;z-index:2;pointer-events:none;mix-blend-mode:screen;opacity:.92}
+.lounge-cap{width:min(100%,calc(80vh * 1.5));margin:20px auto 0;text-align:center}
+.lounge-cap .eyebrow{color:#e6b877;letter-spacing:.14em}
+.lounge-cap h1{color:#f6efe1;margin:.1em 0 .3em;font-size:clamp(1.9rem,4.4vw,3rem)}
+.lounge-cap .lead{color:#c9c0b0;max-width:62ch;margin:0 auto 1.2em}
+.lounge-cap .btn-primary{box-shadow:0 10px 30px -10px rgba(255,150,70,.6)}
+@media (prefers-reduced-motion: reduce){.lounge-scene{transform:scale(1.04)}}
+@media (max-width:640px){.lounge-band{padding:28px 0 36px}.lounge-window,.lounge-cap{border-radius:14px}}

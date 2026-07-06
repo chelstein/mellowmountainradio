@@ -218,6 +218,7 @@
      ========================================================= */
   var viz = doc.querySelector("[data-viz]");
   var eqBars = doc.querySelectorAll("[data-eq] i");
+  var sceneEq = null; // lounge-scene spectrum canvas, registered by initLounge()
   var audioCtx = null, analyser = null, srcNode = null, freqData = null, rafId = null;
   var vizReal = false;      // have we ever seen non-zero spectrum data?
   var vizChecked = 0;       // frames observed while playing (to detect a tainted stream)
@@ -256,6 +257,22 @@
         eqBars[i].style.opacity = (0.45 + mag * 0.55).toFixed(2);
       }
     }
+    // big spectrum along the bottom of the lounge scene
+    if (sceneEq && sceneEq.isConnected && vizReal) {
+      var sc = sceneEq._c || (sceneEq._c = sceneEq.getContext("2d"));
+      var sw = sceneEq.width, sh = sceneEq.height;
+      sc.clearRect(0, 0, sw, sh);
+      var SB = 48, gap = Math.max(1, sw / SB * 0.32), sbw = (sw - gap * (SB - 1)) / SB;
+      for (i = 0; i < SB; i++) {
+        var sv = freqData[Math.floor((i + 0.5) / SB * n * 0.72)] / 255;
+        var sbh = Math.max(sh * 0.03, sv * sv * sh);
+        var g = sc.createLinearGradient(0, sh - sbh, 0, sh);
+        g.addColorStop(0, "rgba(255, 196, 110, " + (0.55 + sv * 0.45).toFixed(3) + ")");
+        g.addColorStop(1, "rgba(226, 110, 90, " + (0.25 + sv * 0.35).toFixed(3) + ")");
+        sc.fillStyle = g;
+        sc.fillRect(i * (sbw + gap), sh - sbh, sbw, sbh);
+      }
+    }
     // full spectrum on the canvas backdrop
     if (viz && vizReal) {
       var ctx = viz._c || (viz._c = viz.getContext("2d"));
@@ -292,6 +309,7 @@
     if (rafId) { window.cancelAnimationFrame(rafId); rafId = null; }
     doc.body.classList.remove("viz-live");
     for (var i = 0; i < eqBars.length; i++) { eqBars[i].style.height = ""; eqBars[i].style.opacity = ""; }
+    if (sceneEq && sceneEq._c) sceneEq._c.clearRect(0, 0, sceneEq.width, sceneEq.height);
   }
 
   /* =========================================================
@@ -3849,6 +3867,55 @@
     if (reduced) { var rT = setInterval(function () { if (!cv.isConnected) { clearInterval(rT); return; } paint(); }, 60000); }
     else { (function loop() { if (!cv.isConnected) return; paint(); requestAnimationFrame(function () { setTimeout(loop, 100); }); })(); }
     window.addEventListener("resize", function () { if (cv.isConnected) { size(); paint(); } });
+  }
+
+  /* =========================================================
+     THE LOUNGE WINDOW — the painted view from the transmitter site.
+     One fixed view (golden hour on the mountain), shown whole. The
+     aircraft beacon blinks for real, the scene takes a little depth
+     from the pointer, and the live on-air spectrum rolls along the
+     sill the moment you press Listen. Nothing here is faked: beacon,
+     parallax, and EQ are all real behavior on a real painting.
+     ========================================================= */
+  function initLounge() {
+    var root = doc.querySelector("[data-lounge]"); if (!root) return;
+    var scene = root.querySelector("[data-lounge-scene]");
+    var eq = root.querySelector("[data-lounge-eq]");
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (eq) {
+      sceneEq = eq; // register the sill so the live spectrum has somewhere to draw
+      var sizeEq = function () {
+        var r = eq.getBoundingClientRect();
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        eq.width = Math.max(1, Math.round((r.width || 600) * dpr));
+        eq.height = Math.max(1, Math.round((r.height || 64) * dpr));
+        eq._c = null;
+      };
+      sizeEq();
+      window.addEventListener("resize", sizeEq, { passive: true });
+      // if the stream is already playing when this page loads, get the ribbon going
+      if (playing) startViz();
+    }
+
+    // gentle depth: the view drifts a few pixels toward the pointer
+    if (scene && !reduce) {
+      var tx = 0, ty = 0, cx = 0, cy = 0, praf = null;
+      var ease = function () {
+        cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
+        scene.style.transform = "scale(1.06) translate(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px)";
+        if (Math.abs(tx - cx) > 0.1 || Math.abs(ty - cy) > 0.1) praf = window.requestAnimationFrame(ease);
+        else praf = null;
+      };
+      root.addEventListener("pointermove", function (e) {
+        if (e.pointerType === "touch") return;
+        var r = root.getBoundingClientRect();
+        tx = ((e.clientX - r.left) / r.width - 0.5) * -22;
+        ty = ((e.clientY - r.top) / r.height - 0.5) * -14;
+        if (!praf) praf = window.requestAnimationFrame(ease);
+      }, { passive: true });
+      root.addEventListener("pointerleave", function () { tx = 0; ty = 0; if (!praf) praf = window.requestAnimationFrame(ease); });
+    }
   }
 
   function initTape() {
@@ -7556,6 +7623,7 @@
     initRoads();
     initSkyPage();
     initJeep();
+    initLounge();
     initTape();
     initWindow();
     initTimeMachine();
