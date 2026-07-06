@@ -105,5 +105,7 @@ export function getSkyState(date, lat, lng) {
     moonPhase: moon.phase,
     moonFraction: moon.fraction,
     moonUp: moonPos.altitude > 0,
+    moonAltitudeDeg: moonPos.altitude / rad,
+    moonAzimuthDeg: moonPos.azimuth / rad + 180,
   };
 }
