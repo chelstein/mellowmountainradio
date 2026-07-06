@@ -3455,7 +3455,7 @@ body.podplaying .player.show { transform: translateY(180%); }
 .lounge-scene{aspect-ratio:1536/1024;background-image:var(--lounge-img);background-size:cover;background-position:center;transform:scale(1.06);transform-origin:center;will-change:transform}
 .lounge-tint,.lounge-midday,.lounge-clouds,.lounge-sky,.lounge-precip,.lounge-air{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .lounge-tint{background:linear-gradient(180deg,#04060e 0%,#080b18 45%,#0c0a13 100%);opacity:0;transition:opacity 1.2s linear;z-index:1}
-.lounge-midday{background:linear-gradient(180deg,#cddcee 0%,#e7ecec 55%,#efe8d8 100%);opacity:0;transition:opacity 2.5s linear;z-index:1}
+.lounge-midday{background:linear-gradient(180deg,#3f7ec2 0%,#7fa8d0 38%,#dce6e2 72%,#efe8d8 100%);opacity:0;transition:opacity 2.5s linear;z-index:1}
 .lounge-clouds{background:#98a4b8;opacity:0;transition:opacity 2s linear;z-index:1}
 .lounge-sky{z-index:1}
 .lounge-precip{z-index:2}

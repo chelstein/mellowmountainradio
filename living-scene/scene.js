@@ -92,7 +92,7 @@ export function initLivingScene(root) {
     // Plain alpha (no mix-blend-mode — see the compositing-cost note above)
     // doesn't preserve underlying detail the way soft-light did, so the
     // same 0-1 range would wash the painting out solid at high middayAmount.
-    const middayOp = (lastSkyState.middayAmount * 0.32).toFixed(3);
+    const middayOp = (lastSkyState.middayAmount * 0.42).toFixed(3);
     if (tint && nightOp !== lastTintOpacity) { tint.style.opacity = nightOp; lastTintOpacity = nightOp; }
     if (midday && middayOp !== lastMiddayOpacity) { midday.style.opacity = middayOp; lastMiddayOpacity = middayOp; }
   }
