@@ -2732,6 +2732,7 @@ body:not(.is-playing) .listen-btn::after {
 .page-hero-cta { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; }
 
 .page-section { padding: 80px 0; }
+.page-section--snug { padding: 56px 0; }
 .page-section--tint { background: var(--bg-2); }
 .page-section--dark { background: var(--navy-deep); color: #fff; }
 .page-section--dark h2, .page-section--dark h3 { color: #fff; }
@@ -3460,3 +3461,7 @@ body.podplaying .player.show { transform: translateY(180%); }
 .lounge-cap .btn-primary{box-shadow:0 10px 30px -10px rgba(255,150,70,.6)}
 @media (prefers-reduced-motion: reduce){.lounge-scene{transform:scale(1.04)}}
 @media (max-width:640px){.lounge-band{padding:28px 0 36px}.lounge-window,.lounge-cap{border-radius:14px}}
+.tape-off .off-card{max-width:440px;margin:0 auto;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:32px 28px;box-shadow:var(--shadow-sm)}
+.tape-off .off-card .info-ic{margin:0 auto 16px}
+.tape-off .off-card p{margin:0 0 6px;color:var(--ink)}
+.tape-off .off-card .embed-note{margin:0}
