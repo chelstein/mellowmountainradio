@@ -143,19 +143,25 @@
       ]
     },
     {
-      "parameters": {},
-      "id": "trig-backfill",
-      "name": "Backfill: click Test once",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "kazm-index-sweep",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "wh-sweep",
+      "name": "Seed sweep (remote)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
       "position": [
         0,
         660
-      ]
+      ],
+      "webhookId": "kazm-index-sweep"
     },
     {
       "parameters": {
-        "jsCode": "// Sweep 400 days of AzuraCast's own song history in 10-day chunks \u2014\n// the records run back over a year; take all of it for the lifetime index.\nconst out = [];\nconst day = 86400000;\nconst now = Date.now();\nfor (let back = 400; back > 0; back -= 10) {\n  const s = new Date(now - back * day), e = new Date(now - Math.max(0, back - 10) * day);\n  const f = (x) => x.toISOString().slice(0, 10);\n  out.push({ json: { start: f(s), end: f(e) } });\n}\nreturn out;"
+        "jsCode": "// Sliced remote sweep: ?from=YYYY-MM-DD&to=YYYY-MM-DD in 10-day chunks.\nconst q = $input.first().json.query || {};\nif (q.k !== 'mmr-sweep-2026') return [];\nconst okd = (s) => /^\\d{4}-\\d{2}-\\d{2}$/.test(s || '');\nif (!okd(q.from) || !okd(q.to)) return [];\nconst out = [];\nlet s = new Date(q.from + 'T00:00:00Z');\nconst end = new Date(q.to + 'T00:00:00Z');\nconst f = (x) => x.toISOString().slice(0, 10);\nwhile (s < end) {\n  let e = new Date(s); e.setUTCDate(e.getUTCDate() + 10);\n  if (e > end) e = end;\n  out.push({ json: { start: f(s), end: f(e) } });\n  s = e;\n}\nreturn out;"
       },
       "id": "code-plan",
       "name": "Plan the sweep",
@@ -193,7 +199,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Build the lifetime index from the whole sweep: spin counts and TRUE\n// first-play dates for every song the station has records of.\nconst sd = $getWorkflowStaticData('global');\nsd.all = sd.all || {};\nif (sd.backfillDone) {\n  return [{ json: { note: 'sweep already ran \u2014 counts preserved' } }];\n}\nconst rows = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (Array.isArray(j)) rows.push(...j);\n  else if (j && j.played_at) rows.push(j);\n  else if (j && Array.isArray(j.data)) rows.push(...j.data);\n}\nrows.sort((a, b) => (a.played_at || 0) - (b.played_at || 0));\nlet counted = 0;\nfor (const r of rows) {\n  const song = r.song || {};\n  const ti = String(song.title || '').trim().slice(0, 140);\n  const ar = String(song.artist || '').trim().slice(0, 140);\n  if (!ti || ti.toLowerCase() === 'mellow mountain radio' || !r.played_at) continue;\n  const key = (ti + '|' + ar).toLowerCase();\n  const ts = new Date(r.played_at * 1000);\n  const iso = ts.toISOString();\n  const phx = new Date(ts.toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\n  const dkey = phx.getFullYear() + '-' + String(phx.getMonth() + 1).padStart(2, '0') + '-' + String(phx.getDate()).padStart(2, '0');\n  const rec = sd.all[key] || { ti, ar, n: 0, first: iso };\n  rec.n++; counted++;\n  if (iso < rec.first) rec.first = iso;\n  if (!rec.last || iso > rec.last) rec.last = iso;\n  const art = song.art && String(song.art).indexOf('http') === 0 ? String(song.art).slice(0, 300) : '';\n  if (art) rec.art = art;\n  sd.all[key] = rec;\n  if (!sd.since || dkey < sd.since) sd.since = dkey;\n}\nsd.backfillDone = true;\nreturn [{ json: { lifetimeCounted: counted, songsKnown: Object.keys(sd.all).length, since: sd.since || null } }];"
+        "jsCode": "// Merge a sweep slice into the lifetime index. Day-level dedupe makes\n// re-runs safe; the poller owns the current Phoenix day.\nconst sd = $getWorkflowStaticData('global');\nsd.all = sd.all || {};\nsd.sweptDays = sd.sweptDays || {};\nconst f = (x) => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');\nconst todayPhx = f(new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Phoenix' })));\nconst rows = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (Array.isArray(j)) rows.push(...j);\n  else if (j && j.played_at) rows.push(j);\n  else if (j && Array.isArray(j.data)) rows.push(...j.data);\n}\nrows.sort((a, b) => (a.played_at || 0) - (b.played_at || 0));\nlet counted = 0;\nconst daysThisRun = {};\nfor (const r of rows) {\n  const song = r.song || {};\n  const ti = String(song.title || '').trim().slice(0, 140);\n  const ar = String(song.artist || '').trim().slice(0, 140);\n  if (!ti || ti.toLowerCase() === 'mellow mountain radio' || !r.played_at) continue;\n  const ts = new Date(r.played_at * 1000);\n  const phx = new Date(ts.toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\n  const dkey = f(phx);\n  if (dkey === todayPhx) continue;\n  if (sd.sweptDays[dkey]) continue;\n  daysThisRun[dkey] = true;\n  const key = (ti + '|' + ar).toLowerCase();\n  const iso = ts.toISOString();\n  const rec = sd.all[key] || { ti, ar, n: 0, first: iso };\n  rec.n++; counted++;\n  if (iso < rec.first) rec.first = iso;\n  if (!rec.last || iso > rec.last) rec.last = iso;\n  sd.all[key] = rec;\n  if (!sd.since || dkey < sd.since) sd.since = dkey;\n}\nObject.assign(sd.sweptDays, daysThisRun);\nreturn [{ json: { counted, days: Object.keys(daysThisRun).length, since: sd.since || null, songs: Object.keys(sd.all).length } }];"
       },
       "id": "code-merge",
       "name": "Merge into the log",
@@ -337,17 +343,6 @@
         ]
       ]
     },
-    "Backfill: click Test once": {
-      "main": [
-        [
-          {
-            "node": "Plan the sweep",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Plan the sweep": {
       "main": [
         [
@@ -419,6 +414,17 @@
         [
           {
             "node": "Compute the charts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seed sweep (remote)": {
+      "main": [
+        [
+          {
+            "node": "Plan the sweep",
             "type": "main",
             "index": 0
           }
