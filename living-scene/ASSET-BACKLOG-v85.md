@@ -39,11 +39,13 @@ Option A has proven the direction is worth it.
 
 Built via OpenCV GrabCut (seeded with known object/sky regions from the
 positions below), not a hand-drawn mask — see the git history for the
-segmentation script. Known simplifications from that process: the tower
-is a solid recolored silhouette (its real lattice was too thin for
-GrabCut to hold onto reliably) and the fence/equipment enclosure is a
-solid panel (its mesh has the same problem) — both still real
-opportunities for rows 5/9 below if someone wants to improve on this.
+segmentation script. The tower's real lattice was too thin for GrabCut
+itself, but a follow-up pass recovered it anyway: color-filtered Canny
+edge detection in a tight column around the mast (dark edges only,
+rejecting the painted clouds' own edge noise by value threshold) —
+see row 5. The fence/equipment enclosure is still a solid panel (same
+underlying problem, not yet attempted with the edge-detection approach)
+— a real opportunity for row 9 if someone wants to improve on this.
 | | |
 |---|---|
 | Position | left 0%, top 0%, width 100%, height 100% (full canvas) |
@@ -75,13 +77,13 @@ opportunities for rows 5/9 below if someone wants to improve on this.
 | Animate | Yes — same wind sway as tree-left, smaller amplitude (smaller, more distant tree) |
 | Notes | Already partially occluded by the dish in the source painting — cut only what's visible, don't invent the hidden parts (the dish sprite will sit in front of it at a higher z-index anyway). Same leaf-gap masking difficulty as tree-left, smaller scale. |
 
-### 5. `tower.png`
+### 5. `tower.png` — **real lattice SHIPPED** (still fused into `lounge-foreground.webp`, not yet its own sprite)
 | | |
 |---|---|
 | Position | left 58.3%, top 4.9%, width 3.9%, height 55.7% (x 895-955, y 50-620) |
 | z-index | 12 |
 | Animate | Optional — real lattice towers do flex slightly at the top in high wind, but likely not worth the complexity for v85; ship static first |
-| Notes | Thin lattice + guy wires against open sky — any fringing/anti-aliasing left over from the cutout will be very visible once it's sitting on a *different*, dynamic sky color instead of the original paint. Needs clean per-pixel alpha on the wires, not a hard binary edge. |
+| Notes | Recovered via Canny edge detection in a tight column (x 900-948) around the mast, kept only where the underlying pixel is dark (HSV value < 110) to reject the painted clouds' own edge noise — GrabCut's region-based approach couldn't hold onto something this thin (tested: even 1px of dilation to reconnect broken lattice fragments bridges straight into nearby cloud-texture edges), but plain edge detection plus a darkness filter could, since it only needs local contrast + real color, never a region large enough for a color model. Guy wires beyond the tight column are not recovered (lost to the column crop) — a nice-to-have, not attempted. To split into its own sprite: same technique, just keep the RGBA result instead of compositing into the shared plate. |
 
 ### 6. `tower-beacon.png`
 | | |

@@ -91,12 +91,14 @@ around them. Concretely:
   only the sky itself changes now. A bright noon sky over dusk-lit dirt
   is an intentional, honest first step (Option A in the backlog below),
   not a bug.
-- The tower is a solid recolored silhouette (see `ASSET-BACKLOG-v85.md`),
-  not its real see-through lattice — it was too thin for automatic
-  segmentation to hold onto reliably; a genuine lattice cutout needs
-  either manual tracing or new source art.
-- The chain-link fence/equipment enclosure is likewise a solid cutout,
-  not a mesh you can see real sky through.
+- The tower's real see-through lattice *is* preserved (recovered via
+  color-filtered Canny edge detection in a tight column around the mast —
+  GrabCut's region/color-statistics approach couldn't hold onto something
+  this thin, but edge detection plus a darkness filter to reject the
+  painted clouds' own edge noise could; see `ASSET-BACKLOG-v85.md`).
+- The chain-link fence/equipment enclosure is still a solid cutout, not a
+  mesh you can see real sky through — the same edge-detection approach
+  wasn't attempted there yet.
 
 Fixing the rest of this needs new art assets (or manual tracing/relighting
 work), not more code — see §3 and `ASSET-BACKLOG-v85.md`.
