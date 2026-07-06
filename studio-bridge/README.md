@@ -105,22 +105,23 @@ lifetime spin counts with each song's FIRST-EVER play date. Powers
 timemachine.html: "what was playing when?", the weekly spin chart, and
 the Station Debuts board.
 
-Setup (2 minutes, same as the request line):
+The workflow reads the station's OWN records: AzuraCast has kept full
+song history the whole time it's relayed MegaSeg (verified back over a
+year, ~600 spins/day). The day view and the weekly charts query that
+history live; the sweep lane builds the lifetime index (spin counts +
+true first-ever-play dates) that powers the Station Debut badges.
+
+Setup (3 minutes):
 1. Import `n8n-kazm-playlog.json` into n8n (Import from URL:
    https://raw.githubusercontent.com/chelstein/mellowmountainradio/main/studio-bridge/n8n-kazm-playlog.json)
-2. Activate. That's it — the live logger needs no keys.
-
-BACKFILL — start weeks deep instead of empty (optional, recommended):
-AzuraCast has been keeping its own song history the whole time it's been
-relaying MegaSeg. The workflow's bottom lane pulls it in:
-1. In AzuraCast: Administration → API Keys → create a key (any account
-   with station-reports access).
-2. In the workflow, open "Pull AzuraCast history" and replace
-   PASTE-YOUR-AZURACAST-API-KEY with it.
-3. Click "Test workflow" once (the manual-trigger lane sweeps the last
-   90 days in 5-day chunks, dedupes against anything the poller already
-   logged, and sets true first-play dates from the earliest record).
-The Time Machine's "log since" date jumps back automatically. For history
-older than AzuraCast keeps, MegaSeg's own play logs on the Mac Studio can
-be exported and merged the same way — say the word and that lane gets
-built.
+2. Replace PASTE-YOUR-AZURACAST-API-KEY with your AzuraCast API key in
+   all THREE HTTP nodes: "Pull that day from AzuraCast", "Pull the week
+   from AzuraCast", and "Pull AzuraCast history". (The key lives only in
+   n8n — never in the site or the repo.)
+3. Activate, then click "Test workflow" once — the sweep lane walks 400
+   days of history in 10-day chunks and builds the lifetime index. It's
+   idempotent; a done-flag stops double counting.
+The Time Machine page reveals itself the moment /webhook/kazm-charts
+answers, with the full year browsable from day one. For history older
+than AzuraCast keeps, MegaSeg's own play logs on the Mac Studio can be
+exported and merged — say the word and that lane gets built.

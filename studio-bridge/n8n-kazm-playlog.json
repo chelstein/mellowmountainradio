@@ -71,10 +71,10 @@
     },
     {
       "parameters": {
-        "jsCode": "// One day of the log, oldest first \u2014 the time machine reads this.\nconst sd = $getWorkflowStaticData('global');\nsd.days = sd.days || {};\nconst q = $input.first().json.query || {};\nconst phx = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\nconst today = phx.getFullYear() + '-' + String(phx.getMonth() + 1).padStart(2, '0') + '-' + String(phx.getDate()).padStart(2, '0');\nlet d = String(q.d || today);\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(d)) d = today;\nconst dates = Object.keys(sd.days).sort();\nreturn [{ json: { ok: true, day: d, today, since: sd.since || null, dates, plays: sd.days[d] || [] } }];"
+        "jsCode": "// Which day does the site want? Build the AzuraCast history query.\nconst q = $input.first().json.query || {};\nconst phx = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\nconst f = (x) => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');\nconst today = f(phx);\nlet day = String(q.d || today);\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(day)) day = today;\nconst next = new Date(day + 'T12:00:00Z'); next.setDate(next.getDate() + 1);\nreturn [{ json: { day, today, start: day, end: f(next) } }];"
       },
       "id": "code-playlog",
-      "name": "Read that day",
+      "name": "Build the day range",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -92,7 +92,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        440,
+        880,
         220
       ]
     },
@@ -117,10 +117,10 @@
     },
     {
       "parameters": {
-        "jsCode": "// Spin charts, computed from real plays only \u2014 never seeded, never padded.\nconst sd = $getWorkflowStaticData('global');\nsd.days = sd.days || {};\nsd.all = sd.all || {};\nconst phx = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\nconst dayKeys = [];\nfor (let i = 0; i < 7; i++) {\n  const dd = new Date(phx); dd.setDate(dd.getDate() - i);\n  dayKeys.push(dd.getFullYear() + '-' + String(dd.getMonth() + 1).padStart(2, '0') + '-' + String(dd.getDate()).padStart(2, '0'));\n}\nconst tally = {}, artists = {};\nlet spins = 0;\nfor (const dk of dayKeys) {\n  for (const p of (sd.days[dk] || [])) {\n    spins++;\n    const key = (p.ti + '|' + p.ar).toLowerCase();\n    const e = tally[key] || { ti: p.ti, ar: p.ar, n: 0, art: p.art || '' };\n    e.n++; if (p.art) e.art = p.art; tally[key] = e;\n    if (p.ar) { artists[p.ar.toLowerCase()] = artists[p.ar.toLowerCase()] || { ar: p.ar, n: 0 }; artists[p.ar.toLowerCase()].n++; }\n  }\n}\nconst top = Object.values(tally).sort((a, b) => b.n - a.n).slice(0, 12);\nconst topArtists = Object.values(artists).sort((a, b) => b.n - a.n).slice(0, 10);\nconst cutoff = Date.now() - 30 * 86400000;\nconst debuts = Object.values(sd.all)\n  .filter(r => r.first && Date.parse(r.first) >= cutoff)\n  .sort((a, b) => (a.first < b.first ? 1 : -1))\n  .slice(0, 12)\n  .map(r => ({ ti: r.ti, ar: r.ar, first: r.first, n: r.n, art: r.art || '' }));\nreturn [{ json: { ok: true, since: sd.since || null, window: { days: 7 }, spins, uniques: Object.keys(tally).length, top, topArtists, debuts } }];"
+        "jsCode": "// The chart week: the last 7 days, straight from the station's records.\nconst phx = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\nconst f = (x) => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');\nconst end = new Date(phx); end.setDate(end.getDate() + 1);\nconst start = new Date(phx); start.setDate(start.getDate() - 7);\nreturn [{ json: { start: f(start), end: f(end) } }];"
       },
       "id": "code-charts",
-      "name": "Compute the charts",
+      "name": "Build the week range",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -138,7 +138,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        440,
+        880,
         440
       ]
     },
@@ -155,7 +155,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Sweep the last 90 days of AzuraCast's own song history in 5-day chunks.\nconst out = [];\nconst day = 86400000;\nconst now = Date.now();\nfor (let back = 90; back > 0; back -= 5) {\n  const s = new Date(now - back * day), e = new Date(now - Math.max(0, back - 5) * day);\n  const f = (x) => x.toISOString().slice(0, 10);\n  out.push({ json: { start: f(s), end: f(e) } });\n}\nreturn out;"
+        "jsCode": "// Sweep 400 days of AzuraCast's own song history in 10-day chunks \u2014\n// the records run back over a year; take all of it for the lifetime index.\nconst out = [];\nconst day = 86400000;\nconst now = Date.now();\nfor (let back = 400; back > 0; back -= 10) {\n  const s = new Date(now - back * day), e = new Date(now - Math.max(0, back - 10) * day);\n  const f = (x) => x.toISOString().slice(0, 10);\n  out.push({ json: { start: f(s), end: f(e) } });\n}\nreturn out;"
       },
       "id": "code-plan",
       "name": "Plan the sweep",
@@ -193,7 +193,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Merge the station's own history into the log \u2014 real plays, real\n// timestamps, deduped against anything the 30-second poller already saw.\nconst sd = $getWorkflowStaticData('global');\nsd.days = sd.days || {};\nsd.all = sd.all || {};\nconst rows = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (Array.isArray(j)) rows.push(...j);\n  else if (j && j.played_at) rows.push(j);\n  else if (j && Array.isArray(j.data)) rows.push(...j.data);\n}\nrows.sort((a, b) => (a.played_at || 0) - (b.played_at || 0));\nlet added = 0;\nfor (const r of rows) {\n  const song = r.song || {};\n  const ti = String(song.title || '').trim().slice(0, 140);\n  const ar = String(song.artist || '').trim().slice(0, 140);\n  if (!ti || ti.toLowerCase() === 'mellow mountain radio' || !r.played_at) continue;\n  const key = (ti + '|' + ar).toLowerCase();\n  const ts = new Date(r.played_at * 1000);\n  const phx = new Date(ts.toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\n  const dkey = phx.getFullYear() + '-' + String(phx.getMonth() + 1).padStart(2, '0') + '-' + String(phx.getDate()).padStart(2, '0');\n  const t = String(phx.getHours()).padStart(2, '0') + ':' + String(phx.getMinutes()).padStart(2, '0');\n  sd.days[dkey] = sd.days[dkey] || [];\n  if (sd.days[dkey].some(p => p.t === t && (p.ti + '|' + p.ar).toLowerCase() === key)) continue;\n  const art = song.art && String(song.art).indexOf('http') === 0 ? String(song.art).slice(0, 300) : '';\n  sd.days[dkey].push({ t, ti, ar, art });\n  added++;\n  const iso = ts.toISOString();\n  const rec = sd.all[key] || { ti, ar, n: 0, first: iso };\n  rec.n++;\n  if (iso < rec.first) rec.first = iso;\n  if (!rec.last || iso > rec.last) rec.last = iso;\n  if (art) rec.art = art;\n  sd.all[key] = rec;\n  if (!sd.since || dkey < sd.since) sd.since = dkey;\n}\nfor (const dkey of Object.keys(sd.days)) sd.days[dkey].sort((a, b) => (a.t < b.t ? -1 : 1));\nconst keys = Object.keys(sd.days).sort();\nwhile (keys.length > 90) { delete sd.days[keys.shift()]; }\nreturn [{ json: { backfilled: added, days: Object.keys(sd.days).length, since: sd.since || null } }];"
+        "jsCode": "// Build the lifetime index from the whole sweep: spin counts and TRUE\n// first-play dates for every song the station has records of.\nconst sd = $getWorkflowStaticData('global');\nsd.all = sd.all || {};\nif (sd.backfillDone) {\n  return [{ json: { note: 'sweep already ran \u2014 counts preserved' } }];\n}\nconst rows = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (Array.isArray(j)) rows.push(...j);\n  else if (j && j.played_at) rows.push(j);\n  else if (j && Array.isArray(j.data)) rows.push(...j.data);\n}\nrows.sort((a, b) => (a.played_at || 0) - (b.played_at || 0));\nlet counted = 0;\nfor (const r of rows) {\n  const song = r.song || {};\n  const ti = String(song.title || '').trim().slice(0, 140);\n  const ar = String(song.artist || '').trim().slice(0, 140);\n  if (!ti || ti.toLowerCase() === 'mellow mountain radio' || !r.played_at) continue;\n  const key = (ti + '|' + ar).toLowerCase();\n  const ts = new Date(r.played_at * 1000);\n  const iso = ts.toISOString();\n  const phx = new Date(ts.toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\n  const dkey = phx.getFullYear() + '-' + String(phx.getMonth() + 1).padStart(2, '0') + '-' + String(phx.getDate()).padStart(2, '0');\n  const rec = sd.all[key] || { ti, ar, n: 0, first: iso };\n  rec.n++; counted++;\n  if (iso < rec.first) rec.first = iso;\n  if (!rec.last || iso > rec.last) rec.last = iso;\n  const art = song.art && String(song.art).indexOf('http') === 0 ? String(song.art).slice(0, 300) : '';\n  if (art) rec.art = art;\n  sd.all[key] = rec;\n  if (!sd.since || dkey < sd.since) sd.since = dkey;\n}\nsd.backfillDone = true;\nreturn [{ json: { lifetimeCounted: counted, songsKnown: Object.keys(sd.all).length, since: sd.since || null } }];"
       },
       "id": "code-merge",
       "name": "Merge into the log",
@@ -202,6 +202,82 @@
       "position": [
         660,
         660
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/history?start={{ $json.start }}&end={{ $json.end }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "PASTE-YOUR-AZURACAST-API-KEY"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "http-day",
+      "name": "Pull that day from AzuraCast",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Shape the station's own records into the time machine's day view.\nconst sd = $getWorkflowStaticData('global');\nconst meta = $('Build the day range').first().json;\nconst rows = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (Array.isArray(j)) rows.push(...j);\n  else if (j && j.played_at) rows.push(j);\n  else if (j && Array.isArray(j.data)) rows.push(...j.data);\n}\nconst plays = [];\nfor (const r of rows) {\n  const song = r.song || {};\n  const ti = String(song.title || '').trim().slice(0, 140);\n  const ar = String(song.artist || '').trim().slice(0, 140);\n  if (!ti || ti.toLowerCase() === 'mellow mountain radio' || !r.played_at) continue;\n  const phx = new Date(new Date(r.played_at * 1000).toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\n  const dkey = phx.getFullYear() + '-' + String(phx.getMonth() + 1).padStart(2, '0') + '-' + String(phx.getDate()).padStart(2, '0');\n  if (dkey !== meta.day) continue; // the API range is UTC \u2014 keep Sedona's day only\n  const t = String(phx.getHours()).padStart(2, '0') + ':' + String(phx.getMinutes()).padStart(2, '0');\n  const art = song.art && String(song.art).indexOf('http') === 0 ? String(song.art).slice(0, 300) : '';\n  plays.push({ t, ti, ar, art });\n}\nplays.sort((a, b) => (a.t < b.t ? -1 : 1));\nreturn [{ json: { ok: true, day: meta.day, today: meta.today, since: sd.since || null, plays } }];"
+      },
+      "id": "code-shapeday",
+      "name": "Shape the day",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/history?start={{ $json.start }}&end={{ $json.end }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "PASTE-YOUR-AZURACAST-API-KEY"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "http-week",
+      "name": "Pull the week from AzuraCast",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Spin charts computed from the station's own records \u2014 never seeded.\n// Debuts come from the lifetime index the sweep + poller maintain.\nconst sd = $getWorkflowStaticData('global');\nsd.all = sd.all || {};\nconst rows = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  if (Array.isArray(j)) rows.push(...j);\n  else if (j && j.played_at) rows.push(j);\n  else if (j && Array.isArray(j.data)) rows.push(...j.data);\n}\nconst tally = {}, artists = {};\nlet spins = 0;\nfor (const r of rows) {\n  const song = r.song || {};\n  const ti = String(song.title || '').trim().slice(0, 140);\n  const ar = String(song.artist || '').trim().slice(0, 140);\n  if (!ti || ti.toLowerCase() === 'mellow mountain radio' || !r.played_at) continue;\n  spins++;\n  const key = (ti + '|' + ar).toLowerCase();\n  const art = song.art && String(song.art).indexOf('http') === 0 ? String(song.art).slice(0, 300) : '';\n  const e = tally[key] || { ti, ar, n: 0, art };\n  e.n++; if (art) e.art = art; tally[key] = e;\n  if (ar) { const ak = ar.toLowerCase(); artists[ak] = artists[ak] || { ar, n: 0 }; artists[ak].n++; }\n}\nconst top = Object.values(tally).sort((a, b) => b.n - a.n).slice(0, 12);\nconst topArtists = Object.values(artists).sort((a, b) => b.n - a.n).slice(0, 10);\nconst cutoff = Date.now() - 30 * 86400000;\nconst debuts = Object.values(sd.all)\n  .filter(r => r.first && Date.parse(r.first) >= cutoff)\n  .sort((a, b) => (a.first < b.first ? 1 : -1))\n  .slice(0, 12)\n  .map(r => ({ ti: r.ti, ar: r.ar, first: r.first, n: r.n, art: r.art || '' }));\nreturn [{ json: { ok: true, since: sd.since || null, window: { days: 7 }, spins, uniques: Object.keys(tally).length, top, topArtists, debuts } }];"
+      },
+      "id": "code-computecharts",
+      "name": "Compute the charts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        440
       ]
     }
   ],
@@ -232,18 +308,7 @@
       "main": [
         [
           {
-            "node": "Read that day",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Read that day": {
-      "main": [
-        [
-          {
-            "node": "Respond with the day",
+            "node": "Build the day range",
             "type": "main",
             "index": 0
           }
@@ -254,7 +319,7 @@
       "main": [
         [
           {
-            "node": "Compute the charts",
+            "node": "Build the week range",
             "type": "main",
             "index": 0
           }
@@ -299,6 +364,61 @@
         [
           {
             "node": "Merge into the log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the day range": {
+      "main": [
+        [
+          {
+            "node": "Pull that day from AzuraCast",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull that day from AzuraCast": {
+      "main": [
+        [
+          {
+            "node": "Shape the day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shape the day": {
+      "main": [
+        [
+          {
+            "node": "Respond with the day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the week range": {
+      "main": [
+        [
+          {
+            "node": "Pull the week from AzuraCast",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull the week from AzuraCast": {
+      "main": [
+        [
+          {
+            "node": "Compute the charts",
             "type": "main",
             "index": 0
           }
