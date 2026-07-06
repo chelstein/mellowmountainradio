@@ -1,7 +1,11 @@
-// Real solar & lunar position math for the Living Window — no network
-// required, no approximation "for effect." Standard low-precision solar/
-// lunar position formulas (the same math behind SunCalc), good to a few
-// arcminutes, which is far tighter than anything a sky tint needs.
+// Real solar & lunar position math for the Living Window. Sun/moon/planets
+// prefer the vendored Astronomy Engine (github.com/cosinekitty/astronomy,
+// MIT) once it loads — real VSOP/ELP-based positions, real apparent
+// magnitudes, real rise/set search. If it fails to load (offline, blocked
+// script, ad blocker), everything falls back to the hand-rolled low-
+// precision solar/lunar formulas below (the same math behind SunCalc,
+// good to a few arcminutes) so the scene never breaks — it just loses
+// the planets, which the fallback path can't compute.
 const PI = Math.PI, rad = PI / 180;
 const dayMs = 1000 * 60 * 60 * 24, J1970 = 2440588, J2000 = 2451545;
 
@@ -70,21 +74,109 @@ export function getMoonIllumination(date) {
 }
 
 /**
+ * Convert a real RA/Dec (J2000, degrees) to altitude/azimuth (degrees)
+ * using the same sidereal-time math as the sun/moon fallback above.
+ * Precession is ignored — at under half a degree over decades it's well
+ * inside this scene's "artistic, not literal" tolerance, and it lets the
+ * whole bright-star catalog convert with plain trig instead of needing
+ * per-star engine calls (Astronomy Engine only keeps 8 custom-star slots).
+ */
+export function altAzFromRaDec(raDeg, decDeg, date, lat, lng) {
+  const lw = rad * -lng, phi = rad * lat, d = toDays(date);
+  const H = siderealTime(d, lw) - raDeg * rad;
+  const dec = decDeg * rad;
+  return { altitude: altitude(H, phi, dec) / rad, azimuth: azimuth(H, phi, dec) / rad + 180 };
+}
+
+// ---- Astronomy Engine loading (real Sun/Moon/planet ephemeris) ----
+let engine = null, engineFailed = false, enginePromise = null;
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error("failed to load " + src));
+    document.head.appendChild(s);
+  });
+}
+
+/** Load the vendored Astronomy Engine once. Safe to call repeatedly. */
+export function initAstronomyEngine() {
+  if (enginePromise) return enginePromise;
+  enginePromise = (async () => {
+    try {
+      if (typeof window !== "undefined" && window.Astronomy) { engine = window.Astronomy; return true; }
+      const url = new URL("./vendor/astronomy-engine.browser.min.js", import.meta.url).href;
+      await loadScript(url);
+      if (!window.Astronomy) throw new Error("Astronomy engine script loaded but did not attach to window");
+      engine = window.Astronomy;
+      return true;
+    } catch (err) {
+      engineFailed = true;
+      engine = null;
+      return false;
+    }
+  })();
+  return enginePromise;
+}
+
+export function engineAvailable() { return !!engine; }
+
+const PLANET_BODIES = ["Venus", "Mars", "Jupiter", "Saturn"];
+
+/** Real Venus/Mars/Jupiter/Saturn altitude/azimuth/magnitude. Empty array
+ *  if the engine isn't loaded — planets simply don't render rather than
+ *  faking a position. */
+export function getPlanetPositions(date, lat, lng, elevationM) {
+  if (!engine) return [];
+  const obs = new engine.Observer(lat, lng, elevationM || 0);
+  const t = new engine.AstroTime(date);
+  const out = [];
+  for (const name of PLANET_BODIES) {
+    try {
+      const eq = engine.Equator(engine.Body[name], t, obs, true, true);
+      const hor = engine.Horizon(t, obs, eq.ra, eq.dec, "normal");
+      const illum = engine.Illumination(engine.Body[name], t);
+      out.push({ name, altDeg: hor.altitude, azDeg: hor.azimuth, magnitude: illum.mag });
+    } catch (err) { /* one body failing shouldn't drop the rest */ }
+  }
+  return out;
+}
+
+function getSkyStateEngine(date, lat, lng, elevationM) {
+  const obs = new engine.Observer(lat, lng, elevationM || 0);
+  const t = new engine.AstroTime(date);
+  const sunEq = engine.Equator(engine.Body.Sun, t, obs, true, true);
+  const sunHor = engine.Horizon(t, obs, sunEq.ra, sunEq.dec, "normal");
+  const moonEq = engine.Equator(engine.Body.Moon, t, obs, true, true);
+  const moonHor = engine.Horizon(t, obs, moonEq.ra, moonEq.dec, "normal");
+  const illum = engine.Illumination(engine.Body.Moon, t);
+  const quarter = engine.MoonPhase(t); // 0=new, 90=first quarter, 180=full, 270=last quarter (degrees)
+  return bandSkyState(sunHor.altitude, sunHor.azimuth, moonHor.altitude, moonHor.azimuth, quarter / 360, illum.phase_fraction);
+}
+
+function getSkyStateFallback(date, lat, lng) {
+  const sun = getSunPosition(date, lat, lng);
+  const moon = getMoonIllumination(date);
+  const moonPos = getMoonPosition(date, lat, lng);
+  return bandSkyState(sun.altitude / rad, sun.azimuth / rad + 180, moonPos.altitude / rad, moonPos.azimuth / rad + 180, moon.phase, moon.fraction);
+}
+
+/**
  * Sky state derived from real sun altitude: how "night" it is (0=full
  * day, 1=full astronomical night) plus named bands for anything that
  * wants a discrete state instead of a blend.
  */
-export function getSkyState(date, lat, lng) {
-  const sun = getSunPosition(date, lat, lng);
-  const altDeg = sun.altitude / rad;
+function bandSkyState(sunAltDeg, sunAzDeg, moonAltDeg, moonAzDeg, moonPhase, moonFraction) {
   let band = "day";
-  if (altDeg < -18) band = "night";
-  else if (altDeg < -6) band = "astronomical";
-  else if (altDeg < -0.3) band = "twilight";
-  else if (altDeg < 6) band = "goldenHour";
+  if (sunAltDeg < -18) band = "night";
+  else if (sunAltDeg < -6) band = "astronomical";
+  else if (sunAltDeg < -0.3) band = "twilight";
+  else if (sunAltDeg < 6) band = "goldenHour";
 
   // 0 at +6deg (bright day) fading to 1 at -18deg (full dark), smooth.
-  const nightAmount = Math.max(0, Math.min(1, (6 - altDeg) / 24));
+  const nightAmount = Math.max(0, Math.min(1, (6 - sunAltDeg) / 24));
 
   // The painting is one fixed golden-hour composition — its sun can't
   // physically move. So instead of pretending the disc tracks the real
@@ -92,20 +184,46 @@ export function getSkyState(date, lat, lng) {
   // untouched near actual sunrise/sunset (where it's literally correct),
   // and cools/brightens in proportion to how high the real sun actually
   // is the rest of the day, so noon doesn't read as frozen dusk.
-  const middayAmount = Math.max(0, Math.min(1, (altDeg - 10) / 45));
+  const middayAmount = Math.max(0, Math.min(1, (sunAltDeg - 10) / 45));
 
-  const moon = getMoonIllumination(date);
-  const moonPos = getMoonPosition(date, lat, lng);
   return {
-    sunAltitudeDeg: altDeg,
-    sunAzimuthDeg: sun.azimuth / rad + 180,
+    sunAltitudeDeg: sunAltDeg,
+    sunAzimuthDeg: sunAzDeg,
     band,
     nightAmount,
     middayAmount,
-    moonPhase: moon.phase,
-    moonFraction: moon.fraction,
-    moonUp: moonPos.altitude > 0,
-    moonAltitudeDeg: moonPos.altitude / rad,
-    moonAzimuthDeg: moonPos.azimuth / rad + 180,
+    moonPhase,
+    moonFraction,
+    moonUp: moonAltDeg > 0,
+    moonAltitudeDeg: moonAltDeg,
+    moonAzimuthDeg: moonAzDeg,
   };
+}
+
+export function getSkyState(date, lat, lng, elevationM) {
+  if (engine) {
+    try { return getSkyStateEngine(date, lat, lng, elevationM); }
+    catch (err) { /* fall through to the hand-rolled math below */ }
+  }
+  return getSkyStateFallback(date, lat, lng);
+}
+
+/** Real next sunrise/sunset/moonrise/moonset — debug-panel use only.
+ *  Requires the engine; returns null without one rather than guessing. */
+export function getRiseSetTimes(date, lat, lng, elevationM) {
+  if (!engine) return null;
+  try {
+    const obs = new engine.Observer(lat, lng, elevationM || 0);
+    const t = new engine.AstroTime(date);
+    const sunrise = engine.SearchRiseSet(engine.Body.Sun, obs, 1, t, 1);
+    const sunset = engine.SearchRiseSet(engine.Body.Sun, obs, -1, t, 1);
+    const moonrise = engine.SearchRiseSet(engine.Body.Moon, obs, 1, t, 2);
+    const moonset = engine.SearchRiseSet(engine.Body.Moon, obs, -1, t, 2);
+    return {
+      sunrise: sunrise ? sunrise.date : null,
+      sunset: sunset ? sunset.date : null,
+      moonrise: moonrise ? moonrise.date : null,
+      moonset: moonset ? moonset.date : null,
+    };
+  } catch (err) { return null; }
 }
