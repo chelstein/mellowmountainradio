@@ -3871,11 +3871,11 @@
 
   /* =========================================================
      THE LOUNGE WINDOW — the painted view from the transmitter site.
-     One fixed view (golden hour on the mountain), shown whole. The
-     aircraft beacon blinks for real, the scene takes a little depth
-     from the pointer, and the live on-air spectrum rolls along the
-     sill the moment you press Listen. Nothing here is faked: beacon,
-     parallax, and EQ are all real behavior on a real painting.
+     One fixed view (golden hour on the mountain), shown whole. Pointer
+     parallax and the live on-air spectrum live here; real astronomy,
+     weather, and aircraft (the "living scene" layers) are wired in by
+     living-scene/scene.js, dynamically imported below since this file
+     is a classic script, not a module.
      ========================================================= */
   function initLounge() {
     var root = doc.querySelector("[data-lounge]"); if (!root) return;
@@ -3916,6 +3916,8 @@
       }, { passive: true });
       root.addEventListener("pointerleave", function () { tx = 0; ty = 0; if (!praf) praf = window.requestAnimationFrame(ease); });
     }
+
+    import("./living-scene/scene.js").then(function (m) { m.initLivingScene(root); }).catch(function () {});
   }
 
   function initTape() {

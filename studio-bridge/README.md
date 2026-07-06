@@ -125,3 +125,19 @@ The Time Machine page reveals itself the moment /webhook/kazm-charts
 answers, with the full year browsable from day one. For history older
 than AzuraCast keeps, MegaSeg's own play logs on the Mac Studio can be
 exported and merged — say the word and that lane gets built.
+
+## The Aircraft Proxy (n8n-kazm-aircraft.json) — the Living Window's sky traffic
+
+adsb.lol's public API has no CORS headers, so the browser can't call it
+directly. This three-node workflow (read the query → call adsb.lol →
+shape + respond with `https://mellowmountainradio.com` allowed as an
+origin) sits in between. Deployed and active at
+`https://n8n.mellowmountainradio.com/webhook/kazm-aircraft`. Full detail
+on how it feeds the Lounge window's sky in `living-scene/README.md`.
+
+Setup (2 minutes):
+1. Import `n8n-kazm-aircraft.json` into n8n (Import from URL:
+   https://raw.githubusercontent.com/chelstein/mellowmountainradio/main/studio-bridge/n8n-kazm-aircraft.json)
+2. Activate. No API key needed — adsb.lol is a free public feed.
+If this workflow is ever deactivated, the aircraft layer on the Lounge
+window simply shows no traffic; it never invents planes.
