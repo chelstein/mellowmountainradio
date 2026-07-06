@@ -9,38 +9,49 @@ import { createParticleSystem } from "./particles.js";
 import { fetchAircraft, createAircraftLayer } from "./aircraft.js";
 import { mountWildlife } from "./wildlife.js";
 
-function drawSky(canvas, skyState, stars) {
+function createSkyCanvas(canvas) {
+  let w = 0, h = 0, dpr = 1;
+  function size() {
+    const r = canvas.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = Math.max(1, Math.round((r.width || 600) * dpr));
+    h = Math.max(1, Math.round((r.height || 400) * dpr));
+    canvas.width = w; canvas.height = h;
+  }
+  window.addEventListener("resize", size, { passive: true });
+  size();
   const ctx = canvas.getContext("2d");
-  const r = canvas.getBoundingClientRect();
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = Math.max(1, Math.round((r.width || 600) * dpr));
-  const h = Math.max(1, Math.round((r.height || 400) * dpr));
-  if (canvas.width !== w) canvas.width = w;
-  if (canvas.height !== h) canvas.height = h;
-  ctx.clearRect(0, 0, w, h);
 
-  const starAlpha = Math.max(0, (skyState.nightAmount - 0.45) / 0.55); // only once truly dark
-  if (starAlpha > 0.01) {
-    ctx.fillStyle = "rgba(255,255,255,1)";
-    for (const s of stars) {
-      ctx.globalAlpha = s.a * starAlpha * (0.7 + 0.3 * Math.sin(performance.now() / 1400 + s.tw));
-      ctx.beginPath(); ctx.arc(s.x * w, s.y * h * 0.55, s.r * dpr, 0, Math.PI * 2); ctx.fill();
+  // Star twinkle needs smooth per-frame motion; the astronomy behind it
+  // (sun/moon position) changes over minutes, not milliseconds, so it's
+  // computed on its own slow timer (see refreshSky) rather than recomputed
+  // — along with a forced layout read — 60 times a second.
+  return function draw(skyState, stars) {
+    ctx.clearRect(0, 0, w, h);
+    const starAlpha = Math.max(0, (skyState.nightAmount - 0.45) / 0.55); // only once truly dark
+    if (starAlpha <= 0.01 && !(skyState.moonUp && starAlpha > 0.05)) return; // nothing to draw
+    if (starAlpha > 0.01) {
+      ctx.fillStyle = "rgba(255,255,255,1)";
+      for (const s of stars) {
+        ctx.globalAlpha = s.a * starAlpha * (0.7 + 0.3 * Math.sin(performance.now() / 1400 + s.tw));
+        ctx.beginPath(); ctx.arc(s.x * w, s.y * h * 0.55, s.r * dpr, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
     }
-    ctx.globalAlpha = 1;
-  }
 
-  // Moon: a soft glowing orb, brightness tied to real illuminated fraction.
-  if (skyState.moonUp && starAlpha > 0.05) {
-    const mx = w * 0.82, my = h * 0.16, mr = 13 * dpr;
-    const glowA = starAlpha * (0.35 + 0.5 * skyState.moonFraction);
-    const grad = ctx.createRadialGradient(mx, my, 0, mx, my, mr * 3.4);
-    grad.addColorStop(0, "rgba(235,240,250," + glowA.toFixed(3) + ")");
-    grad.addColorStop(1, "rgba(235,240,250,0)");
-    ctx.fillStyle = grad;
-    ctx.beginPath(); ctx.arc(mx, my, mr * 3.4, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "rgba(245,248,255," + (0.5 + 0.45 * skyState.moonFraction).toFixed(3) + ")";
-    ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI * 2); ctx.fill();
-  }
+    // Moon: a soft glowing orb, brightness tied to real illuminated fraction.
+    if (skyState.moonUp && starAlpha > 0.05) {
+      const mx = w * 0.82, my = h * 0.16, mr = 13 * dpr;
+      const glowA = starAlpha * (0.35 + 0.5 * skyState.moonFraction);
+      const grad = ctx.createRadialGradient(mx, my, 0, mx, my, mr * 3.4);
+      grad.addColorStop(0, "rgba(235,240,250," + glowA.toFixed(3) + ")");
+      grad.addColorStop(1, "rgba(235,240,250,0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(mx, my, mr * 3.4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(245,248,255," + (0.5 + 0.45 * skyState.moonFraction).toFixed(3) + ")";
+      ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI * 2); ctx.fill();
+    }
+  };
 }
 
 export function initLivingScene(root) {
@@ -67,20 +78,37 @@ export function initLivingScene(root) {
 
   mountWildlife(scene || root);
 
-  let skyRaf = null;
-  function renderSkyFrame() {
-    const skyState = getSkyState(new Date(), CONFIG.lat, CONFIG.lon);
-    if (tint) tint.style.opacity = skyState.nightAmount.toFixed(3);
-    if (midday) midday.style.opacity = skyState.middayAmount.toFixed(3);
-    if (skyCanvas) drawSky(skyCanvas, skyState, stars);
-    return skyState;
+  const drawSky = skyCanvas ? createSkyCanvas(skyCanvas) : null;
+  let lastSkyState = null;
+  let lastTintOpacity = null, lastMiddayOpacity = null;
+
+  // Astronomy (sun/moon position) changes over minutes, not milliseconds —
+  // recomputing it, and writing to element style, 60 times a second was
+  // real, measurable jank for zero visual benefit. Refresh it on its own
+  // slow timer; the rAF loop below only redraws the star twinkle.
+  function refreshSky() {
+    lastSkyState = getSkyState(new Date(), CONFIG.lat, CONFIG.lon);
+    const nightOp = lastSkyState.nightAmount.toFixed(3);
+    // Plain alpha (no mix-blend-mode — see the compositing-cost note above)
+    // doesn't preserve underlying detail the way soft-light did, so the
+    // same 0-1 range would wash the painting out solid at high middayAmount.
+    const middayOp = (lastSkyState.middayAmount * 0.32).toFixed(3);
+    if (tint && nightOp !== lastTintOpacity) { tint.style.opacity = nightOp; lastTintOpacity = nightOp; }
+    if (midday && middayOp !== lastMiddayOpacity) { midday.style.opacity = middayOp; lastMiddayOpacity = middayOp; }
   }
+  refreshSky();
+  var skyTimer = window.setInterval(function () {
+    if (!root.isConnected) { window.clearInterval(skyTimer); return; }
+    refreshSky();
+  }, 2000);
+
+  let skyRaf = null;
   if (reduce) {
-    renderSkyFrame(); // one correct static frame, no twinkle loop
+    if (drawSky) drawSky(lastSkyState, stars); // one correct static frame, no twinkle loop
   } else {
     (function loop() {
       if (!root.isConnected) return; // page navigated away — stop, don't leak
-      renderSkyFrame();
+      if (drawSky) drawSky(lastSkyState, stars);
       skyRaf = window.requestAnimationFrame(loop);
     })();
   }
@@ -89,7 +117,7 @@ export function initLivingScene(root) {
     const w = wx || CALM_FALLBACK;
     if (cloudVeil) {
       const cc = w.cloudCoverPct != null ? w.cloudCoverPct : 15;
-      cloudVeil.style.opacity = Math.max(0, Math.min(0.55, (cc / 100) * 0.55)).toFixed(3);
+      cloudVeil.style.opacity = Math.max(0, Math.min(0.28, (cc / 100) * 0.28)).toFixed(3);
     }
     if (particles) particles.setWeather(w.kind, w.windMph, w.windDirDeg);
     if (gauge) {

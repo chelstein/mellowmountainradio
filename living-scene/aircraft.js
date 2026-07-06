@@ -54,6 +54,7 @@ export function createAircraftLayer(canvas) {
 
   function tick() {
     if (!running || !canvas.isConnected) { running = false; return; }
+    if (!planes.length) { ctx.clearRect(0, 0, w, h); raf = null; return; } // nothing to animate — stop, don't spin the loop empty
     raf = window.requestAnimationFrame(tick);
     ctx.clearRect(0, 0, w, h);
     const now = performance.now();
@@ -86,6 +87,7 @@ export function createAircraftLayer(canvas) {
     setAircraft(list) {
       const now = performance.now();
       planes = (list || []).map((p) => Object.assign({ _t0: now }, p));
+      if (running && planes.length && !raf) tick();
     },
     start() { if (running) return; running = true; tick(); },
     stop() { running = false; if (raf) window.cancelAnimationFrame(raf); raf = null; ctx.clearRect(0, 0, w, h); },

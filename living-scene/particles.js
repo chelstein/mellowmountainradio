@@ -54,6 +54,7 @@ export function createParticleSystem(canvas) {
 
   function tick() {
     if (!running || !canvas.isConnected) { running = false; return; }
+    if (!particles.length) { ctx.clearRect(0, 0, w, h); raf = null; return; } // nothing to animate — stop, don't spin the loop empty
     raf = window.requestAnimationFrame(tick);
     ctx.clearRect(0, 0, w, h);
     // wind: a tailwind component pushes drift left/right (dirDeg is "from" direction)
@@ -87,7 +88,7 @@ export function createParticleSystem(canvas) {
     setWeather(newKind, newWindMph, newWindDirDeg) {
       const kindChanged = newKind !== kind;
       kind = newKind; windMph = newWindMph || 0; windDirDeg = newWindDirDeg || 270;
-      if (kindChanged) rebuild();
+      if (kindChanged) { rebuild(); if (running && particles.length && !raf) tick(); }
     },
     start() { if (running) return; running = true; if (!particles.length) rebuild(); tick(); },
     stop() { running = false; if (raf) window.cancelAnimationFrame(raf); raf = null; ctx.clearRect(0, 0, w, h); },
