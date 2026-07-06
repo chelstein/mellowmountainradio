@@ -219,6 +219,7 @@
   var viz = doc.querySelector("[data-viz]");
   var eqBars = doc.querySelectorAll("[data-eq] i");
   var sceneEq = null; // lounge-scene spectrum canvas, registered by initLounge()
+  var sceneEqPeaks = null; // per-bar peak-hold heights (rise instantly, fall slowly)
   var audioCtx = null, analyser = null, srcNode = null, freqData = null, rafId = null;
   var vizReal = false;      // have we ever seen non-zero spectrum data?
   var vizChecked = 0;       // frames observed while playing (to detect a tainted stream)
@@ -236,6 +237,19 @@
       analyser.connect(audioCtx.destination);
       freqData = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) { audioCtx = null; analyser = null; }
+  }
+
+  function fillRoundTopRect(ctx, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h);
+    ctx.beginPath();
+    ctx.moveTo(x, y + h);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h);
+    ctx.closePath();
+    ctx.fill();
   }
 
   function drawViz() {
@@ -257,20 +271,37 @@
         eqBars[i].style.opacity = (0.45 + mag * 0.55).toFixed(2);
       }
     }
-    // big spectrum along the bottom of the lounge scene
+    // big spectrum along the bottom of the lounge scene — glowing,
+    // rounded bars with a warm 3-stop gradient and slow-decaying
+    // peak-hold caps, the way a real hardware VU meter reads.
     if (sceneEq && sceneEq.isConnected && vizReal) {
       var sc = sceneEq._c || (sceneEq._c = sceneEq.getContext("2d"));
       var sw = sceneEq.width, sh = sceneEq.height;
       sc.clearRect(0, 0, sw, sh);
       var SB = 48, gap = Math.max(1, sw / SB * 0.32), sbw = (sw - gap * (SB - 1)) / SB;
+      var barR = Math.min(sbw / 2, sh * 0.05);
+      if (!sceneEqPeaks || sceneEqPeaks.length !== SB) sceneEqPeaks = new Array(SB).fill(0);
       for (i = 0; i < SB; i++) {
         var sv = freqData[Math.floor((i + 0.5) / SB * n * 0.72)] / 255;
         var sbh = Math.max(sh * 0.03, sv * sv * sh);
+        var x = i * (sbw + gap);
+
+        sceneEqPeaks[i] = sbh > sceneEqPeaks[i] ? sbh : Math.max(sbh, sceneEqPeaks[i] - sh * 0.012);
+
+        sc.save();
+        sc.shadowColor = "rgba(255,150,70,0.5)";
+        sc.shadowBlur = sbw * 1.1;
         var g = sc.createLinearGradient(0, sh - sbh, 0, sh);
-        g.addColorStop(0, "rgba(255, 196, 110, " + (0.55 + sv * 0.45).toFixed(3) + ")");
-        g.addColorStop(1, "rgba(226, 110, 90, " + (0.25 + sv * 0.35).toFixed(3) + ")");
+        g.addColorStop(0, "rgba(255,238,205," + (0.8 + sv * 0.2).toFixed(3) + ")");
+        g.addColorStop(0.45, "rgba(255,178,90," + (0.6 + sv * 0.4).toFixed(3) + ")");
+        g.addColorStop(1, "rgba(214,90,70," + (0.28 + sv * 0.35).toFixed(3) + ")");
         sc.fillStyle = g;
-        sc.fillRect(i * (sbw + gap), sh - sbh, sbw, sbh);
+        fillRoundTopRect(sc, x, sh - sbh, sbw, sbh, barR);
+        sc.restore();
+
+        var peakY = sh - sceneEqPeaks[i];
+        sc.fillStyle = "rgba(255,246,225,0.9)";
+        sc.fillRect(x, Math.max(0, peakY - sh * 0.006), sbw, Math.max(1, sh * 0.012));
       }
     }
     // full spectrum on the canvas backdrop
@@ -310,6 +341,7 @@
     doc.body.classList.remove("viz-live");
     for (var i = 0; i < eqBars.length; i++) { eqBars[i].style.height = ""; eqBars[i].style.opacity = ""; }
     if (sceneEq && sceneEq._c) sceneEq._c.clearRect(0, 0, sceneEq.width, sceneEq.height);
+    if (sceneEqPeaks) sceneEqPeaks.fill(0);
   }
 
   /* =========================================================
