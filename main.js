@@ -7209,29 +7209,140 @@
      Every spin logged by the n8n play-log workflow the moment it
      airs; this page reads the log. Real plays only — never seeded.
      ========================================================= */
+  /* =========================================================
+     THE SONG TIME MACHINE (timemachine.html)
+     Tune through time on a radio dial: every day since the log
+     began is on the band. Real plays only — never seeded.
+     ========================================================= */
   function initTimeMachine() {
     var root = doc.querySelector("[data-tm]"); if (!root || root.getAttribute("data-init")) return;
     root.setAttribute("data-init", "1");
     var off = doc.querySelector("[data-tm-off]");
     var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
     var CHARTS = "https://n8n.mellowmountainradio.com/webhook/kazm-charts";
-    var dateIn = root.querySelector("[data-tm-date]"), timeIn = root.querySelector("[data-tm-time]"),
+    var dial = root.querySelector("[data-tm-dial]"), dateIn = root.querySelector("[data-tm-date]"),
+      timeIn = root.querySelector("[data-tm-time]"), timeRange = root.querySelector("[data-tm-timerange]"),
       goBtn = root.querySelector("[data-tm-go]"), ansEl = root.querySelector("[data-tm-answer]"),
       dayWrap = root.querySelector("[data-tm-daywrap]"), dayH = root.querySelector("[data-tm-day-h]"),
       dayEl = root.querySelector("[data-tm-day]"), noteEl = root.querySelector("[data-tm-note]"),
-      statsEl = root.querySelector("[data-tm-stats]"), topEl = root.querySelector("[data-tm-top]"),
-      artEl = root.querySelector("[data-tm-artists]"), debEl = root.querySelector("[data-tm-debuts]");
+      statsEl = root.querySelector("[data-tm-stats]"), podiumEl = root.querySelector("[data-tm-podium]"),
+      topEl = root.querySelector("[data-tm-top]"), artEl = root.querySelector("[data-tm-artists]"),
+      debEl = root.querySelector("[data-tm-debuts]"),
+      roDay = root.querySelector("[data-tm-readout-day]"), roTime = root.querySelector("[data-tm-readout-time]");
     root.hidden = true;
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var dayData = null;
-    function tmEsc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
-    function fmt12(t) {
-      var hm = t.split(":"), h = +hm[0], m = hm[1];
-      return ((h % 12) || 12) + ":" + m + (h < 12 ? " AM" : " PM");
+    // the light of each hour — the day log wears the sky's own colors
+    var HOURC = ["#141a33","#141a33","#141a33","#141a33","#1c2140","#3a2c55","#c96f4a","#e8a05c","#7d9dc4","#87a9cc","#8fb2d4","#94b8da","#97bbdd","#94b8da","#8fb2d4","#87a9cc","#d9995c","#e8873f","#a04b63","#4a3466","#232a4c","#141a33","#141a33","#141a33"];
+    function tmEsc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
+    function fmt12(t) { var hm = t.split(":"), h = +hm[0]; return ((h % 12) || 12) + ":" + hm[1] + (h < 12 ? " AM" : " PM"); }
+    function fmtDate(d) { var p = d.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" }); }
+    function fmtShort(d) { var p = d.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric", year: "numeric" }); }
+    function dstr(dt) { return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0"); }
+    function countUp(el, target, suffix) {
+      if (reduced) { el.textContent = target.toLocaleString() + (suffix || ""); return; }
+      var t0c = performance.now();
+      (function tick(now) {
+        var p = Math.min(1, (now - t0c) / 900), v = Math.round(target * (1 - Math.pow(1 - p, 3)));
+        el.textContent = v.toLocaleString() + (suffix || "");
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0c);
     }
-    function fmtDate(d) {
-      var p = d.split("-");
-      return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+    /* ── THE DIAL ─────────────────────────────────────────── */
+    var D = { since: null, today: null, sel: 0, pos: 0, vel: 0, drag: null, raf: 0, px: 13 };
+    function dayIndex(d) { return Math.round((new Date(d + "T12:00:00Z") - new Date(D.since + "T12:00:00Z")) / 86400000); }
+    function indexDate(i) { var dt = new Date(D.since + "T12:00:00Z"); dt.setUTCDate(dt.getUTCDate() + i); return dt.toISOString().slice(0, 10); }
+    function drawDial() {
+      if (!dial || !D.since || !D.today) return;
+      var W2 = dial.clientWidth || 800, H2 = 96, dpr = Math.min(2, window.devicePixelRatio || 1);
+      if (dial.width !== W2 * dpr) { dial.width = W2 * dpr; dial.height = H2 * dpr; }
+      var g = dial.getContext("2d");
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      g.clearRect(0, 0, W2, H2);
+      var maxI = dayIndex(D.today), cx = W2 / 2;
+      var i0 = Math.floor(D.pos - cx / D.px) - 1, i1 = Math.ceil(D.pos + cx / D.px) + 1;
+      for (var i = Math.max(0, i0); i <= Math.min(maxI, i1); i++) {
+        var x2 = cx + (i - D.pos) * D.px;
+        var dt = new Date(D.since + "T12:00:00Z"); dt.setUTCDate(dt.getUTCDate() + i);
+        var isMonth = dt.getUTCDate() === 1, isSun = dt.getUTCDay() === 0;
+        var near = Math.max(0, 1 - Math.abs(i - D.pos) / (cx / D.px));
+        var a = .28 + near * .6;
+        g.strokeStyle = "rgba(255,217,138," + a.toFixed(2) + ")";
+        g.lineWidth = isMonth ? 2 : 1;
+        var th = isMonth ? 34 : (isSun ? 20 : 11);
+        g.beginPath(); g.moveTo(x2, H2 - 18); g.lineTo(x2, H2 - 18 - th); g.stroke();
+        if (isMonth) {
+          g.fillStyle = "rgba(255,231,183," + (.5 + near * .5).toFixed(2) + ")";
+          g.font = "700 10px Lato, sans-serif"; g.textAlign = "center";
+          g.fillText(dt.toLocaleDateString([], { month: "short", timeZone: "UTC" }).toUpperCase() + " ’" + String(dt.getUTCFullYear()).slice(2), x2, H2 - 4);
+        }
+      }
+      // band edges fade
+      var fadeL = g.createLinearGradient(0, 0, 70, 0);
+      fadeL.addColorStop(0, "rgba(16,21,44,1)"); fadeL.addColorStop(1, "rgba(16,21,44,0)");
+      g.fillStyle = fadeL; g.fillRect(0, 0, 70, H2);
+      var fadeR = g.createLinearGradient(W2 - 70, 0, W2, 0);
+      fadeR.addColorStop(0, "rgba(16,21,44,0)"); fadeR.addColorStop(1, "rgba(16,21,44,1)");
+      g.fillStyle = fadeR; g.fillRect(W2 - 70, 0, 70, H2);
     }
+    function setReadout() {
+      if (roTime && timeIn.value) roTime.textContent = fmt12(timeIn.value);
+      if (!D.since || !D.today) return;
+      var d = indexDate(Math.round(Math.max(0, Math.min(dayIndex(D.today), D.pos))));
+      if (roDay) roDay.textContent = fmtShort(d);
+    }
+    function dialSettle() {
+      var maxI = dayIndex(D.today);
+      D.sel = Math.round(Math.max(0, Math.min(maxI, D.pos)));
+      D.pos = D.sel;
+      drawDial(); setReadout();
+      var d = indexDate(D.sel);
+      if (!dayData || dayData.day !== d) loadDay(d, timeIn.value ? renderAnswer : null);
+    }
+    function dialAnim() {
+      D.raf = 0;
+      if (D.drag) return;
+      D.pos += D.vel; D.vel *= .92;
+      var maxI = dayIndex(D.today);
+      if (D.pos < 0) { D.pos = 0; D.vel = 0; }
+      if (D.pos > maxI) { D.pos = maxI; D.vel = 0; }
+      drawDial(); setReadout();
+      if (Math.abs(D.vel) > .02) D.raf = requestAnimationFrame(dialAnim);
+      else dialSettle();
+    }
+    if (dial) {
+      dial.addEventListener("pointerdown", function (e) {
+        dial.setPointerCapture(e.pointerId);
+        D.drag = { x: e.clientX, pos: D.pos, moved: false, lastX: e.clientX, lastT: performance.now(), v: 0 };
+        if (D.raf) { cancelAnimationFrame(D.raf); D.raf = 0; }
+      });
+      dial.addEventListener("pointermove", function (e) {
+        if (!D.drag) return;
+        var dx = e.clientX - D.drag.x;
+        if (Math.abs(dx) > 3) D.drag.moved = true;
+        D.pos = Math.max(-2, Math.min(dayIndex(D.today) + 2, D.drag.pos - dx / D.px));
+        var now = performance.now(), dt2 = now - D.drag.lastT;
+        if (dt2 > 0) D.drag.v = -(e.clientX - D.drag.lastX) / D.px / (dt2 / 16.7);
+        D.drag.lastX = e.clientX; D.drag.lastT = now;
+        drawDial(); setReadout();
+      });
+      function dialUp(e) {
+        if (!D.drag) return;
+        var wasClick = !D.drag.moved;
+        D.vel = reduced ? 0 : Math.max(-6, Math.min(6, D.drag.v));
+        var rect = dial.getBoundingClientRect();
+        D.drag = null;
+        if (wasClick) {
+          D.pos = D.pos + (e.clientX - rect.left - rect.width / 2) / D.px;
+          dialSettle();
+        } else if (Math.abs(D.vel) > .02 && !reduced) D.raf = requestAnimationFrame(dialAnim);
+        else dialSettle();
+      }
+      dial.addEventListener("pointerup", dialUp);
+      dial.addEventListener("pointercancel", function () { D.drag = null; dialSettle(); });
+      window.addEventListener("resize", drawDial);
+    }
+    /* ── ANSWER + DAY LOG ─────────────────────────────────── */
     function setUrl() {
       if (!dayData) return;
       try {
@@ -7246,27 +7357,44 @@
       var t = timeIn.value, plays = dayData.plays || [];
       var hit = -1;
       for (var i = 0; i < plays.length; i++) { if (plays[i].t <= t) hit = i; else break; }
+      var html;
       if (hit < 0) {
-        ansEl.innerHTML = '<p class="tm-miss">The log has nothing on the air yet at ' + fmt12(t) + " that day — " +
+        html = '<p class="tm-miss">Nothing on the log yet at ' + fmt12(t) + " that day — " +
           (plays.length ? "the first spin logged was at " + fmt12(plays[0].t) + "." : "no spins were logged that day.") + "</p>";
-        ansEl.hidden = false; setUrl(); return;
+      } else {
+        var p = plays[hit], before = plays[hit - 1], after = plays[hit + 1];
+        html = '<div class="tm-hit"><div class="tm-hit-clock"><em>ON THE AIR AT</em><span>' + fmt12(t) + "</span></div>" +
+          '<div class="tm-hit-song"><b>' + tmEsc(p.ti) + "</b>" + (p.ar ? "<span>" + tmEsc(p.ar) + "</span>" : "") +
+          "<em>needle dropped at " + fmt12(p.t) + "</em></div></div>" +
+          '<div class="tm-tape">' +
+          (before ? '<button type="button" class="tm-tape-seg" data-tt="' + before.t + '"><i>&#9664;</i><div><b>' + tmEsc(before.ti) + "</b><span>" + fmt12(before.t) + "</span></div></button>" : "<span></span>") +
+          '<div class="tm-tape-now">&#9673;</div>' +
+          (after ? '<button type="button" class="tm-tape-seg tm-tape-seg--r" data-tt="' + after.t + '"><div><b>' + tmEsc(after.ti) + "</b><span>" + fmt12(after.t) + "</span></div><i>&#9654;</i></button>" : "<span></span>") +
+          "</div>";
       }
-      var p = plays[hit], before = plays[hit - 1], after = plays[hit + 1];
-      var h = '<div class="tm-hit"><span class="tm-hit-time">' + fmt12(t) + "</span>" +
-        '<div class="tm-hit-song"><b>' + tmEsc(p.ti) + "</b>" + (p.ar ? "<span>" + tmEsc(p.ar) + "</span>" : "") +
-        '<em>went on the air at ' + fmt12(p.t) + "</em></div></div>";
-      if (before || after) {
-        h += '<div class="tm-neighbors">' +
-          (before ? '<span>&larr; before: ' + tmEsc(before.ti) + " — " + tmEsc(before.ar) + " (" + fmt12(before.t) + ")</span>" : "") +
-          (after ? '<span>after: ' + tmEsc(after.ti) + " — " + tmEsc(after.ar) + " (" + fmt12(after.t) + ") &rarr;</span>" : "") + "</div>";
-      }
-      ansEl.innerHTML = h; ansEl.hidden = false;
-      setUrl();
-      var row = dayEl.querySelector('[data-i="' + hit + '"]');
-      if (row) {
-        dayEl.querySelectorAll(".is-hit").forEach(function (r) { r.classList.remove("is-hit"); });
-        row.classList.add("is-hit"); row.scrollIntoView({ block: "nearest" });
-      }
+      var apply = function () {
+        ansEl.innerHTML = html; ansEl.hidden = false;
+        ansEl.querySelectorAll(".tm-tape-seg").forEach(function (b) {
+          b.addEventListener("click", function () { setTime(b.getAttribute("data-tt")); renderAnswer(); });
+        });
+        setUrl(); setReadout();
+        if (hit >= 0) {
+          var row = dayEl.querySelector('[data-i="' + hit + '"]');
+          if (row) {
+            dayEl.querySelectorAll(".is-hit").forEach(function (r) { r.classList.remove("is-hit"); });
+            row.classList.add("is-hit"); row.scrollIntoView({ block: "nearest" });
+          }
+        }
+      };
+      if (reduced) { apply(); return; }
+      ansEl.hidden = false;
+      ansEl.classList.add("is-tuning");
+      setTimeout(function () { apply(); ansEl.classList.remove("is-tuning"); }, 300);
+    }
+    function setTime(t) {
+      timeIn.value = t;
+      if (timeRange) { var hm = t.split(":"); timeRange.value = (+hm[0]) * 60 + (+hm[1]); }
+      setReadout();
     }
     function renderDay() {
       if (!dayData) return;
@@ -7277,43 +7405,61 @@
           : "No spins logged this day.") + "</p>";
       } else {
         dayEl.innerHTML = dayData.plays.map(function (p, i) {
-          return '<button type="button" class="tm-row" data-i="' + i + '"><span class="tm-row-t">' + fmt12(p.t) + "</span><span class=\"tm-row-s\"><b>" + tmEsc(p.ti) + "</b>" + (p.ar ? " — " + tmEsc(p.ar) : "") + "</span></button>";
+          var hr = +p.t.split(":")[0];
+          return '<button type="button" class="tm-row" data-i="' + i + '" style="--hc:' + HOURC[hr] + '"><span class="tm-row-t">' + fmt12(p.t) + '</span><span class="tm-row-s"><b>' + tmEsc(p.ti) + "</b>" + (p.ar ? " — " + tmEsc(p.ar) : "") + "</span></button>";
         }).join("");
         dayEl.querySelectorAll(".tm-row").forEach(function (r) {
           r.addEventListener("click", function () {
             var p = dayData.plays[+r.getAttribute("data-i")];
-            timeIn.value = p.t; renderAnswer();
+            setTime(p.t); renderAnswer();
           });
         });
       }
       dayWrap.hidden = false;
       noteEl.textContent = dayData.since
-        ? "The log begins " + fmtDate(dayData.since) + " and runs to right now — every entry is a real spin from the air. Times are Sedona time."
+        ? "The log begins " + fmtDate(dayData.since) + " and runs to right now — every entry is a real spin from the air, spots and all. Times are Sedona time."
         : "";
     }
     function loadDay(d, then) {
+      if (dayH) dayH.textContent = "tuning…";
       fetch(PLAYLOG + (d ? "?d=" + encodeURIComponent(d) : ""), { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
           if (!j || !j.ok) return;
           dayData = j;
           dateIn.value = j.day;
-          if (j.since) dateIn.min = j.since;
+          if (j.since) { dateIn.min = j.since; if (!D.since) { D.since = j.since; } }
           dateIn.max = j.today;
+          D.today = j.today;
+          if (D.since) { D.pos = D.sel = dayIndex(j.day); drawDial(); setReadout(); }
           renderDay();
           if (then) then();
         }).catch(function () {});
     }
+    /* ── CHARTS ───────────────────────────────────────────── */
     function renderCharts(c) {
       var since = c.since ? fmtDate(c.since) : null;
-      statsEl.innerHTML = '<span class="tm-stat"><b>' + c.spins + "</b> spins this week</span>" +
-        '<span class="tm-stat"><b>' + c.uniques + "</b> different songs</span>" +
-        (since ? '<span class="tm-stat">log since <b>' + tmEsc(since) + "</b></span>" : "");
-      var max = (c.top && c.top[0] && c.top[0].n) || 1;
-      topEl.innerHTML = (c.top || []).map(function (s) {
-        return "<li><div class=\"tm-top-meta\"><b>" + tmEsc(s.ti) + "</b><span>" + tmEsc(s.ar) + "</span></div>" +
-          '<div class="tm-bar"><i style="width:' + Math.round(s.n / max * 100) + '%"></i><em>' + s.n + "&times;</em></div></li>";
+      statsEl.innerHTML = '<span class="tm-stat"><b data-n="' + c.spins + '">0</b> music spins this week</span>' +
+        '<span class="tm-stat"><b data-n="' + c.uniques + '">0</b> different songs</span>' +
+        (since ? '<span class="tm-stat">the log remembers back to <b>' + tmEsc(since) + "</b></span>" : "");
+      statsEl.querySelectorAll("b[data-n]").forEach(function (b) { countUp(b, +b.getAttribute("data-n")); });
+      var top = c.top || [];
+      if (podiumEl) {
+        var med = ["gold", "silver", "bronze"], order = [1, 0, 2];
+        podiumEl.innerHTML = top.length >= 3 ? order.map(function (oi) {
+          var s = top[oi];
+          return '<div class="tm-pod tm-pod--' + med[oi] + '"><span class="tm-pod-rank">' + (oi + 1) + '</span><b>' + tmEsc(s.ti) + "</b><span class=\"tm-pod-ar\">" + tmEsc(s.ar) + '</span><span class="tm-pod-n">' + s.n + " spins</span></div>";
+        }).join("") : "";
+      }
+      var rest = top.slice(3);
+      var max = (rest[0] && rest[0].n) || 1;
+      topEl.innerHTML = rest.map(function (s, i) {
+        return '<li><div class="tm-top-meta" data-rk="' + (i + 4) + '"><b>' + tmEsc(s.ti) + "</b><span>" + tmEsc(s.ar) + "</span></div>" +
+          '<div class="tm-bar"><i data-w="' + Math.round(s.n / max * 100) + '"></i><em>' + s.n + "&times;</em></div></li>";
       }).join("") || '<li class="embed-note">Not enough plays logged yet — give it a day on the air.</li>';
+      requestAnimationFrame(function () {
+        topEl.querySelectorAll(".tm-bar i").forEach(function (b) { b.style.width = b.getAttribute("data-w") + "%"; });
+      });
       artEl.innerHTML = (c.topArtists || []).map(function (a) {
         return '<span class="tm-chip">' + tmEsc(a.ar) + " <b>" + a.n + "&times;</b></span>";
       }).join("");
@@ -7322,22 +7468,30 @@
         return '<div class="tm-debut"><span class="tm-badge">FIRST EVER PLAY</span><b>' + tmEsc(dd.ti) + "</b><span>" + tmEsc(dd.ar) + "</span><em>debuted " + when + (dd.n > 1 ? " · " + dd.n + " spins since" : "") + "</em></div>";
       }).join("") || '<p class="embed-note">No debuts in the last 30 days — the classics are holding the fort.</p>';
     }
+    /* ── WIRING ───────────────────────────────────────────── */
     goBtn.addEventListener("click", function () {
       if (dayData && dateIn.value === dayData.day) renderAnswer();
       else if (dateIn.value) loadDay(dateIn.value, renderAnswer);
     });
     dateIn.addEventListener("change", function () { if (dateIn.value) loadDay(dateIn.value, timeIn.value ? renderAnswer : null); });
-    // probe: charts endpoint decides whether the machine is wired up yet
+    timeIn.addEventListener("change", function () { if (timeIn.value) { setTime(timeIn.value); renderAnswer(); } });
+    if (timeRange) timeRange.addEventListener("input", function () {
+      var m = +timeRange.value, t = String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+      timeIn.value = t; setReadout();
+    });
+    if (timeRange) timeRange.addEventListener("change", function () { renderAnswer(); });
     fetch(CHARTS, { cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (c) {
         if (!c || !c.ok) throw new Error("off");
         root.hidden = false;
         renderCharts(c);
+        if (c.since) D.since = c.since;
         var qs = new URLSearchParams(location.search);
         var d0 = qs.get("d"), t0 = qs.get("t");
-        if (t0 && /^\d{2}:\d{2}$/.test(t0)) timeIn.value = t0;
-        loadDay(d0 && /^\d{4}-\d{2}-\d{2}$/.test(d0) ? d0 : null, timeIn.value ? renderAnswer : null);
+        if (t0 && /^\d{2}:\d{2}$/.test(t0)) setTime(t0);
+        else setTime(new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "America/Phoenix" }));
+        loadDay(d0 && /^\d{4}-\d{2}-\d{2}$/.test(d0) ? d0 : null, t0 ? renderAnswer : null);
       })
       .catch(function () { if (off) off.hidden = false; });
   }
