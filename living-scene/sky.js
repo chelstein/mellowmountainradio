@@ -54,7 +54,11 @@ export function skyGradientCSS(skyState) {
 /** The real, moving sun — the only sun now that the painted one has been
  *  cut out of the foreground plate along with the rest of the sky, so
  *  there's nothing left to crossfade against. Fades in/out only right at
- *  the horizon (rise/set), full strength any time it's actually up. */
+ *  the horizon (rise/set), full strength any time it's actually up.
+ *  Layered rendering (wide ambient glow, tighter bloom, a real radial
+ *  gradient inside the disc itself instead of a flat fill, plus a soft
+ *  four-point lens-flare sparkle) — real astronomy driving the position/
+ *  timing, calm illustration for how it actually reads on screen. */
 export function drawSun(ctx, w, h, skyState) {
   if (skyState.sunAltitudeDeg <= -4) return;
   const proj = projectAltAz(skyState.sunAltitudeDeg, skyState.sunAzimuthDeg, -4);
@@ -67,13 +71,61 @@ export function drawSun(ctx, w, h, skyState) {
   const warm = Math.max(0, Math.min(1, skyState.sunAltitudeDeg / 90));
   const r = 255, g = Math.round(175 + 40 * warm), b = Math.round(70 + 70 * warm);
   const sr = w * (0.022 + 0.01 * (1 - warm));
-  const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr * 5);
-  grad.addColorStop(0, "rgba(" + r + "," + g + "," + b + "," + (sunA * 0.6).toFixed(3) + ")");
-  grad.addColorStop(1, "rgba(" + r + "," + g + "," + b + ",0)");
-  ctx.fillStyle = grad;
-  ctx.beginPath(); ctx.arc(sx, sy, sr * 5, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = "rgba(255," + Math.round(205 + 30 * warm) + "," + Math.round(110 + 70 * warm) + "," + sunA.toFixed(3) + ")";
+
+  // Wide, very soft ambient glow — the atmospheric haze around the disc.
+  const outer = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr * 7);
+  outer.addColorStop(0, "rgba(" + r + "," + g + "," + b + "," + (sunA * 0.32).toFixed(3) + ")");
+  outer.addColorStop(0.5, "rgba(" + r + "," + g + "," + b + "," + (sunA * 0.1).toFixed(3) + ")");
+  outer.addColorStop(1, "rgba(" + r + "," + g + "," + b + ",0)");
+  ctx.fillStyle = outer;
+  ctx.beginPath(); ctx.arc(sx, sy, sr * 7, 0, Math.PI * 2); ctx.fill();
+
+  // Tighter bloom, brighter — the visible "glare" right around the disc.
+  const bloom = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr * 2.6);
+  bloom.addColorStop(0, "rgba(255,250,235," + (sunA * 0.75).toFixed(3) + ")");
+  bloom.addColorStop(1, "rgba(" + r + "," + g + "," + b + ",0)");
+  ctx.fillStyle = bloom;
+  ctx.beginPath(); ctx.arc(sx, sy, sr * 2.6, 0, Math.PI * 2); ctx.fill();
+
+  // The disc itself: a real radial gradient (hot white-gold core cooling
+  // to a warmer rim) instead of one flat fill, so it reads as a lit
+  // sphere rather than a flat sticker.
+  const disc = ctx.createRadialGradient(sx - sr * 0.15, sy - sr * 0.15, 0, sx, sy, sr);
+  disc.addColorStop(0, "rgba(255,252,240," + sunA.toFixed(3) + ")");
+  disc.addColorStop(0.6, "rgba(255," + Math.round(220 + 20 * warm) + "," + Math.round(140 + 60 * warm) + "," + sunA.toFixed(3) + ")");
+  disc.addColorStop(1, "rgba(255," + Math.round(195 + 25 * warm) + "," + Math.round(100 + 70 * warm) + "," + sunA.toFixed(3) + ")");
+  ctx.fillStyle = disc;
   ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
+
+  // A soft four-point sparkle, the way a bright real sun blooms through a
+  // camera lens — subtle, never a scientific artifact, just a calm sparkle.
+  const flareA = sunA * 0.35;
+  if (flareA > 0.02) {
+    ctx.save();
+    ctx.translate(sx, sy);
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; i < 2; i++) {
+      const len = sr * (i === 0 ? 4.2 : 2.6);
+      const thick = sr * (i === 0 ? 0.16 : 0.35);
+      const rot = i === 0 ? 0 : Math.PI / 4;
+      ctx.save();
+      ctx.rotate(rot);
+      const g1 = ctx.createLinearGradient(-len, 0, len, 0);
+      g1.addColorStop(0, "rgba(255,240,210,0)");
+      g1.addColorStop(0.5, "rgba(255,245,220," + flareA.toFixed(3) + ")");
+      g1.addColorStop(1, "rgba(255,240,210,0)");
+      ctx.fillStyle = g1;
+      ctx.fillRect(-len, -thick / 2, len * 2, thick);
+      const g2 = ctx.createLinearGradient(0, -len, 0, len);
+      g2.addColorStop(0, "rgba(255,240,210,0)");
+      g2.addColorStop(0.5, "rgba(255,245,220," + flareA.toFixed(3) + ")");
+      g2.addColorStop(1, "rgba(255,240,210,0)");
+      ctx.fillStyle = g2;
+      ctx.fillRect(-thick / 2, -len, thick, len * 2);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
 }
 
 /** The real moon: real altitude/azimuth, brightness tied to real
