@@ -7234,6 +7234,11 @@
     var dayData = null;
     // the light of each hour — the day log wears the sky's own colors
     var HOURC = ["#141a33","#141a33","#141a33","#141a33","#1c2140","#3a2c55","#c96f4a","#e8a05c","#7d9dc4","#87a9cc","#8fb2d4","#94b8da","#97bbdd","#94b8da","#8fb2d4","#87a9cc","#d9995c","#e8873f","#a04b63","#4a3466","#232a4c","#141a33","#141a33","#141a33"];
+    // light chips get dark ink, dark chips get cream — always readable
+    var HOURTX = HOURC.map(function (c) {
+      var r = parseInt(c.slice(1, 3), 16), g2 = parseInt(c.slice(3, 5), 16), b = parseInt(c.slice(5, 7), 16);
+      return (r * .299 + g2 * .587 + b * .114) > 120 ? "#1c2130" : "#f6f0dd";
+    });
     function tmEsc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
     function fmt12(t) { var hm = t.split(":"), h = +hm[0]; return ((h % 12) || 12) + ":" + hm[1] + (h < 12 ? " AM" : " PM"); }
     function fmtDate(d) { var p = d.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" }); }
@@ -7266,14 +7271,14 @@
         var dt = new Date(D.since + "T12:00:00Z"); dt.setUTCDate(dt.getUTCDate() + i);
         var isMonth = dt.getUTCDate() === 1, isSun = dt.getUTCDay() === 0;
         var near = Math.max(0, 1 - Math.abs(i - D.pos) / (cx / D.px));
-        var a = .28 + near * .6;
+        var a = .45 + near * .5;
         g.strokeStyle = "rgba(255,217,138," + a.toFixed(2) + ")";
         g.lineWidth = isMonth ? 2 : 1;
         var th = isMonth ? 34 : (isSun ? 20 : 11);
         g.beginPath(); g.moveTo(x2, H2 - 18); g.lineTo(x2, H2 - 18 - th); g.stroke();
         if (isMonth) {
-          g.fillStyle = "rgba(255,231,183," + (.5 + near * .5).toFixed(2) + ")";
-          g.font = "700 10px Lato, sans-serif"; g.textAlign = "center";
+          g.fillStyle = "rgba(255,231,183," + (.68 + near * .32).toFixed(2) + ")";
+          g.font = "700 11px Lato, sans-serif"; g.textAlign = "center";
           g.fillText(dt.toLocaleDateString([], { month: "short", timeZone: "UTC" }).toUpperCase() + " ’" + String(dt.getUTCFullYear()).slice(2), x2, H2 - 4);
         }
       }
@@ -7406,7 +7411,7 @@
       } else {
         dayEl.innerHTML = dayData.plays.map(function (p, i) {
           var hr = +p.t.split(":")[0];
-          return '<button type="button" class="tm-row" data-i="' + i + '" style="--hc:' + HOURC[hr] + '"><span class="tm-row-t">' + fmt12(p.t) + '</span><span class="tm-row-s"><b>' + tmEsc(p.ti) + "</b>" + (p.ar ? " — " + tmEsc(p.ar) : "") + "</span></button>";
+          return '<button type="button" class="tm-row" data-i="' + i + '" style="--hc:' + HOURC[hr] + ';--ht:' + HOURTX[hr] + '"><span class="tm-row-t">' + fmt12(p.t) + '</span><span class="tm-row-s"><b>' + tmEsc(p.ti) + "</b>" + (p.ar ? " — " + tmEsc(p.ar) : "") + "</span></button>";
         }).join("");
         dayEl.querySelectorAll(".tm-row").forEach(function (r) {
           r.addEventListener("click", function () {
