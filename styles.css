@@ -208,7 +208,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
    HEADER / NAV
    ========================================================= */
 .site-header {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 100;
   height: var(--header-h);
   display: flex; align-items: center;
   transition: background .3s ease, box-shadow .3s ease, border-color .3s ease;

@@ -75,33 +75,37 @@ The site probes the relay on page load — the incident board and corridor
 status lines appear on their own once it answers. Cameras and the flow map
 never depend on it (they're direct from ADOT).
 
-## The Tape (broadcast archive: tape-recorder-azuracast.sh)
+## The Tape (broadcast archive)
 
 Records the stream in 6-hour blocks, keeps exactly 14 days (both numbers are
 the statutory-license rules for archived programs). Uses infrastructure the
-station already owns — no new storage bill:
+station already owns — no new storage bill, no server to babysit:
 
-- Each finished block uploads straight into AzuraCast's own media library
-  (the same place songs live), NOT the Podcasts feature.
-- The file is added to a disabled, on-demand-only playlist ("Lounge Archive",
-  id 16 — `is_enabled:false`, `include_in_on_demand:true`) so it's publicly
-  playable via AzuraCast's on-demand download URL but never scheduled into
-  live rotation.
+- **`KAZM Tape Recorder`** (`n8n-kazm-rewind` sibling: `n8n-kazm-tape-recorder.json`,
+  deployed and active) — an n8n Schedule Trigger fires at 00:00/06:00/12:00/18:00
+  Phoenix time, and an Execute Command node does the whole job in one shot:
+  `timeout 21600 wget` captures exactly six hours of the live stream on n8n's
+  own server, then a `node` subprocess (real Node, not the sandboxed Code
+  node — it has `fetch` and full `require()`) uploads it straight into
+  AzuraCast's own media library and associates it with a disabled,
+  on-demand-only playlist ("Lounge Archive", id 16 —
+  `is_enabled:false`, `include_in_on_demand:true`). Verified: the file is
+  publicly downloadable via AzuraCast's on-demand endpoint regardless of
+  that `is_enabled` flag, so there's no live-rotation risk at all — nothing
+  to double-check in the dashboard before this runs for real.
 - The `KAZM Lounge Archive Feed` n8n workflow (`n8n-kazm-rewind.json`) lists
   those files, shapes them into blocks, prunes anything past 14 days, and
   serves it all at `/webhook/kazm-rewind`. The site's `rewind.json` already
   points at it — the Lounge reveals itself the moment real blocks exist.
 
-**Before this runs for real:** confirm in the AzuraCast dashboard that a
-disabled custom playlist with no schedule truly never bleeds into live
-rotation. That's a call to make with eyes on your own setup, not something
-to assume from outside — a wrong guess here means real airtime.
+Nothing to install, no cron to schedule, no box to keep alive — it's all
+running on the n8n instance already. Confirm your webcast/SoundExchange
+licensing covers the direct AzuraCast stream — the archive rides the same
+license as the stream itself.
 
-Setup is in the header of `tape-recorder-azuracast.sh` — needs ffmpeg,
-your AzuraCast API key, runs via cron or systemd on whatever box is already
-on 24/7 (the AzuraCast box itself is the natural choice — it records from
-localhost). Confirm your webcast/SoundExchange licensing covers the direct
-AzuraCast stream — the archive rides the same license as the stream itself.
+(`tape-recorder-azuracast.sh` and `tape-recorder.sh` are standalone
+fallbacks — useful only if you ever want recording to happen somewhere
+other than the n8n box.)
 
 (`tape-recorder.sh` is the older DigitalOcean Space-based version, kept
 around only in case you ever want the archive on separate storage instead.)
