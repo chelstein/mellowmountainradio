@@ -108,7 +108,19 @@ the Station Debuts board.
 Setup (2 minutes, same as the request line):
 1. Import `n8n-kazm-playlog.json` into n8n (Import from URL:
    https://raw.githubusercontent.com/chelstein/mellowmountainradio/main/studio-bridge/n8n-kazm-playlog.json)
-2. Activate. That's it — no keys, no credentials.
-The site probes /webhook/kazm-charts on page load; the Time Machine page
-reveals itself the moment the workflow answers. The log begins the day
-you activate — the page says so honestly instead of faking history.
+2. Activate. That's it — the live logger needs no keys.
+
+BACKFILL — start weeks deep instead of empty (optional, recommended):
+AzuraCast has been keeping its own song history the whole time it's been
+relaying MegaSeg. The workflow's bottom lane pulls it in:
+1. In AzuraCast: Administration → API Keys → create a key (any account
+   with station-reports access).
+2. In the workflow, open "Pull AzuraCast history" and replace
+   PASTE-YOUR-AZURACAST-API-KEY with it.
+3. Click "Test workflow" once (the manual-trigger lane sweeps the last
+   90 days in 5-day chunks, dedupes against anything the poller already
+   logged, and sets true first-play dates from the earliest record).
+The Time Machine's "log since" date jumps back automatically. For history
+older than AzuraCast keeps, MegaSeg's own play logs on the Mac Studio can
+be exported and merged the same way — say the word and that lane gets
+built.
