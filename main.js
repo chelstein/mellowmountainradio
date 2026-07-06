@@ -1931,7 +1931,7 @@
       var L = r[0], d = r[1], trails = r[2];
       if (!L || !el.isConnected) { el.innerHTML = '<div class="trail-map-load">Map unavailable</div>'; return; }
       el.innerHTML = "";
-      var map = L.map(el, { zoomControl: true, scrollWheelZoom: false }).setView([34.8697, -111.7610], 11);
+      var map = L.map(el, { zoomControl: true, scrollWheelZoom: false, touchZoom: false, doubleClickZoom: false }).setView([34.8697, -111.7610], 11);
       L.tileLayer(TOPO_TILE, { maxZoom: 16, attribution: "USGS · The National Map" }).addTo(map);
       if (trails) Object.keys(trails).forEach(function (k) { (trails[k].lines || []).forEach(function (seg) { L.polyline(seg, { color: "#c85a1e", weight: 2, opacity: .45 }).addTo(map); }); });
       var col = { Aves: "#3a7bd5", Mammalia: "#b5651d", Reptilia: "#2f9e6a", Insecta: "#d59a1e", Amphibia: "#7a5ad5", Plantae: "#c0398a" };
@@ -1994,7 +1994,7 @@
       var L = r[0], trails = r[1], data = trails && trails[slug];
       if (!L || !data || !data.lines) { mapEl.innerHTML = '<div class="trail-map-load">Route unavailable</div>'; return; }
       mapEl.innerHTML = "";
-      var map = L.map(mapEl, { zoomControl: true, attributionControl: true, scrollWheelZoom: false, dragging: true, tap: false });
+      var map = L.map(mapEl, { zoomControl: true, attributionControl: true, scrollWheelZoom: false, dragging: true, tap: false, touchZoom: false, doubleClickZoom: false });
       L.tileLayer(TOPO_TILE, { maxZoom: 16, attribution: "USGS · The National Map" }).addTo(map);
       var all = [];
       data.lines.forEach(function (seg) {
@@ -2345,7 +2345,7 @@
     ]).then(function (res) {
       var L = res[0], rv = res[1];
       if (!L || !el.isConnected) { el.innerHTML = '<p class="embed-note">The radar map is unavailable right now.</p>'; return; }
-      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true }).setView([34.8697, -111.761], 8);
+      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true, touchZoom: false, doubleClickZoom: false, minZoom: 6 }).setView([34.8697, -111.761], 7);
       L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { maxZoom: 12, subdomains: "abcd", attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(map);
       L.circleMarker([34.8697, -111.761], { radius: 6, color: "#ffd88a", fillColor: "#ffd88a", fillOpacity: .9 }).addTo(map).bindTooltip("Sedona");
       setTimeout(function () { map.invalidateSize(); }, 250);
@@ -2571,7 +2571,7 @@
     el.setAttribute("data-init", "1");
     loadLeaflet(function (L) {
       if (!L || !el.isConnected) { if (el.isConnected) el.innerHTML = '<p class="embed-note">The satellite map is unavailable right now.</p>'; return; }
-      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true }).setView([34.873, -111.83], 11);
+      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true, touchZoom: false, doubleClickZoom: false }).setView([34.873, -111.83], 11);
       L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
         maxZoom: 17, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics · Trail lines &copy; OpenStreetMap contributors"
       }).addTo(map);
@@ -4023,7 +4023,7 @@
     el.setAttribute("data-init", "1");
     loadLeaflet(function (L) {
       if (!L || !el.isConnected) { if (el.isConnected) el.innerHTML = '<p class="embed-note">The traffic map is unavailable right now.</p>'; return; }
-      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true, attributionControl: true }).setView([34.8675, -111.794], 14);
+      var map = L.map(el, { scrollWheelZoom: false, zoomControl: true, attributionControl: true, touchZoom: false, doubleClickZoom: false }).setView([34.8675, -111.794], 14);
       L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { maxZoom: 19, subdomains: "abcd", attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(map);
       var traffic = L.tileLayer(TRAFFIC_TILE, { maxZoom: 19, opacity: 1, attribution: "Traffic &copy; ADOT AZ511" }).addTo(map);
       // ADOT tiles cache ~60s; nudge a redraw each minute to keep it live
@@ -6754,7 +6754,7 @@
       mapEl._done = true;
       loadLeaflet(function (L) {
         if (!L || !mapEl.isConnected) return;
-        var map = L.map(mapEl, { zoomControl: true, scrollWheelZoom: false }).setView([34.838, -111.768], 12);
+        var map = L.map(mapEl, { zoomControl: true, scrollWheelZoom: false, touchZoom: false, doubleClickZoom: false }).setView([34.838, -111.768], 12);
         L.tileLayer(TOPO_TILE, { maxZoom: 16, attribution: "USGS · The National Map" }).addTo(map);
         GC_WAYPOINTS.forEach(function (w) {
           L.circleMarker([w.lat, w.lon], { radius: 9, color: "#b3541e", weight: 2, fillColor: "#f2a444", fillOpacity: .85 })
