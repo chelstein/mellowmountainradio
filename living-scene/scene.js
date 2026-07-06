@@ -7,7 +7,7 @@ import { CONFIG } from "./config.js";
 import { getSkyState, getRiseSetTimes, initAstronomyEngine, engineAvailable } from "./astronomy.js";
 import { getVisibleStars } from "./stars.js";
 import { getVisiblePlanets } from "./planets.js";
-import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS } from "./sky.js";
+import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS, groundFilterCSS } from "./sky.js";
 import { fetchWeather, CALM_FALLBACK } from "./weather.js";
 import { createParticleSystem } from "./particles.js";
 import { fetchAircraft, createAircraftLayer } from "./aircraft.js";
@@ -88,7 +88,7 @@ export function initLivingScene(root) {
 
   const drawSky = skyCanvas ? createSkyCanvas(skyCanvas) : null;
   let lastSkyState = null, lastStars = [], lastPlanets = [];
-  let lastGradient = null;
+  let lastGradient = null, lastGroundFilter = null;
 
   // Astronomy changes over seconds, not milliseconds — recomputing it,
   // and writing to element style, 60 times a second was real, measurable
@@ -102,6 +102,9 @@ export function initLivingScene(root) {
 
     const gradient = skyGradientCSS(lastSkyState);
     if (gradientEl && gradient !== lastGradient) { gradientEl.style.background = gradient; lastGradient = gradient; }
+
+    const groundFilter = groundFilterCSS(lastSkyState);
+    if (scene && groundFilter !== lastGroundFilter) { scene.style.filter = groundFilter; lastGroundFilter = groundFilter; }
 
     if (debugEl) {
       const rs = getRiseSetTimes(now, CONFIG.lat, CONFIG.lon, CONFIG.elevationM);

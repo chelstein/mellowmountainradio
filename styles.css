@@ -3459,7 +3459,7 @@ body.podplaying .player.show { transform: translateY(180%); }
 .lounge-gradient{transition:background 2.5s linear;z-index:0}
 .lounge-clouds{background:#98a4b8;opacity:0;transition:opacity 2s linear;z-index:0}
 .lounge-sky{z-index:0}
-.lounge-scene{background-image:var(--lounge-img);background-size:cover;background-position:center;transform:scale(1.06);transform-origin:center;will-change:transform;z-index:1}
+.lounge-scene{background-image:var(--lounge-img);background-size:cover;background-position:center;transform:scale(1.06);transform-origin:center;will-change:transform;z-index:1;filter:brightness(1) saturate(1) contrast(1);transition:filter 2.5s linear}
 .lounge-precip{z-index:2}
 .lounge-air{z-index:2}
 .lounge-gauge-glow{position:absolute;left:38%;top:61.5%;width:5.4%;height:17%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(150,205,255,.85) 0%,rgba(120,180,255,.35) 45%,rgba(120,180,255,0) 75%);opacity:0;transition:opacity 1.6s ease;pointer-events:none;z-index:2;filter:blur(1px)}

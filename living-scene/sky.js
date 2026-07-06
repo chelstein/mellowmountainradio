@@ -21,6 +21,23 @@ const STOP_PCT = [0, 15, 40, 65, 100];
 function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
 function lerpRGB(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; }
 
+/** The foreground plate (ground/trees/tower/dish/jeep/etc.) is still one
+ *  flattened cutout lit for the one real golden-hour moment the painting
+ *  depicts (see ASSET-BACKLOG-v85.md — true per-object relighting needs
+ *  the full Option B layer split). Until then, this is a real, if coarse,
+ *  stand-in: a CSS filter driven by the same middayAmount/nightAmount the
+ *  sky gradient uses, so a real bright midday sun measurably brightens
+ *  and cools the ground instead of leaving it looking permanently dusk-lit
+ *  no matter the actual time of day. Unchanged (identity) at golden hour,
+ *  since that's the one moment the painted lighting is already correct.
+ */
+export function groundFilterCSS(skyState) {
+  const brightness = 1 + 0.22 * skyState.middayAmount - 0.4 * skyState.nightAmount;
+  const saturate = 1 - 0.2 * skyState.middayAmount - 0.25 * skyState.nightAmount;
+  const contrast = 1 + 0.05 * skyState.middayAmount;
+  return "brightness(" + brightness.toFixed(3) + ") saturate(" + saturate.toFixed(3) + ") contrast(" + contrast.toFixed(3) + ")";
+}
+
 /** Real CSS gradient for the sky itself, blended from real sun altitude —
  *  golden hour is the painting's own true colors; day and night blend in
  *  from there via middayAmount/nightAmount, same axes the old tint used. */
