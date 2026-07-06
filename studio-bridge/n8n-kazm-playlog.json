@@ -1,0 +1,143 @@
+{
+  "name": "KAZM Play Log",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "trig-clock",
+      "name": "Every 30 seconds",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://streaming.mellowmountainradio.com/api/nowplaying/mellowmountainradio",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "http-np",
+      "name": "Ask what's on air",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// The station's memory — every spin, appended once, forever counted.\n// Lives in workflow static data: no credentials, no database.\nconst sd = $getWorkflowStaticData('global');\nsd.days = sd.days || {};\nsd.all = sd.all || {};\nconst np = $input.first().json || {};\nconst song = np.now_playing && np.now_playing.song;\nif (!song || !song.title) { return [{ json: { logged: false, why: 'no song' } }]; }\nconst ti = String(song.title).trim().slice(0, 140);\nconst ar = String(song.artist || '').trim().slice(0, 140);\nif (!ti || ti.toLowerCase() === 'mellow mountain radio') { return [{ json: { logged: false, why: 'station id' } }]; }\nconst key = (ti + '|' + ar).toLowerCase();\nif (sd.lastKey === key) { return [{ json: { logged: false, why: 'same song' } }]; }\nsd.lastKey = key;\nconst now = new Date();\nconst phx = new Date(now.toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\nconst d = phx.getFullYear() + '-' + String(phx.getMonth() + 1).padStart(2, '0') + '-' + String(phx.getDate()).padStart(2, '0');\nconst t = String(phx.getHours()).padStart(2, '0') + ':' + String(phx.getMinutes()).padStart(2, '0');\nconst art = song.art && String(song.art).indexOf('http') === 0 ? String(song.art).slice(0, 300) : '';\nsd.days[d] = sd.days[d] || [];\nsd.days[d].push({ t, ti, ar, art });\nif (sd.days[d].length > 600) sd.days[d] = sd.days[d].slice(-600);\nconst iso = now.toISOString();\nconst rec = sd.all[key] || { ti, ar, n: 0, first: iso };\nrec.n++; rec.last = iso; if (art) rec.art = art;\nsd.all[key] = rec;\nif (!sd.since) sd.since = d;\n// keep 90 days of day-logs; the all-time tallies stay forever\nconst keys = Object.keys(sd.days).sort();\nwhile (keys.length > 90) { delete sd.days[keys.shift()]; }\nreturn [{ json: { logged: true, d, t, ti, ar } }];"
+      },
+      "id": "code-log",
+      "name": "Log the spin",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "kazm-playlog",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://mellowmountainradio.com"
+        }
+      },
+      "id": "wh-playlog",
+      "name": "Site asks for a day",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 220],
+      "webhookId": "kazm-playlog"
+    },
+    {
+      "parameters": {
+        "jsCode": "// One day of the log, oldest first — the time machine reads this.\nconst sd = $getWorkflowStaticData('global');\nsd.days = sd.days || {};\nconst q = $input.first().json.query || {};\nconst phx = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\nconst today = phx.getFullYear() + '-' + String(phx.getMonth() + 1).padStart(2, '0') + '-' + String(phx.getDate()).padStart(2, '0');\nlet d = String(q.d || today);\nif (!/^\\d{4}-\\d{2}-\\d{2}$/.test(d)) d = today;\nconst dates = Object.keys(sd.days).sort();\nreturn [{ json: { ok: true, day: d, today, since: sd.since || null, dates, plays: sd.days[d] || [] } }];"
+      },
+      "id": "code-playlog",
+      "name": "Read that day",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 220]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "resp-playlog",
+      "name": "Respond with the day",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [440, 220]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "kazm-charts",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://mellowmountainradio.com"
+        }
+      },
+      "id": "wh-charts",
+      "name": "Site asks for charts",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 440],
+      "webhookId": "kazm-charts"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Spin charts, computed from real plays only — never seeded, never padded.\nconst sd = $getWorkflowStaticData('global');\nsd.days = sd.days || {};\nsd.all = sd.all || {};\nconst phx = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Phoenix' }));\nconst dayKeys = [];\nfor (let i = 0; i < 7; i++) {\n  const dd = new Date(phx); dd.setDate(dd.getDate() - i);\n  dayKeys.push(dd.getFullYear() + '-' + String(dd.getMonth() + 1).padStart(2, '0') + '-' + String(dd.getDate()).padStart(2, '0'));\n}\nconst tally = {}, artists = {};\nlet spins = 0;\nfor (const dk of dayKeys) {\n  for (const p of (sd.days[dk] || [])) {\n    spins++;\n    const key = (p.ti + '|' + p.ar).toLowerCase();\n    const e = tally[key] || { ti: p.ti, ar: p.ar, n: 0, art: p.art || '' };\n    e.n++; if (p.art) e.art = p.art; tally[key] = e;\n    if (p.ar) { artists[p.ar.toLowerCase()] = artists[p.ar.toLowerCase()] || { ar: p.ar, n: 0 }; artists[p.ar.toLowerCase()].n++; }\n  }\n}\nconst top = Object.values(tally).sort((a, b) => b.n - a.n).slice(0, 12);\nconst topArtists = Object.values(artists).sort((a, b) => b.n - a.n).slice(0, 10);\nconst cutoff = Date.now() - 30 * 86400000;\nconst debuts = Object.values(sd.all)\n  .filter(r => r.first && Date.parse(r.first) >= cutoff)\n  .sort((a, b) => (a.first < b.first ? 1 : -1))\n  .slice(0, 12)\n  .map(r => ({ ti: r.ti, ar: r.ar, first: r.first, n: r.n, art: r.art || '' }));\nreturn [{ json: { ok: true, since: sd.since || null, window: { days: 7 }, spins, uniques: Object.keys(tally).length, top, topArtists, debuts } }];"
+      },
+      "id": "code-charts",
+      "name": "Compute the charts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 440]
+    },
+    {
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {}
+      },
+      "id": "resp-charts",
+      "name": "Respond with charts",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [440, 440]
+    }
+  ],
+  "connections": {
+    "Every 30 seconds": {
+      "main": [[{ "node": "Ask what's on air", "type": "main", "index": 0 }]]
+    },
+    "Ask what's on air": {
+      "main": [[{ "node": "Log the spin", "type": "main", "index": 0 }]]
+    },
+    "Site asks for a day": {
+      "main": [[{ "node": "Read that day", "type": "main", "index": 0 }]]
+    },
+    "Read that day": {
+      "main": [[{ "node": "Respond with the day", "type": "main", "index": 0 }]]
+    },
+    "Site asks for charts": {
+      "main": [[{ "node": "Compute the charts", "type": "main", "index": 0 }]]
+    },
+    "Compute the charts": {
+      "main": [[{ "node": "Respond with charts", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

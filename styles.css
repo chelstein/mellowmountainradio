@@ -3345,3 +3345,54 @@ body.podplaying .player.show { transform: translateY(180%); }
 .homewin-pitch h2 { color: #fff; font-size: 2rem; margin: 6px 0 14px; }
 .homewin-pitch p { color: rgba(233,237,255,.82); font-size: 15.5px; line-height: 1.75; margin: 0 0 14px; max-width: 58ch; }
 .homewin-pitch p b { color: #ffe9a8; }
+
+/* ── The Song Time Machine ─────────────────────────────── */
+.tm-controls{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:18px}
+.tm-lab{display:flex;flex-direction:column;gap:6px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft,#5a5147)}
+.tm-lab input{padding:10px 12px;border:1px solid rgba(34,61,110,.25);border-radius:10px;font:inherit;background:#fff;color:inherit}
+.tm-answer{margin:6px 0 22px}
+.tm-hit{display:flex;gap:16px;align-items:center;background:linear-gradient(135deg,#223d6e,#2e4f8a);color:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 10px 24px rgba(34,61,110,.25)}
+.tm-hit-time{font-family:Alice,serif;font-size:1.6rem;white-space:nowrap;color:#ffd98a}
+.tm-hit-song b{display:block;font-size:1.15rem}
+.tm-hit-song span{opacity:.85}
+.tm-hit-song em{display:block;font-style:normal;font-size:.8rem;opacity:.7;margin-top:4px}
+.tm-miss{background:#fff7e8;border:1px solid rgba(180,140,60,.35);border-radius:12px;padding:14px 16px}
+.tm-neighbors{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-soft,#5a5147);margin-top:10px}
+.tm-daywrap{margin-top:8px}
+.tm-day-h{font-family:Alice,serif;font-size:1.05rem;margin:0 0 10px}
+.tm-day{max-height:420px;overflow-y:auto;border:1px solid rgba(34,61,110,.15);border-radius:12px;background:#fff}
+.tm-row{display:flex;gap:12px;width:100%;text-align:left;padding:9px 14px;border:0;border-bottom:1px solid rgba(34,61,110,.08);background:transparent;font:inherit;cursor:pointer}
+.tm-row:hover{background:#f5f0e6}
+.tm-row.is-hit{background:#223d6e;color:#fff}
+.tm-row.is-hit .tm-row-t{color:#ffd98a}
+.tm-row-t{white-space:nowrap;font-variant-numeric:tabular-nums;color:#8a5f2a;min-width:74px}
+.tm-row-s b{font-weight:700}
+.tm-stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.tm-stat{background:#fff;border:1px solid rgba(34,61,110,.18);border-radius:999px;padding:8px 16px;font-size:.85rem}
+.tm-stat b{color:#223d6e}
+.tm-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
+@media(max-width:820px){.tm-grid{grid-template-columns:1fr}}
+.tm-chartcard{background:#fff;border-radius:16px;padding:20px 22px;box-shadow:0 6px 18px rgba(30,25,18,.08)}
+.tm-chartcard h3{font-family:Alice,serif;margin:0 0 12px}
+.tm-top{list-style:none;margin:0;padding:0;counter-reset:tmrank}
+.tm-top li{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(34,61,110,.08);counter-increment:tmrank}
+.tm-top-meta{display:flex;flex-direction:column;min-width:0}
+.tm-top-meta::before{content:counter(tmrank);float:left}
+.tm-top-meta b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm-top-meta span{font-size:.78rem;color:var(--ink-soft,#5a5147)}
+.tm-top li .tm-top-meta{position:relative;padding-left:26px}
+.tm-top li .tm-top-meta::before{position:absolute;left:0;top:2px;font-family:Alice,serif;color:#8a5f2a}
+.tm-bar{position:relative;height:20px;background:#f0e9db;border-radius:6px;overflow:hidden}
+.tm-bar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#b6543f,#e0854f);border-radius:6px}
+.tm-bar em{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:.72rem;font-style:normal;font-weight:800;color:#223d6e}
+.tm-artists{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.tm-chip{background:#f5f0e6;border:1px solid rgba(138,95,42,.3);border-radius:999px;padding:6px 12px;font-size:.8rem}
+.tm-chip b{color:#8a5f2a}
+.tm-h-debut{margin-top:6px}
+.tm-debut-sub{font-size:.8rem;color:var(--ink-soft,#5a5147);margin:2px 0 12px}
+.tm-debuts{display:flex;flex-direction:column;gap:10px}
+.tm-debut{position:relative;border:1px solid rgba(180,84,63,.35);border-radius:12px;padding:12px 14px;background:#fffaf2}
+.tm-debut b{display:block}
+.tm-debut>span{font-size:.82rem;color:var(--ink-soft,#5a5147)}
+.tm-debut em{display:block;font-style:normal;font-size:.74rem;color:#8a5f2a;margin-top:4px}
+.tm-badge{position:absolute;top:-9px;right:10px;background:#b6543f;color:#fff;font-size:.6rem;font-weight:900;letter-spacing:.1em;padding:3px 8px;border-radius:999px}

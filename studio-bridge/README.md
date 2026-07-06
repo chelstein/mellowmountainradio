@@ -96,3 +96,19 @@ calibration references for the Station Window on rewind.html: the canvas
 grades the base photo (backdoor.jpg) to match whichever of these skies the
 real sun and weather currently call for. Not served by any page — kept in
 the repo as the source of truth for how the yard actually looks.
+
+## The Play Log (n8n-kazm-playlog.json) — the Song Time Machine
+
+Logs every song the moment it airs (polls the AzuraCast now-playing API
+every 30 seconds), keeps 90 days of minute-by-minute day logs plus
+lifetime spin counts with each song's FIRST-EVER play date. Powers
+timemachine.html: "what was playing when?", the weekly spin chart, and
+the Station Debuts board.
+
+Setup (2 minutes, same as the request line):
+1. Import `n8n-kazm-playlog.json` into n8n (Import from URL:
+   https://raw.githubusercontent.com/chelstein/mellowmountainradio/main/studio-bridge/n8n-kazm-playlog.json)
+2. Activate. That's it — no keys, no credentials.
+The site probes /webhook/kazm-charts on page load; the Time Machine page
+reveals itself the moment the workflow answers. The log begins the day
+you activate — the page says so honestly instead of faking history.

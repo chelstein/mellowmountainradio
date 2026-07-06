@@ -30,7 +30,7 @@
           '<a role="menuitem" href="sports.html#mlb">MLB &middot; Diamondbacks</a><a role="menuitem" href="sports.html#nba">NBA &middot; Suns</a><a role="menuitem" href="sports.html#nfl">NFL &middot; Cardinals</a><a role="menuitem" href="sports.html#college">College &middot; ASU, U of A, NAU</a><a role="menuitem" href="sports.html#ufc">UFC</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="music"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Music &amp; More</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="rewind.html">&#128252; The Listeners&rsquo; Lounge</a><a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
+          '<a role="menuitem" href="rewind.html">&#128252; The Listeners&rsquo; Lounge</a><a role="menuitem" href="timemachine.html">&#128336; Song Time Machine</a><a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="jeeptrails.html">&#128663; Jeep Trails</a><a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="photography.html">Photography</a><a role="menuitem" href="events.html#geocaching">Geocaching</a><a role="menuitem" href="events.html">All Adventures</a>' +
@@ -60,7 +60,7 @@
           '<a href="https://twitter.com/mellowmountain1" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M18.9 2H22l-7.1 8.1L23.3 22h-6.6l-5.2-6.8L5.6 22H2.5l7.6-8.7L1 2h6.8l4.7 6.2Zm-1.2 18h1.8L7.4 3.8H5.5Z"/></svg></a>' +
         '</div>' +
       '</div>' +
-      '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="rewind.html">Listeners&rsquo; Lounge</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
+      '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="rewind.html">Listeners&rsquo; Lounge</a><a href="timemachine.html">Song Time Machine</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
       '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="weather.html">Weather</a><a href="roads.html">Roads &amp; Traffic</a><a href="firstpeoples.html">First Peoples</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="The Vibe"><h4>The Vibe</h4><a href="vibe.html">Cosmic Conditions</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="wildlife.html">Seen around Sedona</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="archives.html">KAZM Archives</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="http://tee.pub/lic/XYLqEd6IJr8" target="_blank" rel="noopener">Merch</a></nav>' +
@@ -7204,6 +7204,144 @@
       .catch(function () { box.innerHTML = '<p class="embed-note">Library events are unavailable right now.</p>'; });
   }
 
+  /* =========================================================
+     THE SONG TIME MACHINE (timemachine.html)
+     Every spin logged by the n8n play-log workflow the moment it
+     airs; this page reads the log. Real plays only — never seeded.
+     ========================================================= */
+  function initTimeMachine() {
+    var root = doc.querySelector("[data-tm]"); if (!root || root.getAttribute("data-init")) return;
+    root.setAttribute("data-init", "1");
+    var off = doc.querySelector("[data-tm-off]");
+    var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
+    var CHARTS = "https://n8n.mellowmountainradio.com/webhook/kazm-charts";
+    var dateIn = root.querySelector("[data-tm-date]"), timeIn = root.querySelector("[data-tm-time]"),
+      goBtn = root.querySelector("[data-tm-go]"), ansEl = root.querySelector("[data-tm-answer]"),
+      dayWrap = root.querySelector("[data-tm-daywrap]"), dayH = root.querySelector("[data-tm-day-h]"),
+      dayEl = root.querySelector("[data-tm-day]"), noteEl = root.querySelector("[data-tm-note]"),
+      statsEl = root.querySelector("[data-tm-stats]"), topEl = root.querySelector("[data-tm-top]"),
+      artEl = root.querySelector("[data-tm-artists]"), debEl = root.querySelector("[data-tm-debuts]");
+    root.hidden = true;
+    var dayData = null;
+    function tmEsc(s) { return (s == null ? "" : String(s)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
+    function fmt12(t) {
+      var hm = t.split(":"), h = +hm[0], m = hm[1];
+      return ((h % 12) || 12) + ":" + m + (h < 12 ? " AM" : " PM");
+    }
+    function fmtDate(d) {
+      var p = d.split("-");
+      return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+    }
+    function setUrl() {
+      if (!dayData) return;
+      try {
+        var u = new URL(location.href);
+        u.searchParams.set("d", dayData.day);
+        if (timeIn.value) u.searchParams.set("t", timeIn.value); else u.searchParams.delete("t");
+        history.replaceState(null, "", u);
+      } catch (e) {}
+    }
+    function renderAnswer() {
+      if (!dayData || !timeIn.value) { ansEl.hidden = true; return; }
+      var t = timeIn.value, plays = dayData.plays || [];
+      var hit = -1;
+      for (var i = 0; i < plays.length; i++) { if (plays[i].t <= t) hit = i; else break; }
+      if (hit < 0) {
+        ansEl.innerHTML = '<p class="tm-miss">The log has nothing on the air yet at ' + fmt12(t) + " that day — " +
+          (plays.length ? "the first spin logged was at " + fmt12(plays[0].t) + "." : "no spins were logged that day.") + "</p>";
+        ansEl.hidden = false; setUrl(); return;
+      }
+      var p = plays[hit], before = plays[hit - 1], after = plays[hit + 1];
+      var h = '<div class="tm-hit"><span class="tm-hit-time">' + fmt12(t) + "</span>" +
+        '<div class="tm-hit-song"><b>' + tmEsc(p.ti) + "</b>" + (p.ar ? "<span>" + tmEsc(p.ar) + "</span>" : "") +
+        '<em>went on the air at ' + fmt12(p.t) + "</em></div></div>";
+      if (before || after) {
+        h += '<div class="tm-neighbors">' +
+          (before ? '<span>&larr; before: ' + tmEsc(before.ti) + " — " + tmEsc(before.ar) + " (" + fmt12(before.t) + ")</span>" : "") +
+          (after ? '<span>after: ' + tmEsc(after.ti) + " — " + tmEsc(after.ar) + " (" + fmt12(after.t) + ") &rarr;</span>" : "") + "</div>";
+      }
+      ansEl.innerHTML = h; ansEl.hidden = false;
+      setUrl();
+      var row = dayEl.querySelector('[data-i="' + hit + '"]');
+      if (row) {
+        dayEl.querySelectorAll(".is-hit").forEach(function (r) { r.classList.remove("is-hit"); });
+        row.classList.add("is-hit"); row.scrollIntoView({ block: "nearest" });
+      }
+    }
+    function renderDay() {
+      if (!dayData) return;
+      dayH.textContent = fmtDate(dayData.day) + " — " + (dayData.plays || []).length + " spins logged";
+      if (!(dayData.plays || []).length) {
+        dayEl.innerHTML = '<p class="embed-note">' + (dayData.since && dayData.day < dayData.since
+          ? "The log begins " + fmtDate(dayData.since) + " — radio only remembers forward from there."
+          : "No spins logged this day.") + "</p>";
+      } else {
+        dayEl.innerHTML = dayData.plays.map(function (p, i) {
+          return '<button type="button" class="tm-row" data-i="' + i + '"><span class="tm-row-t">' + fmt12(p.t) + "</span><span class=\"tm-row-s\"><b>" + tmEsc(p.ti) + "</b>" + (p.ar ? " — " + tmEsc(p.ar) : "") + "</span></button>";
+        }).join("");
+        dayEl.querySelectorAll(".tm-row").forEach(function (r) {
+          r.addEventListener("click", function () {
+            var p = dayData.plays[+r.getAttribute("data-i")];
+            timeIn.value = p.t; renderAnswer();
+          });
+        });
+      }
+      dayWrap.hidden = false;
+      noteEl.textContent = dayData.since
+        ? "The log begins " + fmtDate(dayData.since) + " and runs to right now — every entry is a real spin from the air. Times are Sedona time."
+        : "";
+    }
+    function loadDay(d, then) {
+      fetch(PLAYLOG + (d ? "?d=" + encodeURIComponent(d) : ""), { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          if (!j || !j.ok) return;
+          dayData = j;
+          dateIn.value = j.day;
+          if (j.since) dateIn.min = j.since;
+          dateIn.max = j.today;
+          renderDay();
+          if (then) then();
+        }).catch(function () {});
+    }
+    function renderCharts(c) {
+      var since = c.since ? fmtDate(c.since) : null;
+      statsEl.innerHTML = '<span class="tm-stat"><b>' + c.spins + "</b> spins this week</span>" +
+        '<span class="tm-stat"><b>' + c.uniques + "</b> different songs</span>" +
+        (since ? '<span class="tm-stat">log since <b>' + tmEsc(since) + "</b></span>" : "");
+      var max = (c.top && c.top[0] && c.top[0].n) || 1;
+      topEl.innerHTML = (c.top || []).map(function (s) {
+        return "<li><div class=\"tm-top-meta\"><b>" + tmEsc(s.ti) + "</b><span>" + tmEsc(s.ar) + "</span></div>" +
+          '<div class="tm-bar"><i style="width:' + Math.round(s.n / max * 100) + '%"></i><em>' + s.n + "&times;</em></div></li>";
+      }).join("") || '<li class="embed-note">Not enough plays logged yet — give it a day on the air.</li>';
+      artEl.innerHTML = (c.topArtists || []).map(function (a) {
+        return '<span class="tm-chip">' + tmEsc(a.ar) + " <b>" + a.n + "&times;</b></span>";
+      }).join("");
+      debEl.innerHTML = (c.debuts || []).map(function (dd) {
+        var when = new Date(dd.first).toLocaleDateString([], { month: "short", day: "numeric", timeZone: "America/Phoenix" });
+        return '<div class="tm-debut"><span class="tm-badge">FIRST EVER PLAY</span><b>' + tmEsc(dd.ti) + "</b><span>" + tmEsc(dd.ar) + "</span><em>debuted " + when + (dd.n > 1 ? " · " + dd.n + " spins since" : "") + "</em></div>";
+      }).join("") || '<p class="embed-note">No debuts in the last 30 days — the classics are holding the fort.</p>';
+    }
+    goBtn.addEventListener("click", function () {
+      if (dayData && dateIn.value === dayData.day) renderAnswer();
+      else if (dateIn.value) loadDay(dateIn.value, renderAnswer);
+    });
+    dateIn.addEventListener("change", function () { if (dateIn.value) loadDay(dateIn.value, timeIn.value ? renderAnswer : null); });
+    // probe: charts endpoint decides whether the machine is wired up yet
+    fetch(CHARTS, { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (c) {
+        if (!c || !c.ok) throw new Error("off");
+        root.hidden = false;
+        renderCharts(c);
+        var qs = new URLSearchParams(location.search);
+        var d0 = qs.get("d"), t0 = qs.get("t");
+        if (t0 && /^\d{2}:\d{2}$/.test(t0)) timeIn.value = t0;
+        loadDay(d0 && /^\d{4}-\d{2}-\d{2}$/.test(d0) ? d0 : null, timeIn.value ? renderAnswer : null);
+      })
+      .catch(function () { if (off) off.hidden = false; });
+  }
+
   function initPage() {
     initReveal();
     initScoreboards();
@@ -7250,6 +7388,7 @@
     initJeep();
     initTape();
     initWindow();
+    initTimeMachine();
     initPlaybook();
     initHomePulse();
     initRequests();
