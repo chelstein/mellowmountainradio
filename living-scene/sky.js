@@ -1,11 +1,10 @@
 // The sky itself: a real CSS gradient (skyGradientCSS) plus the canvas-
 // drawn sun, moon, stars, and planets, all positioned by real altitude/
-// azimuth (see config.js's projectAltAz). `lounge-foreground.webp` is a
-// transparent-sky cutout of the original painting (see
-// living-scene/ASSET-BACKLOG-v85.md for how it was made and its known
-// simplifications — the tower in particular is a solid recolored
-// silhouette, not its real see-through lattice), so this sky renders
-// truly *behind* the trees/tower/dish rather than tinted on top of them.
+// azimuth (see config.js's projectAltAz). The foreground is now a set of
+// real per-time-of-day paintings (see living-scene/timeofday.js and
+// living-scene/tod/*.webp), each its own transparent-sky cutout, so this
+// sky renders truly *behind* the trees/tower/dish rather than tinted on
+// top of them, crossfading between paintings as real clock time passes.
 import { SKY, projectAltAz } from "./config.js";
 
 // Real sky-gradient color stops (percent, [r,g,b]) at 0/15/40/65/100%
@@ -59,51 +58,6 @@ function skyStopsForAltitude(sunAltDeg) {
   return GOLDEN; // unreachable — LADDER is exhaustive and monotonic
 }
 
-/** The foreground plate (ground/trees/tower/dish/jeep/etc.) is still one
- *  flattened cutout lit for the one real golden-hour moment the painting
- *  depicts (see ASSET-BACKLOG-v85.md — true per-object relighting needs
- *  the full Option B layer split). Until then, this is a real, if coarse,
- *  stand-in: a CSS filter driven by the same middayAmount/nightAmount the
- *  sky gradient uses, so a real bright midday sun measurably brightens
- *  and cools the ground instead of leaving it looking permanently dusk-lit
- *  no matter the actual time of day. Unchanged (identity) at golden hour,
- *  since that's the one moment the painted lighting is already correct.
- */
-export function groundFilterCSS(skyState) {
-  // Real report against the live site: 4:30pm (sun at 37 deg, well short
-  // of solar noon) still read as too dark/dusky against a correctly
-  // bright sky. The first pass (0.22/0.2/0.05 coefficients) was too
-  // timid to sell "mid-afternoon" against ground painted for near-
-  // sunset shadows — retuned once to 0.7/0.33/0.13.
-  //
-  // Real report again, this time at 10:23am with the sun at 59.9deg
-  // (middayAmount already maxed at 1): even the fully-settled 0.7-tuned
-  // filter (brightness 1.7) still read as golden-hour dusk, confirmed by
-  // checking the actual computed style after its transition finished, not
-  // guessed from a screenshot. A flat brightness/saturate multiplier can
-  // only scale a baked-in warm cast, not remove it — pushed further and
-  // checked visually (brightness up to 2.3, saturate down to 0.5) until
-  // it actually read as bright daylight instead of "the same dusk, less
-  // dark." See duskGlowMaskCSS below for the other half of this same
-  // fix — the horizon glow's actual hue, which brightness alone can't touch.
-  //
-  // The night side of this same formula went untested until the sky
-  // gradient itself actually got dark (see skyStopsForAltitude/LADDER
-  // above) — once it did, the old -0.4 coefficient left the tower and
-  // trees at 60% brightness even at full night, reading as pale/glowing
-  // against a correctly dark sky instead of properly dim. nightAmount is
-  // eased through smoothstep (not linear) so the deepening is gradual,
-  // matching duskGlowMaskCSS's approach, and now actually reaches a
-  // real night-dark look (18% brightness, 38% saturation) by the time
-  // nightAmount hits 1 (sun -18deg, true night).
-  const n = skyState.nightAmount;
-  const nightEase = n * n * (3 - 2 * n);
-  const brightness = 1 + 1.3 * skyState.middayAmount - 0.82 * nightEase;
-  const saturate = 1 - 0.5 * skyState.middayAmount - 0.62 * nightEase;
-  const contrast = 1 + 0.2 * skyState.middayAmount + 0.08 * nightEase;
-  return "brightness(" + brightness.toFixed(3) + ") saturate(" + saturate.toFixed(3) + ") contrast(" + contrast.toFixed(3) + ")";
-}
-
 /** Real CSS gradient for the sky itself, blended from real sun altitude
  *  through the full day -> golden hour -> civil -> nautical ->
  *  astronomical -> night ladder above, so dusk/dawn passes through the
@@ -112,61 +66,6 @@ export function skyGradientCSS(skyState) {
   const rgbStops = skyStopsForAltitude(skyState.sunAltitudeDeg);
   const stops = STOP_PCT.map((pct, i) => "rgb(" + rgbStops[i].join(",") + ") " + pct + "%");
   return "linear-gradient(180deg," + stops.join(",") + ")";
-}
-
-/** The foreground plate has a real, permanent warm bloom baked into it at
- *  (SKY.cameraX, SKY.cameraY) — the road's vanishing point, which is also
- *  exactly where the reference photo's real sun sat at golden hour (see
- *  config.js). That's correct at golden hour, since it's a real photo of
- *  a real moment, but it's static art: nothing about it changes as the
- *  real sun actually moves. Unmasked at night it reads as a second sun
- *  sitting in the trees; unmasked by day it still reads as a sunset glow
- *  in the middle of a bright morning, because a brightness/saturate filter
- *  (groundFilterCSS) can only scale a baked-in hue, never actually shift
- *  it — confirmed by a real report at 10:23am (sun 59.9deg) where the
- *  filter was measurably at its full daytime value and the glow still
- *  looked like dusk.
- *
- *  So this masks the same real coordinate from both directions, and both
- *  are smoothstep-eased (continuous, no jump right at the reference
- *  moment):
- *  - Night side (sun below the real reference altitude): a dark counter-
- *    glow, reaching true black by the end of real nautical twilight (sun
- *    -11deg). Tuned against the actual source pixels there (sampled
- *    around rgb(231,110,12) at the hottest point), not guessed.
- *  - Day side (sun above it): the same spot needs neutralizing, not
- *    darkening — a bright midday sun down that corridor would be a pale
- *    hazy glare, not a warm ember, and a dark patch in bright daylight
- *    would just look like an unexplained smudge. A pale, desaturated
- *    wash ramps in as the sun climbs and is fully in by sun ~40deg
- *    (clearly bright day), tuned visually against the live report until
- *    the corridor actually read as daylight haze instead of sunset. */
-export function duskGlowMaskCSS(skyState) {
-  const altDeg = skyState.sunAltitudeDeg;
-  const GOLDEN_ALT = 5.35321006934902; // the real reference photo's exact sun altitude — untouched at this one moment
-  const cx = (SKY.cameraX * 100).toFixed(2), cy = (SKY.cameraY * 100).toFixed(2);
-
-  if (altDeg <= GOLDEN_ALT) {
-    const t = Math.max(0, Math.min(1, (GOLDEN_ALT - altDeg) / 16.35)); // 0 at reference, 1 by sun -11deg
-    const alpha = t * t * (3 - 2 * t);
-    if (alpha <= 0.004) return "none";
-    return "radial-gradient(ellipse 20% 16% at " + cx + "% " + cy + "%," +
-      "rgba(5,4,7," + alpha.toFixed(3) + ") 0%," +
-      "rgba(5,4,7," + (alpha * 0.82).toFixed(3) + ") 40%," +
-      "rgba(5,4,7," + (alpha * 0.45).toFixed(3) + ") 68%," +
-      "rgba(5,4,7," + (alpha * 0.15).toFixed(3) + ") 88%," +
-      "rgba(5,4,7,0) 100%)";
-  }
-
-  const t = Math.max(0, Math.min(1, (altDeg - GOLDEN_ALT) / 34.65)); // 0 at reference, 1 by sun ~40deg
-  const alpha = t * t * (3 - 2 * t) * 0.8;
-  if (alpha <= 0.004) return "none";
-  return "radial-gradient(ellipse 20% 16% at " + cx + "% " + cy + "%," +
-    "rgba(205,213,214," + alpha.toFixed(3) + ") 0%," +
-    "rgba(205,213,214," + (alpha * 0.82).toFixed(3) + ") 40%," +
-    "rgba(205,213,214," + (alpha * 0.45).toFixed(3) + ") 68%," +
-    "rgba(205,213,214," + (alpha * 0.15).toFixed(3) + ") 88%," +
-    "rgba(205,213,214,0) 100%)";
 }
 
 /** A soft, warm band hugging the real horizon line (config.js's SKY.horizonY)

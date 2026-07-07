@@ -7,11 +7,11 @@ import { CONFIG } from "./config.js";
 import { getSkyState, getRiseSetTimes, initAstronomyEngine, engineAvailable } from "./astronomy.js";
 import { getVisibleStars } from "./stars.js";
 import { getVisiblePlanets } from "./planets.js";
-import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS, groundFilterCSS, horizonHazeCSS, duskGlowMaskCSS, sunGlintCSS } from "./sky.js";
+import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS, horizonHazeCSS, sunGlintCSS } from "./sky.js";
+import { crossfadeFor, imageUrl } from "./timeofday.js";
 import { fetchWeather, CALM_FALLBACK } from "./weather.js";
 import { createParticleSystem } from "./particles.js";
 import { fetchAircraft, createAircraftLayer } from "./aircraft.js";
-import { mountWildlife } from "./wildlife.js";
 import { createSkyLifeLayer } from "./skylife.js";
 
 function createSkyCanvas(canvas) {
@@ -77,12 +77,12 @@ export function initLivingScene(root) {
   if (!root) return;
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const scene = root.querySelector("[data-lounge-scene]");
+  const sceneA = root.querySelector("[data-lounge-scene-a]");
+  const sceneB = root.querySelector("[data-lounge-scene-b]");
   const gradientEl = root.querySelector("[data-ls-gradient]");
   const cloudVeil = root.querySelector("[data-ls-clouds]");
   const skyCanvas = root.querySelector("[data-ls-sky]");
   const hazeEl = root.querySelector("[data-ls-haze]");
-  const duskPatchEl = root.querySelector("[data-ls-duskpatch]");
   const jeepGlintEl = root.querySelector("[data-ls-jeep-glint]");
   const gaugeGlintEl = root.querySelector("[data-ls-gauge-glint]");
   const precipCanvas = root.querySelector("[data-ls-precip]");
@@ -102,7 +102,12 @@ export function initLivingScene(root) {
   const skylife = skylifeCanvas ? createSkyLifeLayer(skylifeCanvas) : null;
   if (!reduce) { if (particles) particles.start(); if (aircraftLayer) aircraftLayer.start(); if (skylife) skylife.start(); }
 
-  mountWildlife(scene || root);
+  // NOTE: the separate animated deer sprite (wildlife.js) matched a
+  // transparent hole in the old single lounge-foreground.webp. Each of
+  // the new per-time-of-day paintings already has its own deer baked in
+  // (at a slightly different spot per painting), so the sprite overlay
+  // is skipped here rather than showing two mismatched deer. Re-adding
+  // an animated deer against these new backgrounds is a follow-up.
 
   // Real planet positions need the Astronomy Engine; kicked off here and
   // never awaited — getSkyState/getPlanetPositions fall back gracefully
@@ -113,7 +118,8 @@ export function initLivingScene(root) {
 
   const drawSky = skyCanvas ? createSkyCanvas(skyCanvas) : null;
   let lastSkyState = null, lastStars = [], lastPlanets = [];
-  let lastGradient = null, lastGroundFilter = null, lastHaze = null, lastDuskPatch = null, lastGlint = null;
+  let lastGradient = null, lastHaze = null, lastGlint = null;
+  let lastCrossfadeA = null, lastCrossfadeB = null;
 
   // Astronomy changes over seconds, not milliseconds — recomputing it,
   // and writing to element style, 60 times a second was real, measurable
@@ -128,14 +134,16 @@ export function initLivingScene(root) {
     const gradient = skyGradientCSS(lastSkyState);
     if (gradientEl && gradient !== lastGradient) { gradientEl.style.background = gradient; lastGradient = gradient; }
 
-    const groundFilter = groundFilterCSS(lastSkyState);
-    if (scene && groundFilter !== lastGroundFilter) { scene.style.filter = groundFilter; lastGroundFilter = groundFilter; }
+    if (sceneA && sceneB) {
+      const cf = crossfadeFor(now, CONFIG.timezone);
+      if (cf.a.key !== lastCrossfadeA) { sceneA.style.backgroundImage = "url('" + imageUrl(cf.a.key) + "')"; lastCrossfadeA = cf.a.key; }
+      if (cf.b.key !== lastCrossfadeB) { sceneB.style.backgroundImage = "url('" + imageUrl(cf.b.key) + "')"; lastCrossfadeB = cf.b.key; }
+      sceneA.style.opacity = (1 - cf.weight).toFixed(3);
+      sceneB.style.opacity = cf.weight.toFixed(3);
+    }
 
     const haze = horizonHazeCSS(lastSkyState);
     if (hazeEl && haze !== lastHaze) { hazeEl.style.background = haze; lastHaze = haze; }
-
-    const duskPatch = duskGlowMaskCSS(lastSkyState);
-    if (duskPatchEl && duskPatch !== lastDuskPatch) { duskPatchEl.style.background = duskPatch; lastDuskPatch = duskPatch; }
 
     const glint = sunGlintCSS(lastSkyState);
     if (glint !== lastGlint) {
