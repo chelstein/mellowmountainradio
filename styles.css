@@ -3494,6 +3494,14 @@ body.podplaying .player.show { transform: translateY(180%); }
 .lounge-play.is-playing .ic-play{display:none}
 @media (max-width:520px){.lounge-play{left:11px;bottom:11px;padding:9px 13px 9px 11px;font-size:.82rem}.lounge-play svg{width:19px;height:19px}}
 
+/* Real sunrise/sunset + moon-phase readout — see scene.js's refreshSky.
+   Same glass-pill language as .lounge-play, top-right so it never
+   competes with the play button for space. */
+.lounge-conditions{position:absolute;right:16px;top:16px;z-index:4;padding:9px 14px;border-radius:14px;background:rgba(20,16,26,.52);box-shadow:0 6px 22px -8px rgba(0,0,0,.7),0 0 0 1px rgba(255,214,150,.18) inset;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);color:#fdf3e7;font:600 .78rem/1.45 var(--font-body,inherit);letter-spacing:.01em;text-align:right;pointer-events:none}
+.lounge-conditions .lc-row{white-space:nowrap}
+.lounge-conditions .lc-label{color:#ffb86b;font-weight:700}
+@media (max-width:520px){.lounge-conditions{right:11px;top:11px;padding:7px 10px;font-size:.68rem;border-radius:11px}}
+
 /* =========================================================
    REAL, ALWAYS — the real-data story, merged into the Lounge page
    ========================================================= */

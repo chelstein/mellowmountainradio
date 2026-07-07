@@ -46,6 +46,23 @@ function fmtTime(date) {
   return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: CONFIG.timezone });
 }
 
+// 8-phase names from real moon phase (0=new, 0.5=full, 1=new again — same
+// value getSkyState already returns). Boundaries follow the usual
+// almanac convention: a narrow band right at each exact phase (new/
+// first quarter/full/last quarter), wider bands for the crescent/gibbous
+// stretches between them.
+function moonPhaseName(phase) {
+  const p = ((phase % 1) + 1) % 1;
+  if (p < 0.03 || p > 0.97) return "New Moon";
+  if (p < 0.22) return "Waxing Crescent";
+  if (p < 0.28) return "First Quarter";
+  if (p < 0.47) return "Waxing Gibbous";
+  if (p < 0.53) return "Full Moon";
+  if (p < 0.72) return "Waning Gibbous";
+  if (p < 0.78) return "Last Quarter";
+  return "Waning Crescent";
+}
+
 function createDebugPanel(root) {
   if (!/[?&]skydebug\b/.test(window.location.search)) return null;
   const el = document.createElement("div");
@@ -72,6 +89,7 @@ export function initLivingScene(root) {
   const airCanvas = root.querySelector("[data-ls-air]");
   const skylifeCanvas = root.querySelector("[data-ls-skylife]");
   const gauge = root.querySelector("[data-ls-gauge]");
+  const conditionsEl = root.querySelector("[data-ls-conditions]");
 
   // Appended to root, not `scene` — `.lounge-scene` has its own CSS
   // transform (the pointer-parallax scale), which creates a stacking
@@ -128,8 +146,17 @@ export function initLivingScene(root) {
 
     if (skylife) skylife.setConditions(lastSkyState.sunAltitudeDeg > 3, lastSkyState.nightAmount > 0.5);
 
+    const rs = getRiseSetTimes(now, CONFIG.lat, CONFIG.lon, CONFIG.elevationM);
+    if (conditionsEl) {
+      const phaseName = moonPhaseName(lastSkyState.moonPhase);
+      const litPct = Math.round(lastSkyState.moonFraction * 100);
+      conditionsEl.innerHTML =
+        '<div class="lc-row"><span class="lc-label">Rise</span> ' + (rs ? fmtTime(rs.sunrise) : "—") +
+        '  <span class="lc-label">Set</span> ' + (rs ? fmtTime(rs.sunset) : "—") + '</div>' +
+        '<div class="lc-row">' + phaseName + ' &middot; ' + litPct + '% lit</div>';
+    }
+
     if (debugEl) {
-      const rs = getRiseSetTimes(now, CONFIG.lat, CONFIG.lon, CONFIG.elevationM);
       debugEl.textContent =
         "local time   " + now.toLocaleTimeString("en-US", { timeZone: CONFIG.timezone }) + "\n" +
         "engine       " + (engineAvailable() ? "astronomy-engine" : "fallback (low-precision)") + "\n" +
