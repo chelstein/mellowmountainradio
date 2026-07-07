@@ -8,6 +8,10 @@
 // tailed hawks and golden eagles are genuinely common over this canyon —
 // drawn as simple procedural silhouettes since there's no source painting
 // crop for them (same reasoning as wildlife.js's deer-only roster).
+// Contrails (the real thing "chemtrails" actually are — jet exhaust
+// condensing in cold, high-altitude air) get their own rare, long-lived
+// streak once or twice a day, distinct from the short trail already drawn
+// on every real ADS-B blip in aircraft.js.
 //
 // The one thing in here that ISN'T trying to be real: a UFO, on purpose,
 // rare enough it's a wink rather than a feature — silent, erratic, and
@@ -45,6 +49,24 @@ function makeEagle() {
   const dir = Math.random() < 0.5 ? 1 : -1;
   const y0 = rand(0.08, 0.22);
   return { kind: "eagle", t0: performance.now(), dur: rand(38000, 62000), dir, x0: dir > 0 ? -0.08 : 1.08, xEnd: dir > 0 ? 1.12 : -0.12, y0, midY: y0 + rand(-0.05, 0.07), phase: Math.random() * 6.283 };
+}
+
+function makeContrail() {
+  // A real phenomenon (jet exhaust condensing in cold, humid high-altitude
+  // air) — distinct from aircraft.js's real ADS-B blips, which show every
+  // plane currently in range with a short trail that just sells motion.
+  // This is the occasional long-lived streak a real contrail leaves
+  // behind for many minutes after the plane itself is long gone: it grows
+  // as the "plane" crosses, then lingers, slowly widening and fading, the
+  // way real contrails visibly spread and dissipate.
+  const dir = Math.random() < 0.5 ? 1 : -1;
+  const y0 = rand(0.04, 0.16);
+  return {
+    kind: "contrail", t0: performance.now(), dur: rand(9 * 60000, 16 * 60000),
+    x0: dir > 0 ? -0.05 : 1.05, xEnd: dir > 0 ? 1.05 : -0.05,
+    y0, y1: y0 + rand(-0.03, 0.05),
+    formFrac: rand(0.1, 0.18),
+  };
 }
 
 function makeUfo() {
@@ -112,6 +134,13 @@ export function createSkyLifeLayer(canvas) {
       if (canvas.isConnected) { if (isDark) { objects.push(makeUfo()); wake(); } scheduleUfo(); }
     }, rand(2700000, 7200000));
   }
+  function scheduleContrail() {
+    // Raw checks every 3-9h, day-gated (roughly half land at night and get
+    // skipped), nets out to about once or twice over a full day/night cycle.
+    timers.contrail = window.setTimeout(function () {
+      if (canvas.isConnected) { if (isDay) { objects.push(makeContrail()); wake(); } scheduleContrail(); }
+    }, rand(3 * 3600000, 9 * 3600000));
+  }
 
   function drawMeteor(o, now) {
     const p = clamp01((now - o.t0) / o.dur);
@@ -169,6 +198,27 @@ export function createSkyLifeLayer(canvas) {
     return p < 1;
   }
 
+  function drawContrail(o, now) {
+    const p = clamp01((now - o.t0) / o.dur);
+    const travel = clamp01(p / o.formFrac); // the streak growing as the "plane" crosses
+    const fadeP = p <= o.formFrac ? 0 : clamp01((p - o.formFrac) / (1 - o.formFrac)); // then spreading/dissipating
+    const hx = lerp(o.x0, o.xEnd, travel) * w, hy = lerp(o.y0, o.y1, travel) * h;
+    const tx = o.x0 * w, ty = o.y0 * h;
+    const alphaIn = Math.min(1, travel / 0.25);
+    const alphaOut = fadeP < 0.55 ? 1 : Math.max(0, (1 - fadeP) / 0.45);
+    const alpha = alphaIn * alphaOut * 0.5;
+    if (alpha > 0.01) {
+      ctx.save();
+      ctx.filter = "blur(" + (fadeP * 2.4 * dpr).toFixed(2) + "px)";
+      ctx.strokeStyle = "rgba(255,255,255," + alpha.toFixed(3) + ")";
+      ctx.lineWidth = (1.3 + fadeP * 5) * dpr;
+      ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(hx, hy); ctx.stroke();
+      ctx.restore();
+    }
+    return p < 1;
+  }
+
   function drawUfo(o, now) {
     const p = clamp01((now - o.t0) / o.dur);
     const alpha = p < 0.12 ? p / 0.12 : p > 0.85 ? Math.max(0, (1 - p) / 0.15) : 1;
@@ -191,7 +241,7 @@ export function createSkyLifeLayer(canvas) {
     return p < 1;
   }
 
-  const DRAW = { meteor: drawMeteor, satellite: drawSatellite, birds: drawBirds, eagle: drawEagle, ufo: drawUfo };
+  const DRAW = { meteor: drawMeteor, satellite: drawSatellite, birds: drawBirds, eagle: drawEagle, ufo: drawUfo, contrail: drawContrail };
 
   function tick() {
     if (!running || !canvas.isConnected) { running = false; return; }
@@ -207,7 +257,7 @@ export function createSkyLifeLayer(canvas) {
     start() {
       if (running) return;
       running = true;
-      scheduleMeteor(); scheduleSatellite(); scheduleBirds(); scheduleEagle(); scheduleUfo();
+      scheduleMeteor(); scheduleSatellite(); scheduleBirds(); scheduleEagle(); scheduleUfo(); scheduleContrail();
       tick();
     },
     stop() {
