@@ -160,6 +160,27 @@ export function horizonHazeCSS(skyState) {
     "rgba(0,0,0,0) 100%)";
 }
 
+/** A small, fixed-position "catches the light" glint for the jeep's
+ *  windshield and the gauge's domed cap — an approximate reflection, not
+ *  a literal ray-traced one: real sun position isn't used to aim it, but
+ *  its brightness and color are still real, tracking the same sun
+ *  altitude everything else does. Full strength by mid-morning sun,
+ *  warming near the horizon the way direct light actually does, and
+ *  gone below -4deg — there's no real light left to catch once the sun's
+ *  down, so unlike the sky/haze layers this one goes fully dark at
+ *  night rather than lingering. Applied with mix-blend-mode:screen (see
+ *  styles.css) so it only ever brightens, reading as a highlight instead
+ *  of a pasted-on sticker. */
+export function sunGlintCSS(skyState) {
+  const altDeg = skyState.sunAltitudeDeg;
+  const strength = Math.max(0, Math.min(1, (altDeg + 4) / 26));
+  if (strength <= 0.015) return "none";
+  const horizon = Math.max(0, Math.min(1, 1 - altDeg / 20));
+  const r = 255, g = Math.round(250 - 30 * horizon), b = Math.round(232 - 90 * horizon);
+  const alpha = (0.16 + 0.36 * strength).toFixed(3);
+  return "radial-gradient(ellipse 60% 55% at 50% 40%, rgba(" + r + "," + g + "," + b + "," + alpha + ") 0%, rgba(" + r + "," + g + "," + b + ",0) 100%)";
+}
+
 /** The real, moving sun — the only sun now that the painted one has been
  *  cut out of the foreground plate along with the rest of the sky, so
  *  there's nothing left to crossfade against. Fades in/out only right at

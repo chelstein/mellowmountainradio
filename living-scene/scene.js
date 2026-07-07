@@ -7,7 +7,7 @@ import { CONFIG } from "./config.js";
 import { getSkyState, getRiseSetTimes, initAstronomyEngine, engineAvailable } from "./astronomy.js";
 import { getVisibleStars } from "./stars.js";
 import { getVisiblePlanets } from "./planets.js";
-import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS, groundFilterCSS, horizonHazeCSS, duskGlowMaskCSS } from "./sky.js";
+import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS, groundFilterCSS, horizonHazeCSS, duskGlowMaskCSS, sunGlintCSS } from "./sky.js";
 import { fetchWeather, CALM_FALLBACK } from "./weather.js";
 import { createParticleSystem } from "./particles.js";
 import { fetchAircraft, createAircraftLayer } from "./aircraft.js";
@@ -66,6 +66,8 @@ export function initLivingScene(root) {
   const skyCanvas = root.querySelector("[data-ls-sky]");
   const hazeEl = root.querySelector("[data-ls-haze]");
   const duskPatchEl = root.querySelector("[data-ls-duskpatch]");
+  const jeepGlintEl = root.querySelector("[data-ls-jeep-glint]");
+  const gaugeGlintEl = root.querySelector("[data-ls-gauge-glint]");
   const precipCanvas = root.querySelector("[data-ls-precip]");
   const airCanvas = root.querySelector("[data-ls-air]");
   const skylifeCanvas = root.querySelector("[data-ls-skylife]");
@@ -93,7 +95,7 @@ export function initLivingScene(root) {
 
   const drawSky = skyCanvas ? createSkyCanvas(skyCanvas) : null;
   let lastSkyState = null, lastStars = [], lastPlanets = [];
-  let lastGradient = null, lastGroundFilter = null, lastHaze = null, lastDuskPatch = null;
+  let lastGradient = null, lastGroundFilter = null, lastHaze = null, lastDuskPatch = null, lastGlint = null;
 
   // Astronomy changes over seconds, not milliseconds — recomputing it,
   // and writing to element style, 60 times a second was real, measurable
@@ -116,6 +118,13 @@ export function initLivingScene(root) {
 
     const duskPatch = duskGlowMaskCSS(lastSkyState);
     if (duskPatchEl && duskPatch !== lastDuskPatch) { duskPatchEl.style.background = duskPatch; lastDuskPatch = duskPatch; }
+
+    const glint = sunGlintCSS(lastSkyState);
+    if (glint !== lastGlint) {
+      if (jeepGlintEl) jeepGlintEl.style.background = glint;
+      if (gaugeGlintEl) gaugeGlintEl.style.background = glint;
+      lastGlint = glint;
+    }
 
     if (skylife) skylife.setConditions(lastSkyState.sunAltitudeDeg > 3, lastSkyState.nightAmount > 0.5);
 

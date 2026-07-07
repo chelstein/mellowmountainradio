@@ -3468,6 +3468,11 @@ body.podplaying .player.show { transform: translateY(180%); }
    duskGlowMaskCSS. Same z-tier as the scene, painted after it in the DOM
    so it sits on top and can actually darken that one real spot. */
 .lounge-duskpatch{z-index:1;transition:background 2.5s linear}
+/* Small approximate "catches the light" highlights — see sky.js's
+   sunGlintCSS. mix-blend-mode:screen so they only ever brighten what's
+   under them (a real highlight), never look like a flat pasted sticker. */
+.lounge-jeep-glint{position:absolute;left:12.6%;top:60.2%;width:3.2%;height:2.6%;border-radius:50%;pointer-events:none;z-index:1;mix-blend-mode:screen;filter:blur(2px);transition:background 2.5s linear}
+.lounge-gauge-glint{position:absolute;left:36.4%;top:66.5%;width:1.8%;height:2.2%;border-radius:50%;pointer-events:none;z-index:1;mix-blend-mode:screen;filter:blur(1.4px);transition:background 2.5s linear}
 .lounge-precip{z-index:2}
 .lounge-air{z-index:2}
 .lounge-skylife{z-index:2}
