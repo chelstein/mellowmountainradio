@@ -3452,7 +3452,7 @@ body.podplaying .player.show { transform: translateY(180%); }
 .lounge-band .wrap{display:flex;flex-direction:column;align-items:center}
 .lounge-window{position:relative;aspect-ratio:1536/1024;width:min(100%,calc(80vh * 1.5));margin:0 auto;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px -28px rgba(0,0,0,.85),0 2px 0 rgba(255,255,255,.05) inset;background:#0a0d18}
 .lounge-window::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:18px;box-shadow:0 0 120px 12px rgba(0,0,0,.55) inset,0 0 0 1px rgba(255,214,150,.12) inset;z-index:3}
-.lounge-gradient,.lounge-clouds,.lounge-sky,.lounge-haze,.lounge-scene,.lounge-precip,.lounge-air,.lounge-skylife{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lounge-gradient,.lounge-clouds,.lounge-sky,.lounge-haze,.lounge-scene,.lounge-duskpatch,.lounge-precip,.lounge-air,.lounge-skylife{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 /* Real sky, drawn behind a transparent-sky foreground cutout (lounge-
    foreground.webp) instead of tinted on top of a painted sky — see
    living-scene/sky.js (skyGradientCSS) and ASSET-BACKLOG-v85.md. */
@@ -3463,14 +3463,11 @@ body.podplaying .player.show { transform: translateY(180%); }
    horizonHazeCSS. Sits above the sun/moon/star canvas (paints after it in
    this same z0 tier) so distant light reads as passing through haze. */
 .lounge-haze{transition:background 3s linear;z-index:0}
-/* Two stacked, identically-sized layers crossfaded by real local clock
-   time (see living-scene/timeofday.js) — each is a real painting for that
-   time of day with its own correct sun position/shadows/sky color, so
-   unlike the old single-image system there's no brightness/glow-mask
-   trick needed to fake a different time of day on top. */
-.lounge-scene{background-size:cover;background-position:center;transform:scale(1.06);transform-origin:center;will-change:opacity,transform;z-index:1;transition:opacity 2.5s linear}
-.lounge-scene-a{opacity:1}
-.lounge-scene-b{opacity:0}
+.lounge-scene{background-image:var(--lounge-img);background-size:cover;background-position:center;transform:scale(1.06);transform-origin:center;will-change:transform;z-index:1;filter:brightness(1) saturate(1) contrast(1);transition:filter 2.5s linear}
+/* Counter-glow for the baked-in golden-hour sun bloom — see sky.js's
+   duskGlowMaskCSS. Same z-tier as the scene, painted after it in the DOM
+   so it sits on top and can actually darken that one real spot. */
+.lounge-duskpatch{z-index:1;transition:background 2.5s linear}
 /* Small approximate "catches the light" highlights — see sky.js's
    sunGlintCSS. mix-blend-mode:screen so they only ever brighten what's
    under them (a real highlight), never look like a flat pasted sticker. */
