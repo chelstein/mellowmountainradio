@@ -16,10 +16,48 @@ import { SKY, projectAltAz } from "./config.js";
 const GOLDEN = [[61, 59, 111], [80, 53, 87], [133, 90, 120], [205, 95, 56], [247, 153, 59]];
 const NIGHT = [[4, 6, 14], [6, 8, 18], [8, 11, 24], [10, 10, 21], [12, 10, 19]];
 const DAY = [[63, 126, 194], [90, 145, 200], [127, 168, 208], [180, 205, 218], [239, 232, 216]];
+// Real dusk/dawn doesn't fade evenly from golden hour straight to black —
+// the horizon glow shifts hue as it dims (warm gold -> pink -> violet-grey
+// -> gone) while the zenith deepens on its own track. These three give
+// civil/nautical/astronomical twilight (real definitions: sun 0 to -6deg,
+// -6 to -12deg, -12 to -18deg) their own distinct character instead of one
+// flat lerp collapsing all 24 degrees of dusk into a single blend.
+const CIVIL = [[20, 28, 58], [35, 38, 72], [70, 50, 90], [140, 70, 85], [225, 120, 70]];
+const NAUTICAL = [[6, 9, 20], [8, 11, 26], [14, 16, 36], [22, 22, 48], [45, 38, 58]];
+const ASTRONOMICAL = [[3, 4, 11], [4, 5, 14], [6, 7, 18], [8, 8, 20], [16, 13, 24]];
 const STOP_PCT = [0, 15, 40, 65, 100];
+
+// Ladder from bright day down to full night, ordered by real sun altitude.
+// GOLDEN sits at 5.35deg — the reference photo's own real sun altitude —
+// so the painting's true moment is hit exactly, not approximated. Between
+// anchors, color blends linearly by where the real sun altitude actually
+// falls, so the sky always reflects a real, continuous moment rather than
+// jumping between named bands.
+const LADDER = [
+  { alt: 45, stops: DAY },
+  { alt: 5.35, stops: GOLDEN },
+  { alt: -3, stops: CIVIL },
+  { alt: -9, stops: NAUTICAL },
+  { alt: -15, stops: ASTRONOMICAL },
+  { alt: -21, stops: NIGHT },
+];
 
 function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
 function lerpRGB(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; }
+
+function skyStopsForAltitude(sunAltDeg) {
+  if (sunAltDeg >= LADDER[0].alt) return LADDER[0].stops;
+  const last = LADDER[LADDER.length - 1];
+  if (sunAltDeg <= last.alt) return last.stops;
+  for (let i = 0; i < LADDER.length - 1; i++) {
+    const hi = LADDER[i], lo = LADDER[i + 1];
+    if (sunAltDeg <= hi.alt && sunAltDeg >= lo.alt) {
+      const t = (hi.alt - sunAltDeg) / (hi.alt - lo.alt);
+      return STOP_PCT.map((_pct, idx) => lerpRGB(hi.stops[idx], lo.stops[idx], t));
+    }
+  }
+  return GOLDEN; // unreachable — LADDER is exhaustive and monotonic
+}
 
 /** The foreground plate (ground/trees/tower/dish/jeep/etc.) is still one
  *  flattened cutout lit for the one real golden-hour moment the painting
@@ -44,17 +82,41 @@ export function groundFilterCSS(skyState) {
   return "brightness(" + brightness.toFixed(3) + ") saturate(" + saturate.toFixed(3) + ") contrast(" + contrast.toFixed(3) + ")";
 }
 
-/** Real CSS gradient for the sky itself, blended from real sun altitude —
- *  golden hour is the painting's own true colors; day and night blend in
- *  from there via middayAmount/nightAmount, same axes the old tint used. */
+/** Real CSS gradient for the sky itself, blended from real sun altitude
+ *  through the full day -> golden hour -> civil -> nautical ->
+ *  astronomical -> night ladder above, so dusk/dawn passes through the
+ *  same rich color sequence a real sky actually does. */
 export function skyGradientCSS(skyState) {
-  const stops = STOP_PCT.map((pct, i) => {
-    const rgb = skyState.nightAmount > 0
-      ? lerpRGB(GOLDEN[i], NIGHT[i], skyState.nightAmount)
-      : lerpRGB(GOLDEN[i], DAY[i], skyState.middayAmount);
-    return "rgb(" + rgb.join(",") + ") " + pct + "%";
-  });
+  const rgbStops = skyStopsForAltitude(skyState.sunAltitudeDeg);
+  const stops = STOP_PCT.map((pct, i) => "rgb(" + rgbStops[i].join(",") + ") " + pct + "%");
   return "linear-gradient(180deg," + stops.join(",") + ")";
+}
+
+/** A soft, warm band hugging the real horizon line (config.js's SKY.horizonY)
+ *  — the atmospheric haze/dust a real distant treeline always sits behind,
+ *  distinct from the vertical sky gradient above: this is horizontal
+ *  atmospheric depth, not sky color. Peaks in intensity and warmth when the
+ *  real sun is near the horizon (more atmosphere for light to scatter
+ *  through), stays pale and present through full day, and fades to a faint
+ *  cool residue at full night — never fully absent, since real haze isn't. */
+export function horizonHazeCSS(skyState) {
+  const altDeg = skyState.sunAltitudeDeg;
+  const lowSun = Math.max(0, Math.min(1, 1 - Math.abs(altDeg) / 20)); // peaks with the sun near the horizon, either side
+  const warmth = lowSun * (1 - skyState.nightAmount * 0.6);
+  const r = 255;
+  const g = Math.round(210 + 30 * (1 - warmth));
+  const b = Math.round(150 + 90 * (1 - warmth) - 40 * skyState.nightAmount);
+  const alpha = Math.max(0.04, Math.min(0.42, 0.14 + 0.24 * lowSun + 0.05 * skyState.middayAmount - 0.09 * skyState.nightAmount));
+  const hy = SKY.horizonY * 100;
+  const c = function (a) { return "rgba(" + r + "," + g + "," + b + "," + a.toFixed(3) + ")"; };
+  return "linear-gradient(180deg," +
+    "rgba(0,0,0,0) 0%," +
+    "rgba(0,0,0,0) " + (hy - 9).toFixed(2) + "%," +
+    c(alpha * 0.45) + " " + (hy - 2).toFixed(2) + "%," +
+    c(alpha) + " " + hy.toFixed(2) + "%," +
+    c(alpha * 0.35) + " " + (hy + 3).toFixed(2) + "%," +
+    "rgba(0,0,0,0) " + (hy + 11).toFixed(2) + "%," +
+    "rgba(0,0,0,0) 100%)";
 }
 
 /** The real, moving sun — the only sun now that the painted one has been
