@@ -74,8 +74,18 @@ export function groundFilterCSS(skyState) {
   // of solar noon) still read as too dark/dusky against a correctly
   // bright sky. The first pass (0.22/0.2/0.05 coefficients) was too
   // timid to sell "mid-afternoon" against ground painted for near-
-  // sunset shadows — retuned and checked visually up to full midday
-  // intensity (brightness 1.7) before landing here.
+  // sunset shadows — retuned once to 0.7/0.33/0.13.
+  //
+  // Real report again, this time at 10:23am with the sun at 59.9deg
+  // (middayAmount already maxed at 1): even the fully-settled 0.7-tuned
+  // filter (brightness 1.7) still read as golden-hour dusk, confirmed by
+  // checking the actual computed style after its transition finished, not
+  // guessed from a screenshot. A flat brightness/saturate multiplier can
+  // only scale a baked-in warm cast, not remove it — pushed further and
+  // checked visually (brightness up to 2.3, saturate down to 0.5) until
+  // it actually read as bright daylight instead of "the same dusk, less
+  // dark." See duskGlowMaskCSS below for the other half of this same
+  // fix — the horizon glow's actual hue, which brightness alone can't touch.
   //
   // The night side of this same formula went untested until the sky
   // gradient itself actually got dark (see skyStopsForAltitude/LADDER
@@ -88,9 +98,9 @@ export function groundFilterCSS(skyState) {
   // nightAmount hits 1 (sun -18deg, true night).
   const n = skyState.nightAmount;
   const nightEase = n * n * (3 - 2 * n);
-  const brightness = 1 + 0.7 * skyState.middayAmount - 0.82 * nightEase;
-  const saturate = 1 - 0.33 * skyState.middayAmount - 0.62 * nightEase;
-  const contrast = 1 + 0.13 * skyState.middayAmount + 0.08 * nightEase;
+  const brightness = 1 + 1.3 * skyState.middayAmount - 0.82 * nightEase;
+  const saturate = 1 - 0.5 * skyState.middayAmount - 0.62 * nightEase;
+  const contrast = 1 + 0.2 * skyState.middayAmount + 0.08 * nightEase;
   return "brightness(" + brightness.toFixed(3) + ") saturate(" + saturate.toFixed(3) + ") contrast(" + contrast.toFixed(3) + ")";
 }
 
@@ -108,29 +118,55 @@ export function skyGradientCSS(skyState) {
  *  (SKY.cameraX, SKY.cameraY) — the road's vanishing point, which is also
  *  exactly where the reference photo's real sun sat at golden hour (see
  *  config.js). That's correct at golden hour, since it's a real photo of
- *  a real moment, but it's static art: it can't dim on its own as the real
- *  sun actually goes down. Unmasked, it reads as a second sun sitting in
- *  the trees all night. This is a targeted counter-glow at that exact real
- *  coordinate: a smoothstep ease (continuous, no jump at the sunset
- *  crossing) that reaches full opacity — true black, not a plateau — by
- *  the end of real nautical twilight (sun -11deg) and stays there through
- *  astronomical twilight and true night. The source pixels there are
- *  genuinely near-saturated (sampled around rgb(231,110,12) at the
- *  hottest point), so the curve is tuned against the raw pixels rather
- *  than guessed: ~0.82 by sun -8deg, matching what actually reads as a
- *  fading ember there rather than still-bright. */
+ *  a real moment, but it's static art: nothing about it changes as the
+ *  real sun actually moves. Unmasked at night it reads as a second sun
+ *  sitting in the trees; unmasked by day it still reads as a sunset glow
+ *  in the middle of a bright morning, because a brightness/saturate filter
+ *  (groundFilterCSS) can only scale a baked-in hue, never actually shift
+ *  it — confirmed by a real report at 10:23am (sun 59.9deg) where the
+ *  filter was measurably at its full daytime value and the glow still
+ *  looked like dusk.
+ *
+ *  So this masks the same real coordinate from both directions, and both
+ *  are smoothstep-eased (continuous, no jump right at the reference
+ *  moment):
+ *  - Night side (sun below the real reference altitude): a dark counter-
+ *    glow, reaching true black by the end of real nautical twilight (sun
+ *    -11deg). Tuned against the actual source pixels there (sampled
+ *    around rgb(231,110,12) at the hottest point), not guessed.
+ *  - Day side (sun above it): the same spot needs neutralizing, not
+ *    darkening — a bright midday sun down that corridor would be a pale
+ *    hazy glare, not a warm ember, and a dark patch in bright daylight
+ *    would just look like an unexplained smudge. A pale, desaturated
+ *    wash ramps in as the sun climbs and is fully in by sun ~40deg
+ *    (clearly bright day), tuned visually against the live report until
+ *    the corridor actually read as daylight haze instead of sunset. */
 export function duskGlowMaskCSS(skyState) {
   const altDeg = skyState.sunAltitudeDeg;
-  const t = Math.max(0, Math.min(1, -altDeg / 11)); // 0 at sunset, 1 by sun -11deg
-  const alpha = t * t * (3 - 2 * t); // smoothstep — continuous through the sunset crossing, flattens at both ends
-  if (alpha <= 0.004) return "none";
+  const GOLDEN_ALT = 5.35321006934902; // the real reference photo's exact sun altitude — untouched at this one moment
   const cx = (SKY.cameraX * 100).toFixed(2), cy = (SKY.cameraY * 100).toFixed(2);
+
+  if (altDeg <= GOLDEN_ALT) {
+    const t = Math.max(0, Math.min(1, (GOLDEN_ALT - altDeg) / 16.35)); // 0 at reference, 1 by sun -11deg
+    const alpha = t * t * (3 - 2 * t);
+    if (alpha <= 0.004) return "none";
+    return "radial-gradient(ellipse 20% 16% at " + cx + "% " + cy + "%," +
+      "rgba(5,4,7," + alpha.toFixed(3) + ") 0%," +
+      "rgba(5,4,7," + (alpha * 0.82).toFixed(3) + ") 40%," +
+      "rgba(5,4,7," + (alpha * 0.45).toFixed(3) + ") 68%," +
+      "rgba(5,4,7," + (alpha * 0.15).toFixed(3) + ") 88%," +
+      "rgba(5,4,7,0) 100%)";
+  }
+
+  const t = Math.max(0, Math.min(1, (altDeg - GOLDEN_ALT) / 34.65)); // 0 at reference, 1 by sun ~40deg
+  const alpha = t * t * (3 - 2 * t) * 0.8;
+  if (alpha <= 0.004) return "none";
   return "radial-gradient(ellipse 20% 16% at " + cx + "% " + cy + "%," +
-    "rgba(5,4,7," + alpha.toFixed(3) + ") 0%," +
-    "rgba(5,4,7," + (alpha * 0.82).toFixed(3) + ") 40%," +
-    "rgba(5,4,7," + (alpha * 0.45).toFixed(3) + ") 68%," +
-    "rgba(5,4,7," + (alpha * 0.15).toFixed(3) + ") 88%," +
-    "rgba(5,4,7,0) 100%)";
+    "rgba(205,213,214," + alpha.toFixed(3) + ") 0%," +
+    "rgba(205,213,214," + (alpha * 0.82).toFixed(3) + ") 40%," +
+    "rgba(205,213,214," + (alpha * 0.45).toFixed(3) + ") 68%," +
+    "rgba(205,213,214," + (alpha * 0.15).toFixed(3) + ") 88%," +
+    "rgba(205,213,214,0) 100%)";
 }
 
 /** A soft, warm band hugging the real horizon line (config.js's SKY.horizonY)
