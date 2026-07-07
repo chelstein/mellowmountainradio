@@ -1987,16 +1987,26 @@
   var TRAFFIC_TILE = "https://tiles.ibi511.com/Geoservice/GetTrafficTile?x={x}&y={y}&z={z}";
   function loadLeaflet(cb) {
     if (window.L) { cb(window.L); return; }
+    // Vendored locally (vendor/leaflet/) rather than pulled from a CDN --
+    // an unpkg.com hiccup, ad-blocker, or slow network used to silently
+    // kill every map on the site (weather, roads, jeep trails) with zero
+    // visible error, since a script tag that never fires onload/onerror
+    // just hangs the whole loadLeaflet callback forever. Same-origin now,
+    // so it loads exactly as reliably as the rest of the page, plus a
+    // timeout fallback in case a future load attempt ever hangs anyway.
+    var done = false;
+    function finish(L) { if (done) return; done = true; cb(L); }
     if (!doc.querySelector('link[data-leaflet]')) {
       var css = doc.createElement("link");
-      css.rel = "stylesheet"; css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; css.setAttribute("data-leaflet", "1");
+      css.rel = "stylesheet"; css.href = "vendor/leaflet/leaflet.css"; css.setAttribute("data-leaflet", "1");
       doc.head.appendChild(css);
     }
     var js = doc.createElement("script");
-    js.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-    js.onload = function () { cb(window.L); };
-    js.onerror = function () { cb(null); };
+    js.src = "vendor/leaflet/leaflet.js";
+    js.onload = function () { finish(window.L); };
+    js.onerror = function () { finish(null); };
     doc.head.appendChild(js);
+    setTimeout(function () { finish(window.L || null); }, 8000);
   }
 
   /* =========================================================
