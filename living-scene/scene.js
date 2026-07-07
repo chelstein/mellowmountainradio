@@ -12,6 +12,7 @@ import { fetchWeather, CALM_FALLBACK } from "./weather.js";
 import { createParticleSystem } from "./particles.js";
 import { fetchAircraft, createAircraftLayer } from "./aircraft.js";
 import { mountWildlife } from "./wildlife.js";
+import { createSkyLifeLayer } from "./skylife.js";
 
 function createSkyCanvas(canvas) {
   let w = 0, h = 0, dpr = 1;
@@ -65,6 +66,7 @@ export function initLivingScene(root) {
   const skyCanvas = root.querySelector("[data-ls-sky]");
   const precipCanvas = root.querySelector("[data-ls-precip]");
   const airCanvas = root.querySelector("[data-ls-air]");
+  const skylifeCanvas = root.querySelector("[data-ls-skylife]");
   const gauge = root.querySelector("[data-ls-gauge]");
 
   // Appended to root, not `scene` — `.lounge-scene` has its own CSS
@@ -75,7 +77,8 @@ export function initLivingScene(root) {
 
   const particles = precipCanvas ? createParticleSystem(precipCanvas) : null;
   const aircraftLayer = airCanvas ? createAircraftLayer(airCanvas) : null;
-  if (!reduce) { if (particles) particles.start(); if (aircraftLayer) aircraftLayer.start(); }
+  const skylife = skylifeCanvas ? createSkyLifeLayer(skylifeCanvas) : null;
+  if (!reduce) { if (particles) particles.start(); if (aircraftLayer) aircraftLayer.start(); if (skylife) skylife.start(); }
 
   mountWildlife(scene || root);
 
@@ -105,6 +108,8 @@ export function initLivingScene(root) {
 
     const groundFilter = groundFilterCSS(lastSkyState);
     if (scene && groundFilter !== lastGroundFilter) { scene.style.filter = groundFilter; lastGroundFilter = groundFilter; }
+
+    if (skylife) skylife.setConditions(lastSkyState.sunAltitudeDeg > 3, lastSkyState.nightAmount > 0.5);
 
     if (debugEl) {
       const rs = getRiseSetTimes(now, CONFIG.lat, CONFIG.lon, CONFIG.elevationM);
