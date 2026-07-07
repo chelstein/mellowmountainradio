@@ -63,6 +63,7 @@ export const SKY = {
   zenithY: ZENITH_Y,
   eastX: 0.05,
   cameraX: CAMERA_X,
+  cameraY: CAMERA_Y, // real reference-photo sun spot / road vanishing point — see sky.js's duskGlowMaskCSS
   westX: 0.95,
   visibleAzimuthCenter: CAMERA_AZIMUTH_DEG,
   visibleAzimuthWidth: 180,

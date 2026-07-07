@@ -7,7 +7,7 @@ import { CONFIG } from "./config.js";
 import { getSkyState, getRiseSetTimes, initAstronomyEngine, engineAvailable } from "./astronomy.js";
 import { getVisibleStars } from "./stars.js";
 import { getVisiblePlanets } from "./planets.js";
-import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS, groundFilterCSS, horizonHazeCSS } from "./sky.js";
+import { drawSun, drawMoon, drawStars, drawPlanets, skyGradientCSS, groundFilterCSS, horizonHazeCSS, duskGlowMaskCSS } from "./sky.js";
 import { fetchWeather, CALM_FALLBACK } from "./weather.js";
 import { createParticleSystem } from "./particles.js";
 import { fetchAircraft, createAircraftLayer } from "./aircraft.js";
@@ -65,6 +65,7 @@ export function initLivingScene(root) {
   const cloudVeil = root.querySelector("[data-ls-clouds]");
   const skyCanvas = root.querySelector("[data-ls-sky]");
   const hazeEl = root.querySelector("[data-ls-haze]");
+  const duskPatchEl = root.querySelector("[data-ls-duskpatch]");
   const precipCanvas = root.querySelector("[data-ls-precip]");
   const airCanvas = root.querySelector("[data-ls-air]");
   const skylifeCanvas = root.querySelector("[data-ls-skylife]");
@@ -92,7 +93,7 @@ export function initLivingScene(root) {
 
   const drawSky = skyCanvas ? createSkyCanvas(skyCanvas) : null;
   let lastSkyState = null, lastStars = [], lastPlanets = [];
-  let lastGradient = null, lastGroundFilter = null, lastHaze = null;
+  let lastGradient = null, lastGroundFilter = null, lastHaze = null, lastDuskPatch = null;
 
   // Astronomy changes over seconds, not milliseconds — recomputing it,
   // and writing to element style, 60 times a second was real, measurable
@@ -112,6 +113,9 @@ export function initLivingScene(root) {
 
     const haze = horizonHazeCSS(lastSkyState);
     if (hazeEl && haze !== lastHaze) { hazeEl.style.background = haze; lastHaze = haze; }
+
+    const duskPatch = duskGlowMaskCSS(lastSkyState);
+    if (duskPatchEl && duskPatch !== lastDuskPatch) { duskPatchEl.style.background = duskPatch; lastDuskPatch = duskPatch; }
 
     if (skylife) skylife.setConditions(lastSkyState.sunAltitudeDeg > 3, lastSkyState.nightAmount > 0.5);
 

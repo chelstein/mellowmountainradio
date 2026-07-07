@@ -92,6 +92,34 @@ export function skyGradientCSS(skyState) {
   return "linear-gradient(180deg," + stops.join(",") + ")";
 }
 
+/** The foreground plate has a real, permanent warm bloom baked into it at
+ *  (SKY.cameraX, SKY.cameraY) — the road's vanishing point, which is also
+ *  exactly where the reference photo's real sun sat at golden hour (see
+ *  config.js). That's correct at golden hour, since it's a real photo of
+ *  a real moment, but it's static art: it can't dim on its own as the real
+ *  sun actually goes down. Unmasked, it reads as a second sun sitting in
+ *  the trees all night. This is a targeted counter-glow at that exact real
+ *  coordinate: untouched while the real sun is still up (that's the one
+ *  moment the bloom is already correct), then ramping in once it actually
+ *  sets. The source pixels there are genuinely near-saturated (sampled
+ *  around rgb(231,110,12) at the hottest point), so getting it to actually
+ *  read as dim needs real, fairly aggressive coverage, not a light tint —
+ *  tuned against the raw pixels rather than guessed, reaching ~90% by the
+ *  end of real nautical twilight (sun -9deg), consistent with a bright
+ *  ember-like sunset afterglow fading out on schedule, not vanishing
+ *  instantly at sunset. */
+export function duskGlowMaskCSS(skyState) {
+  const altDeg = skyState.sunAltitudeDeg;
+  if (altDeg >= 0) return "none"; // real sun still up — the bloom is already correct, leave it alone
+  const t = Math.max(0, Math.min(1, -altDeg / 9)); // 0 right at sunset, 1 by real nautical twilight (-9deg)
+  const alpha = Math.min(0.9, 0.15 + t * 0.75);
+  const cx = (SKY.cameraX * 100).toFixed(2), cy = (SKY.cameraY * 100).toFixed(2);
+  return "radial-gradient(ellipse 15% 11% at " + cx + "% " + cy + "%," +
+    "rgba(6,5,9," + alpha.toFixed(3) + ") 0%," +
+    "rgba(6,5,9," + (alpha * 0.6).toFixed(3) + ") 55%," +
+    "rgba(6,5,9,0) 100%)";
+}
+
 /** A soft, warm band hugging the real horizon line (config.js's SKY.horizonY)
  *  — the atmospheric haze/dust a real distant treeline always sits behind,
  *  distinct from the vertical sky gradient above: this is horizontal
