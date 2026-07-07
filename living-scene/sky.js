@@ -76,9 +76,21 @@ export function groundFilterCSS(skyState) {
   // timid to sell "mid-afternoon" against ground painted for near-
   // sunset shadows — retuned and checked visually up to full midday
   // intensity (brightness 1.7) before landing here.
-  const brightness = 1 + 0.7 * skyState.middayAmount - 0.4 * skyState.nightAmount;
-  const saturate = 1 - 0.33 * skyState.middayAmount - 0.25 * skyState.nightAmount;
-  const contrast = 1 + 0.13 * skyState.middayAmount;
+  //
+  // The night side of this same formula went untested until the sky
+  // gradient itself actually got dark (see skyStopsForAltitude/LADDER
+  // above) — once it did, the old -0.4 coefficient left the tower and
+  // trees at 60% brightness even at full night, reading as pale/glowing
+  // against a correctly dark sky instead of properly dim. nightAmount is
+  // eased through smoothstep (not linear) so the deepening is gradual,
+  // matching duskGlowMaskCSS's approach, and now actually reaches a
+  // real night-dark look (18% brightness, 38% saturation) by the time
+  // nightAmount hits 1 (sun -18deg, true night).
+  const n = skyState.nightAmount;
+  const nightEase = n * n * (3 - 2 * n);
+  const brightness = 1 + 0.7 * skyState.middayAmount - 0.82 * nightEase;
+  const saturate = 1 - 0.33 * skyState.middayAmount - 0.62 * nightEase;
+  const contrast = 1 + 0.13 * skyState.middayAmount + 0.08 * nightEase;
   return "brightness(" + brightness.toFixed(3) + ") saturate(" + saturate.toFixed(3) + ") contrast(" + contrast.toFixed(3) + ")";
 }
 
@@ -99,25 +111,26 @@ export function skyGradientCSS(skyState) {
  *  a real moment, but it's static art: it can't dim on its own as the real
  *  sun actually goes down. Unmasked, it reads as a second sun sitting in
  *  the trees all night. This is a targeted counter-glow at that exact real
- *  coordinate: untouched while the real sun is still up (that's the one
- *  moment the bloom is already correct), then ramping in once it actually
- *  sets. The source pixels there are genuinely near-saturated (sampled
- *  around rgb(231,110,12) at the hottest point), so getting it to actually
- *  read as dim needs real, fairly aggressive coverage, not a light tint —
- *  tuned against the raw pixels rather than guessed, reaching ~90% by the
- *  end of real nautical twilight (sun -9deg), consistent with a bright
- *  ember-like sunset afterglow fading out on schedule, not vanishing
- *  instantly at sunset. */
+ *  coordinate: a smoothstep ease (continuous, no jump at the sunset
+ *  crossing) that reaches full opacity — true black, not a plateau — by
+ *  the end of real nautical twilight (sun -11deg) and stays there through
+ *  astronomical twilight and true night. The source pixels there are
+ *  genuinely near-saturated (sampled around rgb(231,110,12) at the
+ *  hottest point), so the curve is tuned against the raw pixels rather
+ *  than guessed: ~0.82 by sun -8deg, matching what actually reads as a
+ *  fading ember there rather than still-bright. */
 export function duskGlowMaskCSS(skyState) {
   const altDeg = skyState.sunAltitudeDeg;
-  if (altDeg >= 0) return "none"; // real sun still up — the bloom is already correct, leave it alone
-  const t = Math.max(0, Math.min(1, -altDeg / 9)); // 0 right at sunset, 1 by real nautical twilight (-9deg)
-  const alpha = Math.min(0.9, 0.15 + t * 0.75);
+  const t = Math.max(0, Math.min(1, -altDeg / 11)); // 0 at sunset, 1 by sun -11deg
+  const alpha = t * t * (3 - 2 * t); // smoothstep — continuous through the sunset crossing, flattens at both ends
+  if (alpha <= 0.004) return "none";
   const cx = (SKY.cameraX * 100).toFixed(2), cy = (SKY.cameraY * 100).toFixed(2);
-  return "radial-gradient(ellipse 15% 11% at " + cx + "% " + cy + "%," +
-    "rgba(6,5,9," + alpha.toFixed(3) + ") 0%," +
-    "rgba(6,5,9," + (alpha * 0.6).toFixed(3) + ") 55%," +
-    "rgba(6,5,9,0) 100%)";
+  return "radial-gradient(ellipse 20% 16% at " + cx + "% " + cy + "%," +
+    "rgba(5,4,7," + alpha.toFixed(3) + ") 0%," +
+    "rgba(5,4,7," + (alpha * 0.82).toFixed(3) + ") 40%," +
+    "rgba(5,4,7," + (alpha * 0.45).toFixed(3) + ") 68%," +
+    "rgba(5,4,7," + (alpha * 0.15).toFixed(3) + ") 88%," +
+    "rgba(5,4,7,0) 100%)";
 }
 
 /** A soft, warm band hugging the real horizon line (config.js's SKY.horizonY)
