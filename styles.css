@@ -3463,9 +3463,22 @@ body.podplaying .player.show { transform: translateY(180%); }
 .lounge-precip{z-index:2}
 .lounge-air{z-index:2}
 .lounge-gauge-glow{position:absolute;left:38%;top:61.5%;width:5.4%;height:17%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(150,205,255,.85) 0%,rgba(120,180,255,.35) 45%,rgba(120,180,255,0) 75%);opacity:0;transition:opacity 1.6s ease;pointer-events:none;z-index:2;filter:blur(1px)}
-.lounge-deer{position:absolute;pointer-events:none;z-index:1;transform-origin:50% 100%;animation:loungeDeerBreathe 4.6s ease-in-out infinite}
-@keyframes loungeDeerBreathe{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.018) scaleX(1.008)}}
-@media (prefers-reduced-motion: reduce){.lounge-deer{animation:none}}
+/* Transform is driven per-frame by living-scene/wildlife.js (breathing +
+   idle state machine); origin at the feet so breathing/lean pivot there. */
+.lounge-deer{position:absolute;pointer-events:none;z-index:1;transform-origin:50% 100%;will-change:transform}
+
+/* Play/pause control overlaid on the window itself, bottom-left — sits
+   above the ::after vignette (z-index 3) and is the only pointer-active
+   layer in the window. Auto-wires to the stream via [data-listen]. */
+.lounge-play{position:absolute;left:16px;bottom:16px;z-index:4;display:inline-flex;align-items:center;gap:9px;padding:10px 16px 10px 13px;border:0;border-radius:999px;cursor:pointer;color:#fdf3e7;font:700 .92rem/1 var(--font-body,inherit);letter-spacing:.02em;background:rgba(20,16,26,.52);box-shadow:0 6px 22px -8px rgba(0,0,0,.7),0 0 0 1px rgba(255,214,150,.18) inset;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);transition:transform .2s cubic-bezier(.16,1,.3,1),background .2s ease,box-shadow .2s ease}
+.lounge-play svg{fill:#ffb86b;flex:none}
+.lounge-play:hover{transform:translateY(-2px);background:rgba(28,22,34,.66);box-shadow:0 12px 30px -10px rgba(0,0,0,.8),0 0 0 1px rgba(255,214,150,.32) inset}
+.lounge-play:active{transform:translateY(0)}
+.lounge-play:focus-visible{outline:2px solid #ffcf8f;outline-offset:3px}
+.lounge-play .ic-pause{display:none}
+.lounge-play.is-playing .ic-pause{display:block}
+.lounge-play.is-playing .ic-play{display:none}
+@media (max-width:520px){.lounge-play{left:11px;bottom:11px;padding:9px 13px 9px 11px;font-size:.82rem}.lounge-play svg{width:19px;height:19px}}
 
 /* =========================================================
    REAL, ALWAYS — the real-data story, merged into the Lounge page
