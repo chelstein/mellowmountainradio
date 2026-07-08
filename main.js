@@ -7632,6 +7632,31 @@
     probe();
   }
 
+  /* ---- Staff page: "Meet X" audio intros ----
+     Real per-person clips at audio/staff/<slug>-intro.mp3 — none exist yet,
+     so every button fails silently (caught play() rejection) rather than
+     erroring or looking broken. Add the files later and these just work. */
+  function initStaffIntros() {
+    var btns = doc.querySelectorAll("[data-staff-intro]");
+    if (!btns.length) return;
+    var current = null;
+    btns.forEach(function (btn) {
+      var slug = btn.getAttribute("data-staff-intro");
+      var audio = new Audio("audio/staff/" + slug + "-intro.mp3");
+      audio.preload = "none";
+      audio.addEventListener("ended", function () { btn.classList.remove("is-playing"); });
+      btn.addEventListener("click", function () {
+        if (current && current.audio !== audio) { current.audio.pause(); current.audio.currentTime = 0; current.btn.classList.remove("is-playing"); }
+        if (audio.paused) {
+          audio.play().then(function () { btn.classList.add("is-playing"); current = { audio: audio, btn: btn }; })
+            .catch(function () { /* no clip yet — button just stays put */ });
+        } else {
+          audio.pause(); audio.currentTime = 0; btn.classList.remove("is-playing"); current = null;
+        }
+      });
+    });
+  }
+
   function initPage() {
     initReveal();
     initScoreboards();
@@ -7686,6 +7711,7 @@
     initCosmicAudio();
     initGoldenMode();
     initSolstice();
+    initStaffIntros();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
