@@ -2800,6 +2800,26 @@ body:not(.is-playing) .listen-btn::after {
 .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(169, 87, 80, .15); }
 .field textarea { min-height: 130px; resize: vertical; }
 
+/* merch storefront */
+.merch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px 20px; }
+.merch-card {
+  display: flex; flex-direction: column; text-decoration: none; color: inherit;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease, border-color .25s ease;
+}
+.merch-card:hover { transform: translateY(-4px); border-color: var(--accent-soft); box-shadow: 0 20px 38px -24px rgba(154,68,61,.34), var(--shadow-sm); }
+.merch-img { display: block; aspect-ratio: 1; overflow: hidden; background: var(--surface-2); }
+.merch-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.16,1,.3,1); }
+.merch-card:hover .merch-img img { transform: scale(1.05); }
+.merch-meta { display: block; padding: 13px 15px 16px; }
+.merch-meta b { display: block; font-size: 1.02rem; color: var(--heading); }
+.merch-meta i { display: block; font-style: normal; font-size: 13px; color: var(--muted); margin-top: 3px; }
+.merch-cta { text-align: center; }
+.merch-cta h2 { margin-bottom: 8px; }
+.merch-cta .lead { max-width: 48ch; margin: 0 auto 22px; }
+@media (max-width: 480px) { .merch-grid { grid-template-columns: 1fr 1fr; gap: 16px 12px; } }
+
 /* staff */
 /* Warm dark studio hero — same brand terracotta as the rest of the site,
    just leaned into as a "red rock at dusk" glow instead of a small accent. */
