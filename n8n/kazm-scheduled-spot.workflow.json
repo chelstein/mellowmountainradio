@@ -1,0 +1,173 @@
+{
+  "name": "KAZM Scheduled Spot",
+  "nodes": [
+    {
+      "id": "4305b0e6-0312-4e03-9c86-ff39c34eafd6",
+      "name": "Noon Request Spot (18:50 UTC / 11:50 AM AZ)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 280],
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "50 18 * * *" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "964622aa-9b76-4f8a-8441-8b35f51771df",
+      "name": "Evening Request Spot (02:50 UTC / 7:50 PM AZ)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 480],
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "50 2 * * *" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "4487bca9-f551-426b-adc0-fd351767a218",
+      "name": "Determine Slot",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 380],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Determine which slot fired based on UTC hour\nconst hour = new Date().getUTCHours();\n// Noon fires ~18:50 UTC; Evening ~02:50 UTC\nconst slot = (hour >= 16 && hour <= 22) ? 'Noon' : 'Evening';\nconst playlistName = 'KAZM Request ' + slot + ' Playlist';\nconst playlistPath = '/Charles Helstein/MegaSegDropbox/MegaSeg copy/Playlists/KAZM Request ' + slot + ' Playlist';\nreturn [{ json: { slot, playlistName, playlistPath } }];"
+      }
+    },
+    {
+      "id": "afa74907-c0c3-43e6-947d-2dff9176e06c",
+      "name": "Fetch Request Board",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 380],
+      "parameters": {
+        "method": "GET",
+        "url": "https://n8n.mellowmountainradio.com/webhook/kazm-request-board",
+        "options": {}
+      }
+    },
+    {
+      "id": "57871c1c-03f4-4164-9f0b-ba6ddf20299f",
+      "name": "Pick Oldest Unplayed Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 380],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Maintain a played-set in static data so we don't repeat songs\nconst sd = $getWorkflowStaticData('global');\nsd.played = sd.played || [];\n\nconst slotData = $('Determine Slot').first().json;\nconst boardData = $('Fetch Request Board').first().json;\n// Board returns newest-first, so oldest unfulfilled = last element\nconst recent = boardData.requests || [];\n\nconst playedSet = new Set(sd.played);\nlet pick = null;\nfor (let i = recent.length - 1; i >= 0; i--) {\n  const r = recent[i];\n  const key = (String(r.title || '') + '|' + String(r.artist || '')).toLowerCase().trim();\n  if (!playedSet.has(key)) { pick = r; break; }\n}\n\nif (pick) {\n  const key = (String(pick.title || '') + '|' + String(pick.artist || '')).toLowerCase().trim();\n  sd.played.push(key);\n  if (sd.played.length > 200) sd.played = sd.played.slice(-200);\n}\n\nreturn [{ json: {\n  slot: slotData.slot,\n  playlistName: slotData.playlistName,\n  playlistPath: slotData.playlistPath,\n  found: !!pick,\n  title: pick ? String(pick.title || '') : '',\n  artist: pick ? String(pick.artist || '') : ''\n} }];"
+      }
+    },
+    {
+      "id": "241b3e22-a418-4373-8ab5-d81d4874886e",
+      "name": "Request Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1240, 380],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false, "typeValidation": "loose" },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.found }}",
+              "operator": { "type": "boolean", "operation": "true" }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "cb2ba263-752e-451e-b0bb-27c8e2d39069",
+      "name": "Download MegaSeg Library",
+      "type": "n8n-nodes-base.dropbox",
+      "typeVersion": 1,
+      "position": [1500, 280],
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "download",
+        "path": "/Charles Helstein/MegaSegDropbox/MegaSeg copy/Library/MegaSeg Database"
+      }
+    },
+    {
+      "id": "045e2d12-b033-472a-acbc-992f0f78b455",
+      "name": "Search Library and Build Playlist",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1760, 280],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const HEADER = 'Name\\tArtist\\tComposer\\tAlbum\\tGenre\\tSize\\tTime\\tDisc Number\\tDisc Count\\tTrack Number\\tTrack Count\\tYear\\tDate Modified\\tDate Added\\tBit Rate\\tSample Rate\\tVolume Adjustment\\tKind\\tEqualizer\\tComments\\tPlays\\tLast Played\\tMy Rating\\tLocation\\tUniqueID';\n\nconst req = $('Pick Oldest Unplayed Request').first().json;\nconst reqTitle = String(req.title || '').trim().toLowerCase();\nconst reqArtist = String(req.artist || '').trim().toLowerCase();\nconst playlistPath = req.playlistPath;\nconst playlistName = req.playlistName;\n\nlet raw = '';\ntry {\n  const buf = await this.helpers.getBinaryDataBuffer(0, 'data');\n  raw = buf.toString('utf8');\n} catch (e) {}\n\nconst clean = (s) => String(s || '').replace(/\\([^)]*\\)/g, '').replace(/\\s+/g, ' ').trim().toLowerCase();\nconst toSecs = (t) => {\n  const p = String(t || '').split(':').map(Number);\n  if (!p.length || p.some(isNaN)) return 0;\n  return p.reduce((a, b) => a * 60 + b, 0);\n};\nconst toRow = (f) => {\n  const c = new Array(25).fill('');\n  c[0] = f['01']; c[1] = f['02'] || ''; c[3] = f['09'] || '';\n  c[4] = String(f['06'] || '').split('/')[0];\n  c[6] = toSecs(f['05']).toFixed(2);\n  c[11] = f['10'] || ''; c[20] = f['14'] || '0'; c[21] = f['15'] || ''; c[22] = '0';\n  c[23] = f['49']; c[24] = f['45'];\n  return c.join('\\t');\n};\n\nlet match = null;\nif (raw.startsWith('D**')) {\n  for (const rec of raw.split('99* ----').slice(1)) {\n    const f = {};\n    for (const line of rec.split('\\n')) {\n      const m = line.match(/^(\\d\\d)\\]\\s?(.*)/);\n      if (m) f[m[1]] = m[2].replace(/\\r$/, '');\n    }\n    if (!f['01'] || !f['49'] || !f['45']) continue;\n    const t = clean(f['01']);\n    const a = clean(f['02']);\n    const tMatch = t === reqTitle || t.includes(reqTitle) || reqTitle.includes(t);\n    const aMatch = !reqArtist || a.includes(reqArtist) || reqArtist.includes(a);\n    if (tMatch && aMatch) { match = f; break; }\n  }\n}\n\nconst playlistContent = match ? HEADER + '\\n' + toRow(match) + '\\n' : HEADER + '\\n';\n\nreturn [{ json: {\n  playlistPath, playlistName, playlistContent,\n  songFound: !!match,\n  songTitle: match ? match['01'] : req.title,\n  songArtist: match ? (match['02'] || '') : req.artist\n} }];"
+      }
+    },
+    {
+      "id": "26865718-a210-421c-9154-60c973bf8b3d",
+      "name": "Upload Playlist to Dropbox",
+      "type": "n8n-nodes-base.dropbox",
+      "typeVersion": 1,
+      "position": [2020, 280],
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "upload",
+        "path": "={{ $json.playlistPath }}",
+        "binaryData": false,
+        "fileContent": "={{ $json.playlistContent }}"
+      }
+    },
+    {
+      "id": "b0e39af0-10ec-40fc-b050-b99465ea6c06",
+      "name": "Log Spot Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2280, 280],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const sd = $getWorkflowStaticData('global');\nconst d = $('Search Library and Build Playlist').first().json;\nsd.log = sd.log || [];\nsd.log.unshift({\n  at: new Date().toISOString(),\n  slot: d.playlistName,\n  song: d.songTitle,\n  artist: d.songArtist,\n  foundInLib: d.songFound\n});\nsd.log = sd.log.slice(0, 50);\nreturn [{ json: { ok: true, slot: d.playlistName, song: d.songTitle, artist: d.songArtist, foundInLibrary: d.songFound } }];"
+      }
+    }
+  ],
+  "connections": {
+    "Noon Request Spot (18:50 UTC / 11:50 AM AZ)": {
+      "main": [[{ "node": "Determine Slot", "type": "main", "index": 0 }]]
+    },
+    "Evening Request Spot (02:50 UTC / 7:50 PM AZ)": {
+      "main": [[{ "node": "Determine Slot", "type": "main", "index": 0 }]]
+    },
+    "Determine Slot": {
+      "main": [[{ "node": "Fetch Request Board", "type": "main", "index": 0 }]]
+    },
+    "Fetch Request Board": {
+      "main": [[{ "node": "Pick Oldest Unplayed Request", "type": "main", "index": 0 }]]
+    },
+    "Pick Oldest Unplayed Request": {
+      "main": [[{ "node": "Request Found?", "type": "main", "index": 0 }]]
+    },
+    "Request Found?": {
+      "main": [
+        [{ "node": "Download MegaSeg Library", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Download MegaSeg Library": {
+      "main": [[{ "node": "Search Library and Build Playlist", "type": "main", "index": 0 }]]
+    },
+    "Search Library and Build Playlist": {
+      "main": [[{ "node": "Upload Playlist to Dropbox", "type": "main", "index": 0 }]]
+    },
+    "Upload Playlist to Dropbox": {
+      "main": [[{ "node": "Log Spot Result", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "meta": {
+    "instanceId": "",
+    "templateId": "",
+    "description": "2x/day scheduled listener request spots: at 11:50 AM and 7:50 PM AZ time, picks the oldest unplayed listener request from the request board, finds it in the MegaSeg library, and writes a playlist file to Dropbox for MegaSeg to inject at noon and 8 PM."
+  }
+}
