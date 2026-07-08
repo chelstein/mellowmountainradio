@@ -7639,9 +7639,55 @@
   function initStaffIntros() {
     var btns = doc.querySelectorAll("[data-staff-intro]");
     if (!btns.length) return;
-    var current = null;
+    var current = null, audioCtx = null;
+
+    // Loki's "audio intro" is a real dog bark — synthesized with the Web
+    // Audio API rather than a canned mp3, so it works with no asset and
+    // varies a little each time. Two quick "woof" bursts: a pitch-dropping
+    // sawtooth + a shaped noise transient through a bandpass, each with a
+    // sharp amplitude envelope. Honest as a mascot sound effect, not data.
+    function bark(btn) {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      try {
+        if (!audioCtx) audioCtx = new Ctx();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+      } catch (e) { return; }
+      var ctx = audioCtx, t = ctx.currentTime;
+      function woof(t0, pitch) {
+        var osc = ctx.createOscillator();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(pitch, t0);
+        osc.frequency.exponentialRampToValueAtTime(pitch * 0.4, t0 + 0.16);
+        var n = Math.floor(ctx.sampleRate * 0.22), buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0);
+        for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * 0.5;
+        var noise = ctx.createBufferSource(); noise.buffer = buf;
+        var bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = pitch * 2.2; bp.Q.value = 0.9;
+        var g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.85, t0 + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2);
+        osc.connect(bp); noise.connect(bp); bp.connect(g); g.connect(ctx.destination);
+        osc.start(t0); osc.stop(t0 + 0.22);
+        noise.start(t0); noise.stop(t0 + 0.22);
+      }
+      var base = 380 + Math.random() * 90;
+      woof(t, base);
+      woof(t + 0.24, base * (0.9 + Math.random() * 0.15));
+      btn.classList.add("is-playing");
+      window.setTimeout(function () { btn.classList.remove("is-playing"); }, 650);
+    }
+
     btns.forEach(function (btn) {
       var slug = btn.getAttribute("data-staff-intro");
+      // The station dog barks — no mp3, just a woof on every click.
+      if (slug === "loki") {
+        btn.addEventListener("click", function () {
+          if (current) { current.audio.pause(); current.audio.currentTime = 0; current.btn.classList.remove("is-playing"); current = null; }
+          bark(btn);
+        });
+        return;
+      }
       var audio = new Audio("audio/staff/" + slug + "-intro.mp3");
       audio.preload = "none";
       audio.addEventListener("ended", function () { btn.classList.remove("is-playing"); });
