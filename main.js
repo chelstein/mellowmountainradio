@@ -4056,6 +4056,66 @@
           var want = shelf.querySelector('.tape-block[data-date="' + m[1] + '"][data-start="' + (+m[2]) + '"]');
           if (want) play(want, m[3] ? +m[3] : 0);
         }
+        // round seek knob
+        var knobEl = root.querySelector("[data-tape-knob]");
+        var knobRotor = knobEl && knobEl.querySelector("[data-tape-knob-rotor]");
+        var knobFill = knobEl && knobEl.querySelector("[data-tape-knob-fill]");
+        var knobTime = root.querySelector("[data-tape-knob-time]");
+        function tkArcPt(thetaDeg) {
+          var r = thetaDeg * Math.PI / 180;
+          return [40 + 32 * Math.sin(r), 40 - 32 * Math.cos(r)];
+        }
+        function setKnob(frac) {
+          frac = Math.max(0, Math.min(1, frac));
+          var angle = -135 + frac * 270;
+          if (knobRotor) knobRotor.setAttribute("transform", "rotate(" + angle.toFixed(1) + " 40 40)");
+          if (knobFill) {
+            if (frac <= 0.001) { knobFill.setAttribute("d", ""); }
+            else {
+              var s = tkArcPt(-135), e = tkArcPt(angle);
+              var large = frac > 0.667 ? 1 : 0;
+              knobFill.setAttribute("d", "M " + s[0].toFixed(2) + " " + s[1].toFixed(2) + " A 32 32 0 " + large + " 1 " + e[0].toFixed(2) + " " + e[1].toFixed(2));
+            }
+          }
+          if (knobEl) knobEl.setAttribute("aria-valuenow", Math.round(frac * 100));
+        }
+        function knobAngFromEvt(e) {
+          var rc = knobEl.getBoundingClientRect();
+          var dx = e.clientX - (rc.left + rc.width / 2), dy = e.clientY - (rc.top + rc.height / 2);
+          return Math.max(-135, Math.min(135, Math.atan2(dx, -dy) * 180 / Math.PI));
+        }
+        var tkDrag = false;
+        if (knobEl) {
+          knobEl.addEventListener("pointerdown", function (e) {
+            if (!audio.duration) return;
+            tkDrag = true; knobEl.setPointerCapture(e.pointerId); e.preventDefault();
+            var frac = (knobAngFromEvt(e) + 135) / 270;
+            audio.currentTime = frac * audio.duration; setKnob(frac);
+          });
+          knobEl.addEventListener("pointermove", function (e) {
+            if (!tkDrag || !audio.duration) return;
+            var frac = (knobAngFromEvt(e) + 135) / 270;
+            audio.currentTime = frac * audio.duration; setKnob(frac);
+          });
+          knobEl.addEventListener("pointerup", function () { tkDrag = false; });
+          knobEl.addEventListener("pointercancel", function () { tkDrag = false; });
+          knobEl.addEventListener("keydown", function (e) {
+            if (!audio.duration) return;
+            var step = audio.duration / 100;
+            if (e.key === "ArrowRight" || e.key === "ArrowUp") audio.currentTime = Math.min(audio.duration, audio.currentTime + step);
+            else if (e.key === "ArrowLeft" || e.key === "ArrowDown") audio.currentTime = Math.max(0, audio.currentTime - step);
+            else return;
+            setKnob(audio.currentTime / audio.duration); e.preventDefault();
+          });
+          audio.addEventListener("timeupdate", function () {
+            if (tkDrag || !audio.duration) return;
+            setKnob(audio.currentTime / audio.duration);
+            if (knobTime) {
+              var s2 = Math.floor(audio.currentTime), h2 = Math.floor(s2 / 3600), mn = Math.floor((s2 % 3600) / 60), sc = s2 % 60;
+              knobTime.textContent = h2 + ":" + (mn < 10 ? "0" : "") + mn + ":" + (sc < 10 ? "0" : "") + sc;
+            }
+          });
+        }
       });
   }
 

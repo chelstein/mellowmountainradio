@@ -3640,3 +3640,7 @@ body.podplaying .player.show { transform: translateY(180%); }
 .tape-off .off-card .info-ic{margin:0 auto 16px}
 .tape-off .off-card p{margin:0 0 6px;color:var(--ink)}
 .tape-off .off-card .embed-note{margin:0}
+.tape-knob-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;margin-left:auto;flex:none}
+.tape-knob-svg{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;display:block}
+.tape-knob-svg:active{cursor:grabbing}
+.tape-knob-time{font-size:11px;font-weight:800;color:rgba(203,214,255,.5);font-variant-numeric:tabular-nums;letter-spacing:.04em}
