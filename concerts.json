@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-09T19:50:43.830Z",
+ "updated": "2026-07-10T03:36:05.685Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -191,23 +191,8 @@
    "url": "https://www.ticketweb.com/event/the-burning-doors-the-ultimate-whisky-a-go-go-tickets/14972863",
    "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
    "price": 28,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-06-03T14:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "Z7r9jZ1A7-UFY",
-   "artist": "Graham Nash",
-   "date": "2026-07-09",
-   "time": "19:00:00",
-   "venue": "Vilar Performing Arts Center",
-   "city": "Avon",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-UFY",
-   "img": "https://s1.ticketm.net/dam/a/d86/fedf97b5-1eb6-4ab5-83fa-1b3dbd64ed86_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "1900-01-01T06:00:00Z",
    "lineup": []
   },
   {
