@@ -1,0 +1,181 @@
+name: KAZM Tape Recorder
+
+# Records the live stream in 5h30m blocks (above the 5h statutory archived-program
+# minimum) four times a day at Arizona block boundaries, uploads each block to
+# AzuraCast's media library, and keeps rewind-manifest.json current so the
+# Listeners Lounge tape player on rewind.html can serve them up.
+# Blocks are deleted after 14 days (statutory maximum).
+
+on:
+  schedule:
+    # 1:01, 7:01, 13:01, 19:01 UTC = 18:01, 0:01, 6:01, 12:01 Arizona (UTC-7)
+    - cron: "1 1,7,13,19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kazm-tape
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute block identity (Arizona time, UTC-7 fixed offset)
+        id: block
+        run: |
+          AZ_EPOCH=$(( $(date -u +%s) - 7*3600 ))
+          YEAR=$(date -u -d "@$AZ_EPOCH" +%Y)
+          MONTH=$(date -u -d "@$AZ_EPOCH" +%m)
+          DAY=$(date -u -d "@$AZ_EPOCH" +%d)
+          HOUR=$(date -u -d "@$AZ_EPOCH" +%H)
+          BLOCK_HOUR=$(( (10#$HOUR / 6) * 6 ))
+          BLOCK_PAD=$(printf "%02d" $BLOCK_HOUR)
+          FILENAME="kazm-${YEAR}-${MONTH}-${DAY}-${BLOCK_PAD}00"
+          DATE_STR="${YEAR}-${MONTH}-${DAY}"
+          echo "filename=$FILENAME" >> "$GITHUB_OUTPUT"
+          echo "date=$DATE_STR"     >> "$GITHUB_OUTPUT"
+          echo "start=$BLOCK_HOUR"  >> "$GITHUB_OUTPUT"
+          echo "[tape] block: $FILENAME (AZ $DATE_STR $BLOCK_HOUR:00)"
+
+      - name: Prune AzuraCast files older than 14 days
+        env:
+          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
+        run: |
+          python3 - "$AZURACAST_API_KEY" <<'PYEOF'
+          import sys, json, urllib.request
+          from datetime import datetime, timezone, timedelta
+
+          api_key = sys.argv[1]
+          base    = "https://streaming.mellowmountainradio.com"
+          station = "mellowmountainradio"
+          cutoff  = (datetime.now(timezone.utc) - timedelta(days=14)).timestamp()
+
+          req = urllib.request.Request(
+              f"{base}/api/station/{station}/files?searchPhrase=Archive/",
+              headers={"X-API-Key": api_key}
+          )
+          with urllib.request.urlopen(req) as r:
+              files = json.load(r)
+
+          deleted = 0
+          for f in files:
+              if f.get("path", "").startswith("Archive/") and f.get("uploaded_at", 0) < cutoff:
+                  dreq = urllib.request.Request(
+                      f"{base}/api/station/{station}/file/{f['id']}",
+                      method="DELETE",
+                      headers={"X-API-Key": api_key}
+                  )
+                  try:
+                      urllib.request.urlopen(dreq)
+                      print(f"[tape] pruned {f['path']} (id {f['id']})")
+                      deleted += 1
+                  except Exception as e:
+                      print(f"[tape] prune failed {f['id']}: {e}", file=sys.stderr)
+          print(f"[tape] pruned {deleted} old file(s)")
+          PYEOF
+
+      - name: Record stream (5h 30min = 19800s)
+        run: |
+          FILENAME="${{ steps.block.outputs.filename }}"
+          echo "[tape] recording /tmp/${FILENAME}.mp3 for 19800s"
+          ffmpeg -hide_banner -loglevel error \
+            -i "https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" \
+            -t 19800 -c copy -y "/tmp/${FILENAME}.mp3"
+          if [ ! -s "/tmp/${FILENAME}.mp3" ]; then
+            echo "[tape] recording came out empty" >&2
+            exit 1
+          fi
+          echo "[tape] done — $(stat -c%s "/tmp/${FILENAME}.mp3") bytes"
+
+      - name: Upload to AzuraCast media library
+        id: upload
+        env:
+          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
+        run: |
+          FILENAME="${{ steps.block.outputs.filename }}"
+
+          python3 - "/tmp/${FILENAME}.mp3" "Archive/${FILENAME}.mp3" <<'PYEOF'
+          import sys, json, base64
+          local_path, remote_path = sys.argv[1], sys.argv[2]
+          with open(local_path, "rb") as f:
+              b64 = base64.b64encode(f.read()).decode()
+          payload = {"path": remote_path, "file": "data:audio/mpeg;base64," + b64}
+          with open("/tmp/kazm_upload_payload.json", "w") as out:
+              json.dump(payload, out)
+          print(f"[tape] payload ready: {len(b64)} b64 chars for {remote_path}")
+          PYEOF
+
+          RESP=$(curl -s --max-time 600 -X POST \
+            -H "X-API-Key: $AZURACAST_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d @/tmp/kazm_upload_payload.json \
+            "https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/files")
+          rm -f /tmp/kazm_upload_payload.json "/tmp/${FILENAME}.mp3"
+
+          FILE_ID=$(echo "$RESP" | python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
+          if [ -z "$FILE_ID" ]; then
+            echo "[tape] upload failed: $RESP" >&2
+            exit 1
+          fi
+          echo "file_id=$FILE_ID" >> "$GITHUB_OUTPUT"
+          echo "[tape] uploaded as file $FILE_ID"
+
+      - name: Update rewind-manifest.json
+        env:
+          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
+        run: |
+          python3 - \
+            "${{ steps.upload.outputs.file_id }}" \
+            "${{ steps.block.outputs.date }}" \
+            "${{ steps.block.outputs.start }}" \
+            "$AZURACAST_API_KEY" <<'PYEOF'
+          import sys, json
+          from datetime import datetime, timezone, timedelta
+
+          file_id   = sys.argv[1]
+          date_str  = sys.argv[2]
+          start_h   = int(sys.argv[3])
+          api_key   = sys.argv[4]
+          base      = "https://streaming.mellowmountainradio.com"
+          station   = "mellowmountainradio"
+
+          play_url  = f"{base}/api/station/{station}/file/{file_id}/play?api_key={api_key}"
+          new_block = {"url": play_url, "date": date_str, "start": start_h}
+
+          with open("rewind-manifest.json") as f:
+              manifest = json.load(f)
+
+          cutoff_str = (datetime.now(timezone.utc) - timedelta(days=14)).strftime("%Y-%m-%d")
+          kept = [b for b in manifest.get("blocks", []) if b.get("date", "") >= cutoff_str]
+          kept = [b for b in kept if not (b["date"] == date_str and b["start"] == start_h)]
+          kept.append(new_block)
+          kept.sort(key=lambda b: (b["date"], b["start"]))
+
+          manifest["ok"]     = True
+          manifest["blocks"] = kept
+
+          with open("rewind-manifest.json", "w") as f:
+              json.dump(manifest, f, indent=2)
+              f.write("\n")
+
+          print(f"[tape] manifest updated: {len(kept)} block(s)")
+          PYEOF
+
+      - name: Commit and push manifest update
+        run: |
+          git config user.name "mmr-tape-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rewind-manifest.json
+          if git diff --staged --quiet; then
+            echo "No manifest changes."
+          else
+            git pull --rebase origin main
+            git commit -m "KAZM tape: ${{ steps.block.outputs.filename }} [skip ci]"
+            git push origin HEAD:main
+          fi

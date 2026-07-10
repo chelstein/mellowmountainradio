@@ -4031,7 +4031,7 @@
           var st = +btn.getAttribute("data-start");
           audio.src = btn.getAttribute("data-url");
           title.textContent = (NAMES[st] || st + ":00") + " — " + fmtDay(btn.getAttribute("data-date"));
-          sub.textContent = "six broadcast hours · Sedona time · drag anywhere";
+          sub.textContent = "five and a half broadcast hours · Sedona time · drag anywhere";
           hoursEl.innerHTML = "";
           for (var k = 0; k < 6; k++) {
             (function (k) {
