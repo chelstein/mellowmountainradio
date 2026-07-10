@@ -3640,6 +3640,12 @@ body.podplaying .player.show { transform: translateY(180%); }
 .tape-off .off-card .info-ic{margin:0 auto 16px}
 .tape-off .off-card p{margin:0 0 6px;color:var(--ink)}
 .tape-off .off-card .embed-note{margin:0}
+.tape-reel--idle{opacity:.3}
+.tape-player--idle .tape-nowmeta b{opacity:.5}
+.tape-block--ghost{opacity:.22;pointer-events:none;user-select:none;cursor:default}
+.tape-block--ghost:hover{transform:none;border-color:var(--line)}
+.rec-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#e5534b;margin-right:5px;vertical-align:middle;animation:rec-pulse 1.4s ease-in-out infinite}
+@keyframes rec-pulse{0%,100%{opacity:1}50%{opacity:.12}}
 .tape-knob-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;margin-left:auto;flex:none}
 .tape-knob-svg{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;display:block}
 .tape-knob-svg:active{cursor:grabbing}

@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=140" />
+  <link rel="stylesheet" href="styles.css?v=141" />
 </head>
 <body data-page="music">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -125,15 +125,31 @@
     <p class="micro-note">Blocks are five and a half broadcast hours each (the archived-program minimum under the statutory license is five) and every block is deleted fourteen days after airing (the statutory maximum). Times are Sedona time. Sports and syndicated segments may be trimmed where rights require.</p>
   </div>
   <div class="tape-off" data-tape-off>
-    <div class="off-card">
-      <div class="info-ic" aria-hidden="true"><svg viewBox="0 0 256 256" width="22" height="22"><path d="M128 24a104 104 0 1 0 104 104A104.1 104.1 0 0 0 128 24Zm0 192a88 88 0 1 1 88-88 88.1 88.1 0 0 1-88 88Zm8-88V72a8 8 0 0 0-16 0v56a8 8 0 0 0 2.3 5.7l40 40a8 8 0 0 0 11.4-11.4Z"/></svg></div>
-      <p>The Lounge is warming up &mdash; the archive recorder isn&rsquo;t rolling yet.</p>
-      <p class="embed-note">Meanwhile the live stream is right up top, doing what radio does best.</p>
+    <div class="tape-player tape-player--idle">
+      <div class="tape-nowrow">
+        <span class="tape-reel tape-reel--idle" aria-hidden="true">&#9673;</span>
+        <div class="tape-nowmeta">
+          <b>No block loaded</b>
+          <span><span class="rec-dot" aria-hidden="true"></span>Recording now &mdash; first block ready later today</span>
+        </div>
+      </div>
     </div>
+    <div class="tape-shelf tape-shelf--ghost">
+      <div class="tape-day">
+        <span class="tape-day-lab">Today</span>
+        <div class="tape-day-row">
+          <div class="tape-block tape-block--ghost" aria-hidden="true">Overnight<i>12a&ndash;6a</i></div>
+          <div class="tape-block tape-block--ghost" aria-hidden="true">Morning<i>6a&ndash;12p</i></div>
+          <div class="tape-block tape-block--ghost" aria-hidden="true">Afternoon<i>12p&ndash;6p</i></div>
+          <div class="tape-block tape-block--ghost" aria-hidden="true">Evening<i>6p&ndash;12a</i></div>
+        </div>
+      </div>
+    </div>
+    <p class="micro-note">Blocks are five and a half broadcast hours each (the archived-program minimum under the statutory license is five) and every block is deleted fourteen days after airing (the statutory maximum). Times are Sedona time. Sports and syndicated segments may be trimmed where rights require.</p>
   </div>
 </div></section>
   </main>
   <div data-site-footer></div>
-  <script src="main.js?v=140" defer></script>
+  <script src="main.js?v=141" defer></script>
 </body>
 </html>
