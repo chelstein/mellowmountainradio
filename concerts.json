@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-10T14:33:40.554Z",
+ "updated": "2026-07-10T19:37:44.285Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -158,7 +158,7 @@
    "url": "https://www.ticketmaster.com/three-dog-night-chandler-arizona-10-30-2026/event/190064D4F287A4C8",
    "img": "https://s1.ticketm.net/dam/e/46b/51e56a00-26f6-4be9-92c5-18854398746b_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-07-10T17:00:00Z",
    "lineup": []
   },
@@ -220,7 +220,7 @@
    "state": "CA",
    "url": "https://www.ticketweb.com/event/ambrosia-the-coach-house-tickets/14820463",
    "img": "https://s1.ticketm.net/dam/a/6bd/98c7c94d-22d4-4fb6-9698-623379f046bd_607941_RETINA_PORTRAIT_16_9.jpg",
-   "price": 47,
+   "price": 0,
    "status": "onsale",
    "saleStart": "2026-03-30T17:00:00Z",
    "lineup": []
