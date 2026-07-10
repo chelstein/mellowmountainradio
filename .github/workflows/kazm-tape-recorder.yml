@@ -43,6 +43,9 @@ jobs:
           echo "start=$BLOCK_HOUR"  >> "$GITHUB_OUTPUT"
           echo "[tape] block: $FILENAME (AZ $DATE_STR $BLOCK_HOUR:00)"
 
+      - name: Install ffmpeg
+        run: sudo apt-get install -y ffmpeg
+
       - name: Prune AzuraCast files older than 14 days
         env:
           AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
