@@ -103,31 +103,50 @@ jobs:
         run: |
           FILENAME="${{ steps.block.outputs.filename }}"
 
-          python3 - "/tmp/${FILENAME}.mp3" "Archive/${FILENAME}.mp3" <<'PYEOF'
-          import sys, json, base64
-          local_path, remote_path = sys.argv[1], sys.argv[2]
+          FILE_ID=$(python3 - "/tmp/${FILENAME}.mp3" "Archive/${FILENAME}.mp3" "$AZURACAST_API_KEY" <<'PYEOF'
+          import sys, json, base64, urllib.request, urllib.error
+
+          local_path, remote_path, api_key = sys.argv[1], sys.argv[2], sys.argv[3]
+          base    = "https://streaming.mellowmountainradio.com"
+          station = "mellowmountainradio"
+
+          print(f"[tape] reading {local_path}", file=sys.stderr, flush=True)
           with open(local_path, "rb") as f:
               b64 = base64.b64encode(f.read()).decode()
-          payload = {"path": remote_path, "file": "data:audio/mpeg;base64," + b64}
-          with open("/tmp/kazm_upload_payload.json", "w") as out:
-              json.dump(payload, out)
-          print(f"[tape] payload ready: {len(b64)} b64 chars for {remote_path}")
+          print(f"[tape] encoded {len(b64)} b64 chars, uploading to {remote_path}", file=sys.stderr, flush=True)
+
+          payload = json.dumps({"path": remote_path, "file": "data:audio/mpeg;base64," + b64}).encode()
+          req = urllib.request.Request(
+              f"{base}/api/station/{station}/files",
+              data=payload,
+              headers={"X-API-Key": api_key, "Content-Type": "application/json"},
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=600) as resp:
+                  result = json.load(resp)
+          except urllib.error.HTTPError as e:
+              body = e.read().decode(errors="replace")
+              print(f"[tape] upload HTTP {e.code}: {body}", file=sys.stderr)
+              sys.exit(1)
+
+          file_id = result.get("id", "")
+          if not file_id:
+              print(f"[tape] upload failed — no id in response: {result}", file=sys.stderr)
+              sys.exit(1)
+          print(f"[tape] uploaded as file {file_id}", file=sys.stderr, flush=True)
+          print(file_id)
           PYEOF
+          )
 
-          RESP=$(curl -s --max-time 600 -X POST \
-            -H "X-API-Key: $AZURACAST_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d @/tmp/kazm_upload_payload.json \
-            "https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/files")
-          rm -f /tmp/kazm_upload_payload.json "/tmp/${FILENAME}.mp3"
+          rm -f "/tmp/${FILENAME}.mp3"
 
-          FILE_ID=$(echo "$RESP" | python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
           if [ -z "$FILE_ID" ]; then
-            echo "[tape] upload failed: $RESP" >&2
+            echo "[tape] upload step returned no file id" >&2
             exit 1
           fi
           echo "file_id=$FILE_ID" >> "$GITHUB_OUTPUT"
-          echo "[tape] uploaded as file $FILE_ID"
+          echo "[tape] file_id=$FILE_ID"
 
       - name: Update rewind-manifest.json
         env:
