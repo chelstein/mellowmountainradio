@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-10T09:40:18.576Z",
+ "updated": "2026-07-10T14:33:21.232Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -151,6 +151,16 @@
    "genre": "Rock",
    "start": "2026-08-08",
    "end": "2026-08-08"
+  },
+  {
+   "name": "Django Festival All-Stars",
+   "city": "Boulder",
+   "state": "CO",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-Not",
+   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Other",
+   "start": "2026-08-13",
+   "end": "2026-08-13"
   },
   {
    "name": "Just Like Heaven Festival",
