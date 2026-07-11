@@ -7736,6 +7736,54 @@
       });
     });
   }
+  function initListenerFrom() {
+    var el = doc.querySelector('[data-listener-from]');
+    if (!el) return;
+    var API = 'https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/listeners';
+    var KEY = '75db8e647f92cee6:d5e9086849a6b13e27503c72d62ccab7';
+    function flag(code) {
+      if (!code || code.length !== 2) return '';
+      return Array.from(code.toUpperCase()).map(function(c) {
+        return String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65);
+      }).join('');
+    }
+    function render(data) {
+      var real = data.filter(function(l) {
+        return l.location && l.location.country && l.device && !l.device.is_bot;
+      });
+      if (!real.length) {
+        el.innerHTML = '<span class="lf-none">No location data yet</span>';
+        return;
+      }
+      var groups = {};
+      real.forEach(function(l) {
+        var key = l.location.description;
+        if (!groups[key]) groups[key] = { count: 0, country: l.location.country };
+        groups[key].count++;
+      });
+      var sorted = Object.keys(groups).sort(function(a, b) {
+        return groups[b].count - groups[a].count;
+      }).slice(0, 10);
+      el.innerHTML = sorted.map(function(place, i) {
+        var g = groups[place];
+        return (i > 0 ? '<span class="lf-dot" aria-hidden="true">\xb7</span>' : '') +
+          '<span class="lf-chip">' +
+          '<span class="lf-chip-flag" aria-hidden="true">' + flag(g.country) + '</span>' +
+          '<span class="lf-chip-place">' + place + '</span>' +
+          (g.count > 1 ? '<span class="lf-chip-count">\xd7' + g.count + '</span>' : '') +
+          '</span>';
+      }).join('');
+    }
+    function load() {
+      fetch(API, { headers: { 'X-API-Key': KEY } })
+        .then(function(r) { return r.json(); })
+        .then(render)
+        .catch(function() {});
+    }
+    load();
+    setInterval(load, 60000);
+  }
+
   function initPage() {
     initReveal();
     initScoreboards();
@@ -7781,6 +7829,7 @@
     initSkyPage();
     initJeep();
     initLounge();
+    initListenerFrom();
     initTape();
     initWindow();
     initTimeMachine();
