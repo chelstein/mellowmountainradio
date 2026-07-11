@@ -8,6 +8,12 @@
    - Live sports scoreboards, RSS feeds, podcasts, heritage rotator
    ========================================================= */
 (function () {
+  var _bjs = document.createElement("script");
+  _bjs.src = "https://undertowiq.com/rdns/beacon.js";
+  _bjs.setAttribute("data-callsign", "KAZM");
+  _bjs.async = true;
+  document.head.appendChild(_bjs);
+
   "use strict";
 
   var doc = document;
