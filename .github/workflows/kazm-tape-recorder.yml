@@ -83,13 +83,13 @@ jobs:
           print(f"[tape] pruned {deleted} old file(s)")
           PYEOF
 
-      - name: Record stream (5h 30min = 19800s)
+      - name: Record stream (30min test = 1800s)
         run: |
           FILENAME="${{ steps.block.outputs.filename }}"
-          echo "[tape] recording /tmp/${FILENAME}.mp3 for 19800s"
+          echo "[tape] recording /tmp/${FILENAME}.mp3 for 1800s"
           ffmpeg -hide_banner -loglevel error \
             -i "https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" \
-            -t 19800 -c copy -y "/tmp/${FILENAME}.mp3"
+            -t 1800 -c copy -y "/tmp/${FILENAME}.mp3"
           if [ ! -s "/tmp/${FILENAME}.mp3" ]; then
             echo "[tape] recording came out empty" >&2
             exit 1
