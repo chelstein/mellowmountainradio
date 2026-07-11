@@ -13,6 +13,15 @@
   _bjs.setAttribute("data-callsign", "KAZM");
   _bjs.async = true;
   document.head.appendChild(_bjs);
+  // only count as active while audio is actually playing
+  _bjs.addEventListener("load", function () {
+    var a = document.querySelector("audio");
+    if (a) {
+      window.__uiq_active = !a.paused;
+      a.addEventListener("play",  function () { window.__uiq_active = true;  });
+      a.addEventListener("pause", function () { window.__uiq_active = false; });
+    }
+  });
 
   "use strict";
 
