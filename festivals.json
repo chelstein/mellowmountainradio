@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-11T08:00:35.976Z",
+ "updated": "2026-07-11T13:25:26.459Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -21,6 +21,16 @@
    "genre": "Other",
    "start": "2026-09-11",
    "end": "2026-09-11"
+  },
+  {
+   "name": "Reggae Fest",
+   "city": "Los Angeles",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/reggae-fest-los-angeles-california-07-11-2026/event/090064C4A2B0B0AA",
+   "img": "https://s1.ticketm.net/dam/a/510/db6fc217-d801-463d-a374-9aaae8de3510_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Reggae",
+   "start": "2026-07-11",
+   "end": "2026-07-11"
   },
   {
    "name": "EL GRAN CUMBION FEST - CUMBIA Y RUIDO",
@@ -151,16 +161,6 @@
    "genre": "Rock",
    "start": "2026-08-08",
    "end": "2026-08-08"
-  },
-  {
-   "name": "Django Festival All-Stars",
-   "city": "Boulder",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-Not",
-   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Other",
-   "start": "2026-08-13",
-   "end": "2026-08-13"
   },
   {
    "name": "Just Like Heaven Festival",
