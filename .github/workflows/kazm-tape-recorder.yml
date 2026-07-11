@@ -197,7 +197,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No manifest changes."
           else
-            git pull --rebase origin main
             git commit -m "KAZM tape: ${{ steps.block.outputs.filename }} [skip ci]"
+            git pull --rebase origin main
             git push origin HEAD:main
           fi
