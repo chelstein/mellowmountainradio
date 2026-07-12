@@ -1,0 +1,537 @@
+<style>
+/* ── KAZM Mountain Dashboard for OwnCast ──────────────────────── */
+:root {
+  --k-bg:       #17130f;
+  --k-bg2:      #1f1a15;
+  --k-bg3:      #28221a;
+  --k-border:   rgba(201,169,96,.15);
+  --k-gold:     #c9a960;
+  --k-gold-dim: #7a6030;
+  --k-red:      #c93333;
+  --k-text:     #ede5d8;
+  --k-muted:    #80756a;
+  --k-art:      #2a2018;
+  --k-radius:   8px;
+}
+.kmd *, .kmd *::before, .kmd *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.kmd {
+  background: var(--k-bg);
+  border-top: 2px solid var(--k-gold);
+  padding: 20px 16px 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  color: var(--k-text);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.kmd-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr 210px;
+  gap: 14px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+@media (max-width: 700px) {
+  .kmd-grid { grid-template-columns: 1fr; }
+}
+@media (min-width: 701px) and (max-width: 860px) {
+  .kmd-grid { grid-template-columns: 1fr 1fr; }
+  .kmd-col-c { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+}
+
+/* Cards */
+.kmd-card {
+  background: var(--k-bg2);
+  border: 1px solid var(--k-border);
+  border-radius: var(--k-radius);
+  padding: 14px;
+}
+
+/* Section labels */
+.kmd-eyebrow {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--k-gold-dim);
+  margin-bottom: 11px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ── Now Playing ───────────────────── */
+.kmd-live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--k-red);
+  flex-shrink: 0;
+  animation: kmd-blink 2s ease-in-out infinite;
+}
+@keyframes kmd-blink { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(201,51,51,.4)} 50%{opacity:.35;box-shadow:0 0 0 5px rgba(201,51,51,0)} }
+
+.kmd-art-wrap {
+  width: 80px; height: 80px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--k-art);
+  flex-shrink: 0;
+  position: relative;
+}
+.kmd-art-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity .5s;
+}
+.kmd-art-img.kmd-hidden { opacity: 0; }
+
+/* Animated EQ overlay on album art */
+.kmd-eq {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 22px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0 5px 3px;
+  background: linear-gradient(0deg, rgba(0,0,0,.65) 0%, transparent 100%);
+}
+.kmd-eq-b {
+  flex: 1;
+  background: var(--k-gold);
+  border-radius: 1px 1px 0 0;
+  opacity: .85;
+  animation: kmd-eq 1.3s ease-in-out infinite;
+}
+.kmd-eq-b:nth-child(1){animation-duration:1.0s;animation-delay:0s}
+.kmd-eq-b:nth-child(2){animation-duration:1.5s;animation-delay:.15s}
+.kmd-eq-b:nth-child(3){animation-duration:0.9s;animation-delay:.3s}
+.kmd-eq-b:nth-child(4){animation-duration:1.3s;animation-delay:.05s}
+.kmd-eq-b:nth-child(5){animation-duration:1.1s;animation-delay:.25s}
+.kmd-eq-b:nth-child(6){animation-duration:0.8s;animation-delay:.4s}
+@keyframes kmd-eq { 0%,100%{height:3px} 50%{height:15px} }
+
+.kmd-np-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 13px; }
+.kmd-np-info { flex: 1; min-width: 0; padding-top: 2px; }
+.kmd-np-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--k-text);
+  line-height: 1.25;
+  margin-bottom: 4px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  transition: opacity .4s;
+}
+.kmd-np-artist {
+  font-size: 12px;
+  color: var(--k-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kmd-np-album {
+  font-size: 10px;
+  color: var(--k-muted);
+  opacity: .7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+.kmd-np-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--k-border);
+}
+.kmd-np-listeners {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--k-muted);
+  flex: 1;
+}
+.kmd-np-listeners svg { opacity: .55; flex-shrink: 0; }
+.kmd-tune-btn {
+  background: var(--k-gold);
+  color: #17130f;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background .15s, transform .1s;
+  display: inline-block;
+}
+.kmd-tune-btn:hover { background: #d4b474; transform: translateY(-1px); }
+
+/* ── Recently Played ───────────────── */
+.kmd-hist-list { list-style: none; }
+.kmd-hist-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 5px 5px 3px;
+  margin: 0 -5px 0 -3px;
+  border-radius: 5px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  transition: background .12s;
+  cursor: pointer;
+}
+.kmd-hist-item:last-child { border-bottom: none; }
+.kmd-hist-item:hover { background: rgba(255,255,255,.06); }
+.kmd-hist-num {
+  width: 16px;
+  text-align: right;
+  font-size: 10px;
+  color: var(--k-muted);
+  opacity: .55;
+  flex-shrink: 0;
+}
+.kmd-hist-art {
+  width: 34px; height: 34px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--k-art);
+  flex-shrink: 0;
+  display: block;
+}
+.kmd-hist-info { flex: 1; min-width: 0; }
+.kmd-hist-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--k-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kmd-hist-artist {
+  font-size: 10px;
+  color: var(--k-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+.kmd-am-ic {
+  flex-shrink: 0;
+  color: var(--k-gold);
+  opacity: 0;
+  transition: opacity .15s;
+}
+.kmd-hist-item:hover .kmd-am-ic { opacity: .8; }
+
+/* ── Right column cards ─────────────── */
+.kmd-col-c { display: flex; flex-direction: column; gap: 14px; }
+
+/* On Air now */
+.kmd-show-name { font-size: 13px; font-weight: 700; color: var(--k-text); margin-bottom: 2px; }
+.kmd-show-host { font-size: 11px; color: var(--k-gold); margin-bottom: 4px; }
+.kmd-show-desc { font-size: 11px; color: var(--k-muted); line-height: 1.5; }
+.kmd-show-next {
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid var(--k-border);
+  font-size: 10px;
+  color: var(--k-muted);
+}
+.kmd-show-next strong { color: var(--k-text); }
+
+/* Weather */
+.kmd-wx-inner { display: flex; align-items: center; gap: 12px; }
+.kmd-wx-temp { font-size: 30px; font-weight: 700; color: var(--k-text); line-height: 1; }
+.kmd-wx-short { font-size: 11px; color: var(--k-muted); line-height: 1.4; }
+.kmd-wx-loc { font-size: 10px; color: var(--k-gold-dim); margin-top: 3px; }
+
+/* Links */
+.kmd-links { display: flex; flex-direction: column; gap: 1px; }
+.kmd-links a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  color: var(--k-gold);
+  text-decoration: none;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: color .13s, background .13s;
+}
+.kmd-links a:hover { color: #d4b474; background: rgba(201,169,96,.06); }
+.kmd-links svg { opacity: .6; flex-shrink: 0; }
+
+.kmd-err { font-size: 11px; color: var(--k-muted); font-style: italic; }
+</style>
+
+<div class="kmd">
+  <div class="kmd-grid">
+
+    <!-- ── Column A: Now Playing ─────────────────── -->
+    <div class="kmd-card">
+      <div class="kmd-eyebrow">
+        <span class="kmd-live-dot"></span>
+        On Air Now
+      </div>
+      <div class="kmd-np-row">
+        <div class="kmd-art-wrap">
+          <img class="kmd-art-img" id="kmd-art" src="" alt="">
+          <div class="kmd-eq">
+            <div class="kmd-eq-b"></div>
+            <div class="kmd-eq-b"></div>
+            <div class="kmd-eq-b"></div>
+            <div class="kmd-eq-b"></div>
+            <div class="kmd-eq-b"></div>
+            <div class="kmd-eq-b"></div>
+          </div>
+        </div>
+        <div class="kmd-np-info">
+          <div class="kmd-np-title" id="kmd-title">Tuning in&hellip;</div>
+          <div class="kmd-np-artist" id="kmd-artist">&nbsp;</div>
+          <div class="kmd-np-album" id="kmd-album">&nbsp;</div>
+        </div>
+      </div>
+      <div class="kmd-np-footer">
+        <div class="kmd-np-listeners">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          <span id="kmd-count">&mdash;</span>
+        </div>
+        <a class="kmd-tune-btn" href="https://mellowmountainradio.com" target="_blank" rel="noopener">Listen Live &rsaquo;</a>
+      </div>
+    </div>
+
+    <!-- ── Column B: Recently Played ─────────────── -->
+    <div class="kmd-card">
+      <div class="kmd-eyebrow">Recently Played</div>
+      <ul class="kmd-hist-list" id="kmd-hist">
+        <li><span class="kmd-err">Loading&hellip;</span></li>
+      </ul>
+    </div>
+
+    <!-- ── Column C: Show · Weather · Links ─────── -->
+    <div class="kmd-col-c">
+
+      <div class="kmd-card">
+        <div class="kmd-eyebrow">What&rsquo;s On</div>
+        <div class="kmd-show-name" id="kmd-show-name">&mdash;</div>
+        <div class="kmd-show-host" id="kmd-show-host"></div>
+        <div class="kmd-show-desc" id="kmd-show-desc"></div>
+        <div class="kmd-show-next" id="kmd-show-next"></div>
+      </div>
+
+      <div class="kmd-card">
+        <div class="kmd-eyebrow">Sedona Conditions</div>
+        <div id="kmd-wx"><span class="kmd-err">Loading&hellip;</span></div>
+      </div>
+
+      <div class="kmd-card">
+        <div class="kmd-eyebrow">KAZM 106.5 &middot; 780 AM</div>
+        <div class="kmd-links">
+          <a href="https://mellowmountainradio.com" target="_blank" rel="noopener">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            mellowmountainradio.com
+          </a>
+          <a href="https://mellowmountainradio.com/rewind" target="_blank" rel="noopener">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
+            Listeners&rsquo; Lounge &amp; Time Machine
+          </a>
+          <a href="https://aac.mellowmountainradio.com/radio.mp3" target="_blank" rel="noopener">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+            HiFi AAC Stream
+          </a>
+          <a href="https://mellowmountainradio.com/schedule.html" target="_blank" rel="noopener">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Full Program Schedule
+          </a>
+        </div>
+      </div>
+
+    </div><!-- /col-c -->
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ── Config ──────────────────────────────────── */
+var AZ_URL  = 'https://streaming.mellowmountainradio.com/api/nowplaying/mellowmountainradio';
+var SCHED_URL = 'https://mellowmountainradio.com/schedule.json';
+var WX_PTS  = 'https://api.weather.gov/points/34.8697,-111.7610';
+
+/* shows to skip (ads / sweepers) */
+var SKIP_A = ['live365','station id'];
+var SKIP_T = ['adbreak','sweeper_'];
+
+/* ── Helpers ─────────────────────────────────── */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function isReal(a,t){
+  var al=(a||'').toLowerCase(), tl=(t||'').toLowerCase();
+  return !SKIP_A.some(function(x){return al.indexOf(x)>=0}) &&
+         !SKIP_T.some(function(x){return tl.indexOf(x)>=0});
+}
+
+function amLink(a,t){
+  return 'https://music.apple.com/search?term='+encodeURIComponent((a+' '+t).trim());
+}
+
+function el(id){ return document.getElementById(id); }
+
+/* ── Schedule logic ─────────────────────────── */
+var sched = null;
+
+function mtnMinutes(){
+  /* Arizona = UTC-7 year-round (no DST) */
+  var d = new Date();
+  var utcMin = d.getUTCHours()*60 + d.getUTCMinutes();
+  return ((utcMin - 7*60) + 1440) % 1440;
+}
+
+function parseTime(str){
+  var p = str.split(':');
+  return parseInt(p[0],10)*60 + parseInt(p[1],10);
+}
+
+function getShowNow(items){
+  if(!items||!items.length) return null;
+  var now = mtnMinutes();
+  var day = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()];
+  var isWeekend = (day==='Sat'||day==='Sun');
+  for(var i=0;i<items.length;i++){
+    var s = items[i];
+    if(s.days && s.days.indexOf(day)===-1) continue;
+    var start = parseTime(s.start);
+    var end   = parseTime(s.end);
+    /* handle midnight crossings */
+    if(end <= start) end += 1440;
+    var now2 = (now < start && end > 1440) ? now + 1440 : now;
+    if(now2 >= start && now2 < end) return { cur: s, next: items[(i+1)%items.length] };
+  }
+  return null;
+}
+
+function fmtTime(str){
+  var p = str.split(':');
+  var h = parseInt(p[0],10), m = parseInt(p[1],10);
+  var ampm = h<12 ? 'am' : 'pm';
+  h = h%12||12;
+  return h + (m ? ':'+('0'+m).slice(-2) : '') + ' ' + ampm;
+}
+
+function renderSchedule(){
+  if(!sched) return;
+  var pool = sched.weekday.concat(sched.weekend||[]);
+  var found = getShowNow(pool);
+  if(!found){ el('kmd-show-name').textContent = 'KAZM 106.5 FM'; return; }
+  var cur=found.cur, nxt=found.next;
+  el('kmd-show-name').textContent = cur.emoji ? cur.emoji+' '+cur.name : cur.name;
+  el('kmd-show-host').textContent = cur.host ? 'with '+cur.host : '';
+  el('kmd-show-desc').textContent = cur.description||'';
+  el('kmd-show-next').innerHTML = nxt
+    ? 'Up next: <strong>'+esc(nxt.name)+'</strong> at '+esc(fmtTime(nxt.start))
+    : '';
+}
+
+function loadSchedule(){
+  fetch(SCHED_URL+'?_='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){ sched=d; renderSchedule(); })
+    .catch(function(){ /* fallback: no schedule shown */ });
+}
+
+/* ── AzuraCast now-playing ────────────────── */
+var lastKey='', fadeTimer=null;
+
+function loadAZ(){
+  fetch(AZ_URL+'?_='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var np=d.now_playing;
+      var a=np.song.artist||'', t=np.song.title||'', alb=np.song.album||'', art=np.song.art||'';
+      var key=a+'|'+t;
+
+      /* Update now-playing only when song changes */
+      if(key!==lastKey && isReal(a,t)){
+        lastKey=key;
+        /* fade art out, swap, fade in */
+        var artEl=el('kmd-art');
+        artEl.classList.add('kmd-hidden');
+        clearTimeout(fadeTimer);
+        fadeTimer=setTimeout(function(){
+          if(art){artEl.src=art;artEl.style.display='block';}
+          else{artEl.style.display='none';}
+          artEl.classList.remove('kmd-hidden');
+        }, 500);
+        el('kmd-title').textContent=t||'—';
+        el('kmd-artist').textContent=a;
+        el('kmd-album').textContent=alb;
+      }
+
+      /* listener count */
+      var lc=(d.listeners&&d.listeners.current!=null)?d.listeners.current:null;
+      el('kmd-count').textContent=lc!==null ? lc+' listening' : '—';
+
+      /* song history */
+      var hist=(d.song_history||[])
+        .filter(function(h){return isReal(h.song.artist,h.song.title);})
+        .slice(0,9);
+      el('kmd-hist').innerHTML=hist.map(function(h,i){
+        var imgSrc=h.song.art||'';
+        var imgTag=imgSrc
+          ? '<img class="kmd-hist-art" src="'+esc(imgSrc)+'" alt="" onerror="this.style.visibility=\'hidden\'">'
+          : '<div class="kmd-hist-art"></div>';
+        return '<li><a class="kmd-hist-item" href="'+amLink(h.song.artist,h.song.title)+'" target="_blank" rel="noopener">'+
+          '<span class="kmd-hist-num">'+(i+1)+'</span>'+
+          imgTag+
+          '<div class="kmd-hist-info">'+
+            '<div class="kmd-hist-title">'+esc(h.song.title)+'</div>'+
+            '<div class="kmd-hist-artist">'+esc(h.song.artist)+'</div>'+
+          '</div>'+
+          '<svg class="kmd-am-ic" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>'+
+        '</a></li>';
+      }).join('');
+    })
+    .catch(function(){/* silent */});
+}
+
+/* ── NWS Weather ─────────────────────────── */
+function loadWeather(){
+  fetch(WX_PTS)
+    .then(function(r){return r.json();})
+    .then(function(d){return fetch(d.properties.forecast);})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var p=d.properties.periods[0];
+      el('kmd-wx').innerHTML=
+        '<div class="kmd-wx-inner">'+
+          '<div class="kmd-wx-temp">'+p.temperature+'&deg;'+p.temperatureUnit+'</div>'+
+          '<div>'+
+            '<div class="kmd-wx-short">'+esc(p.shortForecast)+'</div>'+
+            '<div class="kmd-wx-loc">Sedona, AZ &middot; NWS</div>'+
+          '</div>'+
+        '</div>';
+    })
+    .catch(function(){
+      el('kmd-wx').innerHTML='<span class="kmd-err">Weather unavailable</span>';
+    });
+}
+
+/* ── Boot ──────────────────────────────────── */
+loadSchedule();
+loadAZ();
+loadWeather();
+setInterval(loadAZ,      30000);   /* every 30 s */
+setInterval(loadWeather, 900000);  /* every 15 min */
+setInterval(renderSchedule, 60000);
+
+})();
+</script>
