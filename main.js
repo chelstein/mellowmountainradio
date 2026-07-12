@@ -4039,9 +4039,19 @@
         var pauseIcon = playBtn && playBtn.querySelector(".tape-pause-icon");
         var seekTrack = root.querySelector("[data-tape-seektrack]");
         var seekFill = root.querySelector("[data-tape-seekfill]");
+        var seekBuf = root.querySelector("[data-tape-seekbuf]");
         var seekThumb = root.querySelector("[data-tape-seekthumb]");
+        var tooltipEl = root.querySelector("[data-tape-tooltip]");
+        var ticksEl = root.querySelector("[data-tape-ticks]");
         var elapsedEl = root.querySelector("[data-tape-elapsed]");
         var durEl = root.querySelector("[data-tape-dur]");
+        var nowSongEl = root.querySelector("[data-tape-nowsong]");
+        var nowSongText = root.querySelector("[data-tape-nowsong-text]");
+        var shareBtn = root.querySelector("[data-tape-share]");
+        var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
+        var currentBlock = null;
+        var tapePlaylog = null, tapeNextPlaylog = null, lastSongKey = "";
+        var lastHashUpdate = 0;
         function fmtTime(s) {
           s = Math.floor(s);
           var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sc = s % 60;
@@ -4054,21 +4064,89 @@
           if (seekThumb) seekThumb.style.left = pct;
           if (seekTrack) seekTrack.setAttribute("aria-valuenow", Math.round(frac * 100));
         }
+        function nextDate(d) {
+          var dt = new Date(d + "T12:00:00"); dt.setDate(dt.getDate() + 1);
+          return dt.toISOString().slice(0, 10);
+        }
+        function fetchPlaylog(date, cb) {
+          fetch(PLAYLOG + "?d=" + encodeURIComponent(date), { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (j) { if (j && j.ok) cb(j.plays || []); })
+            .catch(function () {});
+        }
+        function songAtSecs(secsIntoBlock) {
+          if (!tapePlaylog || !currentBlock) return null;
+          var startH = currentBlock.start, secsFromMid = startH * 3600 + secsIntoBlock;
+          var all = [];
+          tapePlaylog.forEach(function (p) {
+            var pt = p.t.split(":"), s = +pt[0] * 3600 + +pt[1] * 60;
+            if (startH >= 18 && s < startH * 3600) s += 86400;
+            all.push({ s: s, p: p });
+          });
+          if (tapeNextPlaylog) tapeNextPlaylog.forEach(function (p) {
+            var pt = p.t.split(":"), s = +pt[0] * 3600 + +pt[1] * 60 + 86400;
+            all.push({ s: s, p: p });
+          });
+          all.sort(function (a, b) { return a.s - b.s; });
+          var hit = null;
+          for (var i = 0; i < all.length; i++) { if (all[i].s <= secsFromMid) hit = all[i].p; else break; }
+          return hit;
+        }
+        function updateNowSong() {
+          if (!nowSongEl || !nowSongText || !currentBlock) return;
+          var song = songAtSecs(audio.currentTime || 0);
+          var key = song ? (song.ti || "") + "|" + (song.ar || "") : "";
+          if (key === lastSongKey) return;
+          lastSongKey = key;
+          if (song) {
+            nowSongText.textContent = song.ti + (song.ar ? " — " + song.ar : "");
+            nowSongEl.hidden = false;
+          } else {
+            nowSongEl.hidden = true;
+          }
+        }
+        function renderTicks() {
+          if (!ticksEl || !audio.duration || !currentBlock) return;
+          ticksEl.innerHTML = "";
+          for (var k = 1; k < 6; k++) {
+            var frac = k * 3600 / audio.duration;
+            if (frac >= 0.98) break;
+            var h = (currentBlock.start + k) % 24;
+            var lab = ((h % 12) || 12) + (h < 12 ? "a" : "p");
+            var tick = doc.createElement("span");
+            tick.className = "tape-tick";
+            tick.style.left = (frac * 100).toFixed(2) + "%";
+            tick.innerHTML = '<span class="tape-tick-lab">' + lab + '</span>';
+            ticksEl.appendChild(tick);
+          }
+        }
         shelf.innerHTML = days.map(function (d) {
           var row = byDay[d].sort(function (a, b) { return a.start - b.start; }).map(function (b) {
             return '<button type="button" class="tape-block" data-url="' + esc(b.url) + '" data-date="' + esc(b.date) + '" data-start="' + b.start + '">' + (NAMES[b.start] || (b.start + ":00")) + '<i>' + ((b.start % 12) || 12) + (b.start < 12 ? "a" : "p") + "–" + (((b.start + 6) % 12) || 12) + ((b.start + 6) % 24 < 12 ? "a" : "p") + '</i></button>';
           }).join("");
           return '<div class="tape-day"><span class="tape-day-lab">' + fmtDay(d) + '</span><div class="tape-day-row">' + row + '</div></div>';
         }).join("");
-        function play(btn, hour) {
+        function play(btn, seekTo) {
           shelf.querySelectorAll(".tape-block").forEach(function (x) { x.classList.remove("is-on"); });
           btn.classList.add("is-on");
           var st = +btn.getAttribute("data-start");
+          var date = btn.getAttribute("data-date");
           audio.src = btn.getAttribute("data-url");
-          title.textContent = (NAMES[st] || st + ":00") + " — " + fmtDay(btn.getAttribute("data-date"));
+          title.textContent = (NAMES[st] || st + ":00") + " — " + fmtDay(date);
           sub.textContent = "five and a half broadcast hours · Sedona";
           setSeek(0); if (elapsedEl) elapsedEl.textContent = "0:00:00"; if (durEl) durEl.textContent = "—";
+          if (seekBuf) seekBuf.style.width = "0%";
+          if (ticksEl) ticksEl.innerHTML = "";
+          if (nowSongEl) nowSongEl.hidden = true;
+          lastSongKey = "";
           if (playBtn) playBtn.disabled = false;
+          if (shareBtn) shareBtn.disabled = false;
+          currentBlock = { date: date, start: st };
+          tapePlaylog = null; tapeNextPlaylog = null;
+          fetchPlaylog(date, function (plays) {
+            tapePlaylog = plays; updateNowSong();
+            if (st >= 18) fetchPlaylog(nextDate(date), function (p2) { tapeNextPlaylog = p2; updateNowSong(); });
+          });
           hoursEl.innerHTML = "";
           for (var k = 0; k < 6; k++) {
             (function (k) {
@@ -4079,8 +4157,9 @@
             })(k);
           }
           audio.play().catch(function () {});
-          try { history.replaceState(null, "", "#b=" + btn.getAttribute("data-date") + "-" + ("0" + st).slice(-2) + (hour ? "&h=" + hour : "")); } catch (e) {}
-          if (hour) { audio.addEventListener("loadedmetadata", function once() { audio.removeEventListener("loadedmetadata", once); audio.currentTime = hour * 3600; }); }
+          var s0 = typeof seekTo === "number" && seekTo > 0 ? seekTo : 0;
+          try { history.replaceState(null, "", "#b=" + date + "-" + ("0" + st).slice(-2) + (s0 ? "&s=" + s0 : "")); } catch (e) {}
+          if (s0) { audio.addEventListener("loadedmetadata", function once() { audio.removeEventListener("loadedmetadata", once); audio.currentTime = s0; }); }
         }
         shelf.addEventListener("click", function (ev) {
           var b = ev.target.closest ? ev.target.closest(".tape-block") : null; if (b) play(b, 0);
@@ -4097,13 +4176,20 @@
           if (pauseIcon) pauseIcon.hidden = true;
           if (playBtn) playBtn.setAttribute("aria-label", "Play");
         });
-        // deep link: #b=YYYY-MM-DD-HH&h=N
-        var m = (location.hash || "").match(/b=(\d{4}-\d{2}-\d{2})-(\d{2})(?:&h=(\d))?/);
-        if (m) {
-          var want = shelf.querySelector('.tape-block[data-date="' + m[1] + '"][data-start="' + (+m[2]) + '"]');
-          if (want) play(want, m[3] ? +m[3] : 0);
+        audio.addEventListener("ended", function () {
+          if (!currentBlock) return;
+          var nextSt = currentBlock.start + 6, nextD = currentBlock.date;
+          if (nextSt >= 24) { nextSt = 0; nextD = nextDate(nextD); }
+          var next = shelf.querySelector('.tape-block[data-date="' + nextD + '"][data-start="' + nextSt + '"]');
+          if (next) { play(next, 0); next.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+        });
+        // deep link: #b=YYYY-MM-DD-HH&s=SECONDS (legacy &h=HOURS also accepted)
+        var dlm = (location.hash || "").match(/b=(\d{4}-\d{2}-\d{2})-(\d{2})(?:&(?:s=(\d+)|h=(\d)))?/);
+        if (dlm) {
+          var want = shelf.querySelector('.tape-block[data-date="' + dlm[1] + '"][data-start="' + (+dlm[2]) + '"]');
+          if (want) { var dlSecs = dlm[3] ? +dlm[3] : (dlm[4] ? +dlm[4] * 3600 : 0); play(want, dlSecs); }
         }
-        // seek bar + transport controls
+        // seek controls
         var seekDragging = false;
         function seekFromEvent(e) {
           var rc = seekTrack.getBoundingClientRect();
@@ -4134,7 +4220,7 @@
             if (!seekDragging || !audio.duration) return;
             seekFromEvent(e);
           });
-          seekTrack.addEventListener("pointerup", function () { seekDragging = false; });
+          seekTrack.addEventListener("pointerup", function () { seekDragging = false; updateNowSong(); });
           seekTrack.addEventListener("pointercancel", function () { seekDragging = false; });
           seekTrack.addEventListener("keydown", function (e) {
             if (!audio.duration) return;
@@ -4142,18 +4228,72 @@
             if (e.key === "ArrowRight" || e.key === "ArrowUp") audio.currentTime = Math.min(audio.duration, audio.currentTime + step);
             else if (e.key === "ArrowLeft" || e.key === "ArrowDown") audio.currentTime = Math.max(0, audio.currentTime - step);
             else return;
-            setSeek(audio.currentTime / audio.duration); e.preventDefault();
+            setSeek(audio.currentTime / audio.duration); updateNowSong(); e.preventDefault();
           });
+          if (tooltipEl) {
+            seekTrack.addEventListener("mousemove", function (e) {
+              if (!audio.duration) return;
+              var rc = seekTrack.getBoundingClientRect();
+              var x = e.clientX - rc.left;
+              tooltipEl.textContent = fmtTime(Math.max(0, Math.min(1, x / rc.width)) * audio.duration);
+              tooltipEl.style.left = x + "px";
+            });
+          }
           audio.addEventListener("timeupdate", function () {
             if (seekDragging || !audio.duration) return;
             setSeek(audio.currentTime / audio.duration);
             if (elapsedEl) elapsedEl.textContent = fmtTime(audio.currentTime);
+            updateNowSong();
+            var now = Date.now();
+            if (currentBlock && now - lastHashUpdate > 5000) {
+              lastHashUpdate = now;
+              try { history.replaceState(null, "", "#b=" + currentBlock.date + "-" + ("0" + currentBlock.start).slice(-2) + "&s=" + Math.floor(audio.currentTime)); } catch (e2) {}
+            }
+          });
+          audio.addEventListener("progress", function () {
+            if (!seekBuf || !audio.duration || !audio.buffered.length) return;
+            seekBuf.style.width = Math.min(100, audio.buffered.end(audio.buffered.length - 1) / audio.duration * 100).toFixed(2) + "%";
           });
           audio.addEventListener("loadedmetadata", function () {
             if (durEl) durEl.textContent = fmtTime(audio.duration);
             if (elapsedEl) elapsedEl.textContent = fmtTime(0);
+            renderTicks();
           });
         }
+        // speed control
+        root.querySelectorAll("[data-tape-speed]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            audio.playbackRate = +btn.getAttribute("data-tape-speed");
+            root.querySelectorAll("[data-tape-speed]").forEach(function (b) {
+              b.classList.toggle("is-on", b === btn);
+              b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+            });
+          });
+        });
+        // share button: copy deep link with exact seconds to clipboard
+        if (shareBtn) {
+          shareBtn.addEventListener("click", function () {
+            if (!currentBlock) return;
+            var s = Math.floor(audio.currentTime || 0);
+            var url = location.origin + location.pathname + "#b=" + currentBlock.date + "-" + ("0" + currentBlock.start).slice(-2) + (s ? "&s=" + s : "");
+            var origHTML = shareBtn.innerHTML;
+            function onCopied() {
+              shareBtn.textContent = "Copied!";
+              shareBtn.classList.add("is-copied");
+              setTimeout(function () { shareBtn.innerHTML = origHTML; shareBtn.classList.remove("is-copied"); }, 2200);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(url).then(onCopied).catch(function () { prompt("Copy this link:", url); });
+            } else { prompt("Copy this link:", url); }
+          });
+        }
+        // space bar play/pause (skip if focus is in a text field)
+        doc.addEventListener("keydown", function (e) {
+          if (e.code !== "Space" || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable) return;
+          if (!audio.src || audio.readyState < 1) return;
+          e.preventDefault();
+          if (audio.paused) audio.play().catch(function () {}); else audio.pause();
+        });
       });
   }
 
