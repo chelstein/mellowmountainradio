@@ -4034,6 +4034,26 @@
           var dt = new Date(d + "T12:00:00");
           return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][dt.getDay()] + " " + (dt.getMonth() + 1) + "/" + dt.getDate();
         }
+        var playBtn = root.querySelector("[data-tape-playbtn]");
+        var playIcon = playBtn && playBtn.querySelector(".tape-play-icon");
+        var pauseIcon = playBtn && playBtn.querySelector(".tape-pause-icon");
+        var seekTrack = root.querySelector("[data-tape-seektrack]");
+        var seekFill = root.querySelector("[data-tape-seekfill]");
+        var seekThumb = root.querySelector("[data-tape-seekthumb]");
+        var elapsedEl = root.querySelector("[data-tape-elapsed]");
+        var durEl = root.querySelector("[data-tape-dur]");
+        function fmtTime(s) {
+          s = Math.floor(s);
+          var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sc = s % 60;
+          return h + ":" + (m < 10 ? "0" : "") + m + ":" + (sc < 10 ? "0" : "") + sc;
+        }
+        function setSeek(frac) {
+          frac = Math.max(0, Math.min(1, frac));
+          var pct = (frac * 100).toFixed(2) + "%";
+          if (seekFill) seekFill.style.width = pct;
+          if (seekThumb) seekThumb.style.left = pct;
+          if (seekTrack) seekTrack.setAttribute("aria-valuenow", Math.round(frac * 100));
+        }
         shelf.innerHTML = days.map(function (d) {
           var row = byDay[d].sort(function (a, b) { return a.start - b.start; }).map(function (b) {
             return '<button type="button" class="tape-block" data-url="' + esc(b.url) + '" data-date="' + esc(b.date) + '" data-start="' + b.start + '">' + (NAMES[b.start] || (b.start + ":00")) + '<i>' + ((b.start % 12) || 12) + (b.start < 12 ? "a" : "p") + "–" + (((b.start + 6) % 12) || 12) + ((b.start + 6) % 24 < 12 ? "a" : "p") + '</i></button>';
@@ -4046,7 +4066,9 @@
           var st = +btn.getAttribute("data-start");
           audio.src = btn.getAttribute("data-url");
           title.textContent = (NAMES[st] || st + ":00") + " — " + fmtDay(btn.getAttribute("data-date"));
-          sub.textContent = "five and a half broadcast hours · Sedona time · drag anywhere";
+          sub.textContent = "five and a half broadcast hours · Sedona";
+          setSeek(0); if (elapsedEl) elapsedEl.textContent = "0:00:00"; if (durEl) durEl.textContent = "—";
+          if (playBtn) playBtn.disabled = false;
           hoursEl.innerHTML = "";
           for (var k = 0; k < 6; k++) {
             (function (k) {
@@ -4063,72 +4085,73 @@
         shelf.addEventListener("click", function (ev) {
           var b = ev.target.closest ? ev.target.closest(".tape-block") : null; if (b) play(b, 0);
         });
-        audio.addEventListener("play", function () { if (reel) reel.classList.add("is-spin"); });
-        audio.addEventListener("pause", function () { if (reel) reel.classList.remove("is-spin"); });
+        audio.addEventListener("play", function () {
+          if (reel) reel.classList.add("is-spin");
+          if (playIcon) playIcon.hidden = true;
+          if (pauseIcon) pauseIcon.hidden = false;
+          if (playBtn) playBtn.setAttribute("aria-label", "Pause");
+        });
+        audio.addEventListener("pause", function () {
+          if (reel) reel.classList.remove("is-spin");
+          if (playIcon) playIcon.hidden = false;
+          if (pauseIcon) pauseIcon.hidden = true;
+          if (playBtn) playBtn.setAttribute("aria-label", "Play");
+        });
         // deep link: #b=YYYY-MM-DD-HH&h=N
         var m = (location.hash || "").match(/b=(\d{4}-\d{2}-\d{2})-(\d{2})(?:&h=(\d))?/);
         if (m) {
           var want = shelf.querySelector('.tape-block[data-date="' + m[1] + '"][data-start="' + (+m[2]) + '"]');
           if (want) play(want, m[3] ? +m[3] : 0);
         }
-        // round seek knob
-        var knobEl = root.querySelector("[data-tape-knob]");
-        var knobRotor = knobEl && knobEl.querySelector("[data-tape-knob-rotor]");
-        var knobFill = knobEl && knobEl.querySelector("[data-tape-knob-fill]");
-        var knobTime = root.querySelector("[data-tape-knob-time]");
-        function tkArcPt(thetaDeg) {
-          var r = thetaDeg * Math.PI / 180;
-          return [40 + 32 * Math.sin(r), 40 - 32 * Math.cos(r)];
+        // seek bar + transport controls
+        var seekDragging = false;
+        function seekFromEvent(e) {
+          var rc = seekTrack.getBoundingClientRect();
+          var frac = Math.max(0, Math.min(1, (e.clientX - rc.left) / rc.width));
+          audio.currentTime = frac * (audio.duration || 0);
+          setSeek(frac);
         }
-        function setKnob(frac) {
-          frac = Math.max(0, Math.min(1, frac));
-          var angle = -135 + frac * 270;
-          if (knobRotor) knobRotor.setAttribute("transform", "rotate(" + angle.toFixed(1) + " 40 40)");
-          if (knobFill) {
-            if (frac <= 0.001) { knobFill.setAttribute("d", ""); }
-            else {
-              var s = tkArcPt(-135), e = tkArcPt(angle);
-              var large = frac > 0.667 ? 1 : 0;
-              knobFill.setAttribute("d", "M " + s[0].toFixed(2) + " " + s[1].toFixed(2) + " A 32 32 0 " + large + " 1 " + e[0].toFixed(2) + " " + e[1].toFixed(2));
-            }
-          }
-          if (knobEl) knobEl.setAttribute("aria-valuenow", Math.round(frac * 100));
-        }
-        function knobAngFromEvt(e) {
-          var rc = knobEl.getBoundingClientRect();
-          var dx = e.clientX - (rc.left + rc.width / 2), dy = e.clientY - (rc.top + rc.height / 2);
-          return Math.max(-135, Math.min(135, Math.atan2(dx, -dy) * 180 / Math.PI));
-        }
-        var tkDrag = false;
-        if (knobEl) {
-          knobEl.addEventListener("pointerdown", function (e) {
-            if (!audio.duration) return;
-            tkDrag = true; knobEl.setPointerCapture(e.pointerId); e.preventDefault();
-            var frac = (knobAngFromEvt(e) + 135) / 270;
-            audio.currentTime = frac * audio.duration; setKnob(frac);
+        if (playBtn) {
+          playBtn.addEventListener("click", function () {
+            if (audio.paused) audio.play().catch(function () {});
+            else audio.pause();
           });
-          knobEl.addEventListener("pointermove", function (e) {
-            if (!tkDrag || !audio.duration) return;
-            var frac = (knobAngFromEvt(e) + 135) / 270;
-            audio.currentTime = frac * audio.duration; setKnob(frac);
-          });
-          knobEl.addEventListener("pointerup", function () { tkDrag = false; });
-          knobEl.addEventListener("pointercancel", function () { tkDrag = false; });
-          knobEl.addEventListener("keydown", function (e) {
+        }
+        root.querySelectorAll("[data-tape-skip]").forEach(function (skipBtn) {
+          skipBtn.addEventListener("click", function () {
             if (!audio.duration) return;
-            var step = audio.duration / 100;
+            var delta = +skipBtn.getAttribute("data-tape-skip");
+            audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + delta));
+          });
+        });
+        if (seekTrack) {
+          seekTrack.addEventListener("pointerdown", function (e) {
+            if (!audio.duration) return;
+            seekDragging = true; seekTrack.setPointerCapture(e.pointerId); e.preventDefault();
+            seekFromEvent(e);
+          });
+          seekTrack.addEventListener("pointermove", function (e) {
+            if (!seekDragging || !audio.duration) return;
+            seekFromEvent(e);
+          });
+          seekTrack.addEventListener("pointerup", function () { seekDragging = false; });
+          seekTrack.addEventListener("pointercancel", function () { seekDragging = false; });
+          seekTrack.addEventListener("keydown", function (e) {
+            if (!audio.duration) return;
+            var step = 300;
             if (e.key === "ArrowRight" || e.key === "ArrowUp") audio.currentTime = Math.min(audio.duration, audio.currentTime + step);
             else if (e.key === "ArrowLeft" || e.key === "ArrowDown") audio.currentTime = Math.max(0, audio.currentTime - step);
             else return;
-            setKnob(audio.currentTime / audio.duration); e.preventDefault();
+            setSeek(audio.currentTime / audio.duration); e.preventDefault();
           });
           audio.addEventListener("timeupdate", function () {
-            if (tkDrag || !audio.duration) return;
-            setKnob(audio.currentTime / audio.duration);
-            if (knobTime) {
-              var s2 = Math.floor(audio.currentTime), h2 = Math.floor(s2 / 3600), mn = Math.floor((s2 % 3600) / 60), sc = s2 % 60;
-              knobTime.textContent = h2 + ":" + (mn < 10 ? "0" : "") + mn + ":" + (sc < 10 ? "0" : "") + sc;
-            }
+            if (seekDragging || !audio.duration) return;
+            setSeek(audio.currentTime / audio.duration);
+            if (elapsedEl) elapsedEl.textContent = fmtTime(audio.currentTime);
+          });
+          audio.addEventListener("loadedmetadata", function () {
+            if (durEl) durEl.textContent = fmtTime(audio.duration);
+            if (elapsedEl) elapsedEl.textContent = fmtTime(0);
           });
         }
       });
