@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=143" />
+  <link rel="stylesheet" href="styles.css?v=144" />
 </head>
 <body data-page="music">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -126,9 +126,11 @@
   <div class="section-head"><p class="eyebrow">Every hour kept for two weeks, then the desert takes it back</p><h2>Rewind the mountain</h2><p class="lead">The morning show you slept through, the song you half-caught in the canyon, the ballgame&rsquo;s last inning &mdash; the past fourteen days are here, block by block. Pick a day and drop the needle anywhere.</p></div>
   <div class="tape" data-tape hidden>
     <div class="tape-player">
-      <div class="tape-nowrow"><span class="tape-reel" data-tape-reel aria-hidden="true">&#9673;</span><div class="tape-nowmeta"><b data-tape-title>Pick a block below</b><span data-tape-sub>fourteen days on the shelf</span></div><div class="tape-knob-wrap"><svg class="tape-knob-svg" data-tape-knob viewBox="0 0 80 80" width="72" height="72" role="slider" aria-label="Seek through current block" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><defs><radialGradient id="tapeKnobGrad" cx="38%" cy="35%" r="62%"><stop offset="0%" stop-color="#3a2c1e"/><stop offset="100%" stop-color="#1a1208"/></radialGradient></defs><path d="M 17.37 62.63 A 32 32 0 1 1 62.63 62.63" fill="none" stroke="rgba(255,195,90,.16)" stroke-width="4" stroke-linecap="round"/><path data-tape-knob-fill d="" fill="none" stroke="#ffd88a" stroke-width="4" stroke-linecap="round"/><g data-tape-knob-rotor><circle cx="40" cy="40" r="24" fill="url(#tapeKnobGrad)" stroke="rgba(255,200,120,.2)" stroke-width="1.5"/><line x1="40" y1="40" x2="40" y2="20" stroke="#ffd88a" stroke-width="2.5" stroke-linecap="round" opacity=".85"/><circle cx="40" cy="20" r="3" fill="#ffd88a"/></g><circle cx="36" cy="36" r="3.5" fill="rgba(255,255,255,.06)"/></svg><span class="tape-knob-time" data-tape-knob-time>—</span></div></div>
-      <audio class="tape-audio" data-tape-audio controls preload="none"></audio>
+      <div class="tape-nowrow"><span class="tape-reel" data-tape-reel aria-hidden="true">&#9673;</span><div class="tape-nowmeta"><b data-tape-title>Pick a block below</b><span data-tape-sub>fourteen days on the shelf</span></div><button class="tape-play-btn" data-tape-playbtn aria-label="Play" disabled><svg class="tape-play-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="tape-pause-icon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" hidden><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button></div>
+      <div class="tape-seekbar"><div class="tape-seektrack" data-tape-seektrack tabindex="0" role="slider" aria-label="Seek through current block" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="tape-seekfill" data-tape-seekfill></div><div class="tape-seekthumb" data-tape-seekthumb></div></div></div>
+      <div class="tape-transport"><button class="tape-skip-btn" data-tape-skip="-900" aria-label="Skip back 15 minutes">&#8592; 15m</button><div class="tape-time-disp"><span data-tape-elapsed>&#8212;</span><span class="tape-time-sep">/</span><span data-tape-dur>&#8212;</span></div><button class="tape-skip-btn" data-tape-skip="900" aria-label="Skip forward 15 minutes">15m &#8594;</button></div>
       <div class="tape-hours" data-tape-hours></div>
+      <audio class="tape-audio" data-tape-audio preload="none"></audio>
     </div>
     <div class="tape-shelf" data-tape-shelf></div>
     <p class="micro-note">Blocks are five and a half broadcast hours each (the archived-program minimum under the statutory license is five) and every block is deleted fourteen days after airing (the statutory maximum). Times are Sedona time. Sports and syndicated segments may be trimmed where rights require.</p>
@@ -159,6 +161,6 @@
 </div></section>
   </main>
   <div data-site-footer></div>
-  <script src="main.js?v=143" defer></script>
+  <script src="main.js?v=144" defer></script>
 </body>
 </html>
