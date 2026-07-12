@@ -102,47 +102,29 @@ jobs:
           AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
         run: |
           FILENAME="${{ steps.block.outputs.filename }}"
+          SIZE=$(stat -c%s "/tmp/${FILENAME}.mp3")
+          echo "[tape] uploading /tmp/${FILENAME}.mp3 ($SIZE bytes) via multipart"
 
-          FILE_ID=$(python3 - "/tmp/${FILENAME}.mp3" "Archive/${FILENAME}.mp3" "$AZURACAST_API_KEY" <<'PYEOF'
-          import sys, json, base64, urllib.request, urllib.error
-
-          local_path, remote_path, api_key = sys.argv[1], sys.argv[2], sys.argv[3]
-          base    = "https://streaming.mellowmountainradio.com"
-          station = "mellowmountainradio"
-
-          print(f"[tape] reading {local_path}", file=sys.stderr, flush=True)
-          with open(local_path, "rb") as f:
-              b64 = base64.b64encode(f.read()).decode()
-          print(f"[tape] encoded {len(b64)} b64 chars, uploading to {remote_path}", file=sys.stderr, flush=True)
-
-          payload = json.dumps({"path": remote_path, "file": "data:audio/mpeg;base64," + b64}).encode()
-          req = urllib.request.Request(
-              f"{base}/api/station/{station}/files",
-              data=payload,
-              headers={"X-API-Key": api_key, "Content-Type": "application/json"},
-              method="POST",
-          )
-          try:
-              with urllib.request.urlopen(req, timeout=600) as resp:
-                  result = json.load(resp)
-          except urllib.error.HTTPError as e:
-              body = e.read().decode(errors="replace")
-              print(f"[tape] upload HTTP {e.code}: {body}", file=sys.stderr)
-              sys.exit(1)
-
-          file_id = result.get("id", "")
-          if not file_id:
-              print(f"[tape] upload failed — no id in response: {result}", file=sys.stderr)
-              sys.exit(1)
-          print(f"[tape] uploaded as file {file_id}", file=sys.stderr, flush=True)
-          print(file_id)
-          PYEOF
-          )
+          # multipart/form-data sends the raw binary — no base64 inflation
+          HTTP_CODE=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" \
+            --max-time 1800 \
+            -X POST \
+            -H "X-API-Key: $AZURACAST_API_KEY" \
+            -F "path=Archive/${FILENAME}.mp3" \
+            -F "file=@/tmp/${FILENAME}.mp3;type=audio/mpeg" \
+            "https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/files")
 
           rm -f "/tmp/${FILENAME}.mp3"
 
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "[tape] upload HTTP $HTTP_CODE: $(cat /tmp/upload_response.json)" >&2
+            exit 1
+          fi
+
+          FILE_ID=$(python3 -c "import json; d=json.load(open('/tmp/upload_response.json')); print(d.get('id',''))")
+
           if [ -z "$FILE_ID" ]; then
-            echo "[tape] upload step returned no file id" >&2
+            echo "[tape] upload succeeded but no id in response: $(cat /tmp/upload_response.json)" >&2
             exit 1
           fi
           echo "file_id=$FILE_ID" >> "$GITHUB_OUTPUT"
