@@ -1,0 +1,103 @@
+{
+  "station": "KAZM 106.5 FM & 780 AM",
+  "timezone": "America/Phoenix",
+  "note": "Times in Mountain Standard Time (MST / UTC-7). Arizona does not observe daylight saving time.",
+  "weekday": [
+    {
+      "id": "morning-music",
+      "start": "06:00",
+      "end": "12:00",
+      "name": "Mellow Mountain Music",
+      "host": null,
+      "description": "Smooth yacht rock, local tunes, and relaxed energy to start the day. CBS, state, and local news plus the local forecast on the hour.",
+      "emoji": "🎶",
+      "days": ["Mon","Tue","Wed","Thu","Fri"]
+    },
+    {
+      "id": "midday-music",
+      "start": "12:00",
+      "end": "15:00",
+      "name": "Midday Mellow Mountain Music",
+      "host": null,
+      "description": "The mellow flow continues through the afternoon. Native America Calling mid-day, with news on the hour.",
+      "emoji": "🎶",
+      "days": ["Mon","Tue","Wed","Thu","Fri"]
+    },
+    {
+      "id": "three-pack",
+      "start": "15:00",
+      "end": "15:15",
+      "name": "The World Famous 3 O'Clock Three Pack",
+      "host": null,
+      "description": "Three themed tracks back-to-back, no interruptions — a daily highlight.",
+      "emoji": "⭐",
+      "days": ["Mon","Tue","Wed","Thu","Fri"]
+    },
+    {
+      "id": "sports-music",
+      "start": "15:15",
+      "end": "22:00",
+      "name": "Sports & Music Block",
+      "host": null,
+      "description": "Live coverage of the Suns, Cardinals, Diamondbacks, ASU, U of A, and NAU, mixed with evening music and updates.",
+      "emoji": "🏆",
+      "days": ["Mon","Tue","Wed","Thu","Fri"]
+    },
+    {
+      "id": "coast-to-coast",
+      "start": "22:00",
+      "end": "02:00",
+      "name": "Coast to Coast AM",
+      "host": "George Noory",
+      "description": "Explore the unexplained — UFOs, conspiracies, and ancient mysteries — through the midnight hours.",
+      "emoji": "🌌",
+      "days": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    },
+    {
+      "id": "overnight-music",
+      "start": "02:00",
+      "end": "04:00",
+      "name": "Overnight Mellow Mountain Music",
+      "host": null,
+      "description": "Late-night chill and midnight classics to ease you into morning.",
+      "emoji": "🌙",
+      "days": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    },
+    {
+      "id": "quiet-storm",
+      "start": "04:00",
+      "end": "06:00",
+      "name": "The Quiet Storm",
+      "host": "Marcus Moon",
+      "description": "Two hours of timeless R&B and soul to close out the night.",
+      "emoji": "🌙",
+      "days": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    }
+  ],
+  "weekend": [
+    {
+      "id": "weekend-morning",
+      "start": "06:00",
+      "end": "22:00",
+      "name": "Mellow Mountain Music",
+      "host": null,
+      "description": "A full day of soft oldies, yacht rock, and mellow music.",
+      "emoji": "🎶",
+      "days": ["Sat","Sun"]
+    }
+  ],
+  "specialty": [
+    { "name": "The Yacht Club",              "host": "Meredith Marx",                    "description": "Smooth sailing through the yacht rock of the '70s and '80s." },
+    { "name": "MentalRadio",                 "host": "Shadoe Stevens",                   "description": "Wit, music, and mischief from the legendary broadcaster." },
+    { "name": "Unreserved",                  "host": "Rosanna Deerchild",               "description": "Stories from Indigenous communities across North America." },
+    { "name": "The Pet Buzz",                "host": "Charlotte Reed & Michael Fleck",   "description": "Pet news, tips, and guests for animal lovers." },
+    { "name": "Rooted in Healing",           "host": "Dr. Beth Claxton, M.D.",           "description": "Conversations on health and whole-person wellness." },
+    { "name": "Democratic Perspective",      "host": "Verde Valley Independent Democrats","description": "The week's issues, Sundays at 8am.", "time": "Sun 08:00" },
+    { "name": "Sedona's Backstage Pass",     "host": "Shondra",                          "description": "Behind the scenes with Sedona's music and arts scene." },
+    { "name": "Poetry & Prose Project",      "host": "Gary Every",                       "description": "Poetry and storytelling from the Southwest." },
+    { "name": "Sedona Soul Sisters",         "host": "Christel Arcucci",                 "description": "Access your psychic power and embody your purpose." },
+    { "name": "DJ Mike Show",                "host": "DJ Mike",                          "description": "Captivating music, outstanding vibes." },
+    { "name": "Chamber 101",                 "host": "Chamber of Commerce",              "description": "Maximize your chamber partnership benefits." },
+    { "name": "Leaders' Lounge",             "host": "Jablow & Ploog",                   "description": "Local leaders and conversations shaping the Verde Valley." }
+  ]
+}
