@@ -2320,6 +2320,8 @@ body.golden-hour::after { content: ""; position: fixed; inset: 0; z-index: 70; p
 .dyk { background: linear-gradient(160deg, #fdf3e2, #fbfaf6); border: 1px solid var(--line); }
 .dyk-k { font-family: var(--font-display); font-size: 1.3rem; color: var(--accent-strong); }
 .dyk-text { font-size: 15px; line-height: 1.65; color: var(--ink); margin-top: 8px; }
+.dyk--hifi { max-width: 600px; margin: 28px auto 0; }
+.dyk-link { color: var(--accent-strong); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 720px) { .two-col-notes { grid-template-columns: 1fr; } }
 
 /* Kids checklist */
