@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-13T14:40:33.805Z",
+ "updated": "2026-07-13T19:26:23.908Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -79,7 +79,7 @@
    "city": "Phoenix",
    "state": "AZ",
    "url": "https://www.ticketmaster.com/chicago-styx-the-windy-cities-tour-phoenix-arizona-09-01-2026/event/190063799D894F42",
-   "img": "https://s1.ticketm.net/dam/a/a48/51b042fa-627d-421f-8500-0a535ab79a48_RETINA_PORTRAIT_16_9.jpg",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
    "saleStart": "2025-12-05T17:00:00Z",
@@ -605,7 +605,7 @@
    "city": "Denver",
    "state": "CO",
    "url": "https://www.ticketmaster.com/chicago-styx-the-windy-cities-tour-denver-colorado-08-28-2026/event/1E006378B5A77148",
-   "img": "https://s1.ticketm.net/dam/a/a48/51b042fa-627d-421f-8500-0a535ab79a48_RETINA_PORTRAIT_16_9.jpg",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
    "saleStart": "2025-12-05T17:00:00Z",
@@ -622,7 +622,7 @@
    "city": "Denver",
    "state": "CO",
    "url": "https://www.ticketmaster.com/club-level-seating-chicago-styx-denver-colorado-08-28-2026/event/1E00638AAC7F7DF6",
-   "img": "https://s1.ticketm.net/dam/a/a48/51b042fa-627d-421f-8500-0a535ab79a48_RETINA_PORTRAIT_16_9.jpg",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
    "saleStart": "2025-12-12T17:00:00Z",
@@ -674,7 +674,7 @@
    "city": "Palm Desert",
    "state": "CA",
    "url": "https://www.ticketmaster.com/chicago-styx-the-windy-cities-tour-palm-desert-california-09-02-2026/event/0A006378DDF992FB",
-   "img": "https://s1.ticketm.net/dam/a/a48/51b042fa-627d-421f-8500-0a535ab79a48_RETINA_PORTRAIT_16_9.jpg",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
    "saleStart": "2025-12-05T18:00:00Z",
@@ -695,6 +695,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-05-01T16:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "Z7r9jZ1A70384",
+   "artist": "The Beach Boys",
+   "date": "2026-09-02",
+   "time": "19:30:00",
+   "venue": "Rendezvous Event Center",
+   "city": "Winter Park",
+   "state": "CO",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A70384",
+   "img": "https://s1.ticketm.net/dam/a/1e6/a7fb22db-7408-44ee-94cc-b6fd363bc1e6_1583871_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "1900-01-01T06:00:00Z",
    "lineup": []
   },
   {
@@ -751,7 +766,7 @@
    "city": "Inglewood",
    "state": "CA",
    "url": "https://www.ticketmaster.com/chicago-styx-the-windy-cities-tour-inglewood-california-09-06-2026/event/09006379EB8CC553",
-   "img": "https://s1.ticketm.net/dam/a/a48/51b042fa-627d-421f-8500-0a535ab79a48_RETINA_PORTRAIT_16_9.jpg",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
    "saleStart": "2025-12-05T18:00:00Z",
@@ -1337,6 +1352,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-05-20T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "17AYv0G6CxsoGYd",
+   "artist": "Ambrosia",
+   "date": "2026-11-27",
+   "time": "20:00:00",
+   "venue": "The Showroom at the Golden Nugget",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/ambrosia-las-vegas-nevada-11-27-2026/event/170064E8B144CC03",
+   "img": "https://s1.ticketm.net/dam/a/6bd/98c7c94d-22d4-4fb6-9698-623379f046bd_607941_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-07-14T17:00:00Z",
    "lineup": []
   },
   {
