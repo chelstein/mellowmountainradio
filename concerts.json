@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-12T19:09:31.888Z",
+ "updated": "2026-07-13T03:18:41.531Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -191,7 +191,7 @@
    "url": "https://www.ticketmaster.com/good-vibrations-celebration-of-the-beach-las-vegas-nevada-07-12-2026/event/1700649AF9BC660C",
    "img": "https://s1.ticketm.net/dam/e/61d/95a60a2b-ac20-43b4-8e60-614687b8b61d_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-05-05T19:00:00Z",
    "lineup": []
   },
@@ -206,7 +206,7 @@
    "url": "https://www.ticketmaster.com/ambrosia-fontana-california-07-12-2026/event/0900649DFA7A8E38",
    "img": "https://s1.ticketm.net/dam/a/6bd/98c7c94d-22d4-4fb6-9698-623379f046bd_607941_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-05-07T17:00:00Z",
    "lineup": []
   },
