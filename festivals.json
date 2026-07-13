@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-13T03:18:22.810Z",
+ "updated": "2026-07-13T09:32:52.304Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -21,16 +21,6 @@
    "genre": "Other",
    "start": "2026-09-11",
    "end": "2026-09-11"
-  },
-  {
-   "name": "EL GRAN CUMBION FEST - CUMBIA Y RUIDO",
-   "city": "Rancho Cucamonga",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/el-gran-cumbion-fest-the-arrow-room-tickets/14928153",
-   "img": "https://s1.ticketm.net/dam/c/548/5fefbd1c-973b-4b0e-9b2e-d78e4ce37548_106111_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "World",
-   "start": "2026-07-12",
-   "end": "2026-07-12"
   },
   {
    "name": "Solardo - Hags Fest",
@@ -171,6 +161,26 @@
    "genre": "Other",
    "start": "2026-08-13",
    "end": "2026-08-13"
+  },
+  {
+   "name": "80s MUSIC FESTIVAL",
+   "city": "Rancho Mirage",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/80s-music-festival-rancho-mirage-california-08-15-2026/event/090064BF0895AF1C",
+   "img": "https://s1.ticketm.net/dam/e/b03/09661bd7-3e8f-4609-8369-d04120c5cb03_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Undefined",
+   "start": "2026-08-15",
+   "end": "2026-08-15"
+  },
+  {
+   "name": "California's Best Hip-Hop Music Festival Too Short and Mozzy",
+   "city": "Bakersfield",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A703J4",
+   "img": "https://s1.ticketm.net/dam/a/5fb/a44f3c17-a239-46fd-b103-81401a5715fb_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Hip-Hop/Rap",
+   "start": "2026-08-15",
+   "end": "2026-08-15"
   },
   {
    "name": "Just Like Heaven Festival",
