@@ -1,16 +1,20 @@
 name: KAZM Tape Recorder
 
-# Records the live stream in 5h30m blocks (above the 5h statutory archived-program
-# minimum) four times a day at Arizona block boundaries, uploads each block to
-# AzuraCast's media library, and keeps rewind-manifest.json current so the
-# Listeners Lounge tape player on rewind.html can serve them up.
-# Blocks are deleted after 14 days (statutory maximum).
+# Records the live stream in 5h30m blocks, stores each as a GitHub Release asset,
+# and keeps rewind-manifest.json current so the Listeners Lounge tape player works.
+# Blocks (releases) are deleted after 14 days. GitHub Releases sidesteps the
+# AzuraCast nginx client_max_body_size limit that was killing every upload.
 
 on:
   schedule:
     # 1:01, 7:01, 13:01, 19:01 UTC = 18:01, 0:01, 6:01, 12:01 Arizona (UTC-7)
     - cron: "1 1,7,13,19 * * *"
   workflow_dispatch:
+    inputs:
+      duration:
+        description: 'Recording duration in seconds (default: 19800 = 5h30m full block)'
+        required: false
+        default: '19800'
 
 permissions:
   contents: write
@@ -22,7 +26,7 @@ concurrency:
 jobs:
   record:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 380
     steps:
       - uses: actions/checkout@v4
 
@@ -46,111 +50,85 @@ jobs:
       - name: Install ffmpeg
         run: sudo apt-get install -y ffmpeg
 
-      - name: Prune AzuraCast files older than 14 days
+      - name: Prune GitHub releases older than 14 days
         env:
-          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 - "$AZURACAST_API_KEY" <<'PYEOF'
-          import sys, json, urllib.request
+          python3 - <<'PYEOF'
+          import subprocess, json
           from datetime import datetime, timezone, timedelta
 
-          api_key = sys.argv[1]
-          base    = "https://streaming.mellowmountainradio.com"
-          station = "mellowmountainradio"
-          cutoff  = (datetime.now(timezone.utc) - timedelta(days=14)).timestamp()
-
-          req = urllib.request.Request(
-              f"{base}/api/station/{station}/files?searchPhrase=Archive/",
-              headers={"X-API-Key": api_key}
+          cutoff = (datetime.now(timezone.utc) - timedelta(days=14)).strftime("%Y-%m-%dT%H:%M:%SZ")
+          result = subprocess.run(
+              ['gh', 'release', 'list', '--repo', 'chelstein/mellowmountainradio',
+               '--json', 'tagName,publishedAt', '--limit', '100'],
+              capture_output=True, text=True
           )
-          with urllib.request.urlopen(req) as r:
-              files = json.load(r)
-
+          releases = json.loads(result.stdout or '[]')
           deleted = 0
-          for f in files:
-              if f.get("path", "").startswith("Archive/") and f.get("uploaded_at", 0) < cutoff:
-                  dreq = urllib.request.Request(
-                      f"{base}/api/station/{station}/file/{f['id']}",
-                      method="DELETE",
-                      headers={"X-API-Key": api_key}
-                  )
-                  try:
-                      urllib.request.urlopen(dreq)
-                      print(f"[tape] pruned {f['path']} (id {f['id']})")
-                      deleted += 1
-                  except Exception as e:
-                      print(f"[tape] prune failed {f['id']}: {e}", file=sys.stderr)
-          print(f"[tape] pruned {deleted} old file(s)")
+          for r in releases:
+              if r.get('tagName', '').startswith('tape-') and r['publishedAt'] < cutoff:
+                  subprocess.run(['gh', 'release', 'delete', r['tagName'],
+                                  '--repo', 'chelstein/mellowmountainradio',
+                                  '--yes', '--cleanup-tag'], capture_output=True)
+                  print(f"[tape] pruned {r['tagName']}")
+                  deleted += 1
+          print(f"[tape] pruned {deleted} old release(s)")
           PYEOF
 
-      - name: Record stream (5h 30min = 19800s)
+      - name: Record stream
         run: |
           FILENAME="${{ steps.block.outputs.filename }}"
-          echo "[tape] recording /tmp/${FILENAME}.mp3 for 19800s"
+          DURATION="${{ github.event.inputs.duration }}"
+          if [ -z "$DURATION" ]; then DURATION=19800; fi
+          echo "[tape] recording /tmp/${FILENAME}.mp3 for ${DURATION}s"
           ffmpeg -hide_banner -loglevel error \
             -i "https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" \
-            -t 19800 -c copy -y "/tmp/${FILENAME}.mp3"
+            -t "$DURATION" -c copy -y "/tmp/${FILENAME}.mp3"
           if [ ! -s "/tmp/${FILENAME}.mp3" ]; then
             echo "[tape] recording came out empty" >&2
             exit 1
           fi
           echo "[tape] done — $(stat -c%s "/tmp/${FILENAME}.mp3") bytes"
 
-      - name: Upload to AzuraCast media library
+      - name: Upload to GitHub Release
         id: upload
         env:
-          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           FILENAME="${{ steps.block.outputs.filename }}"
-          SIZE=$(stat -c%s "/tmp/${FILENAME}.mp3")
-          echo "[tape] uploading /tmp/${FILENAME}.mp3 ($SIZE bytes) via multipart"
+          TAG="tape-${FILENAME}"
 
-          # multipart/form-data sends the raw binary — no base64 inflation
-          HTTP_CODE=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" \
-            --max-time 1800 \
-            -X POST \
-            -H "X-API-Key: $AZURACAST_API_KEY" \
-            -F "path=Archive/${FILENAME}.mp3" \
-            -F "file=@/tmp/${FILENAME}.mp3;type=audio/mpeg" \
-            "https://streaming.mellowmountainradio.com/api/station/mellowmountainradio/files")
+          # Delete any existing release for this block slot before re-creating
+          gh release delete "$TAG" --repo chelstein/mellowmountainradio \
+            --yes --cleanup-tag 2>/dev/null || true
 
+          gh release create "$TAG" \
+            --repo chelstein/mellowmountainradio \
+            --title "KAZM tape: $FILENAME" \
+            --notes "Automated broadcast recording. Auto-deleted after 14 days." \
+            --prerelease \
+            "/tmp/${FILENAME}.mp3#${FILENAME}.mp3"
+
+          DOWNLOAD_URL="https://github.com/chelstein/mellowmountainradio/releases/download/${TAG}/${FILENAME}.mp3"
+          echo "download_url=$DOWNLOAD_URL" >> "$GITHUB_OUTPUT"
+          echo "[tape] uploaded: $DOWNLOAD_URL"
           rm -f "/tmp/${FILENAME}.mp3"
 
-          if [ "$HTTP_CODE" != "200" ]; then
-            echo "[tape] upload HTTP $HTTP_CODE: $(cat /tmp/upload_response.json)" >&2
-            exit 1
-          fi
-
-          FILE_ID=$(python3 -c "import json; d=json.load(open('/tmp/upload_response.json')); print(d.get('id',''))")
-
-          if [ -z "$FILE_ID" ]; then
-            echo "[tape] upload succeeded but no id in response: $(cat /tmp/upload_response.json)" >&2
-            exit 1
-          fi
-          echo "file_id=$FILE_ID" >> "$GITHUB_OUTPUT"
-          echo "[tape] file_id=$FILE_ID"
-
       - name: Update rewind-manifest.json
-        env:
-          AZURACAST_API_KEY: ${{ secrets.AZURACAST_API_KEY }}
         run: |
           python3 - \
-            "${{ steps.upload.outputs.file_id }}" \
+            "${{ steps.upload.outputs.download_url }}" \
             "${{ steps.block.outputs.date }}" \
-            "${{ steps.block.outputs.start }}" \
-            "$AZURACAST_API_KEY" <<'PYEOF'
+            "${{ steps.block.outputs.start }}" <<'PYEOF'
           import sys, json
           from datetime import datetime, timezone, timedelta
 
-          file_id   = sys.argv[1]
-          date_str  = sys.argv[2]
-          start_h   = int(sys.argv[3])
-          api_key   = sys.argv[4]
-          base      = "https://streaming.mellowmountainradio.com"
-          station   = "mellowmountainradio"
+          url      = sys.argv[1]
+          date_str = sys.argv[2]
+          start_h  = int(sys.argv[3])
 
-          play_url  = f"{base}/api/station/{station}/file/{file_id}/play?api_key={api_key}"
-          new_block = {"url": play_url, "date": date_str, "start": start_h}
+          new_block = {"url": url, "date": date_str, "start": start_h}
 
           with open("rewind-manifest.json") as f:
               manifest = json.load(f)
@@ -171,7 +149,7 @@ jobs:
           print(f"[tape] manifest updated: {len(kept)} block(s)")
           PYEOF
 
-      - name: Commit and push manifest update
+      - name: Commit and push manifest
         run: |
           git config user.name "mmr-tape-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
