@@ -4125,7 +4125,7 @@
         }
         shelf.innerHTML = days.map(function (d) {
           var row = byDay[d].sort(function (a, b) { return a.start - b.start; }).map(function (b) {
-            return '<button type="button" class="tape-block" data-url="' + esc(b.url) + '" data-date="' + esc(b.date) + '" data-start="' + b.start + '">' + (NAMES[b.start] || (b.start + ":00")) + '<i>' + ((b.start % 12) || 12) + (b.start < 12 ? "a" : "p") + "–" + (((b.start + 6) % 12) || 12) + ((b.start + 6) % 24 < 12 ? "a" : "p") + '</i></button>';
+            return '<button type="button" class="tape-block" data-url="' + esc(b.url) + '" data-date="' + esc(b.date) + '" data-start="' + b.start + '" data-rec-start="' + (b.recStart != null ? b.recStart : "") + '">' + (NAMES[b.start] || (b.start + ":00")) + '<i>' + ((b.start % 12) || 12) + (b.start < 12 ? "a" : "p") + "–" + (((b.start + 6) % 12) || 12) + ((b.start + 6) % 24 < 12 ? "a" : "p") + '</i></button>';
           }).join("");
           return '<div class="tape-day"><span class="tape-day-lab">' + fmtDay(d) + '</span><div class="tape-day-row">' + row + '</div></div>';
         }).join("");
@@ -4134,6 +4134,8 @@
           btn.classList.add("is-on");
           var st = +btn.getAttribute("data-start");
           var date = btn.getAttribute("data-date");
+          var recStartAttr = btn.getAttribute("data-rec-start");
+          var recStartVal = (recStartAttr !== null && recStartAttr !== "") ? +recStartAttr : null;
           audio.src = btn.getAttribute("data-url");
           title.textContent = (NAMES[st] || st + ":00") + " — " + fmtDay(date);
           sub.textContent = "five and a half broadcast hours · Sedona";
@@ -4144,7 +4146,7 @@
           lastSongKey = "";
           if (playBtn) playBtn.disabled = false;
           if (shareBtn) shareBtn.disabled = false;
-          currentBlock = { date: date, start: st };
+          currentBlock = { date: date, start: st, recStart: recStartVal };
           tapePlaylog = null; tapeNextPlaylog = null;
           fetchPlaylog(date, function (plays) {
             tapePlaylog = plays; updateNowSong();
