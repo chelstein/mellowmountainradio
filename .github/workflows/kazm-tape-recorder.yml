@@ -77,11 +77,14 @@ jobs:
           PYEOF
 
       - name: Record stream
+        id: recording
         run: |
           FILENAME="${{ steps.block.outputs.filename }}"
           DURATION="${{ github.event.inputs.duration }}"
           if [ -z "$DURATION" ]; then DURATION=19800; fi
-          echo "[tape] recording /tmp/${FILENAME}.mp3 for ${DURATION}s"
+          REC_START_SECS=$(( ($(date -u +%s) - 7*3600) % 86400 ))
+          echo "rec_start=$REC_START_SECS" >> "$GITHUB_OUTPUT"
+          echo "[tape] recording /tmp/${FILENAME}.mp3 for ${DURATION}s (AZ offset: ${REC_START_SECS}s from midnight)"
           ffmpeg -hide_banner -loglevel error \
             -i "https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" \
             -t "$DURATION" -c copy -y "/tmp/${FILENAME}.mp3"
@@ -120,15 +123,17 @@ jobs:
           python3 - \
             "${{ steps.upload.outputs.download_url }}" \
             "${{ steps.block.outputs.date }}" \
-            "${{ steps.block.outputs.start }}" <<'PYEOF'
+            "${{ steps.block.outputs.start }}" \
+            "${{ steps.recording.outputs.rec_start }}" <<'PYEOF'
           import sys, json
           from datetime import datetime, timezone, timedelta
 
-          url      = sys.argv[1]
-          date_str = sys.argv[2]
-          start_h  = int(sys.argv[3])
+          url       = sys.argv[1]
+          date_str  = sys.argv[2]
+          start_h   = int(sys.argv[3])
+          rec_start = int(sys.argv[4]) if len(sys.argv) > 4 and sys.argv[4] else start_h * 3600
 
-          new_block = {"url": url, "date": date_str, "start": start_h}
+          new_block = {"url": url, "date": date_str, "start": start_h, "recStart": rec_start}
 
           with open("rewind-manifest.json") as f:
               manifest = json.load(f)
