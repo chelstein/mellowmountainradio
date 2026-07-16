@@ -1,22 +1,11 @@
 {
- "updated": "2026-07-15T19:15:37.862Z",
+ "updated": "2026-07-16T02:47:53.551Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: The Proposal",
-   "date": "2026-07-15",
-   "time": "19:30",
-   "venue": "The Wilde Resort and Spa",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-the-proposal/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/The-Proposal-poster.jpg",
-   "summary": "In the 2009 romantic comedy “The Proposal”, strict Canadian book editor Margaret Tate (Sandra Bullock) forces her long-suffering assistant, Andrew Paxton (Ryan Reynolds), to marry her to avoid being deported to her…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Outdoor Film: Field of Dreams",
@@ -404,6 +393,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Couture",
+   "date": "2026-08-07",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/couture/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Couture-poster.jpg",
+   "summary": "Academy Award-winner Angelina Jolie stars as Maxine, an American filmmaker who arrives in Paris during the frenzy of Fashion Week."
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Grateful Dead Meet-Up At The Movies 2026",
    "date": "2026-08-08",
    "time": "",
@@ -412,6 +412,17 @@
    "url": "https://sedonafilmfestival.com/event/grateful-dead-meet-up-at-the-movies-2026/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Grateful-Dead-2026-poster.jpg",
    "summary": "Come celebrate the 35th anniversary of an iconic Grateful Dead show as it makes a high-energy return to the big screen! Join Dead Heads in your neighborhood — and around the world — for the 2026 Grateful Dead Meet-Up…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Stand-Up Comedy Night with Claude Stuart",
+   "date": "2026-08-09",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/stand-up-comedy-night-with-claude-stuart/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Comedy-Night-Claude-Stuart-poster-Aug-2026.jpg",
+   "summary": "From packing comedy venues across the globe to regular television appearances on shows like “The Tonight Show” and “Last Comic Standing”, veteran comedian Claude Stuart has come a long way from his down-home,…"
   },
   {
    "source": "Sedona Film Festival",
