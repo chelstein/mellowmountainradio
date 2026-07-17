@@ -118,13 +118,19 @@ jobs:
           echo "[tape] uploaded: $DOWNLOAD_URL"
           rm -f "/tmp/${FILENAME}.mp3"
 
-      - name: Update rewind-manifest.json
+      - name: Commit and push manifest
         run: |
-          python3 - \
-            "${{ steps.upload.outputs.download_url }}" \
-            "${{ steps.block.outputs.date }}" \
-            "${{ steps.block.outputs.start }}" \
-            "${{ steps.recording.outputs.rec_start }}" <<'PYEOF'
+          git config user.name "mmr-tape-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          URL="${{ steps.upload.outputs.download_url }}"
+          DATE_STR="${{ steps.block.outputs.date }}"
+          START_H="${{ steps.block.outputs.start }}"
+          REC_START="${{ steps.recording.outputs.rec_start }}"
+          FILENAME="${{ steps.block.outputs.filename }}"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git checkout origin/main
+            python3 - "$URL" "$DATE_STR" "$START_H" "$REC_START" <<'PYEOF'
           import sys, json
           from datetime import datetime, timezone, timedelta
 
@@ -153,19 +159,15 @@ jobs:
 
           print(f"[tape] manifest updated: {len(kept)} block(s)")
           PYEOF
-
-      - name: Commit and push manifest
-        run: |
-          git config user.name "mmr-tape-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          MANIFEST=$(cat rewind-manifest.json)
-          git fetch origin main
-          git checkout origin/main
-          echo "$MANIFEST" > rewind-manifest.json
-          git add rewind-manifest.json
-          if git diff --staged --quiet; then
-            echo "No manifest changes."
-          else
-            git commit -m "KAZM tape: ${{ steps.block.outputs.filename }} [skip ci]"
-            git push origin HEAD:main
-          fi
+            git add rewind-manifest.json
+            if git diff --staged --quiet; then
+              echo "[tape] no manifest changes"
+              exit 0
+            fi
+            git commit -m "KAZM tape: $FILENAME [skip ci]"
+            git push origin HEAD:main && exit 0
+            echo "[tape] push failed (attempt $attempt/5), retrying in $((attempt * 5))s..."
+            sleep $((attempt * 5))
+          done
+          echo "[tape] all push attempts failed" >&2
+          exit 1
