@@ -4109,6 +4109,7 @@
             var src = audioCtx.createMediaElementSource(audio);
             src.connect(analyser);
             analyser.connect(audioCtx.destination);
+            audioCtx.resume(); // must be called while still inside the gesture handler
           } catch(e) { audioCtx = null; analyser = null; }
         }
         function runVuLoop() {
