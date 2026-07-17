@@ -480,7 +480,8 @@
       fetch("rewind-manifest.json", { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (d) {
-          if (!d || !d.blocks) { location.href = base; return; }
+          if (!d || !d.blocks || !d.blocks.length) { location.href = "/rewind.html"; return; }
+          // look for the exact block covering the current song
           for (var i = 0; i < d.blocks.length; i++) {
             var b = d.blocks[i];
             if (b.date === azDate && b.start === slotH) {
@@ -489,9 +490,11 @@
               return;
             }
           }
-          location.href = base; // block not yet archived — land at start
+          // current block still recording — jump to the most recent archived block
+          var latest = d.blocks[d.blocks.length - 1];
+          location.href = "/rewind.html#b=" + latest.date + "-" + ("0" + latest.start).slice(-2);
         })
-        .catch(function () { location.href = base; });
+        .catch(function () { location.href = "/rewind.html"; });
     });
   })();
 
