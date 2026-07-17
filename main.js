@@ -4047,6 +4047,7 @@
         var durEl = root.querySelector("[data-tape-dur]");
         var nowSongEl = root.querySelector("[data-tape-nowsong]");
         var nowSongText = root.querySelector("[data-tape-nowsong-text]");
+        var nowSongArt = root.querySelector("[data-tape-nowsong-art]");
         var shareBtn = root.querySelector("[data-tape-share]");
         var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
         var currentBlock = null;
@@ -4094,6 +4095,25 @@
           for (var i = 0; i < all.length; i++) { if (all[i].s <= secsFromMid) hit = all[i].p; else break; }
           return hit;
         }
+        var artCache = {};
+        function fetchArt(artist, title, cb) {
+          var cacheKey = (artist || "") + "\n" + (title || "");
+          if (cacheKey in artCache) { cb(artCache[cacheKey]); return; }
+          artCache[cacheKey] = null;
+          var q = encodeURIComponent([(artist || ""), (title || "")].filter(Boolean).join(" "));
+          fetch("https://itunes.apple.com/search?term=" + q + "&entity=song&limit=1")
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(j) {
+              var hit = j && j.results && j.results[0];
+              var art = hit ? {
+                img: (hit.artworkUrl100 || "").replace("100x100bb", "200x200bb"),
+                url: hit.trackViewUrl || null
+              } : null;
+              artCache[cacheKey] = art;
+              cb(art);
+            })
+            .catch(function() { cb(null); });
+        }
         function updateNowSong() {
           if (!nowSongEl || !nowSongText || !currentBlock) return;
           var song = songAtSecs(audio.currentTime || 0);
@@ -4101,8 +4121,22 @@
           if (key === lastSongKey) return;
           lastSongKey = key;
           if (song) {
-            nowSongText.textContent = song.ti + (song.ar ? " — " + song.ar : "");
+            var label = song.ti + (song.ar ? " — " + song.ar : "");
+            nowSongText.textContent = label;
+            nowSongText.removeAttribute("href");
+            if (nowSongArt) { nowSongArt.hidden = true; nowSongArt.src = ""; }
             nowSongEl.hidden = false;
+            fetchArt(song.ar || "", song.ti || "", function(art) {
+              if (key !== lastSongKey) return;
+              if (nowSongArt && art && art.img) {
+                nowSongArt.src = art.img;
+                nowSongArt.alt = label;
+                nowSongArt.hidden = false;
+              }
+              if (nowSongText && art && art.url) {
+                nowSongText.setAttribute("href", art.url);
+              }
+            });
           } else {
             nowSongEl.hidden = true;
           }

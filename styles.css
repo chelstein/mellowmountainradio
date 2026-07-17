@@ -3663,7 +3663,9 @@ body.podplaying .player.show { transform: translateY(180%); }
 .tape-play-btn:disabled{opacity:.35;cursor:default}
 .tape-nowsong{display:flex;align-items:center;gap:8px;padding:7px 10px;margin:0 0 10px;background:rgba(200,112,64,.08);border:1px solid rgba(200,112,64,.22);border-radius:8px;font-size:12.5px;overflow:hidden}
 .tape-nowsong-note{color:#c87040;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;flex:none;white-space:nowrap}
-.tape-nowsong-text{color:#f0d8b0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tape-nowsong-art{width:40px;height:40px;border-radius:4px;object-fit:cover;flex:none}
+.tape-nowsong-text{color:#f0d8b0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;text-decoration:none}
+.tape-nowsong-text[href]:hover{color:#c87040;text-decoration:underline}
 .tape-seekbar{margin:14px 0 0;position:relative}
 .tape-seektrack{position:relative;height:6px;background:rgba(160,95,25,.22);border-radius:3px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
 .tape-seektrack:hover{background:rgba(160,95,25,.34)}
