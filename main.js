@@ -98,6 +98,7 @@
         '<span class="player-pulse" data-pulse hidden><button class="pp-btn" type="button" data-pulse-love aria-label="Feed the pulse — more like this, nudges the station playlist" title="Feed the pulse — more like this"><svg viewBox="0 0 24 12" width="20" height="11" aria-hidden="true"><polyline points="0,6 6,6 9,1 13,11 16,6 24,6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button><button class="pp-btn pp-btn--nah" type="button" data-pulse-nah aria-label="Flatline — not my vibe, nudges the station playlist" title="Flatline — not my vibe"><svg viewBox="0 0 24 12" width="20" height="11" aria-hidden="true"><line x1="0" y1="6" x2="24" y2="6" stroke="currentColor" stroke-width="2"/></svg></button></span>' +
       '</div>' +
       '<button class="player-btn" data-listen aria-pressed="false" aria-label="Play or pause the live stream">' + ICON_PLAY + ICON_PAUSE + '<span class="player-btn-label" data-listen-label>Listen Live</span></button>' +
+      '<a class="player-rewind" data-player-rewind href="/rewind.html" aria-label="Rewind — jump to this song in the archive">&#8617; Rewind</a>' +
     '</div></div>' +
     '<audio id="stream" preload="none" crossorigin="anonymous"><source src="https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" type="audio/mpeg" /><source src="https://streaming.live365.com/a56104" type="audio/mpeg" /></audio>';
 
@@ -457,6 +458,42 @@
   }
   fetchNowPlaying();
   setInterval(fetchNowPlaying, 20000);
+
+  /* =========================================================
+     ON-AIR → REWIND: "Rewind" button in live player jumps to the
+     archived block for the song currently on air.
+     ========================================================= */
+  (function () {
+    var rwBtn = doc.querySelector("[data-player-rewind]");
+    if (!rwBtn) return;
+    rwBtn.addEventListener("click", function (e) {
+      var np = lastNowData && lastNowData.now_playing;
+      if (!np || !np.played_at) return; // no data yet — let href work
+      e.preventDefault();
+      var t = np.played_at; // Unix seconds when the song started
+      var adj = t - 7 * 3600; // shift to AZ time (UTC-7, no DST)
+      var azSecs = ((adj % 86400) + 86400) % 86400; // seconds from AZ midnight
+      var azDate = new Date(adj * 1000).toISOString().slice(0, 10); // AZ date
+      var slotH = Math.floor(azSecs / (6 * 3600)) * 6; // 0, 6, 12, or 18
+      var base = "/rewind.html#b=" + azDate + "-" + ("0" + slotH).slice(-2);
+      // fetch manifest to get recStart so the seek lands on the right song
+      fetch("rewind-manifest.json", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (!d || !d.blocks) { location.href = base; return; }
+          for (var i = 0; i < d.blocks.length; i++) {
+            var b = d.blocks[i];
+            if (b.date === azDate && b.start === slotH) {
+              var rs = b.recStart != null ? b.recStart : slotH * 3600;
+              location.href = base + "&s=" + Math.max(0, Math.floor(azSecs - rs));
+              return;
+            }
+          }
+          location.href = base; // block not yet archived — land at start
+        })
+        .catch(function () { location.href = base; });
+    });
+  })();
 
   /* =========================================================
      PODCAST PLAYER (persistent) + browser (re-rendered per page)
@@ -4052,6 +4089,7 @@
         var vuEl = root.querySelector("[data-tape-vu]");
         var vuBars = vuEl ? [].slice.call(vuEl.querySelectorAll("span")) : [];
         var shareBtn = root.querySelector("[data-tape-share]");
+        var upNextEl = root.querySelector("[data-tape-upnext]");
         var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
         var currentBlock = null;
         var tapePlaylog = null, tapeNextPlaylog = null, lastSongKey = "";
@@ -4187,6 +4225,7 @@
           if (ticksEl) ticksEl.innerHTML = "";
           if (nowSongEl) nowSongEl.hidden = true;
           if (playerEl) playerEl.classList.remove("has-art");
+          if (upNextEl) upNextEl.hidden = true;
           lastSongKey = "";
           if (playBtn) playBtn.disabled = false;
           if (shareBtn) shareBtn.disabled = false;
@@ -4300,6 +4339,19 @@
             if (currentBlock && now - lastHashUpdate > 5000) {
               lastHashUpdate = now;
               try { history.replaceState(null, "", "#b=" + currentBlock.date + "-" + ("0" + currentBlock.start).slice(-2) + "&s=" + Math.floor(audio.currentTime)); } catch (e2) {}
+            }
+            // "up next" banner: show next block name when within 5 min of end
+            if (upNextEl && currentBlock) {
+              var rem = audio.duration - audio.currentTime;
+              if (rem > 0 && rem < 300) {
+                var nst = currentBlock.start + 6, nd = currentBlock.date;
+                if (nst >= 24) { nst = 0; nd = nextDate(nd); }
+                var nxt = shelf.querySelector('.tape-block[data-date="' + nd + '"][data-start="' + nst + '"]');
+                if (nxt && upNextEl.hidden) {
+                  upNextEl.textContent = "Up next: " + (NAMES[nst] || nst + ":00") + " · " + fmtDay(nd);
+                  upNextEl.hidden = false;
+                } else if (!nxt && !upNextEl.hidden) { upNextEl.hidden = true; }
+              } else if (!upNextEl.hidden) { upNextEl.hidden = true; }
             }
           });
           audio.addEventListener("progress", function () {
