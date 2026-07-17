@@ -460,28 +460,54 @@
   setInterval(fetchNowPlaying, 20000);
 
   /* =========================================================
-     ON-AIR → REWIND: "Rewind" button in live player jumps to the
-     archived block for the song currently on air.
+     ON-AIR → REWIND: show the Rewind button only when the current
+     live slot actually exists in the archive, then jump to the exact
+     song position when clicked.
      ========================================================= */
   (function () {
     var rwBtn = doc.querySelector("[data-player-rewind]");
-    if (!rwBtn) return;
+    var livePlayer = doc.querySelector(".player");
+    if (!rwBtn || !livePlayer) return;
+
+    function azSlotNow() {
+      var now = Date.now() / 1000;
+      var adj = now - 7 * 3600;
+      return {
+        date: new Date(adj * 1000).toISOString().slice(0, 10),
+        start: Math.floor(((adj % 86400) + 86400) % 86400 / (6 * 3600)) * 6
+      };
+    }
+
+    function checkRewindAvailable() {
+      var slot = azSlotNow();
+      fetch("rewind-manifest.json", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          var found = d && d.blocks && d.blocks.some(function (b) {
+            return b.date === slot.date && b.start === slot.start;
+          });
+          livePlayer.classList.toggle("has-rewind", !!found);
+        })
+        .catch(function () { livePlayer.classList.remove("has-rewind"); });
+    }
+
+    checkRewindAvailable();
+    setInterval(checkRewindAvailable, 10 * 60 * 1000); // re-check every 10 min
+
     rwBtn.addEventListener("click", function (e) {
       var np = lastNowData && lastNowData.now_playing;
-      if (!np || !np.played_at) return; // no data yet — let href work
+      if (!np || !np.played_at) return;
       e.preventDefault();
-      var t = np.played_at; // Unix seconds when the song started
-      var adj = t - 7 * 3600; // shift to AZ time (UTC-7, no DST)
-      var azSecs = ((adj % 86400) + 86400) % 86400; // seconds from AZ midnight
-      var azDate = new Date(adj * 1000).toISOString().slice(0, 10); // AZ date
-      var slotH = Math.floor(azSecs / (6 * 3600)) * 6; // 0, 6, 12, or 18
+      var t = np.played_at;
+      var adj = t - 7 * 3600;
+      var azSecs = ((adj % 86400) + 86400) % 86400;
+      var azDate = new Date(adj * 1000).toISOString().slice(0, 10);
+      var slotH = Math.floor(azSecs / (6 * 3600)) * 6;
       var base = "/rewind.html#b=" + azDate + "-" + ("0" + slotH).slice(-2);
-      // fetch manifest to get recStart so the seek lands on the right song
       fetch("rewind-manifest.json", { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (d) {
           if (!d || !d.blocks || !d.blocks.length) { location.href = "/rewind.html"; return; }
-          // look for the exact block covering the current song
           for (var i = 0; i < d.blocks.length; i++) {
             var b = d.blocks[i];
             if (b.date === azDate && b.start === slotH) {
@@ -490,9 +516,7 @@
               return;
             }
           }
-          // current block still recording — jump to the most recent archived block
-          var latest = d.blocks[d.blocks.length - 1];
-          location.href = "/rewind.html#b=" + latest.date + "-" + ("0" + latest.start).slice(-2);
+          location.href = "/rewind.html";
         })
         .catch(function () { location.href = "/rewind.html"; });
     });
