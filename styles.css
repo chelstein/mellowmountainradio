@@ -3414,12 +3414,20 @@ body.podplaying .player.show { transform: translateY(180%); }
 .fp-now p { margin: 0; font-size: 14px; line-height: 1.75; color: rgba(246,236,221,.85); }
 
 /* ── THE TAPE — the listening room ── */
-.tape-player { background: radial-gradient(140% 160% at 30% 0%, #2a1608 0%, #190c04 55%, #0d0602 100%); border: 1px solid rgba(160,95,25,.3); border-radius: var(--r); padding: 20px 22px; margin-bottom: 22px; }
-.tape-nowrow { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
-.tape-reel { font-size: 1.8rem; color: #c87040; line-height: 1; }
-.tape-reel.is-spin { animation: tapespin 2.4s linear infinite; display: inline-block; }
-@keyframes tapespin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .tape-reel.is-spin { animation: none; } }
+.tape-player { position: relative; overflow: hidden; background: radial-gradient(140% 160% at 30% 0%, #2a1608 0%, #190c04 55%, #0d0602 100%); border: 1px solid rgba(160,95,25,.3); border-radius: var(--r); padding: 20px 22px; margin-bottom: 22px; }
+.tape-player::before{content:'';position:absolute;inset:-30px;background-image:var(--tape-bg,none);background-size:cover;background-position:center;filter:blur(28px) saturate(1.5);opacity:0;transition:opacity 1.2s;pointer-events:none;z-index:0}
+.tape-player.has-art::before{opacity:.2}
+.tape-nowrow,.tape-nowsong,.tape-seekbar,.tape-transport,.tape-extras,.tape-hours{position:relative;z-index:1}
+.tape-nowrow { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: nowrap; }
+.tape-reel{display:inline-flex;align-items:center;line-height:1;flex:none}
+.tape-reel.is-spin{animation:none}
+.tape-cassette-svg{display:block}
+.tape-cassette-svg .tape-reel-l{transform-origin:22px 18px}
+.tape-cassette-svg .tape-reel-r{transform-origin:50px 18px}
+.tape-reel.is-spin .tape-reel-l{animation:tapespin 2.8s linear infinite}
+.tape-reel.is-spin .tape-reel-r{animation:tapespin 3.5s linear infinite}
+@keyframes tapespin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.tape-reel.is-spin .tape-reel-l,.tape-reel.is-spin .tape-reel-r{animation:none}}
 .tape-nowmeta { display: flex; flex-direction: column; gap: 1px; }
 .tape-nowmeta b { color: #f5e5cc; font-size: 1.1rem; }
 .tape-nowmeta span { color: rgba(220,185,140,.7); font-size: 12.5px; }
@@ -3658,9 +3666,23 @@ body.podplaying .player.show { transform: translateY(180%); }
 .lf-chip-count{font-size:.72rem;color:var(--accent-soft);font-weight:700;margin-left:1px}
 .lf-dot{color:rgba(255,255,255,.18);margin:0 1px}
 .lf-loading,.lf-none{font-size:.8rem;color:rgba(255,255,255,.28)}
-.tape-play-btn{width:52px;height:52px;border-radius:50%;background:rgba(160,95,25,.18);border:1.5px solid rgba(160,95,25,.55);color:#c87040;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .12s;flex:none;margin-left:auto}
+.tape-play-btn{width:52px;height:52px;border-radius:50%;background:rgba(160,95,25,.18);border:1.5px solid rgba(160,95,25,.55);color:#c87040;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .12s;flex:none}
 .tape-play-btn:hover:not(:disabled){background:rgba(160,95,25,.32);transform:scale(1.05)}
 .tape-play-btn:disabled{opacity:.35;cursor:default}
+.tape-playwrap{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tape-vu{display:flex;align-items:flex-end;gap:2px;height:22px}
+.tape-vu span{width:3px;background:rgba(200,112,64,.7);border-radius:1.5px 1.5px 0 0;height:3px}
+.tape-vu.is-active span{animation:vu-bar .6s ease-in-out infinite alternate}
+.tape-vu.is-active span:nth-child(1){animation-duration:.52s;animation-delay:0s}
+.tape-vu.is-active span:nth-child(2){animation-duration:.64s;animation-delay:.07s}
+.tape-vu.is-active span:nth-child(3){animation-duration:.48s;animation-delay:.13s}
+.tape-vu.is-active span:nth-child(4){animation-duration:.71s;animation-delay:.04s}
+.tape-vu.is-active span:nth-child(5){animation-duration:.58s;animation-delay:.17s}
+.tape-vu.is-active span:nth-child(6){animation-duration:.44s;animation-delay:.09s}
+.tape-vu.is-active span:nth-child(7){animation-duration:.67s;animation-delay:.21s}
+.tape-vu.is-active span:nth-child(8){animation-duration:.55s;animation-delay:.03s}
+@keyframes vu-bar{from{height:3px;opacity:.5}to{height:20px;opacity:1}}
+@media (prefers-reduced-motion:reduce){.tape-vu.is-active span{animation:none;height:10px}}
 .tape-nowsong{display:flex;align-items:center;gap:8px;padding:7px 10px;margin:0 0 10px;background:rgba(200,112,64,.08);border:1px solid rgba(200,112,64,.22);border-radius:8px;font-size:12.5px;overflow:hidden}
 .tape-nowsong-note{color:#c87040;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;flex:none;white-space:nowrap}
 .tape-nowsong-art{width:40px;height:40px;border-radius:4px;object-fit:cover;flex:none}
