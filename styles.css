@@ -2564,6 +2564,16 @@ a.contact-v:hover { color: var(--accent-strong); }
 .player-btn:hover { background: var(--accent-deep); transform: translateY(-1px); }
 .player-btn svg { fill: currentColor; }
 body.has-player { padding-bottom: 74px; }
+.player-rewind {
+  display: none; flex: none; align-items: center; gap: 5px;
+  font-size: 12.5px; font-weight: 700; letter-spacing: .04em; font-family: var(--font-body);
+  color: rgba(255,255,255,.52); text-decoration: none;
+  padding: 7px 13px; border-radius: var(--pill);
+  border: 1px solid rgba(255,255,255,.14);
+  transition: color .15s, border-color .15s, background .15s;
+}
+.player.show .player-rewind { display: inline-flex; }
+.player-rewind:hover { color: #fff; border-color: rgba(255,255,255,.32); background: rgba(255,255,255,.07); }
 
 /* =========================================================
    LISTEN / PLAY BUTTON POLISH
@@ -2671,7 +2681,7 @@ body:not(.is-playing) .listen-btn::after {
   .recent-note { display: none; }
   .partner-grid { grid-template-columns: 1fr 1fr; }
   .player-inner { padding: 10px 16px; gap: 12px; }
-  .player-onair, .player-btn-label { display: none; }
+  .player-onair, .player-btn-label, .player-rewind { display: none; }
   .player-btn { padding: 11px 16px; }
   body.has-player { padding-bottom: 70px; }
 }
@@ -3716,3 +3726,5 @@ body.podplaying .player.show { transform: translateY(180%); }
 .tape-share-btn:hover:not(:disabled){background:rgba(160,95,25,.2);color:#e8c080}
 .tape-share-btn:disabled{opacity:.3;cursor:default}
 .tape-share-btn.is-copied{color:#7ed87e;border-color:rgba(80,160,80,.4);background:rgba(40,100,40,.15)}
+.tape-upnext{font-size:11px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:rgba(200,155,90,.55);text-align:center;padding:10px 0 2px;animation:upnext-in .35s ease}
+@keyframes upnext-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}

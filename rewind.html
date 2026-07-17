@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=148" />
+  <link rel="stylesheet" href="styles.css?v=149" />
 </head>
 <body data-page="music">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -131,6 +131,7 @@
       <div class="tape-transport"><button class="tape-skip-btn" data-tape-skip="-900" aria-label="Skip back 15 minutes">&#8592; 15m</button><div class="tape-time-disp"><span data-tape-elapsed>&#8212;</span><span class="tape-time-sep">/</span><span data-tape-dur>&#8212;</span></div><button class="tape-skip-btn" data-tape-skip="900" aria-label="Skip forward 15 minutes">15m &#8594;</button></div>
       <div class="tape-extras"><div class="tape-speeds"><span class="tape-speed-lab">Speed</span><button class="tape-speed-btn is-on" data-tape-speed="1" aria-pressed="true">1&#215;</button><button class="tape-speed-btn" data-tape-speed="1.5" aria-pressed="false">1&#189;&#215;</button><button class="tape-speed-btn" data-tape-speed="2" aria-pressed="false">2&#215;</button></div><button class="tape-share-btn" data-tape-share aria-label="Copy link to this moment" disabled><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg> Share moment</button></div>
       <div class="tape-hours" data-tape-hours></div>
+      <div class="tape-upnext" data-tape-upnext hidden></div>
       <audio class="tape-audio" data-tape-audio preload="none"></audio>
     </div>
     <div class="tape-shelf" data-tape-shelf></div>
@@ -162,7 +163,7 @@
 </div></section>
   </main>
   <div data-site-footer></div>
-  <script src="main.js?v=148" defer></script>
+  <script src="main.js?v=149" defer></script>
   <script>window.__uiq_active = true;</script>
 </body>
 </html>
