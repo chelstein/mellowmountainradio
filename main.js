@@ -4048,11 +4048,15 @@
         var nowSongEl = root.querySelector("[data-tape-nowsong]");
         var nowSongText = root.querySelector("[data-tape-nowsong-text]");
         var nowSongArt = root.querySelector("[data-tape-nowsong-art]");
+        var playerEl = root.querySelector(".tape-player");
+        var vuEl = root.querySelector("[data-tape-vu]");
+        var vuBars = vuEl ? [].slice.call(vuEl.querySelectorAll("span")) : [];
         var shareBtn = root.querySelector("[data-tape-share]");
         var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
         var currentBlock = null;
         var tapePlaylog = null, tapeNextPlaylog = null, lastSongKey = "";
         var lastHashUpdate = 0;
+        var audioCtx = null, analyser = null, vuRaf = 0;
         function fmtTime(s) {
           s = Math.floor(s);
           var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sc = s % 60;
@@ -4095,6 +4099,45 @@
           for (var i = 0; i < all.length; i++) { if (all[i].s <= secsFromMid) hit = all[i].p; else break; }
           return hit;
         }
+        function initAudioCtx() {
+          if (analyser) return;
+          try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 64;
+            analyser.smoothingTimeConstant = 0.7;
+            var src = audioCtx.createMediaElementSource(audio);
+            src.connect(analyser);
+            analyser.connect(audioCtx.destination);
+          } catch(e) { audioCtx = null; analyser = null; }
+        }
+        function runVuLoop() {
+          if (!analyser || !vuEl) return;
+          var data = new Uint8Array(analyser.frequencyBinCount);
+          (function tick() {
+            if (!vuEl || !vuEl.classList.contains("is-active")) return;
+            analyser.getByteFrequencyData(data);
+            var n = vuBars.length;
+            for (var i = 0; i < n; i++) {
+              var v = data[Math.floor(i * data.length / n)] || 0;
+              vuBars[i].style.height = Math.max(3, Math.round(v / 255 * 20)) + "px";
+            }
+            vuRaf = requestAnimationFrame(tick);
+          })();
+        }
+        function startVu() {
+          if (!vuEl) return;
+          vuEl.classList.add("is-active");
+          if (!analyser) initAudioCtx();
+          if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+          if (analyser) { cancelAnimationFrame(vuRaf); runVuLoop(); }
+        }
+        function stopVu() {
+          if (!vuEl) return;
+          vuEl.classList.remove("is-active");
+          cancelAnimationFrame(vuRaf);
+          vuBars.forEach(function(b) { b.style.height = ""; });
+        }
         var artCache = {};
         function fetchArt(artist, title, cb) {
           var cacheKey = (artist || "") + "\n" + (title || "");
@@ -4135,6 +4178,10 @@
               }
               if (nowSongText && art && art.url) {
                 nowSongText.setAttribute("href", art.url);
+              }
+              if (playerEl && art && art.img) {
+                playerEl.style.setProperty("--tape-bg", "url(" + art.img + ")");
+                playerEl.classList.add("has-art");
               }
             });
           } else {
@@ -4177,6 +4224,7 @@
           if (seekBuf) seekBuf.style.width = "0%";
           if (ticksEl) ticksEl.innerHTML = "";
           if (nowSongEl) nowSongEl.hidden = true;
+          if (playerEl) playerEl.classList.remove("has-art");
           lastSongKey = "";
           if (playBtn) playBtn.disabled = false;
           if (shareBtn) shareBtn.disabled = false;
@@ -4208,12 +4256,14 @@
           if (playIcon) playIcon.hidden = true;
           if (pauseIcon) pauseIcon.hidden = false;
           if (playBtn) playBtn.setAttribute("aria-label", "Pause");
+          startVu();
         });
         audio.addEventListener("pause", function () {
           if (reel) reel.classList.remove("is-spin");
           if (playIcon) playIcon.hidden = false;
           if (pauseIcon) pauseIcon.hidden = true;
           if (playBtn) playBtn.setAttribute("aria-label", "Play");
+          stopVu();
         });
         audio.addEventListener("ended", function () {
           if (!currentBlock) return;
