@@ -2572,7 +2572,7 @@ body.has-player { padding-bottom: 74px; }
   border: 1px solid rgba(255,255,255,.14);
   transition: color .15s, border-color .15s, background .15s;
 }
-.player.show .player-rewind { display: inline-flex; }
+.player.show.has-rewind .player-rewind { display: inline-flex; }
 .player-rewind:hover { color: #fff; border-color: rgba(255,255,255,.32); background: rgba(255,255,255,.07); }
 
 /* =========================================================
