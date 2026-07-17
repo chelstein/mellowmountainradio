@@ -4128,7 +4128,6 @@
         function startVu() {
           if (!vuEl) return;
           vuEl.classList.add("is-active");
-          if (!analyser) initAudioCtx();
           if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
           if (analyser) { cancelAnimationFrame(vuRaf); runVuLoop(); }
         }
@@ -4249,7 +4248,8 @@
           if (s0) { audio.addEventListener("loadedmetadata", function once() { audio.removeEventListener("loadedmetadata", once); audio.currentTime = s0; }); }
         }
         shelf.addEventListener("click", function (ev) {
-          var b = ev.target.closest ? ev.target.closest(".tape-block") : null; if (b) play(b, 0);
+          var b = ev.target.closest ? ev.target.closest(".tape-block") : null;
+          if (b) { initAudioCtx(); play(b, 0); }
         });
         audio.addEventListener("play", function () {
           if (reel) reel.classList.add("is-spin");
@@ -4288,6 +4288,7 @@
         }
         if (playBtn) {
           playBtn.addEventListener("click", function () {
+            initAudioCtx();
             if (audio.paused) audio.play().catch(function () {});
             else audio.pause();
           });
