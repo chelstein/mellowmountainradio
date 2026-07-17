@@ -4056,7 +4056,6 @@
         var currentBlock = null;
         var tapePlaylog = null, tapeNextPlaylog = null, lastSongKey = "";
         var lastHashUpdate = 0;
-        var audioCtx = null, analyser = null, vuRaf = 0;
         function fmtTime(s) {
           s = Math.floor(s);
           var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sc = s % 60;
@@ -4099,45 +4098,8 @@
           for (var i = 0; i < all.length; i++) { if (all[i].s <= secsFromMid) hit = all[i].p; else break; }
           return hit;
         }
-        function initAudioCtx() {
-          if (analyser) return;
-          try {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 64;
-            analyser.smoothingTimeConstant = 0.7;
-            var src = audioCtx.createMediaElementSource(audio);
-            src.connect(analyser);
-            analyser.connect(audioCtx.destination);
-            audioCtx.resume(); // must be called while still inside the gesture handler
-          } catch(e) { audioCtx = null; analyser = null; }
-        }
-        function runVuLoop() {
-          if (!analyser || !vuEl) return;
-          var data = new Uint8Array(analyser.frequencyBinCount);
-          (function tick() {
-            if (!vuEl || !vuEl.classList.contains("is-active")) return;
-            analyser.getByteFrequencyData(data);
-            var n = vuBars.length;
-            for (var i = 0; i < n; i++) {
-              var v = data[Math.floor(i * data.length / n)] || 0;
-              vuBars[i].style.height = Math.max(3, Math.round(v / 255 * 20)) + "px";
-            }
-            vuRaf = requestAnimationFrame(tick);
-          })();
-        }
-        function startVu() {
-          if (!vuEl) return;
-          vuEl.classList.add("is-active");
-          if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
-          if (analyser) { cancelAnimationFrame(vuRaf); runVuLoop(); }
-        }
-        function stopVu() {
-          if (!vuEl) return;
-          vuEl.classList.remove("is-active");
-          cancelAnimationFrame(vuRaf);
-          vuBars.forEach(function(b) { b.style.height = ""; });
-        }
+        function startVu() { if (vuEl) vuEl.classList.add("is-active"); }
+        function stopVu() { if (vuEl) vuEl.classList.remove("is-active"); }
         var artCache = {};
         function fetchArt(artist, title, cb) {
           var cacheKey = (artist || "") + "\n" + (title || "");
@@ -4250,7 +4212,7 @@
         }
         shelf.addEventListener("click", function (ev) {
           var b = ev.target.closest ? ev.target.closest(".tape-block") : null;
-          if (b) { initAudioCtx(); play(b, 0); }
+          if (b) play(b, 0);
         });
         audio.addEventListener("play", function () {
           if (reel) reel.classList.add("is-spin");
@@ -4289,7 +4251,6 @@
         }
         if (playBtn) {
           playBtn.addEventListener("click", function () {
-            initAudioCtx();
             if (audio.paused) audio.play().catch(function () {});
             else audio.pause();
           });
