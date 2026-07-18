@@ -1,55 +1,11 @@
 {
- "updated": "2026-07-17T19:14:35.270Z",
+ "updated": "2026-07-18T02:42:21.716Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Time and Water",
-   "date": "2026-07-17",
-   "time": "",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/time-and-water/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Time-and-Water-poster.jpg",
-   "summary": "Facing the death of his country’s glaciers and the loss of his beloved grandparents, Icelandic writer Andri Snær Magnason turns his archives into a time capsule to hold what is slipping away — family, memory, time…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "For the Love of a Woman",
-   "date": "2026-07-17",
-   "time": "",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/for-the-love-of-a-woman/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/For-the-Love-of-a-Woman-poster.jpg",
-   "summary": "Search for others … find yourself. “For the Love of a Woman” is a sweeping English-language saga based on the beloved novel of Israeli author Meir Shalev, The Loves of Judith."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Lucky Strike",
-   "date": "2026-07-17",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/lucky-strike/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Lucky-Strike-poster.jpg",
-   "summary": "Inspired by true events, “Lucky Strike” tells the story of a wounded American soldier trapped behind enemy lines during the last major German offensive during WWII, what will become known as The Battle of the Bulge."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Super Improv! Game Show: Super Hero Edition",
-   "date": "2026-07-17",
-   "time": "19:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/super-improv-game-show-super-hero-edition/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Super-Improv-Super-Hero-JULY-poster.jpg",
-   "summary": "Faster than a speeding punchline! More powerful than an awkward silence! Able to leap tall tales in a single bound! Super Improv! is flying back into Sedona for its 4th spectacular show at the Mary Fisher Theatre on…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Les Liaisons Dangereuses",
@@ -459,6 +415,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Amrum",
+   "date": "2026-08-11",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/amrum/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Amrum-poster.jpg",
+   "summary": "From Golden Globe Award-winning filmmaker Fatih Akin, “Amrum” is a tender coming-of-age tale about the loss of innocence set against the waning days of the Second World War."
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Outdoor Film: When Harry Met Sally",
    "date": "2026-08-12",
    "time": "19:30",
@@ -555,6 +522,39 @@
    "url": "https://sedonafilmfestival.com/event/darlene-koldenhoven-live-in-sedona/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Darlene-K-poster-2.jpg",
    "summary": "Grammy Award-winning artist Darlene Koldenhoven will present Live in Sedona, an intimate live event blending memoir, music, storytelling, and conversation, on Sunday, Aug. 30, at 4:00 p.m. at the Mary D. Fisher…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Dr. Steve Taubman’s Mind Magic",
+   "date": "2026-09-06",
+   "time": "15:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/dr-steve-taubmans-mind-magic/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Mind-Magic-2026-poster.jpg",
+   "summary": "Join Dr. Steve Taubman for an afternoon of Mind Magic: world-class mentalism and side-splitting comedy. Don’t miss out! Experience a high-energy performance where world-class mentalism meets side-splitting comedy."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Rita Lim: Make It With You … Yesterday Once More",
+   "date": "2026-09-10",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/rita-lim-make-it-with-you-yesterday-once-more/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Rita-Lim-poster.jpg",
+   "summary": "Award-winning recording artist Rita Lim makes her Sedona debut with “Make It With You … Yesterday Once More” — a captivating new concert celebrating the timeless music of Bread, The Carpenters & More."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Trailblazers",
+   "date": "2026-10-14",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/trailblazers/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Trailblazers-poster.jpg",
+   "summary": "In 1982, brothers Troy and Gil Gillenwater decided to walk across the state of Arizona. Without GPS, mobile phones, or continuous trails, they cobbled together an 810-mile adventure that took over two months and two…"
   }
  ]
 }
