@@ -98,7 +98,8 @@
         '<span class="player-pulse" data-pulse hidden><button class="pp-btn" type="button" data-pulse-love aria-label="Feed the pulse — more like this, nudges the station playlist" title="Feed the pulse — more like this"><svg viewBox="0 0 24 12" width="20" height="11" aria-hidden="true"><polyline points="0,6 6,6 9,1 13,11 16,6 24,6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button><button class="pp-btn pp-btn--nah" type="button" data-pulse-nah aria-label="Flatline — not my vibe, nudges the station playlist" title="Flatline — not my vibe"><svg viewBox="0 0 24 12" width="20" height="11" aria-hidden="true"><line x1="0" y1="6" x2="24" y2="6" stroke="currentColor" stroke-width="2"/></svg></button></span>' +
       '</div>' +
       '<button class="player-btn" data-listen aria-pressed="false" aria-label="Play or pause the live stream">' + ICON_PLAY + ICON_PAUSE + '<span class="player-btn-label" data-listen-label>Listen Live</span></button>' +
-      '<a class="player-rewind" data-player-rewind href="/rewind.html" aria-label="Rewind — jump to this song in the archive">&#8617; Rewind</a>' +
+      '<a class="player-rewind" data-player-rewind href="/rewind.html" aria-label="Rewind — replay from the start of this song">&#8617; Rewind</a>' +
+      '<button class="player-live-btn" data-player-live-btn aria-label="Back to live stream">&#9654; Back to Live</button>' +
     '</div></div>' +
     '<audio id="stream" preload="none" crossorigin="anonymous"><source src="https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" type="audio/mpeg" /><source src="https://streaming.live365.com/a56104" type="audio/mpeg" /></audio>';
 
@@ -368,6 +369,7 @@
   var APPLE_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M17.05 12.04c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3.01-.79-1.55.02-2.98.9-3.78 2.29-1.61 2.8-.41 6.94 1.16 9.21.77 1.11 1.69 2.36 2.89 2.31 1.16-.05 1.6-.75 3-.75 1.4 0 1.8.75 3.02.72 1.25-.02 2.04-1.13 2.8-2.25.88-1.29 1.24-2.54 1.26-2.6-.03-.01-2.42-.93-2.44-3.69zM14.79 5.3c.64-.78 1.07-1.86.95-2.94-.92.04-2.04.61-2.7 1.39-.59.69-1.11 1.79-.97 2.85 1.03.08 2.08-.52 2.72-1.3z"/></svg>';
   var artCache = {};
   var lastNowData = null;
+  var onSongChange = null; // set by live-buffer rewind block
 
   function setAll(selector, text) { if (text == null) return; doc.querySelectorAll(selector).forEach(function (n) { n.textContent = text; }); }
   function setListeners(n) {
@@ -451,75 +453,120 @@
     renderHistory(data.song_history);
   }
   function fetchNowPlaying() {
+    var prevAt = lastNowData && lastNowData.now_playing && lastNowData.now_playing.played_at;
     fetch(NOWPLAYING_API, { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error("np " + r.status); return r.json(); })
-      .then(function (data) { lastNowData = data; renderNow(data); })
+      .then(function (data) {
+        lastNowData = data;
+        renderNow(data);
+        var newAt = data && data.now_playing && data.now_playing.played_at;
+        if (onSongChange && newAt && newAt !== prevAt) onSongChange();
+      })
       .catch(function () { /* keep last-known on screen */ });
   }
   fetchNowPlaying();
   setInterval(fetchNowPlaying, 20000);
 
   /* =========================================================
-     ON-AIR → REWIND: show the Rewind button only when the current
-     live slot actually exists in the archive, then jump to the exact
-     song position when clicked.
+     LIVE BUFFER REWIND: record the stream as it plays; show the
+     Rewind button after 10 s; clicking replays from the start of
+     the buffer (= start of current song). Buffer resets on song
+     change (detected via fetchNowPlaying) so Rewind always means
+     "this song". Max buffer: 10 min (longest song on KAZM).
+     Falls back to hiding the button on browsers without captureStream.
      ========================================================= */
   (function () {
     var rwBtn = doc.querySelector("[data-player-rewind]");
+    var liveBtn = doc.querySelector("[data-player-live-btn]");
     var livePlayer = doc.querySelector(".player");
     if (!rwBtn || !livePlayer) return;
 
-    function azSlotNow() {
-      var now = Date.now() / 1000;
-      var adj = now - 7 * 3600;
-      return {
-        date: new Date(adj * 1000).toISOString().slice(0, 10),
-        start: Math.floor(((adj % 86400) + 86400) % 86400 / (6 * 3600)) * 6
+    var liveSrc = audio.src;
+    var recorder = null;
+    var chunks = [];
+    var rewindUrl = null;
+    var showTimer = null;
+    var capTimer = null;
+
+    function canRecord() {
+      return typeof audio.captureStream === "function" || typeof audio.mozCaptureStream === "function";
+    }
+
+    function startRecording() {
+      if (!canRecord()) return;
+      stopRecording(false);
+      var stream;
+      try { stream = (audio.captureStream || audio.mozCaptureStream).call(audio); }
+      catch (e) { return; }
+      chunks = [];
+      livePlayer.classList.remove("has-rewind");
+      clearTimeout(showTimer);
+      clearTimeout(capTimer);
+      recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = function (e) {
+        if (e.data && e.data.size > 0) chunks.push(e.data);
       };
+      recorder.start(5000); // collect a chunk every 5 s
+      showTimer = setTimeout(function () {
+        if (recorder && recorder.state === "recording") livePlayer.classList.add("has-rewind");
+      }, 10000);
+      capTimer = setTimeout(function () { // cap at 10 min — longest song
+        if (recorder && recorder.state === "recording") recorder.stop();
+      }, 600000);
     }
 
-    function checkRewindAvailable() {
-      var slot = azSlotNow();
-      fetch("rewind-manifest.json", { cache: "no-store" })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) {
-          var found = d && d.blocks && d.blocks.some(function (b) {
-            return b.date === slot.date && b.start === slot.start;
-          });
-          livePlayer.classList.toggle("has-rewind", !!found);
-        })
-        .catch(function () { livePlayer.classList.remove("has-rewind"); });
+    function stopRecording(keepChunks) {
+      clearTimeout(showTimer);
+      clearTimeout(capTimer);
+      if (recorder && recorder.state !== "inactive") {
+        try { recorder.stop(); } catch (e) {}
+      }
+      recorder = null;
+      if (!keepChunks) chunks = [];
     }
 
-    checkRewindAvailable();
-    setInterval(checkRewindAvailable, 10 * 60 * 1000); // re-check every 10 min
+    function returnToLive() {
+      audio.pause();
+      if (rewindUrl) { URL.revokeObjectURL(rewindUrl); rewindUrl = null; }
+      audio.src = liveSrc;
+      livePlayer.classList.remove("is-rewinding");
+      audio.play();
+    }
+
+    // reset buffer at the start of each new song
+    onSongChange = function () {
+      if (!livePlayer.classList.contains("is-rewinding") && !audio.paused) startRecording();
+    };
+
+    audio.addEventListener("play", function () {
+      if (!livePlayer.classList.contains("is-rewinding")) startRecording();
+    });
+
+    audio.addEventListener("pause", function () {
+      if (!livePlayer.classList.contains("is-rewinding")) {
+        stopRecording(false);
+        livePlayer.classList.remove("has-rewind");
+      }
+    });
+
+    audio.addEventListener("ended", function () {
+      if (livePlayer.classList.contains("is-rewinding")) returnToLive();
+    });
 
     rwBtn.addEventListener("click", function (e) {
-      var np = lastNowData && lastNowData.now_playing;
-      if (!np || !np.played_at) return;
       e.preventDefault();
-      var t = np.played_at;
-      var adj = t - 7 * 3600;
-      var azSecs = ((adj % 86400) + 86400) % 86400;
-      var azDate = new Date(adj * 1000).toISOString().slice(0, 10);
-      var slotH = Math.floor(azSecs / (6 * 3600)) * 6;
-      var base = "/rewind.html#b=" + azDate + "-" + ("0" + slotH).slice(-2);
-      fetch("rewind-manifest.json", { cache: "no-store" })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) {
-          if (!d || !d.blocks || !d.blocks.length) { location.href = "/rewind.html"; return; }
-          for (var i = 0; i < d.blocks.length; i++) {
-            var b = d.blocks[i];
-            if (b.date === azDate && b.start === slotH) {
-              var rs = b.recStart != null ? b.recStart : slotH * 3600;
-              location.href = base + "&s=" + Math.max(0, Math.floor(azSecs - rs));
-              return;
-            }
-          }
-          location.href = "/rewind.html";
-        })
-        .catch(function () { location.href = "/rewind.html"; });
+      if (!chunks.length) return;
+      stopRecording(true);
+      var blob = new Blob(chunks, { type: chunks[0].type });
+      if (rewindUrl) URL.revokeObjectURL(rewindUrl);
+      rewindUrl = URL.createObjectURL(blob);
+      audio.src = rewindUrl;
+      audio.play();
+      livePlayer.classList.add("is-rewinding");
+      livePlayer.classList.remove("has-rewind");
     });
+
+    if (liveBtn) liveBtn.addEventListener("click", returnToLive);
   })();
 
   /* =========================================================
