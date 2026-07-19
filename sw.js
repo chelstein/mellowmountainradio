@@ -18,7 +18,7 @@ var CORE = [
   "/concerts.html", "/movies.html", "/podcasts.html", "/archives.html",
   "/staff.html", "/about.html", "/contact.html", "/library.html",
   "/music.html", "/sports.html", "/contests.html", "/advertising.html", "/wildlife.html",
-  "/horoscope.html", "/chakras.html", "/soundhealing.html", "/photography.html", "/roads.html", "/weather.html", "/jeeptrails.html", "/firstpeoples.html", "/rewind.html", "/timemachine.html", "/ifoughtthelaw.html",
+  "/horoscope.html", "/chakras.html", "/soundhealing.html", "/photography.html", "/roads.html", "/weather.html", "/jeeptrails.html", "/firstpeoples.html", "/rewind.html", "/timemachine.html", "/ifoughtthelaw.html", "/lyrics.html",
   "/vendor/leaflet/leaflet.js", "/vendor/leaflet/leaflet.css",
   "/vendor/leaflet/images/layers.png", "/vendor/leaflet/images/layers-2x.png", "/vendor/leaflet/images/marker-icon.png"
 ];
