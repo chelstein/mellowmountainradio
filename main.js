@@ -8173,6 +8173,7 @@
     initGoldenMode();
     initSolstice();
     initStaffIntros();
+    initLyrics();
     renderRotationWall();
     renderPodcasts();
     syncListenUI();
@@ -8283,7 +8284,7 @@
      bar and per-line karaoke highlight track the song in real time
      using played_at from AzuraCast as the clock anchor.
      ========================================================= */
-  (function () {
+  function initLyrics() {
     var page = doc.querySelector("[data-lyrics-page]");
     if (!page) return;
 
@@ -8293,7 +8294,8 @@
     var artEl = page.querySelector("[data-lyr-art]");
     var bodyEl = page.querySelector("[data-lyr-body]");
     var bioEl = page.querySelector("[data-lyr-bio]");
-    if (!bodyEl) return;
+    if (!bodyEl || bodyEl.getAttribute("data-lyr-init")) return;
+    bodyEl.setAttribute("data-lyr-init", "1");
 
     var currentAt = null;
     var fetching = false;
@@ -8355,6 +8357,7 @@
       if (duration && startedAt) {
         kStart = startedAt; kDuration = duration;
         kTimer = setInterval(function () {
+          if (!bodyEl.isConnected) { clearInterval(kTimer); kTimer = null; return; }
           var b = bodyEl.querySelector("[data-lyr-bar]");
           if (b) b.style.width = Math.min(100, Math.max(0, Date.now() / 1000 - kStart - STREAM_LAG) / kDuration * 100).toFixed(1) + "%";
         }, 1000);
@@ -8370,7 +8373,7 @@
       html += "</div>";
       bodyEl.innerHTML = html;
       kLines = lines; kStart = startedAt; kDuration = duration; kLastIdx = -1;
-      kTimer = setInterval(tickKaraoke, 500);
+      kTimer = setInterval(function () { if (!bodyEl.isConnected) { clearInterval(kTimer); kTimer = null; return; } tickKaraoke(); }, 500);
       tickKaraoke();
     }
 
@@ -8517,10 +8520,14 @@
     }
 
     var startPoll = setInterval(function () {
+      if (!bodyEl.isConnected) { clearInterval(startPoll); return; }
       if (lastNowData) { clearInterval(startPoll); syncSong(); }
     }, 400);
-    setInterval(syncSong, 10000);
-  })();
+    var syncInterval = setInterval(function () {
+      if (!bodyEl.isConnected) { clearInterval(syncInterval); return; }
+      syncSong();
+    }, 10000);
+  }
 
   // Install prompt: show a small, dismissible chip only when the browser says
   // the app is installable; hide it on install or dismiss. Remembers dismissal.
