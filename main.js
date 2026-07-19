@@ -8448,14 +8448,17 @@
       if (artistEl) artistEl.textContent = artist;
       if (albumEl) albumEl.textContent = "";
       if (artEl) {
-        if (song.art) { artEl.src = song.art; artEl.classList.add("is-art"); }
-        else {
-          artEl.src = LOGO_FALLBACK; artEl.classList.remove("is-art");
-          fetchArtwork(artist, shortTitle).then(function (meta) {
-            if (meta && meta.art) { artEl.src = meta.art; artEl.classList.add("is-art"); }
-            if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
-          });
-        }
+        // Show AzuraCast art immediately as placeholder, then upgrade to iTunes
+        // (higher-res + album name) — always fetch regardless of whether song.art exists.
+        var azArt = song.art || null;
+        if (azArt) { artEl.src = azArt; artEl.classList.add("is-art"); }
+        else { artEl.src = LOGO_FALLBACK; artEl.classList.remove("is-art"); }
+        fetchArtwork(artist, shortTitle).then(function (meta) {
+          var best = (meta && meta.art) || azArt;
+          if (best) { artEl.src = best; artEl.classList.add("is-art"); }
+          else { artEl.src = LOGO_FALLBACK; artEl.classList.remove("is-art"); }
+          if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
+        });
       }
       fetchLyrics(artist, rawTitle, at);
     }
