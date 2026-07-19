@@ -8303,7 +8303,7 @@
     var kLastIdx = -1;
     // HLS stream buffer adds ~20 s of latency; lyrics tick this many seconds behind
     // server clock so they match what the listener is actually hearing.
-    var STREAM_LAG = 14;
+    var STREAM_LAG = 18;
 
     bodyEl.classList.add("lyr-loading");
     bodyEl.innerHTML = "<p>Tuning in…</p>";
