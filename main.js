@@ -8278,9 +8278,10 @@
 
   /* =========================================================
      SONG LYRICS PAGE (lyrics.html)
-     Shows lyrics for whatever is live on KAZM right now.
-     LRClib (primary, no key) → Lyrics.ovh (fallback).
-     Polls lastNowData every 10 s; updates on each song change.
+     LRClib (primary) → Lyrics.ovh (fallback).
+     When LRClib returns syncedLyrics (timestamped), a red progress
+     bar and per-line karaoke highlight track the song in real time
+     using played_at from AzuraCast as the clock anchor.
      ========================================================= */
   (function () {
     var page = doc.querySelector("[data-lyrics-page]");
@@ -8295,38 +8296,96 @@
 
     var currentAt = null;
     var fetching = false;
+    var kTimer = null;       // karaoke interval
+    var kLines = null;       // [{t, text}] parsed LRC
+    var kStart = null;       // played_at unix timestamp
+    var kDuration = null;    // song duration in seconds
+    var kLastIdx = -1;
 
-    // Show a "tuning in" state immediately so the page never looks broken
     bodyEl.classList.add("lyr-loading");
     bodyEl.innerHTML = "<p>Tuning in…</p>";
 
-    function showLyrics(text) {
-      fetching = false;
-      bodyEl.classList.remove("lyr-loading");
-      if (!text || !text.trim()) {
-        bodyEl.classList.add("lyr-empty");
-        bodyEl.innerHTML = "<p>No lyrics on file for this one — enjoy it with your ears.</p>";
-        return;
-      }
-      bodyEl.classList.remove("lyr-empty");
-      var html = text.trim().split(/\n{2,}/).map(function (p) {
-        return "<p>" + esc(p.trim()).replace(/\n/g, "<br>") + "</p>";
-      }).join("");
-      bodyEl.innerHTML = html;
-      bodyEl.scrollTop = 0;
+    // AzuraCast stores "Song Title - Album Name" in one field — strip album suffix
+    function cleanTitle(t) { var i = t.indexOf(" - "); return i > 0 ? t.substring(0, i) : t; }
+
+    function parseLrc(lrc) {
+      var lines = [];
+      lrc.split("\n").forEach(function (row) {
+        var m = row.match(/^\[(\d+):(\d+(?:\.\d+)?)\](.*)/);
+        if (m && m[3].trim()) lines.push({ t: parseInt(m[1]) * 60 + parseFloat(m[2]), text: m[3].trim() });
+      });
+      return lines.sort(function (a, b) { return a.t - b.t; });
     }
 
-    // AzuraCast stores titles as "Song Title - Album Name" in one field.
-    // Strip the album suffix so lyrics APIs can match the actual song title.
-    function cleanTitle(t) {
-      var i = t.indexOf(" - ");
-      return i > 0 ? t.substring(0, i) : t;
+    function stopKaraoke() {
+      if (kTimer) { clearInterval(kTimer); kTimer = null; }
+      kLines = null; kStart = null; kDuration = null; kLastIdx = -1;
+    }
+
+    function tickKaraoke() {
+      if (!kLines || !kStart) return;
+      var elapsed = Date.now() / 1000 - kStart;
+      var barEl = bodyEl.querySelector("[data-lyr-bar]");
+      if (barEl && kDuration) barEl.style.width = Math.min(100, elapsed / kDuration * 100).toFixed(1) + "%";
+      var idx = 0;
+      for (var i = 0; i < kLines.length; i++) { if (kLines[i].t <= elapsed) idx = i; }
+      if (idx === kLastIdx) return;
+      kLastIdx = idx;
+      var els = bodyEl.querySelectorAll(".lyr-line");
+      els.forEach(function (el, i) {
+        el.classList.remove("is-active", "was-sung");
+        if (i < idx) el.classList.add("was-sung");
+        else if (i === idx) el.classList.add("is-active");
+      });
+      if (els[idx]) els[idx].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function renderPlain(text, duration, startedAt) {
+      stopKaraoke();
+      fetching = false;
+      bodyEl.classList.remove("lyr-loading", "lyr-empty");
+      var prog = duration ? '<div class="lyr-progress"><div class="lyr-progress-bar" data-lyr-bar></div></div>' : "";
+      bodyEl.innerHTML = prog + text.trim().split(/\n{2,}/).map(function (p) {
+        return "<p>" + esc(p.trim()).replace(/\n/g, "<br>") + "</p>";
+      }).join("");
+      if (duration && startedAt) {
+        kStart = startedAt; kDuration = duration;
+        kTimer = setInterval(function () {
+          var b = bodyEl.querySelector("[data-lyr-bar]");
+          if (b) b.style.width = Math.min(100, (Date.now() / 1000 - kStart) / kDuration * 100).toFixed(1) + "%";
+        }, 1000);
+      }
+    }
+
+    function renderSynced(lines, duration, startedAt) {
+      stopKaraoke();
+      fetching = false;
+      bodyEl.classList.remove("lyr-loading", "lyr-empty");
+      var html = '<div class="lyr-progress"><div class="lyr-progress-bar" data-lyr-bar></div></div><div class="lyr-lines">';
+      lines.forEach(function (l) { html += '<span class="lyr-line">' + esc(l.text) + "</span>"; });
+      html += "</div>";
+      bodyEl.innerHTML = html;
+      kLines = lines; kStart = startedAt; kDuration = duration; kLastIdx = -1;
+      kTimer = setInterval(tickKaraoke, 500);
+      tickKaraoke();
+    }
+
+    function renderEmpty(msg) {
+      stopKaraoke();
+      fetching = false;
+      bodyEl.classList.remove("lyr-loading");
+      bodyEl.classList.add("lyr-empty");
+      bodyEl.innerHTML = "<p>" + msg + "</p>";
     }
 
     function lrcSearch(artist, title) {
       return fetch("https://lrclib.net/api/search?artist_name=" + encodeURIComponent(artist) + "&track_name=" + encodeURIComponent(title), { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : []; })
-        .then(function (d) { return Array.isArray(d) && d.length && d[0].plainLyrics ? d[0].plainLyrics : null; })
+        .then(function (d) {
+          if (!Array.isArray(d) || !d.length) return null;
+          var best = d.find(function (r) { return r.syncedLyrics; }) || d.find(function (r) { return r.plainLyrics; });
+          return best ? { synced: best.syncedLyrics || null, plain: best.plainLyrics || null, duration: best.duration || null } : null;
+        })
         .catch(function () { return null; });
     }
 
@@ -8337,19 +8396,27 @@
         .catch(function () { return null; });
     }
 
-    function fetchLyrics(artist, rawTitle) {
+    function fetchLyrics(artist, rawTitle, startedAt) {
       if (fetching) return;
       fetching = true;
+      stopKaraoke();
       bodyEl.classList.add("lyr-loading");
       bodyEl.classList.remove("lyr-empty");
       bodyEl.innerHTML = "<p>Searching for lyrics…</p>";
       var shortTitle = cleanTitle(rawTitle);
-      // Try LRClib with full title, then short title, then Lyrics.ovh with short title
       lrcSearch(artist, rawTitle)
-        .then(function (txt) { return txt || lrcSearch(artist, shortTitle); })
-        .then(function (txt) { return txt || tryOvh(artist, shortTitle); })
-        .then(function (txt) { showLyrics(txt); })
-        .catch(function () { showLyrics(null); });
+        .then(function (r) { return r || lrcSearch(artist, shortTitle); })
+        .then(function (r) {
+          if (r) {
+            if (r.synced) { var lines = parseLrc(r.synced); if (lines.length) { renderSynced(lines, r.duration, startedAt); return; } }
+            if (r.plain) { renderPlain(r.plain, r.duration, startedAt); return; }
+          }
+          return tryOvh(artist, shortTitle).then(function (txt) {
+            if (txt) renderPlain(txt, null, null);
+            else renderEmpty("No lyrics on file for this one — enjoy it with your ears.");
+          });
+        })
+        .catch(function () { renderEmpty("No lyrics on file for this one — enjoy it with your ears."); });
     }
 
     function syncSong() {
@@ -8364,42 +8431,32 @@
       var artist = (song.artist || "").trim();
       var shortTitle = cleanTitle(rawTitle);
 
-      // No music playing right now (station ID, news, talk segment)
       if (!rawTitle || !artist) {
+        stopKaraoke();
         if (titleEl) titleEl.textContent = "KAZM 106.5 FM & 780 AM";
         if (artistEl) artistEl.textContent = "Mellow Mountain Radio";
         if (albumEl) albumEl.textContent = "";
         if (artEl) { artEl.src = LOGO_FALLBACK; artEl.classList.remove("is-art"); }
-        bodyEl.classList.remove("lyr-loading");
-        bodyEl.classList.add("lyr-empty");
-        bodyEl.innerHTML = "<p>Music is on the way — lyrics appear when a song is playing.</p>";
-        fetching = false;
+        renderEmpty("Music is on the way — lyrics appear when a song is playing.");
         return;
       }
 
       if (titleEl) titleEl.textContent = shortTitle;
       if (artistEl) artistEl.textContent = artist;
       if (albumEl) albumEl.textContent = "";
-
       if (artEl) {
-        // Use AzuraCast's own art first (it's per-song), fall back to iTunes
-        if (song.art) {
-          artEl.src = song.art;
-          artEl.classList.add("is-art");
-        } else {
-          artEl.src = LOGO_FALLBACK;
-          artEl.classList.remove("is-art");
+        if (song.art) { artEl.src = song.art; artEl.classList.add("is-art"); }
+        else {
+          artEl.src = LOGO_FALLBACK; artEl.classList.remove("is-art");
           fetchArtwork(artist, shortTitle).then(function (meta) {
             if (meta && meta.art) { artEl.src = meta.art; artEl.classList.add("is-art"); }
             if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
           });
         }
       }
-
-      fetchLyrics(artist, rawTitle);
+      fetchLyrics(artist, rawTitle, at);
     }
 
-    // Poll until firstNowPlaying data arrives, then switch to interval
     var startPoll = setInterval(function () {
       if (lastNowData) { clearInterval(startPoll); syncSong(); }
     }, 400);
