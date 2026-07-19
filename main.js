@@ -7756,6 +7756,9 @@
       statsEl = root.querySelector("[data-tm-stats]"), podiumEl = root.querySelector("[data-tm-podium]"),
       topEl = root.querySelector("[data-tm-top]"), artEl = root.querySelector("[data-tm-artists]"),
       debEl = root.querySelector("[data-tm-debuts]"), otdEl = root.querySelector("[data-tm-otd]"),
+      srInputEl = root.querySelector("[data-tm-search-input]"),
+      srBtnEl = root.querySelector("[data-tm-search-btn]"),
+      srResultsEl = root.querySelector("[data-tm-search-results]"),
       roDay = root.querySelector("[data-tm-readout-day]"), roTime = root.querySelector("[data-tm-readout-time]");
     root.hidden = true;
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -7973,6 +7976,14 @@
           }
         }).catch(function () {});
     }
+    function isMusicPlay(p) {
+      var t = p.ti || "", a = p.ar || "";
+      if (!t || !a) return false;
+      if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update/i.test(t)) return false;
+      if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(t)) return false;
+      if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News/i.test(a)) return false;
+      return true;
+    }
     function loadOnThisDay() {
       if (!otdEl || !D.today || !D.since) return;
       var todayParts = D.today.split("-");
@@ -7998,17 +8009,7 @@
         pastDates.forEach(function (date, i) {
           var j = results[i];
           if (!j || !j.ok) return;
-          var plays = (j.plays || []).filter(function (p) {
-            var t = p.ti || "", a = p.ar || "";
-            if (!t || !a) return false;
-            // exclude by title prefix / pattern
-            if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update/i.test(t)) return false;
-            // exclude ad-trafficking codes (all-caps+digits+symbols, no spaces)
-            if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(t)) return false;
-            // exclude known non-music artists
-            if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News/i.test(a)) return false;
-            return true;
-          });
+          var plays = (j.plays || []).filter(isMusicPlay);
           if (!plays.length) return;
           var counts = {};
           plays.forEach(function (p) {
@@ -8031,6 +8032,68 @@
         });
         otdEl.innerHTML = cards || '<p class="tm-otd-none">No play data found for this date in past years.</p>';
       });
+    }
+    /* ── SEARCH ──────────────────────────────────────────── */
+    var srAbort = null;
+    function doSearch() {
+      if (!srInputEl || !srResultsEl) return;
+      var q = srInputEl.value.trim().toLowerCase();
+      if (!q) return;
+      if (!D.since || !D.today) { srResultsEl.innerHTML = '<p class="tm-sr-meta">Log is still loading — try again in a moment.</p>'; return; }
+      if (srAbort) { srAbort(); srAbort = null; }
+      var aborted = false;
+      srAbort = function () { aborted = true; };
+      // build all dates most-recent-first
+      var allDates = [], cur = new Date(D.today + "T00:00:00Z"), sinceD = new Date(D.since + "T00:00:00Z");
+      while (cur >= sinceD) { allDates.push(cur.toISOString().slice(0, 10)); cur.setUTCDate(cur.getUTCDate() - 1); }
+      var BATCH = 20, matches = [], daysSearched = 0;
+      var batches = [];
+      for (var i = 0; i < allDates.length; i += BATCH) batches.push(allDates.slice(i, i + BATCH));
+      function renderSR(done) {
+        var label = matches.length + " spin" + (matches.length !== 1 ? "s" : "") + " matching “" + q + "”";
+        var prog = done ? " in the full log" : " &mdash; searched " + daysSearched + " of " + allDates.length + " days&hellip;";
+        var html = '<p class="tm-sr-meta">' + label + prog + "</p>";
+        if (matches.length) {
+          html += '<ol class="tm-sr-list">' + matches.map(function (m) {
+            var url = "timemachine.html?d=" + m.date + "&t=" + encodeURIComponent(m.time);
+            return '<li class="tm-sr-item"><span class="tm-sr-song">' + tmEsc(m.ti) + "</span>" +
+              '<span class="tm-sr-ar">by ' + tmEsc(m.ar) + "</span>" +
+              '<span class="tm-sr-when">' + fmtDate(m.date) + " at " + fmt12(m.time) + "</span>" +
+              '<a class="tm-sr-jump" href="' + url + '">jump →</a></li>';
+          }).join("") + "</ol>";
+        }
+        srResultsEl.innerHTML = html;
+      }
+      srResultsEl.innerHTML = '<p class="tm-sr-meta">Searching the full log&hellip;</p>';
+      function nextBatch(bi) {
+        if (aborted || bi >= batches.length) {
+          if (!aborted) {
+            if (!matches.length) srResultsEl.innerHTML = '<p class="tm-sr-meta">No results for “' + tmEsc(q) + '” in the full log.</p>';
+            else renderSR(true);
+          }
+          return;
+        }
+        var batch = batches[bi];
+        Promise.all(batch.map(function (date) {
+          return fetch(PLAYLOG + "?d=" + encodeURIComponent(date), { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .catch(function () { return null; });
+        })).then(function (results) {
+          if (aborted) return;
+          batch.forEach(function (date, i) {
+            daysSearched++;
+            var j = results[i];
+            if (!j || !j.ok) return;
+            (j.plays || []).filter(isMusicPlay).forEach(function (p) {
+              var t = (p.ti || "").toLowerCase(), a = (p.ar || "").toLowerCase();
+              if (t.indexOf(q) !== -1 || a.indexOf(q) !== -1) matches.push({ date: date, time: p.t, ti: p.ti, ar: p.ar });
+            });
+          });
+          renderSR(false);
+          nextBatch(bi + 1);
+        });
+      }
+      nextBatch(0);
     }
     /* ── CHARTS ───────────────────────────────────────────── */
     function renderCharts(c) {
@@ -8076,6 +8139,8 @@
       timeIn.value = t; setReadout();
     });
     if (timeRange) timeRange.addEventListener("change", function () { renderAnswer(); });
+    if (srBtnEl) srBtnEl.addEventListener("click", doSearch);
+    if (srInputEl) srInputEl.addEventListener("keydown", function (e) { if (e.key === "Enter") doSearch(); });
     var probeN = 0;
     function probe() {
       probeN++;
@@ -8367,6 +8432,11 @@
     var kStart = null;       // played_at unix timestamp
     var kDuration = null;    // song duration in seconds
     var kLastIdx = -1;
+    var kUserScrolled = 0;   // timestamp of last manual scroll
+    window.addEventListener("scroll", function onLyrScroll() {
+      if (!bodyEl.isConnected) { window.removeEventListener("scroll", onLyrScroll); return; }
+      kUserScrolled = Date.now();
+    }, { passive: true });
     // HLS stream buffer adds ~20 s of latency; lyrics tick this many seconds behind
     // server clock so they match what the listener is actually hearing.
     var STREAM_LAG = 13;
@@ -8406,7 +8476,12 @@
         if (i < idx) el.classList.add("was-sung");
         else if (i === idx) el.classList.add("is-active");
       });
-      if (els[idx]) els[idx].scrollIntoView({ behavior: "smooth", block: "center" });
+      if (els[idx] && Date.now() - kUserScrolled > 2000) {
+        var r = els[idx].getBoundingClientRect();
+        if (r.top < 60 || r.bottom > window.innerHeight - 60) {
+          els[idx].scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
     }
 
     function renderPlain(text, duration, startedAt) {
