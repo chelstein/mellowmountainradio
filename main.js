@@ -8457,13 +8457,16 @@
       var artist = (song.artist || "").trim();
       var shortTitle = cleanTitle(rawTitle);
 
-      if (!rawTitle || !artist) {
+      var isAdBreak = /^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID/i.test(rawTitle) ||
+                      artist === "Live365" || artist === "Mellow Mountain Radio" || artist === "Station ID";
+
+      if (!rawTitle || !artist || isAdBreak) {
         stopKaraoke();
         if (titleEl) titleEl.textContent = "KAZM 106.5 FM & 780 AM";
         if (artistEl) artistEl.textContent = "Mellow Mountain Radio";
         if (albumEl) albumEl.textContent = "";
         if (artEl) { artEl.src = LOGO_FALLBACK; artEl.classList.remove("is-art"); }
-        renderEmpty("Music is on the way — lyrics appear when a song is playing.");
+        renderEmpty(isAdBreak ? "Commercial break — music returns shortly." : "Music is on the way — lyrics appear when a song is playing.");
         return;
       }
 
