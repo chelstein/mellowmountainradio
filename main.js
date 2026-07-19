@@ -8316,30 +8316,40 @@
       bodyEl.scrollTop = 0;
     }
 
+    // AzuraCast stores titles as "Song Title - Album Name" in one field.
+    // Strip the album suffix so lyrics APIs can match the actual song title.
+    function cleanTitle(t) {
+      var i = t.indexOf(" - ");
+      return i > 0 ? t.substring(0, i) : t;
+    }
+
+    function lrcSearch(artist, title) {
+      return fetch("https://lrclib.net/api/search?artist_name=" + encodeURIComponent(artist) + "&track_name=" + encodeURIComponent(title), { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (d) { return Array.isArray(d) && d.length && d[0].plainLyrics ? d[0].plainLyrics : null; })
+        .catch(function () { return null; });
+    }
+
     function tryOvh(artist, title) {
       return fetch("https://api.lyrics.ovh/v1/" + encodeURIComponent(artist) + "/" + encodeURIComponent(title), { cache: "no-store" })
         .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) { showLyrics(d && d.lyrics ? d.lyrics : null); })
-        .catch(function () { showLyrics(null); });
+        .then(function (d) { return d && d.lyrics ? d.lyrics : null; })
+        .catch(function () { return null; });
     }
 
-    function fetchLyrics(artist, title) {
+    function fetchLyrics(artist, rawTitle) {
       if (fetching) return;
       fetching = true;
       bodyEl.classList.add("lyr-loading");
       bodyEl.classList.remove("lyr-empty");
       bodyEl.innerHTML = "<p>Searching for lyrics…</p>";
-      var lcUrl = "https://lrclib.net/api/search?artist_name=" + encodeURIComponent(artist) + "&track_name=" + encodeURIComponent(title);
-      fetch(lcUrl, { cache: "no-store" })
-        .then(function (r) { return r.ok ? r.json() : []; })
-        .then(function (results) {
-          if (Array.isArray(results) && results.length && results[0].plainLyrics) {
-            showLyrics(results[0].plainLyrics);
-          } else {
-            return tryOvh(artist, title);
-          }
-        })
-        .catch(function () { tryOvh(artist, title); });
+      var shortTitle = cleanTitle(rawTitle);
+      // Try LRClib with full title, then short title, then Lyrics.ovh with short title
+      lrcSearch(artist, rawTitle)
+        .then(function (txt) { return txt || lrcSearch(artist, shortTitle); })
+        .then(function (txt) { return txt || tryOvh(artist, shortTitle); })
+        .then(function (txt) { showLyrics(txt); })
+        .catch(function () { showLyrics(null); });
     }
 
     function syncSong() {
@@ -8350,11 +8360,12 @@
       currentAt = at;
 
       var song = np.song || {};
-      var title = (song.title || "").trim();
+      var rawTitle = (song.title || "").trim();
       var artist = (song.artist || "").trim();
+      var shortTitle = cleanTitle(rawTitle);
 
       // No music playing right now (station ID, news, talk segment)
-      if (!title || !artist) {
+      if (!rawTitle || !artist) {
         if (titleEl) titleEl.textContent = "KAZM 106.5 FM & 780 AM";
         if (artistEl) artistEl.textContent = "Mellow Mountain Radio";
         if (albumEl) albumEl.textContent = "";
@@ -8366,20 +8377,26 @@
         return;
       }
 
-      if (titleEl) titleEl.textContent = title;
+      if (titleEl) titleEl.textContent = shortTitle;
       if (artistEl) artistEl.textContent = artist;
       if (albumEl) albumEl.textContent = "";
 
       if (artEl) {
-        artEl.src = LOGO_FALLBACK;
-        artEl.classList.remove("is-art");
-        fetchArtwork(artist, title).then(function (meta) {
-          if (meta && meta.art) { artEl.src = meta.art; artEl.classList.add("is-art"); }
-          if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
-        });
+        // Use AzuraCast's own art first (it's per-song), fall back to iTunes
+        if (song.art) {
+          artEl.src = song.art;
+          artEl.classList.add("is-art");
+        } else {
+          artEl.src = LOGO_FALLBACK;
+          artEl.classList.remove("is-art");
+          fetchArtwork(artist, shortTitle).then(function (meta) {
+            if (meta && meta.art) { artEl.src = meta.art; artEl.classList.add("is-art"); }
+            if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
+          });
+        }
       }
 
-      fetchLyrics(artist, title);
+      fetchLyrics(artist, rawTitle);
     }
 
     // Poll until firstNowPlaying data arrives, then switch to interval
