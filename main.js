@@ -8292,6 +8292,7 @@
     var albumEl = page.querySelector("[data-lyr-album]");
     var artEl = page.querySelector("[data-lyr-art]");
     var bodyEl = page.querySelector("[data-lyr-body]");
+    var bioEl = page.querySelector("[data-lyr-bio]");
     if (!bodyEl) return;
 
     var currentAt = null;
@@ -8445,6 +8446,27 @@
         .catch(function () { renderEmpty("No lyrics on file for this one — enjoy it with your ears."); });
     }
 
+    var bioCache = {};
+    function fetchBio(artist) {
+      if (!bioEl) return;
+      if (bioCache[artist] !== undefined) { bioEl.innerHTML = bioCache[artist]; return; }
+      bioEl.innerHTML = "";
+      fetch("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(artist))
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (!d || d.type === "disambiguation" || !d.extract) { bioCache[artist] = ""; return; }
+          var sentences = d.extract.match(/[^.!?]*[.!?]+[\s]*/g) || [];
+          var short = sentences.slice(0, 3).join("").trim() || d.extract;
+          var html = '<p class="lyr-bio-text">' + esc(short) + '</p>';
+          if (d.content_urls && d.content_urls.desktop) {
+            html += '<a class="lyr-bio-link" href="' + esc(d.content_urls.desktop.page) + '" target="_blank" rel="noopener">More on Wikipedia →</a>';
+          }
+          bioCache[artist] = html;
+          bioEl.innerHTML = html;
+        })
+        .catch(function () { bioCache[artist] = ""; });
+    }
+
     function syncSong() {
       var np = lastNowData && lastNowData.now_playing;
       if (!np) return;
@@ -8466,6 +8488,7 @@
         if (artistEl) artistEl.textContent = "Mellow Mountain Radio";
         if (albumEl) albumEl.textContent = "";
         if (artEl) { artEl.src = LOGO_FALLBACK; artEl.classList.remove("is-art"); }
+        if (bioEl) bioEl.innerHTML = "";
         renderEmpty(isAdBreak ? "Commercial break — music returns shortly." : "Music is on the way — lyrics appear when a song is playing.");
         return;
       }
@@ -8487,6 +8510,7 @@
         });
       }
       fetchLyrics(artist, rawTitle, at);
+      fetchBio(artist);
     }
 
     var startPoll = setInterval(function () {
