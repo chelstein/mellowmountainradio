@@ -8000,9 +8000,14 @@
           if (!j || !j.ok) return;
           var plays = (j.plays || []).filter(function (p) {
             var t = p.ti || "", a = p.ar || "";
-            return t && a &&
-              !/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID/i.test(t) &&
-              a !== "Live365" && a !== "Mellow Mountain Radio" && a !== "Station ID";
+            if (!t || !a) return false;
+            // exclude by title prefix / pattern
+            if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update/i.test(t)) return false;
+            // exclude ad-trafficking codes (all-caps+digits+symbols, no spaces)
+            if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(t)) return false;
+            // exclude known non-music artists
+            if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News/i.test(a)) return false;
+            return true;
           });
           if (!plays.length) return;
           var counts = {};
