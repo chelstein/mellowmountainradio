@@ -8301,6 +8301,9 @@
     var kStart = null;       // played_at unix timestamp
     var kDuration = null;    // song duration in seconds
     var kLastIdx = -1;
+    // HLS stream buffer adds ~20 s of latency; lyrics tick this many seconds behind
+    // server clock so they match what the listener is actually hearing.
+    var STREAM_LAG = 20;
 
     bodyEl.classList.add("lyr-loading");
     bodyEl.innerHTML = "<p>Tuning in…</p>";
@@ -8324,7 +8327,7 @@
 
     function tickKaraoke() {
       if (!kLines || !kStart) return;
-      var elapsed = Date.now() / 1000 - kStart;
+      var elapsed = Math.max(0, Date.now() / 1000 - kStart - STREAM_LAG);
       var barEl = bodyEl.querySelector("[data-lyr-bar]");
       if (barEl && kDuration) barEl.style.width = Math.min(100, elapsed / kDuration * 100).toFixed(1) + "%";
       var idx = 0;
@@ -8352,7 +8355,7 @@
         kStart = startedAt; kDuration = duration;
         kTimer = setInterval(function () {
           var b = bodyEl.querySelector("[data-lyr-bar]");
-          if (b) b.style.width = Math.min(100, (Date.now() / 1000 - kStart) / kDuration * 100).toFixed(1) + "%";
+          if (b) b.style.width = Math.min(100, Math.max(0, Date.now() / 1000 - kStart - STREAM_LAG) / kDuration * 100).toFixed(1) + "%";
         }, 1000);
       }
     }
