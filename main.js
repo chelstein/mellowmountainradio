@@ -8296,6 +8296,10 @@
     var currentAt = null;
     var fetching = false;
 
+    // Show a "tuning in" state immediately so the page never looks broken
+    bodyEl.classList.add("lyr-loading");
+    bodyEl.innerHTML = "<p>Tuning in…</p>";
+
     function showLyrics(text) {
       fetching = false;
       bodyEl.classList.remove("lyr-loading");
@@ -8341,41 +8345,48 @@
     function syncSong() {
       var np = lastNowData && lastNowData.now_playing;
       if (!np) return;
-      var at = np.played_at;
-      if (at === currentAt) return;
+      var at = np.played_at || 0;
+      if (at && at === currentAt) return;
       currentAt = at;
 
       var song = np.song || {};
-      var title = song.title || "";
-      var artist = song.artist || "";
-      var isStation = !title || title.toLowerCase().indexOf("mellow mountain") !== -1;
+      var title = (song.title || "").trim();
+      var artist = (song.artist || "").trim();
 
-      if (titleEl) titleEl.textContent = isStation ? "Mellow Mountain Radio" : title;
-      if (artistEl) artistEl.textContent = isStation ? "106.5 FM & 780 AM" : (artist || "");
+      // No music playing right now (station ID, news, talk segment)
+      if (!title || !artist) {
+        if (titleEl) titleEl.textContent = "KAZM 106.5 FM & 780 AM";
+        if (artistEl) artistEl.textContent = "Mellow Mountain Radio";
+        if (albumEl) albumEl.textContent = "";
+        if (artEl) { artEl.src = LOGO_FALLBACK; artEl.classList.remove("is-art"); }
+        bodyEl.classList.remove("lyr-loading");
+        bodyEl.classList.add("lyr-empty");
+        bodyEl.innerHTML = "<p>Music is on the way — lyrics appear when a song is playing.</p>";
+        fetching = false;
+        return;
+      }
+
+      if (titleEl) titleEl.textContent = title;
+      if (artistEl) artistEl.textContent = artist;
       if (albumEl) albumEl.textContent = "";
 
       if (artEl) {
         artEl.src = LOGO_FALLBACK;
         artEl.classList.remove("is-art");
-        if (!isStation && artist && title) {
-          fetchArtwork(artist, title).then(function (meta) {
-            if (meta && meta.art) { artEl.src = meta.art; artEl.classList.add("is-art"); }
-            if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
-          });
-        }
+        fetchArtwork(artist, title).then(function (meta) {
+          if (meta && meta.art) { artEl.src = meta.art; artEl.classList.add("is-art"); }
+          if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
+        });
       }
 
-      if (isStation) {
-        bodyEl.classList.remove("lyr-loading", "lyr-empty");
-        bodyEl.innerHTML = "";
-        fetching = false;
-        return;
-      }
       fetchLyrics(artist, title);
     }
 
+    // Poll until firstNowPlaying data arrives, then switch to interval
+    var startPoll = setInterval(function () {
+      if (lastNowData) { clearInterval(startPoll); syncSong(); }
+    }, 400);
     setInterval(syncSong, 10000);
-    setTimeout(syncSong, 1500);
   })();
 
   // Install prompt: show a small, dismissible chip only when the browser says
