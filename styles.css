@@ -3653,6 +3653,16 @@ body.podplaying .player.show { transform: translateY(180%); }
 
 .tm-studio{scroll-margin-top:84px}
 #charts{scroll-margin-top:84px}
+#onthisday{scroll-margin-top:84px}
+.tm-otd{display:flex;flex-wrap:wrap;gap:20px;margin-top:8px}
+.tm-otd-card{flex:1 1 260px;background:var(--surface,#fff);border:1px solid var(--line-soft,transparent);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow-sm,0 4px 14px rgba(30,25,18,.07))}
+.tm-otd-card h3{font-family:Alice,serif;font-size:1.05rem;margin:0 0 4px;color:var(--heading,#2c2620)}
+.tm-otd-meta{font-size:.78rem;color:var(--muted,#5a5147);display:block;margin-bottom:12px}
+.tm-otd-songs{margin:0;padding:0 0 0 1.1em}
+.tm-otd-songs li{font-size:.88rem;line-height:1.65;color:var(--ink,#2c2620)}
+.tm-otd-ar{color:var(--muted,#5a5147);font-size:.8rem}
+.tm-otd-ct{color:var(--accent-deep,#8a5f2a);font-size:.75rem;font-weight:700;margin-left:.25rem}
+.tm-otd-none{color:var(--muted,#5a5147);font-style:italic;font-size:.9rem}
 
 /* =========================================================
    THE LOUNGE WINDOW — the painted view, framed like a dim room

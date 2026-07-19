@@ -7755,7 +7755,7 @@
       dayEl = root.querySelector("[data-tm-day]"), noteEl = root.querySelector("[data-tm-note]"),
       statsEl = root.querySelector("[data-tm-stats]"), podiumEl = root.querySelector("[data-tm-podium]"),
       topEl = root.querySelector("[data-tm-top]"), artEl = root.querySelector("[data-tm-artists]"),
-      debEl = root.querySelector("[data-tm-debuts]"),
+      debEl = root.querySelector("[data-tm-debuts]"), otdEl = root.querySelector("[data-tm-otd]"),
       roDay = root.querySelector("[data-tm-readout-day]"), roTime = root.querySelector("[data-tm-readout-time]");
     root.hidden = true;
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -7967,7 +7967,65 @@
           if (D.since) { D.pos = D.sel = dayIndex(j.day); drawDial(); setReadout(); }
           renderDay();
           if (then) then();
+          if (otdEl && !otdEl.getAttribute("data-otd-loaded")) {
+            otdEl.setAttribute("data-otd-loaded", "1");
+            loadOnThisDay();
+          }
         }).catch(function () {});
+    }
+    function loadOnThisDay() {
+      if (!otdEl || !D.today || !D.since) return;
+      var todayParts = D.today.split("-");
+      var todayYear = +todayParts[0];
+      var mmd = todayParts[1] + "-" + todayParts[2];
+      var sinceYear = +D.since.split("-")[0];
+      var pastDates = [];
+      for (var y = sinceYear; y < todayYear; y++) {
+        var d = y + "-" + mmd;
+        if (d >= D.since && d < D.today) pastDates.push(d);
+      }
+      if (!pastDates.length) {
+        otdEl.innerHTML = '<p class="tm-otd-none">No past years in the log for today&rsquo;s date yet &mdash; the log started ' + fmtDate(D.since) + '.</p>';
+        return;
+      }
+      otdEl.innerHTML = '<p class="tm-otd-none" style="opacity:.6">Digging through the archives&hellip;</p>';
+      Promise.all(pastDates.map(function (date) {
+        return fetch(PLAYLOG + "?d=" + encodeURIComponent(date), { cache: "no-store" })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .catch(function () { return null; });
+      })).then(function (results) {
+        var cards = "";
+        pastDates.forEach(function (date, i) {
+          var j = results[i];
+          if (!j || !j.ok) return;
+          var plays = (j.plays || []).filter(function (p) {
+            var t = p.ti || "", a = p.ar || "";
+            return t && a &&
+              !/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID/i.test(t) &&
+              a !== "Live365" && a !== "Mellow Mountain Radio" && a !== "Station ID";
+          });
+          if (!plays.length) return;
+          var counts = {};
+          plays.forEach(function (p) {
+            var key = (p.ti || "") + "\x00" + (p.ar || "");
+            counts[key] = (counts[key] || 0) + 1;
+          });
+          var sorted = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+          var uniques = sorted.length;
+          var top5 = sorted.slice(0, 5);
+          var year = date.split("-")[0];
+          cards += '<div class="tm-otd-card"><h3>' + year + '</h3>' +
+            '<span class="tm-otd-meta">' + plays.length + ' spins &middot; ' + uniques + ' different songs</span>' +
+            '<ol class="tm-otd-songs">' +
+            top5.map(function (key) {
+              var parts = key.split("\x00"), ti = parts[0], ar = parts[1], ct = counts[key];
+              return '<li>' + tmEsc(ti) + ' <span class="tm-otd-ar">by ' + tmEsc(ar) + '</span>' +
+                (ct > 1 ? ' <span class="tm-otd-ct">&times;' + ct + '</span>' : '') + '</li>';
+            }).join("") +
+            '</ol></div>';
+        });
+        otdEl.innerHTML = cards || '<p class="tm-otd-none">No play data found for this date in past years.</p>';
+      });
     }
     /* ── CHARTS ───────────────────────────────────────────── */
     function renderCharts(c) {
