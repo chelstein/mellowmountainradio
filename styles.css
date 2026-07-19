@@ -2585,6 +2585,50 @@ body.has-player { padding-bottom: 74px; }
 }
 .player.show.is-rewinding .player-live-btn { display: inline-flex; }
 .player-live-btn:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.55); }
+.player-lyrics {
+  display: none; flex: none; align-items: center; gap: 4px;
+  font-size: 12.5px; font-weight: 700; letter-spacing: .04em; font-family: var(--font-body);
+  color: rgba(255,255,255,.6); text-decoration: none;
+  padding: 7px 13px; border-radius: var(--pill);
+  border: 1px solid rgba(255,255,255,.18);
+  transition: color .15s, border-color .15s, background .15s;
+}
+.player.show .player-lyrics { display: inline-flex; }
+.player-lyrics:hover { color: #fff; border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.07); }
+
+/* =========================================================
+   LYRICS PAGE
+   ========================================================= */
+.lyr-hero { background: var(--navy); padding: 80px 0 56px; }
+.lyr-hero-inner { display: flex; align-items: center; gap: 36px; }
+.lyr-art-wrap {
+  flex: none; width: 156px; height: 156px;
+  border-radius: 12px; overflow: hidden;
+  background: rgba(255,255,255,.07);
+  box-shadow: 0 8px 32px rgba(0,0,0,.45);
+}
+.lyr-art { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .55; transition: opacity .3s; }
+.lyr-art.is-art { opacity: 1; }
+.lyr-meta { flex: 1; min-width: 0; }
+.lyr-meta .eyebrow { color: rgba(255,255,255,.55); }
+.lyr-title {
+  color: #fff; font-size: clamp(1.5rem, 4vw, 2.6rem); margin: 6px 0 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lyr-artist { color: rgba(255,255,255,.8); font-size: 1.1rem; font-weight: 700; margin: 0 0 4px; }
+.lyr-album { color: rgba(255,255,255,.45); font-size: .88rem; margin: 0; min-height: 1.2em; }
+.lyr-section { padding: 56px 0 96px; }
+.lyr-body { max-width: 620px; line-height: 1.95; font-size: 1.05rem; color: var(--ink); transition: opacity .25s; }
+.lyr-body.lyr-loading { opacity: .38; }
+.lyr-body.lyr-empty { color: var(--muted); font-style: italic; }
+.lyr-body p { margin: 0 0 1.5em; }
+.lyr-body p:last-child { margin-bottom: 0; }
+@media (max-width: 600px) {
+  .lyr-hero { padding: 52px 0 36px; }
+  .lyr-hero-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .lyr-art-wrap { width: 110px; height: 110px; }
+  .lyr-title { white-space: normal; }
+}
 
 /* =========================================================
    LISTEN / PLAY BUTTON POLISH
@@ -2692,7 +2736,7 @@ body:not(.is-playing) .listen-btn::after {
   .recent-note { display: none; }
   .partner-grid { grid-template-columns: 1fr 1fr; }
   .player-inner { padding: 10px 16px; gap: 12px; }
-  .player-onair, .player-btn-label, .player-rewind, .player-live-btn { display: none; }
+  .player-onair, .player-btn-label, .player-rewind, .player-live-btn, .player-lyrics { display: none; }
   .player-btn { padding: 11px 16px; }
   body.has-player { padding-bottom: 70px; }
 }

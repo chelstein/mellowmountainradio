@@ -45,7 +45,7 @@
           '<a role="menuitem" href="sports.html#mlb">MLB &middot; Diamondbacks</a><a role="menuitem" href="sports.html#nba">NBA &middot; Suns</a><a role="menuitem" href="sports.html#nfl">NFL &middot; Cardinals</a><a role="menuitem" href="sports.html#college">College &middot; ASU, U of A, NAU</a><a role="menuitem" href="sports.html#ufc">UFC</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="music"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Music &amp; More</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="timemachine.html">Song Time Machine</a><a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a><a role="menuitem" href="merch.html">Merch</a>' +
+          '<a role="menuitem" href="lyrics.html">Lyrics</a><a role="menuitem" href="timemachine.html">Song Time Machine</a><a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a><a role="menuitem" href="merch.html">Merch</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="jeeptrails.html">Jeep Trails</a><a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="photography.html">Photography</a><a role="menuitem" href="events.html#geocaching">Geocaching</a><a role="menuitem" href="events.html">All Adventures</a>' +
@@ -75,7 +75,7 @@
           '<a href="https://twitter.com/mellowmountain1" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M18.9 2H22l-7.1 8.1L23.3 22h-6.6l-5.2-6.8L5.6 22H2.5l7.6-8.7L1 2h6.8l4.7 6.2Zm-1.2 18h1.8L7.4 3.8H5.5Z"/></svg></a>' +
         '</div>' +
       '</div>' +
-      '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="timemachine.html">Song Time Machine</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
+      '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="lyrics.html">Lyrics</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="timemachine.html">Song Time Machine</a><a href="music.html">Music &amp; More</a><a href="podcasts.html">Podcasts</a></nav>' +
       '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="weather.html">Weather</a><a href="roads.html">Roads &amp; Traffic</a><a href="firstpeoples.html">First Peoples</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="The Vibe"><h4>The Vibe</h4><a href="vibe.html">Cosmic Conditions</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="wildlife.html">Seen around Sedona</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="rewind.html">Listeners&rsquo; Lounge</a><a href="archives.html">KAZM Archives</a><a href="ifoughtthelaw.html">I Fought the Law&hellip;</a><a href="advertising.html">Advertising</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="merch.html">Merch</a></nav>' +
@@ -98,6 +98,7 @@
         '<span class="player-pulse" data-pulse hidden><button class="pp-btn" type="button" data-pulse-love aria-label="Feed the pulse — more like this, nudges the station playlist" title="Feed the pulse — more like this"><svg viewBox="0 0 24 12" width="20" height="11" aria-hidden="true"><polyline points="0,6 6,6 9,1 13,11 16,6 24,6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button><button class="pp-btn pp-btn--nah" type="button" data-pulse-nah aria-label="Flatline — not my vibe, nudges the station playlist" title="Flatline — not my vibe"><svg viewBox="0 0 24 12" width="20" height="11" aria-hidden="true"><line x1="0" y1="6" x2="24" y2="6" stroke="currentColor" stroke-width="2"/></svg></button></span>' +
       '</div>' +
       '<button class="player-btn" data-listen aria-pressed="false" aria-label="Play or pause the live stream">' + ICON_PLAY + ICON_PAUSE + '<span class="player-btn-label" data-listen-label>Listen Live</span></button>' +
+      '<a class="player-lyrics" href="/lyrics.html" aria-label="Song lyrics">&#9834; Lyrics</a>' +
       '<a class="player-rewind" data-player-rewind href="/rewind.html" aria-label="Rewind — replay from the start of this song">&#8617; Rewind</a>' +
       '<button class="player-live-btn" data-player-live-btn aria-label="Back to live stream">&#9654; Back to Live</button>' +
     '</div></div>' +
@@ -8274,6 +8275,108 @@
       window.addEventListener("load", function () { setTimeout(togglePlay, 400); });
     }
   } catch (e) {}
+
+  /* =========================================================
+     SONG LYRICS PAGE (lyrics.html)
+     Shows lyrics for whatever is live on KAZM right now.
+     LRClib (primary, no key) → Lyrics.ovh (fallback).
+     Polls lastNowData every 10 s; updates on each song change.
+     ========================================================= */
+  (function () {
+    var page = doc.querySelector("[data-lyrics-page]");
+    if (!page) return;
+
+    var titleEl = page.querySelector("[data-lyr-title]");
+    var artistEl = page.querySelector("[data-lyr-artist]");
+    var albumEl = page.querySelector("[data-lyr-album]");
+    var artEl = page.querySelector("[data-lyr-art]");
+    var bodyEl = page.querySelector("[data-lyr-body]");
+    if (!bodyEl) return;
+
+    var currentAt = null;
+    var fetching = false;
+
+    function showLyrics(text) {
+      fetching = false;
+      bodyEl.classList.remove("lyr-loading");
+      if (!text || !text.trim()) {
+        bodyEl.classList.add("lyr-empty");
+        bodyEl.innerHTML = "<p>No lyrics on file for this one — enjoy it with your ears.</p>";
+        return;
+      }
+      bodyEl.classList.remove("lyr-empty");
+      var html = text.trim().split(/\n{2,}/).map(function (p) {
+        return "<p>" + esc(p.trim()).replace(/\n/g, "<br>") + "</p>";
+      }).join("");
+      bodyEl.innerHTML = html;
+      bodyEl.scrollTop = 0;
+    }
+
+    function tryOvh(artist, title) {
+      return fetch("https://api.lyrics.ovh/v1/" + encodeURIComponent(artist) + "/" + encodeURIComponent(title), { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { showLyrics(d && d.lyrics ? d.lyrics : null); })
+        .catch(function () { showLyrics(null); });
+    }
+
+    function fetchLyrics(artist, title) {
+      if (fetching) return;
+      fetching = true;
+      bodyEl.classList.add("lyr-loading");
+      bodyEl.classList.remove("lyr-empty");
+      bodyEl.innerHTML = "<p>Searching for lyrics…</p>";
+      var lcUrl = "https://lrclib.net/api/search?artist_name=" + encodeURIComponent(artist) + "&track_name=" + encodeURIComponent(title);
+      fetch(lcUrl, { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (results) {
+          if (Array.isArray(results) && results.length && results[0].plainLyrics) {
+            showLyrics(results[0].plainLyrics);
+          } else {
+            return tryOvh(artist, title);
+          }
+        })
+        .catch(function () { tryOvh(artist, title); });
+    }
+
+    function syncSong() {
+      var np = lastNowData && lastNowData.now_playing;
+      if (!np) return;
+      var at = np.played_at;
+      if (at === currentAt) return;
+      currentAt = at;
+
+      var song = np.song || {};
+      var title = song.title || "";
+      var artist = song.artist || "";
+      var isStation = !title || title.toLowerCase().indexOf("mellow mountain") !== -1;
+
+      if (titleEl) titleEl.textContent = isStation ? "Mellow Mountain Radio" : title;
+      if (artistEl) artistEl.textContent = isStation ? "106.5 FM & 780 AM" : (artist || "");
+      if (albumEl) albumEl.textContent = "";
+
+      if (artEl) {
+        artEl.src = LOGO_FALLBACK;
+        artEl.classList.remove("is-art");
+        if (!isStation && artist && title) {
+          fetchArtwork(artist, title).then(function (meta) {
+            if (meta && meta.art) { artEl.src = meta.art; artEl.classList.add("is-art"); }
+            if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
+          });
+        }
+      }
+
+      if (isStation) {
+        bodyEl.classList.remove("lyr-loading", "lyr-empty");
+        bodyEl.innerHTML = "";
+        fetching = false;
+        return;
+      }
+      fetchLyrics(artist, title);
+    }
+
+    setInterval(syncSong, 10000);
+    setTimeout(syncSong, 1500);
+  })();
 
   // Install prompt: show a small, dismissible chip only when the browser says
   // the app is installable; hide it on install or dismiss. Remembers dismissal.
