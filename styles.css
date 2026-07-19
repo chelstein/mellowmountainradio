@@ -2641,6 +2641,13 @@ body.has-player { padding-bottom: 74px; }
 }
 .lyr-line.was-sung { opacity: .55; }
 .lyr-line.is-active { opacity: 1; color: #e53935; font-size: 1.18rem; font-weight: 700; }
+.lyr-bio { margin-top: 2.5rem; padding-top: 1.75rem; border-top: 1px solid rgba(0,0,0,.08); }
+@media (prefers-color-scheme: dark) { .lyr-bio { border-top-color: rgba(255,255,255,.1); } }
+.lyr-bio:empty { display: none; }
+.lyr-bio-text { font-size: .92rem; line-height: 1.75; color: #555; margin: 0 0 .6rem; }
+@media (prefers-color-scheme: dark) { .lyr-bio-text { color: #aaa; } }
+.lyr-bio-link { font-size: .8rem; color: var(--brand, #223d6e); text-decoration: none; opacity: .75; }
+.lyr-bio-link:hover { opacity: 1; text-decoration: underline; }
 @media (max-width: 600px) {
   .lyr-hero { padding: 52px 0 36px; }
   .lyr-hero-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
