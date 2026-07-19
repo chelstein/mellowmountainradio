@@ -8304,7 +8304,7 @@
     var kLastIdx = -1;
     // HLS stream buffer adds ~20 s of latency; lyrics tick this many seconds behind
     // server clock so they match what the listener is actually hearing.
-    var STREAM_LAG = 14;
+    var STREAM_LAG = 12;
 
     bodyEl.classList.add("lyr-loading");
     bodyEl.innerHTML = "<p>Tuning in…</p>";
@@ -8327,7 +8327,7 @@
     }
 
     function tickKaraoke() {
-      if (!kLines || !kStart) return;
+      if (!kLines || kStart === null) return;
       var elapsed = Math.max(0, Date.now() / 1000 - kStart - STREAM_LAG);
       var barEl = bodyEl.querySelector("[data-lyr-bar]");
       if (barEl && kDuration) barEl.style.width = Math.min(100, elapsed / kDuration * 100).toFixed(1) + "%";
@@ -8473,6 +8473,9 @@
       var at = np.played_at || 0;
       if (at && at === currentAt) return;
       currentAt = at;
+      fetching = false; // reset on any song change so new fetch always runs
+      // Derive startedAt: prefer played_at; fall back to now-elapsed when missing
+      var startedAt = at || (np.elapsed ? Math.round(Date.now() / 1000 - np.elapsed) : null);
 
       var song = np.song || {};
       var rawTitle = (song.title || "").trim();
@@ -8509,7 +8512,7 @@
           if (albumEl && meta && meta.album) albumEl.textContent = meta.album;
         });
       }
-      fetchLyrics(artist, rawTitle, at);
+      fetchLyrics(artist, rawTitle, startedAt);
       fetchBio(artist);
     }
 
