@@ -8399,6 +8399,26 @@
         .catch(function () { return null; });
     }
 
+    var mbCache = {};
+    function checkInstrumental(artist, title) {
+      var key = artist + "|" + title;
+      if (mbCache[key] !== undefined) return Promise.resolve(mbCache[key]);
+      var q = 'artist:"' + artist + '" AND recording:"' + title + '"';
+      return fetch(
+        "https://musicbrainz.org/ws/2/recording?query=" + encodeURIComponent(q) + "&fmt=json&inc=tags&limit=3",
+        { headers: { "User-Agent": "mellowmountainradio/1.0 (chuck@mellowmountainradio.com)" }, cache: "no-store" }
+      )
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          var recordings = d && d.recordings;
+          var isInst = !!(recordings && recordings.length && recordings[0].tags &&
+            recordings[0].tags.some(function (t) { return t.name === "instrumental"; }));
+          mbCache[key] = isInst;
+          return isInst;
+        })
+        .catch(function () { mbCache[key] = false; return false; });
+    }
+
     function fetchLyrics(artist, rawTitle, startedAt) {
       if (fetching) return;
       fetching = true;
@@ -8415,8 +8435,11 @@
             if (r.plain) { renderPlain(r.plain, r.duration, startedAt); return; }
           }
           return tryOvh(artist, shortTitle).then(function (txt) {
-            if (txt) renderPlain(txt, null, null);
-            else renderEmpty("No lyrics on file for this one — enjoy it with your ears.");
+            if (txt) { renderPlain(txt, null, null); return; }
+            return checkInstrumental(artist, shortTitle).then(function (isInst) {
+              if (isInst) renderEmpty("This is an instrumental track — no lyrics, just the music.");
+              else renderEmpty("No lyrics on file for this one — enjoy it with your ears.");
+            });
           });
         })
         .catch(function () { renderEmpty("No lyrics on file for this one — enjoy it with your ears."); });
