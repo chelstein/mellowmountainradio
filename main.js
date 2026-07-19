@@ -468,105 +468,96 @@
   setInterval(fetchNowPlaying, 20000);
 
   /* =========================================================
-     LIVE BUFFER REWIND: record the stream as it plays; show the
-     Rewind button after 10 s; clicking replays from the start of
-     the buffer (= start of current song). Buffer resets on song
-     change (detected via fetchNowPlaying) so Rewind always means
-     "this song". Max buffer: 10 min (longest song on KAZM).
-     Falls back to hiding the button on browsers without captureStream.
+     HLS DVR REWIND: AzuraCast keeps 10 min of live audio as HLS
+     segments on the server. hls.js loads eagerly and attaches to
+     the player before the first click so the DVR window is ready
+     immediately. Rewind = instant currentTime seek. Works on all
+     browsers; Safari uses native HLS without hls.js.
      ========================================================= */
   (function () {
     var rwBtn = doc.querySelector("[data-player-rewind]");
     var liveBtn = doc.querySelector("[data-player-live-btn]");
     var livePlayer = doc.querySelector(".player");
-    if (!rwBtn || !livePlayer) return;
+    if (!rwBtn || !livePlayer || !audio) return;
 
-    var liveSrc = audio.src;
-    var recorder = null;
-    var chunks = [];
-    var rewindUrl = null;
-    var showTimer = null;
-    var capTimer = null;
+    var HLS_SRC = "https://streaming.mellowmountainradio.com/hls/mellowmountainradio/live.m3u8";
+    var hlsInst = null;
+    var hlsNative = false;
 
-    function canRecord() {
-      return typeof audio.captureStream === "function" || typeof audio.mozCaptureStream === "function";
+    function isRewinding() { return livePlayer.classList.contains("is-rewinding"); }
+
+    function songAge() {
+      var np = lastNowData && lastNowData.now_playing;
+      return (np && np.played_at) ? Math.max(0, Date.now() / 1000 - np.played_at) : 0;
     }
 
-    function startRecording() {
-      if (!canRecord()) return;
-      stopRecording(false);
-      var stream;
-      try { stream = (audio.captureStream || audio.mozCaptureStream).call(audio); }
-      catch (e) { return; }
-      chunks = [];
-      livePlayer.classList.remove("has-rewind");
-      clearTimeout(showTimer);
-      clearTimeout(capTimer);
-      recorder = new MediaRecorder(stream);
-      recorder.ondataavailable = function (e) {
-        if (e.data && e.data.size > 0) chunks.push(e.data);
-      };
-      recorder.start(5000); // collect a chunk every 5 s
-      showTimer = setTimeout(function () {
-        if (recorder && recorder.state === "recording") livePlayer.classList.add("has-rewind");
-      }, 10000);
-      capTimer = setTimeout(function () { // cap at 10 min — longest song
-        if (recorder && recorder.state === "recording") recorder.stop();
-      }, 600000);
-    }
-
-    function stopRecording(keepChunks) {
-      clearTimeout(showTimer);
-      clearTimeout(capTimer);
-      if (recorder && recorder.state !== "inactive") {
-        try { recorder.stop(); } catch (e) {}
-      }
-      recorder = null;
-      if (!keepChunks) chunks = [];
+    function liveEdge() {
+      if (hlsInst && hlsInst.liveSyncPosition != null) return hlsInst.liveSyncPosition;
+      if (audio.seekable && audio.seekable.length) return audio.seekable.end(0);
+      return null;
     }
 
     function returnToLive() {
-      audio.pause();
-      if (rewindUrl) { URL.revokeObjectURL(rewindUrl); rewindUrl = null; }
-      audio.src = liveSrc;
+      var edge = liveEdge();
+      if (edge != null) audio.currentTime = edge;
+      if (audio.paused) audio.play();
       livePlayer.classList.remove("is-rewinding");
-      audio.play();
+      livePlayer.classList.add("has-rewind");
     }
 
-    // reset buffer at the start of each new song
-    onSongChange = function () {
-      if (!livePlayer.classList.contains("is-rewinding") && !audio.paused) startRecording();
-    };
+    function onHlsReady() {
+      livePlayer.classList.add("has-rewind");
+      audio.addEventListener("timeupdate", function () {
+        if (!isRewinding()) return;
+        var edge = liveEdge();
+        if (edge != null && audio.currentTime >= edge - 3) {
+          livePlayer.classList.remove("is-rewinding");
+          livePlayer.classList.add("has-rewind");
+        }
+      });
+    }
 
-    audio.addEventListener("play", function () {
-      if (!livePlayer.classList.contains("is-rewinding")) startRecording();
-    });
-
-    audio.addEventListener("pause", function () {
-      if (!livePlayer.classList.contains("is-rewinding")) {
-        stopRecording(false);
-        livePlayer.classList.remove("has-rewind");
+    function initHls() {
+      if (hlsInst || hlsNative) return;
+      if (window.Hls && Hls.isSupported()) {
+        hlsInst = new Hls({ liveSyncDurationCount: 3, backBufferLength: 600, maxBufferLength: 30 });
+        hlsInst.loadSource(HLS_SRC);
+        hlsInst.attachMedia(audio);
+        hlsInst.on(Hls.Events.MANIFEST_PARSED, function () {
+          onHlsReady();
+          if (playing) audio.play();
+        });
+      } else if (audio.canPlayType("application/vnd.apple.mpegurl")) {
+        hlsNative = true;
+        var wasPlaying = playing;
+        audio.src = HLS_SRC;
+        audio.addEventListener("canplay", function () {
+          onHlsReady();
+          if (wasPlaying) audio.play();
+        }, { once: true });
       }
-    });
+    }
 
-    audio.addEventListener("ended", function () {
-      if (livePlayer.classList.contains("is-rewinding")) returnToLive();
-    });
+    // load hls.js eagerly so it is ready before the first play click
+    var s = doc.createElement("script");
+    s.async = true;
+    s.src = "/hls.min.js";
+    s.onload = initHls;
+    doc.head.appendChild(s);
 
     rwBtn.addEventListener("click", function (e) {
       e.preventDefault();
-      if (!chunks.length) return;
-      stopRecording(true);
-      var blob = new Blob(chunks, { type: chunks[0].type });
-      if (rewindUrl) URL.revokeObjectURL(rewindUrl);
-      rewindUrl = URL.createObjectURL(blob);
-      audio.src = rewindUrl;
-      audio.play();
+      if (!audio.seekable || !audio.seekable.length) return;
+      var minSeek = audio.seekable.start(0);
+      var target = Math.max((liveEdge() || audio.currentTime) - songAge(), minSeek);
+      audio.currentTime = target;
+      if (audio.paused) audio.play();
       livePlayer.classList.add("is-rewinding");
       livePlayer.classList.remove("has-rewind");
     });
 
     if (liveBtn) liveBtn.addEventListener("click", returnToLive);
+    audio.addEventListener("ended", function () { if (isRewinding()) returnToLive(); });
   })();
 
   /* =========================================================
