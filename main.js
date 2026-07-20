@@ -7742,6 +7742,119 @@
      Tune through time on a radio dial: every day since the log
      began is on the band. Real plays only — never seeded.
      ========================================================= */
+
+  /* =========================================================
+     STATION DNA — decade breakdown from play log
+     ========================================================= */
+  var DECADE_MAP = {};
+  (function () {
+    function norm(s) {
+      return (s || "").toLowerCase()
+        .replace(/\s*[&+]\s*/g, " and ")
+        .replace(/[^a-z0-9 ]/g, "")
+        .replace(/\b(the|a|an)\b /g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+    function reg(decade) {
+      for (var i = 1; i < arguments.length; i++) {
+        var k = norm(arguments[i]); if (k) DECADE_MAP[k] = decade;
+      }
+    }
+    // 1950s
+    reg(1950, "Elvis Presley", "Buddy Holly", "Chuck Berry", "Fats Domino", "Little Richard", "Jerry Lee Lewis", "Hank Williams", "Patsy Cline", "Johnny Cash");
+    // 1960s
+    reg(1960, "The Beatles", "The Rolling Stones", "Creedence Clearwater Revival", "The Doors", "Jimi Hendrix", "Janis Joplin", "Crosby Stills Nash and Young", "Crosby Stills and Nash", "Crosby, Stills, Nash and Young", "CSNY", "Buffalo Springfield", "The Beach Boys", "Simon and Garfunkel", "Otis Redding", "Aretha Franklin", "Sam Cooke", "The Byrds", "Joni Mitchell", "The Temptations", "Marvin Gaye", "The Four Tops", "Ray Charles", "Bob Dylan", "The Moody Blues", "The Hollies", "Neil Diamond", "Van Morrison", "Sly and the Family Stone", "The Righteous Brothers", "Righteous Brothers", "Herb Alpert", "Herb Alpert and the Tijuana Brass");
+    // 1970s
+    reg(1970, "Eagles", "Steely Dan", "Fleetwood Mac", "The Doobie Brothers", "Doobie Brothers", "James Taylor", "Jackson Browne", "Jimmy Buffett", "America", "Chicago", "Grateful Dead", "ELO", "Electric Light Orchestra", "Boston", "Heart", "Kenny Loggins", "Loggins and Messina", "Paul Simon", "Billy Joel", "Linda Ronstadt", "Carly Simon", "Carole King", "Stephen Bishop", "Dan Fogelberg", "England Dan and John Ford Coley", "Player", "Ambrosia", "Pablo Cruise", "Little River Band", "Boz Scaggs", "Joe Walsh", "Gordon Lightfoot", "Sanford Townsend Band", "Traffic", "Firefall", "The Stylistics", "Stylistics", "Poco", "Gerry Rafferty", "Bill Withers", "Al Jarreau", "Phoebe Snow", "Seals and Crofts", "Jim Croce", "Orleans", "Rod Stewart", "Elton John", "John Denver", "Harry Chapin", "Glen Campbell", "Kenny Rogers", "Supertramp", "Tom Petty and the Heartbreakers", "Tom Petty", "Bruce Springsteen", "Bob Seger", "Bob Seger and the Silver Bullet Band", "Lynyrd Skynyrd", "The Allman Brothers Band", "Allman Brothers", "Peter Frampton", "Paul McCartney", "Wings", "Yes", "Genesis", "The Who", "George Harrison", "John Lennon", "Bread", "Three Dog Night", "Styx", "REO Speedwagon", "Steve Miller Band", "Steve Miller", "Foreigner", "Bee Gees", "Stevie Wonder", "Al Green", "George Benson", "Roberta Flack", "Michael Franks", "Grover Washington Jr.", "Dave Mason", "Neil Young", "David Bowie", "Cat Stevens", "Harry Nilsson", "Earth Wind and Fire", "Commodores", "Diana Ross", "Rufus", "Tower of Power", "Average White Band", "Larry Carlton", "Lee Ritenour", "Dave Grusin", "Seals and Crofts", "Jim Messina", "Loggins and Messina", "Orleans", "Pablo Cruise", "Pure Prairie League", "Kenny O'Brien", "Firefall", "Ambrosia", "Dr. Hook", "Dr. Hook and the Medicine Show", "Odyssey", "Bill Champlin", "War", "Kool and the Gang", "Maze", "Frankie Beverly", "Frankie Beverly and Maze", "George Duke", "Stanley Clarke", "Chick Corea", "Herbie Hancock", "Al Di Meola", "Toto Cutugno");
+    // 1980s
+    reg(1980, "Christopher Cross", "Bobby Caldwell", "Daryl Hall and John Oates", "Hall and Oates", "Don Henley", "Glenn Frey", "Toto", "DeBarge", "Double", "Maxus", "Air Supply", "Robbie Dupree", "Michael McDonald", "Anita Baker", "Sade", "Luther Vandross", "Kenny G", "Richard Marx", "Huey Lewis and the News", "Huey Lewis", "Phil Collins", "Steve Perry", "Bryan Adams", "Lionel Richie", "Michael Jackson", "Kim Carnes", "Steve Winwood", "Joe Cocker", "Paul Young", "Simply Red", "George Michael", "Starship", "Bruce Hornsby", "Bruce Hornsby and the Range", "Billy Ocean", "Robbie Nevil", "Atlantic Starr", "Quarterflash", "Chicago", "Journey", "Foreigner", "Heart", "REO Speedwagon", "Styx", "Kenny Loggins", "Paul McCartney", "George Benson", "Lionel Richie", "Stevie Wonder", "Diana Ross", "Marvin Gaye", "Kool and the Gang", "Rick James", "Teena Marie", "Narada Michael Walden", "Lee Greenwood", "John Waite", "Scandal", "Pat Benatar", "Loverboy", "Night Ranger", "Survivor", "Asia", "Cutting Crew", "Pseudo Echo", "Nik Kershaw", "Howard Jones", "Naked Eyes", "Climie Fisher", "Breathe", "Swing Out Sister", "Johnny Hates Jazz");
+    // 1990s+
+    reg(1990, "Whitney Houston", "Mariah Carey", "Celine Dion", "Michael Buble", "Josh Groban", "Diana Krall", "Norah Jones", "John Mayer", "Jack Johnson", "James Blunt", "Michael Bolton", "Babyface", "Boyz II Men", "Color Me Badd", "All-4-One", "Dru Hill");
+  })();
+
+  function dnaArtistNorm(s) {
+    return (s || "").toLowerCase()
+      .replace(/\s*[&+]\s*/g, " and ")
+      .replace(/[^a-z0-9 ]/g, "")
+      .replace(/\b(the|a|an)\b /g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+  function dnaDecade(artist) {
+    return DECADE_MAP[dnaArtistNorm(artist)] || null;
+  }
+
+  function initMusicDNA() {
+    var el = doc.querySelector("[data-music-dna]");
+    if (!el || el.getAttribute("data-dna-init")) return;
+    el.setAttribute("data-dna-init", "1");
+    var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
+    var DAYS = 60, POOL = 8;
+    function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]; }); }
+    var dates = [], d0 = new Date();
+    for (var i = 0; i < DAYS; i++) {
+      var dd = new Date(d0.getTime() - i * 86400000);
+      dates.push(dd.getUTCFullYear() + "-" + String(dd.getUTCMonth() + 1).padStart(2, "0") + "-" + String(dd.getUTCDate()).padStart(2, "0"));
+    }
+    var total = dates.length, qIdx = 0, doneCount = 0, inFlight = 0;
+    var spinsByDecade = {}, artistSpins = {};
+    var ORDER = ["1970s", "1980s", "1960s", "1990s+", "1950s", "Other"];
+    var COLORS = {"1970s": "#d97706", "1980s": "#2563eb", "1960s": "#0d9488", "1990s+": "#7c3aed", "1950s": "#64748b", "Other": "#94a3b8"};
+    el.innerHTML = "<p class='dna-loading'>Reading the log&hellip;</p>";
+    function renderDNA(final) {
+      var totalSpins = 0;
+      ORDER.forEach(function (dk) { totalSpins += (spinsByDecade[dk] || 0); });
+      if (!totalSpins) return;
+      var html = "";
+      ORDER.forEach(function (dk) {
+        var n = spinsByDecade[dk] || 0; if (!n) return;
+        var pct = Math.round(n / totalSpins * 100); if (pct < 1) return;
+        var topAr = Object.keys(artistSpins[dk] || {})
+          .sort(function (a, b) { return (artistSpins[dk][b] || 0) - (artistSpins[dk][a] || 0); })
+          .slice(0, 4).join(" · ");
+        html += "<div class='dna-row'>" +
+          "<div class='dna-label'><span class='dna-era'>The " + dk + "</span><span class='dna-pct'>" + pct + "%</span></div>" +
+          "<div class='dna-bar-bg'><div class='dna-bar' data-w='" + pct + "' style='background:" + COLORS[dk] + ";width:0'></div></div>" +
+          (topAr ? "<p class='dna-artists'>" + esc(topAr) + "</p>" : "") +
+          "</div>";
+      });
+      if (final) html += "<p class='dna-meta'>Computed from " + doneCount + " days of real spins &mdash; " + totalSpins.toLocaleString() + " music plays</p>";
+      el.innerHTML = html;
+      requestAnimationFrame(function () {
+        el.querySelectorAll(".dna-bar").forEach(function (b) { b.style.width = b.getAttribute("data-w") + "%"; });
+      });
+    }
+    function oneDone(j) {
+      doneCount++; inFlight--;
+      if (j && j.ok) {
+        (j.plays || []).forEach(function (p) {
+          if (!p.ti || !p.ar) return;
+          var decade = dnaDecade(p.ar);
+          var bucket = decade ? decade + "s" : "Other";
+          spinsByDecade[bucket] = (spinsByDecade[bucket] || 0) + 1;
+          if (!artistSpins[bucket]) artistSpins[bucket] = {};
+          artistSpins[bucket][p.ar] = (artistSpins[bucket][p.ar] || 0) + 1;
+        });
+      }
+      var isDone = doneCount >= total;
+      if (isDone || doneCount % 8 === 0) renderDNA(isDone);
+      if (!isDone) pump();
+    }
+    function pump() {
+      while (qIdx < total && inFlight < POOL) {
+        var date = dates[qIdx++]; inFlight++;
+        (function (d) {
+          fetch(PLAYLOG + "?d=" + encodeURIComponent(d), { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .catch(function () { return null; })
+            .then(oneDone);
+        })(date);
+      }
+    }
+    pump();
+  }
+
   function initTimeMachine() {
     var root = doc.querySelector("[data-tm]"); if (!root || root.getAttribute("data-init")) return;
     root.setAttribute("data-init", "1");
@@ -8298,6 +8411,7 @@
     initListenerFrom();
     initTape();
     initWindow();
+    initMusicDNA();
     initTimeMachine();
     initPlaybook();
     initHomePulse();
