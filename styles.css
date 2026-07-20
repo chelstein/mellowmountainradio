@@ -3830,3 +3830,16 @@ body.podplaying .player.show { transform: translateY(180%); }
 .tape-share-btn.is-copied{color:#7ed87e;border-color:rgba(80,160,80,.4);background:rgba(40,100,40,.15)}
 .tape-upnext{font-size:11px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:rgba(200,155,90,.55);text-align:center;padding:10px 0 2px;animation:upnext-in .35s ease}
 @keyframes upnext-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ── STATION DNA ───────────────────────────────────────────── */
+.dna-wrap{max-width:640px}
+.dna-loading{color:var(--txt-muted,#888);font-size:.9rem;padding:1rem 0}
+.dna-row{margin-bottom:1.6rem}
+.dna-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem}
+.dna-era{font-family:Alice,serif;font-size:1rem;color:var(--heading,#223d6e)}
+.dna-pct{font-size:1.5rem;font-weight:900;color:var(--heading,#223d6e);font-variant-numeric:tabular-nums;line-height:1}
+.dna-bar-bg{background:var(--bg-2,#efe4d2);border-radius:6px;overflow:hidden;height:14px}
+.dna-bar{height:14px;border-radius:6px;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.dna-artists{font-size:.78rem;color:var(--txt-muted,#888);margin:.35rem 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dna-meta{font-size:.75rem;color:var(--txt-muted,#888);margin-top:1.6rem;border-top:1px solid var(--line-soft,rgba(0,0,0,.08));padding-top:1rem}
+#dna{scroll-margin-top:84px}
