@@ -2507,15 +2507,15 @@ a.contact-v:hover { color: var(--accent-strong); }
   content: ""; position: absolute; inset: 0; border-radius: 14px;
   background: radial-gradient(circle at 50% 42%, rgba(207, 118, 105, .55), transparent 62%);
 }
-.recent-apple {
+.recent-stream {
   position: absolute; top: 10px; right: 10px; width: 34px; height: 34px;
   display: grid; place-items: center; border-radius: 50%; color: #fff;
   background: rgba(0, 0, 0, .55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   opacity: 0; transform: translateY(-6px); transition: opacity .2s ease, transform .2s ease;
 }
-.recent-apple svg { fill: currentColor; }
+.recent-stream svg { fill: currentColor; }
 .recent-card:hover .recent-art { transform: translateY(-6px); box-shadow: 0 18px 40px -20px rgba(0, 0, 0, .7); }
-.recent-card:hover .recent-apple { opacity: 1; transform: none; }
+.recent-card:hover .recent-stream { opacity: 1; transform: none; }
 .recent-meta { display: block; margin-top: 14px; }
 .recent-title { display: block; font-family: var(--font-display); color: #fff; font-size: 1.05rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .recent-artist { display: block; color: var(--accent-soft); font-size: 13px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2891,6 +2891,9 @@ body:not(.is-playing) .listen-btn::after {
 }
 .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(169, 87, 80, .15); }
 .field textarea { min-height: 130px; resize: vertical; }
+.cf-sent { display:flex; align-items:center; gap:18px; padding:32px 24px; background:var(--surface-alt,rgba(0,0,0,.04)); border-radius:var(--r-sm); }
+.cf-sent svg { flex-shrink:0; color:var(--accent); fill:currentColor; }
+.cf-sent p { font-size:1.1rem; font-family:var(--font-display); color:var(--heading); margin:0; }
 
 /* merch storefront */
 .merch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px 20px; }

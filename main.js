@@ -367,7 +367,7 @@
      ========================================================= */
   var NOWPLAYING_API = "https://streaming.mellowmountainradio.com/api/nowplaying/mellowmountainradio";
   var LOGO_FALLBACK = "Color%20logo%20-%20no%20background.svg";
-  var APPLE_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M17.05 12.04c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3.01-.79-1.55.02-2.98.9-3.78 2.29-1.61 2.8-.41 6.94 1.16 9.21.77 1.11 1.69 2.36 2.89 2.31 1.16-.05 1.6-.75 3-.75 1.4 0 1.8.75 3.02.72 1.25-.02 2.04-1.13 2.8-2.25.88-1.29 1.24-2.54 1.26-2.6-.03-.01-2.42-.93-2.44-3.69zM14.79 5.3c.64-.78 1.07-1.86.95-2.94-.92.04-2.04.61-2.7 1.39-.59.69-1.11 1.79-.97 2.85 1.03.08 2.08-.52 2.72-1.3z"/></svg>';
+  var STREAM_SVG = '<svg viewBox="0 0 256 256" width="16" height="16" aria-hidden="true"><path d="M201.9 54.7A103.4 103.4 0 0 0 128.8 24H128A104 104 0 0 0 24 128v56a24 24 0 0 0 24 24h16a24 24 0 0 0 24-24v-32a24 24 0 0 0-24-24H40.4A88.1 88.1 0 0 1 128 40h.6a87.5 87.5 0 0 1 87.1 88H200a24 24 0 0 0-24 24v32a24 24 0 0 0 24 24h16a24 24 0 0 0 24-24v-56A103.4 103.4 0 0 0 201.9 54.7z"/></svg>';
   var artCache = {};
   var lastNowData = null;
   var onSongChange = null; // set by live-buffer rewind block
@@ -403,10 +403,11 @@
       } else { img.src = LOGO_FALLBACK; img.classList.remove("is-art"); }
     });
   }
-  function appleMusicUrl(artist, title) {
+  function streamingUrl(artist, title) {
     var term = ((artist || "") + " " + (title || "")).trim();
-    return "https://music.apple.com/us/search?term=" + encodeURIComponent(term);
+    return "https://song.link/?q=" + encodeURIComponent(term);
   }
+  function appleMusicUrl(artist, title) { return streamingUrl(artist, title); }
   function renderHistory(history) {
     var historyEl = doc.querySelector("[data-history]");
     if (!historyEl || !history || !history.length) return;
@@ -415,13 +416,13 @@
       var song = item.song || {};
       var li = doc.createElement("li");
       var a = doc.createElement("a");
-      a.className = "recent-card"; a.href = appleMusicUrl(song.artist, song.title); a.target = "_blank"; a.rel = "noopener";
-      a.setAttribute("aria-label", "Find " + (song.title || "this track") + " by " + (song.artist || "") + " on Apple Music");
+      a.className = "recent-card"; a.href = streamingUrl(song.artist, song.title); a.target = "_blank"; a.rel = "noopener";
+      a.setAttribute("aria-label", "Stream " + (song.title || "this track") + " by " + (song.artist || "") + " on Spotify, Apple Music & more");
       var art = doc.createElement("span"); art.className = "recent-art";
       (function (artEl, s) {
         fetchArtwork(s.artist, s.title).then(function (meta) { var u = (meta && meta.art) || s.art; if (u) { artEl.style.backgroundImage = "url('" + u + "')"; artEl.classList.add("has-art"); } });
       })(art, song);
-      var badge = doc.createElement("span"); badge.className = "recent-apple"; badge.innerHTML = APPLE_SVG; art.appendChild(badge);
+      var badge = doc.createElement("span"); badge.className = "recent-stream"; badge.innerHTML = STREAM_SVG; art.appendChild(badge);
       var meta = doc.createElement("span"); meta.className = "recent-meta";
       var t = doc.createElement("span"); t.className = "recent-title"; t.textContent = song.title || "Unknown";
       var ar = doc.createElement("span"); ar.className = "recent-artist"; ar.textContent = song.artist || "";
@@ -1257,7 +1258,7 @@
     var inner = a.l
       ? '<img class="band-logo" src="' + a.l + '" alt="' + esc(a.n) + '" loading="lazy" />'
       : '<span class="band-logo--text">' + esc(a.n) + '</span>';
-    return '<a class="rwall-item' + (a.l ? '' : ' rwall-item--text') + '" data-artist="' + esc(a.n) + '" href="https://music.apple.com/us/search?term=' + encodeURIComponent(a.n) + '" target="_blank" rel="noopener" aria-label="Listen to ' + esc(a.n) + '">' +
+    return '<a class="rwall-item' + (a.l ? '' : ' rwall-item--text') + '" data-artist="' + esc(a.n) + '" href="https://song.link/?q=' + encodeURIComponent(a.n) + '" target="_blank" rel="noopener" aria-label="Stream ' + esc(a.n) + ' on Spotify, Apple Music & more">' +
       inner +
       '<span class="rwall-tag"><span class="rwall-dot"></span>On air now</span>' +
       '</a>';
@@ -8533,6 +8534,15 @@
     syncListenUI();
     renderNow(lastNowData);
     onScroll();
+    initContactSent();
+  }
+
+  function initContactSent() {
+    if (!/[?&]sent=1/.test(location.search)) return;
+    var form = doc.querySelector(".contact-form");
+    if (!form) return;
+    form.innerHTML = '<div class="cf-sent"><svg viewBox="0 0 256 256" width="36" height="36" aria-hidden="true"><path d="M173.7 98.3a8 8 0 0 1 0 11.4l-56 56a8 8 0 0 1-11.4 0l-24-24a8 8 0 0 1 11.4-11.4L112 148.7l50.3-50.4a8 8 0 0 1 11.4 0zM232 128A104 104 0 1 1 128 24a104.1 104.1 0 0 1 104 104zm-16 0a88 88 0 1 0-88 88 88.1 88.1 0 0 0 88-88z"/></svg><p>Message sent — we\'ll be in touch soon.</p></div>';
+    history.replaceState(null, "", location.pathname);
   }
 
   /* =========================================================
