@@ -372,6 +372,7 @@
   var lastNowData = null;
   var onSongChange = null; // set by live-buffer rewind block
   var extraListeners = 0;
+  var live365Listeners = 0;
 
   function setAll(selector, text) { if (text == null) return; doc.querySelectorAll(selector).forEach(function (n) { n.textContent = text; }); }
   function setListeners(n) {
@@ -451,7 +452,8 @@
       });
     }
     var lc = data.listeners ? (data.listeners.current != null ? data.listeners.current : data.listeners.total) : null;
-    setListeners(lc != null ? lc + extraListeners : (extraListeners > 0 ? extraListeners : null));
+    var allExtra = extraListeners + live365Listeners;
+    setListeners(lc != null ? lc + allExtra : (allExtra > 0 ? allExtra : null));
     renderHistory(data.song_history);
   }
   function fetchNowPlaying() {
@@ -482,6 +484,20 @@
   }
   fetchOwncastListeners();
   setInterval(fetchOwncastListeners, 30000);
+  function fetchLive365Listeners() {
+    fetch("https://api.live365.com/station/a56104", { cache: "no-store" })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .catch(function() { return null; })
+      .then(function(d) {
+        var n = d && d.listeners != null ? +d.listeners : 0;
+        if (n !== live365Listeners) {
+          live365Listeners = n;
+          if (lastNowData) renderNow(lastNowData);
+        }
+      });
+  }
+  fetchLive365Listeners();
+  setInterval(fetchLive365Listeners, 30000);
 
   /* =========================================================
      HLS DVR REWIND: AzuraCast keeps 10 min of live audio as HLS
