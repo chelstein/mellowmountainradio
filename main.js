@@ -7802,6 +7802,7 @@
     var DAYS = 60, POOL = 8;
     function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]; }); }
     var dates = [], d0 = new Date();
+    d0.setUTCDate(d0.getUTCDate() - 1);
     for (var i = 0; i < DAYS; i++) {
       var dd = new Date(d0.getTime() - i * 86400000);
       dates.push(dd.getUTCFullYear() + "-" + String(dd.getUTCMonth() + 1).padStart(2, "0") + "-" + String(dd.getUTCDate()).padStart(2, "0"));
@@ -7892,8 +7893,10 @@
     }
     function renderStreaks(final) {
       var list = computeStreaks();
-      if (!list.length && !final) return;
-      if (!list.length) { el.innerHTML = "<p class='streak-loading'>Building the log…</p>"; return; }
+      if (!list.length) {
+        el.innerHTML = "<p class='streak-loading'>" + (final ? "Not enough consecutive data yet — check back soon." : "Scanning " + doneCount + "/" + total + " days…") + "</p>";
+        return;
+      }
       var html = "<ul class='streak-list'>";
       list.forEach(function(s) {
         var icon = s.streak >= 30 ? "🔥" : s.streak >= 14 ? "⚡️" : "📻";
