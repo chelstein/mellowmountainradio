@@ -8039,36 +8039,36 @@
       if (!srInputEl || !srResultsEl) return;
       var raw = srInputEl.value.trim();
       if (!raw) return;
-      if (!D.since || !D.today) { srResultsEl.innerHTML = '<p class=”tm-sr-meta”>Log is still loading — try again in a moment.</p>'; return; }
+      if (!D.since || !D.today) { srResultsEl.innerHTML = '<p class="tm-sr-meta">Log is still loading — try again in a moment.</p>'; return; }
       if (srAbort) { srAbort(); srAbort = null; }
       var aborted = false;
       srAbort = function () { aborted = true; };
       // normalize: strip apostrophes/hyphens, collapse to alpha+digits, split into tokens
-      function norm(s) { return (s || “”).toLowerCase().replace(/['’\-]/g, “”).replace(/[^a-z0-9]/g, “ “).replace(/\s+/g, “ “).trim(); }
-      var tokens = norm(raw).split(“ “).filter(Boolean);
+      function norm(s) { return (s || "").toLowerCase().replace(/[\u0027\u2018\u2019\u002d]/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim(); }
+      var tokens = norm(raw).split(" ").filter(Boolean);
       if (!tokens.length) return;
-      function hit(p) { var combined = norm(p.ti) + “ “ + norm(p.ar); return tokens.every(function (tok) { return combined.indexOf(tok) !== -1; }); }
+      function hit(p) { var combined = norm(p.ti) + " " + norm(p.ar); return tokens.every(function (tok) { return combined.indexOf(tok) !== -1; }); }
       // build all dates most-recent-first
-      var allDates = [], cur = new Date(D.today + “T00:00:00Z”), sinceD = new Date(D.since + “T00:00:00Z”);
+      var allDates = [], cur = new Date(D.today + "T00:00:00Z"), sinceD = new Date(D.since + "T00:00:00Z");
       while (cur >= sinceD) { allDates.push(cur.toISOString().slice(0, 10)); cur.setUTCDate(cur.getUTCDate() - 1); }
       var total = allDates.length, matches = [], daysSearched = 0, qIdx = 0, inFlight = 0;
       var POOL = 8;
       function renderSR(done) {
-        var label = matches.length + “ spin” + (matches.length !== 1 ? “s” : “”) + “ matching “” + tmEsc(raw) + “””;
-        var prog = done ? “ in the full log” : “ &mdash; searched “ + daysSearched + “ of “ + total + “ days&hellip;”;
-        var html = '<p class=”tm-sr-meta”>' + label + prog + “</p>”;
+        var label = matches.length + " spin" + (matches.length !== 1 ? "s" : "") + " matching “" + tmEsc(raw) + "”";
+        var prog = done ? " in the full log" : " &mdash; searched " + daysSearched + " of " + total + " days&hellip;";
+        var html = '<p class="tm-sr-meta">' + label + prog + "</p>";
         if (matches.length) {
-          html += '<ol class=”tm-sr-list”>' + matches.map(function (m) {
-            var url = “timemachine.html?d=” + m.date + “&t=” + encodeURIComponent(m.time);
-            return '<li class=”tm-sr-item”><span class=”tm-sr-song”>' + tmEsc(m.ti) + “</span>” +
-              '<span class=”tm-sr-ar”>by ' + tmEsc(m.ar) + “</span>” +
-              '<span class=”tm-sr-when”>' + fmtDate(m.date) + “ at “ + fmt12(m.time) + “</span>” +
-              '<a class=”tm-sr-jump” href=”' + url + '”>jump →</a></li>';
-          }).join(“”) + “</ol>”;
+          html += '<ol class="tm-sr-list">' + matches.map(function (m) {
+            var url = "timemachine.html?d=" + m.date + "&t=" + encodeURIComponent(m.time);
+            return '<li class="tm-sr-item"><span class="tm-sr-song">' + tmEsc(m.ti) + "</span>" +
+              '<span class="tm-sr-ar">by ' + tmEsc(m.ar) + "</span>" +
+              '<span class="tm-sr-when">' + fmtDate(m.date) + " at " + fmt12(m.time) + "</span>" +
+              '<a class="tm-sr-jump" href="' + url + '">jump →</a></li>';
+          }).join("") + "</ol>";
         }
         srResultsEl.innerHTML = html;
       }
-      srResultsEl.innerHTML = '<p class=”tm-sr-meta”>Searching the full log&hellip;</p>';
+      srResultsEl.innerHTML = '<p class="tm-sr-meta">Searching the full log&hellip;</p>';
       function oneDone(date, j) {
         inFlight--;
         daysSearched++;
@@ -8079,7 +8079,7 @@
         }
         var isDone = daysSearched >= total;
         if (isDone) {
-          if (!matches.length) srResultsEl.innerHTML = '<p class=”tm-sr-meta”>No results for “' + tmEsc(raw) + '” in the full log.</p>';
+          if (!matches.length) srResultsEl.innerHTML = '<p class="tm-sr-meta">No results for "' + tmEsc(raw) + '" in the full log.</p>';
           else renderSR(true);
         } else {
           renderSR(false);
@@ -8091,7 +8091,7 @@
           var date = allDates[qIdx++];
           inFlight++;
           (function (d) {
-            fetch(PLAYLOG + “?d=” + encodeURIComponent(d), { cache: “no-store” })
+            fetch(PLAYLOG + "?d=" + encodeURIComponent(d), { cache: "no-store" })
               .then(function (r) { return r.ok ? r.json() : null; })
               .catch(function () { return null; })
               .then(function (j) { if (!aborted) oneDone(d, j); });
