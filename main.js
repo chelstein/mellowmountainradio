@@ -371,6 +371,7 @@
   var artCache = {};
   var lastNowData = null;
   var onSongChange = null; // set by live-buffer rewind block
+  var extraListeners = 0;
 
   function setAll(selector, text) { if (text == null) return; doc.querySelectorAll(selector).forEach(function (n) { n.textContent = text; }); }
   function setListeners(n) {
@@ -450,7 +451,7 @@
       });
     }
     var lc = data.listeners ? (data.listeners.current != null ? data.listeners.current : data.listeners.total) : null;
-    setListeners(lc);
+    setListeners(lc != null ? lc + extraListeners : (extraListeners > 0 ? extraListeners : null));
     renderHistory(data.song_history);
   }
   function fetchNowPlaying() {
@@ -467,6 +468,20 @@
   }
   fetchNowPlaying();
   setInterval(fetchNowPlaying, 20000);
+  function fetchOwncastListeners() {
+    fetch("https://owncast.mellowmountainradio.com/api/status", { cache: "no-store" })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .catch(function() { return null; })
+      .then(function(d) {
+        var n = d && d.viewerCount != null ? d.viewerCount : 0;
+        if (n !== extraListeners) {
+          extraListeners = n;
+          if (lastNowData) renderNow(lastNowData);
+        }
+      });
+  }
+  fetchOwncastListeners();
+  setInterval(fetchOwncastListeners, 30000);
 
   /* =========================================================
      HLS DVR REWIND: AzuraCast keeps 10 min of live audio as HLS
