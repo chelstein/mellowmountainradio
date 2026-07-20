@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-20T03:39:28.612Z",
+ "updated": "2026-07-20T09:19:25.774Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -437,6 +437,28 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Olmo",
+   "date": "2026-08-14",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/olmo/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Olmo-poster.jpg",
+   "summary": "Fourteen-year-old Olmo and his family are struggling to make ends meet in 1979 New Mexico. Due to an illness that keeps his father Nestor confined to his bed, his mother Cecilia, his sister Ana, and even he himself…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Withdrawal",
+   "date": "2026-08-14",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/withdrawal/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Withdrawl-poster.jpg",
+   "summary": "Raw, unflinching, and surprisingly funny, “Withdrawal” is the winner of 12 awards on the festival circuit including Best Feature/Best Director at the Art of Brooklyn Film Festival and Best Actress at the Kanazawa…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Aida: Met Opera Encore",
    "date": "2026-08-15",
    "time": "13:00",
@@ -533,17 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/trailblazers/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Trailblazers-poster.jpg",
    "summary": "In 1982, brothers Troy and Gil Gillenwater decided to walk across the state of Arizona. Without GPS, mobile phones, or continuous trails, they cobbled together an 810-mile adventure that took over two months and two…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Psychic Standup Comedy Night with Karen Rontowski",
-   "date": "2027-01-23",
-   "time": "18:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
-   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
