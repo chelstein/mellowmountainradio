@@ -7863,6 +7863,75 @@
     pump();
   }
 
+  function initArtistStreaks() {
+    var el = doc.querySelector("[data-music-streaks]");
+    if (!el || el.getAttribute("data-streaks-init")) return;
+    el.setAttribute("data-streaks-init", "1");
+    var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
+    var DAYS = 90, POOL = 8;
+    function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function(m) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]; }); }
+    function normAr(s) { return (s || "").toLowerCase().replace(/^the\s+/, "").trim(); }
+    var dates = [], d0 = new Date();
+    for (var i = 0; i < DAYS; i++) {
+      var dd = new Date(d0.getTime() - i * 86400000);
+      dates.push(dd.getUTCFullYear() + "-" + String(dd.getUTCMonth() + 1).padStart(2, "0") + "-" + String(dd.getUTCDate()).padStart(2, "0"));
+    }
+    var total = dates.length, qIdx = 0, doneCount = 0, inFlight = 0;
+    var artistDays = {};
+    el.innerHTML = "<p class='streak-loading'>Tracking streaks…</p>";
+    function computeStreaks() {
+      var out = [];
+      Object.keys(artistDays).forEach(function(k) {
+        var info = artistDays[k], streak = 0;
+        for (var i = 0; i < dates.length; i++) {
+          if (info.days[dates[i]]) { streak++; } else { break; }
+        }
+        if (streak >= 7) out.push({ name: info.name, streak: streak });
+      });
+      return out.sort(function(a, b) { return b.streak - a.streak; }).slice(0, 15);
+    }
+    function renderStreaks(final) {
+      var list = computeStreaks();
+      if (!list.length && !final) return;
+      if (!list.length) { el.innerHTML = "<p class='streak-loading'>Building the log…</p>"; return; }
+      var html = "<ul class='streak-list'>";
+      list.forEach(function(s) {
+        var icon = s.streak >= 30 ? "🔥" : s.streak >= 14 ? "⚡️" : "📻";
+        html += "<li class='streak-item'><span class='streak-fire'>" + icon + "</span>" +
+          "<span class='streak-artist'>" + esc(s.name) + "</span>" +
+          "<span class='streak-n'>" + s.streak + " days straight</span></li>";
+      });
+      html += "</ul>";
+      if (final) html += "<p class='streak-meta'>Tracking " + DAYS + " days of real spins — consecutive days without a miss</p>";
+      el.innerHTML = html;
+    }
+    function oneDone(j, date) {
+      doneCount++; inFlight--;
+      if (j && j.ok) {
+        (j.plays || []).filter(isMusicPlay).forEach(function(p) {
+          var key = normAr(p.ar); if (!key) return;
+          if (!artistDays[key]) artistDays[key] = { name: p.ar, days: {} };
+          artistDays[key].days[date] = 1;
+        });
+      }
+      var isDone = doneCount >= total;
+      if (isDone || doneCount % 8 === 0) renderStreaks(isDone);
+      if (!isDone) pump();
+    }
+    function pump() {
+      while (qIdx < total && inFlight < POOL) {
+        var date = dates[qIdx++]; inFlight++;
+        (function(d) {
+          fetch(PLAYLOG + "?d=" + encodeURIComponent(d), { cache: "no-store" })
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .catch(function() { return null; })
+            .then(function(j) { oneDone(j, d); });
+        })(date);
+      }
+    }
+    pump();
+  }
+
   function initTimeMachine() {
     var root = doc.querySelector("[data-tm]"); if (!root || root.getAttribute("data-init")) return;
     root.setAttribute("data-init", "1");
@@ -8413,6 +8482,7 @@
     initTape();
     initWindow();
     initMusicDNA();
+    initArtistStreaks();
     initTimeMachine();
     initPlaybook();
     initHomePulse();
