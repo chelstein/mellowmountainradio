@@ -7902,7 +7902,7 @@
         var icon = s.streak >= 30 ? "🔥" : s.streak >= 14 ? "⚡️" : "📻";
         html += "<li class='streak-item'><span class='streak-fire'>" + icon + "</span>" +
           "<span class='streak-artist'>" + esc(s.name) + "</span>" +
-          "<span class='streak-n'>" + s.streak + " days straight</span></li>";
+          "<span class='streak-score'><span class='streak-days'>" + s.streak + "</span><span class='streak-unit'>days</span></span></li>";
       });
       html += "</ul>";
       if (final) html += "<p class='streak-meta'>Tracking " + DAYS + " days of real spins — consecutive days without a miss</p>";
