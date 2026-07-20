@@ -7743,6 +7743,15 @@
      began is on the band. Real plays only — never seeded.
      ========================================================= */
 
+  function isMusicPlay(p) {
+    var t = p.ti || "", a = p.ar || "";
+    if (!t || !a) return false;
+    if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update/i.test(t)) return false;
+    if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(t)) return false;
+    if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News/i.test(a)) return false;
+    return true;
+  }
+
   /* =========================================================
      STATION DNA — decade breakdown from play log
      ========================================================= */
@@ -7828,8 +7837,7 @@
     function oneDone(j) {
       doneCount++; inFlight--;
       if (j && j.ok) {
-        (j.plays || []).forEach(function (p) {
-          if (!p.ti || !p.ar) return;
+        (j.plays || []).filter(isMusicPlay).forEach(function (p) {
           var decade = dnaDecade(p.ar);
           var bucket = decade ? decade + "s" : "Other";
           spinsByDecade[bucket] = (spinsByDecade[bucket] || 0) + 1;
@@ -8089,14 +8097,7 @@
           }
         }).catch(function () {});
     }
-    function isMusicPlay(p) {
-      var t = p.ti || "", a = p.ar || "";
-      if (!t || !a) return false;
-      if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update/i.test(t)) return false;
-      if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(t)) return false;
-      if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News/i.test(a)) return false;
-      return true;
-    }
+
     function loadOnThisDay() {
       if (!otdEl || !D.today || !D.since) return;
       var todayParts = D.today.split("-");
