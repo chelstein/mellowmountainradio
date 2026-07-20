@@ -8037,63 +8037,68 @@
     var srAbort = null;
     function doSearch() {
       if (!srInputEl || !srResultsEl) return;
-      var q = srInputEl.value.trim().toLowerCase();
-      if (!q) return;
-      if (!D.since || !D.today) { srResultsEl.innerHTML = '<p class="tm-sr-meta">Log is still loading — try again in a moment.</p>'; return; }
+      var raw = srInputEl.value.trim();
+      if (!raw) return;
+      if (!D.since || !D.today) { srResultsEl.innerHTML = '<p class=”tm-sr-meta”>Log is still loading — try again in a moment.</p>'; return; }
       if (srAbort) { srAbort(); srAbort = null; }
       var aborted = false;
       srAbort = function () { aborted = true; };
+      // normalize: strip apostrophes/hyphens, collapse to alpha+digits, split into tokens
+      function norm(s) { return (s || “”).toLowerCase().replace(/['’\-]/g, “”).replace(/[^a-z0-9]/g, “ “).replace(/\s+/g, “ “).trim(); }
+      var tokens = norm(raw).split(“ “).filter(Boolean);
+      if (!tokens.length) return;
+      function hit(p) { var combined = norm(p.ti) + “ “ + norm(p.ar); return tokens.every(function (tok) { return combined.indexOf(tok) !== -1; }); }
       // build all dates most-recent-first
-      var allDates = [], cur = new Date(D.today + "T00:00:00Z"), sinceD = new Date(D.since + "T00:00:00Z");
+      var allDates = [], cur = new Date(D.today + “T00:00:00Z”), sinceD = new Date(D.since + “T00:00:00Z”);
       while (cur >= sinceD) { allDates.push(cur.toISOString().slice(0, 10)); cur.setUTCDate(cur.getUTCDate() - 1); }
-      var BATCH = 20, matches = [], daysSearched = 0;
-      var batches = [];
-      for (var i = 0; i < allDates.length; i += BATCH) batches.push(allDates.slice(i, i + BATCH));
+      var total = allDates.length, matches = [], daysSearched = 0, qIdx = 0, inFlight = 0;
+      var POOL = 8;
       function renderSR(done) {
-        var label = matches.length + " spin" + (matches.length !== 1 ? "s" : "") + " matching “" + q + "”";
-        var prog = done ? " in the full log" : " &mdash; searched " + daysSearched + " of " + allDates.length + " days&hellip;";
-        var html = '<p class="tm-sr-meta">' + label + prog + "</p>";
+        var label = matches.length + “ spin” + (matches.length !== 1 ? “s” : “”) + “ matching “” + tmEsc(raw) + “””;
+        var prog = done ? “ in the full log” : “ &mdash; searched “ + daysSearched + “ of “ + total + “ days&hellip;”;
+        var html = '<p class=”tm-sr-meta”>' + label + prog + “</p>”;
         if (matches.length) {
-          html += '<ol class="tm-sr-list">' + matches.map(function (m) {
-            var url = "timemachine.html?d=" + m.date + "&t=" + encodeURIComponent(m.time);
-            return '<li class="tm-sr-item"><span class="tm-sr-song">' + tmEsc(m.ti) + "</span>" +
-              '<span class="tm-sr-ar">by ' + tmEsc(m.ar) + "</span>" +
-              '<span class="tm-sr-when">' + fmtDate(m.date) + " at " + fmt12(m.time) + "</span>" +
-              '<a class="tm-sr-jump" href="' + url + '">jump →</a></li>';
-          }).join("") + "</ol>";
+          html += '<ol class=”tm-sr-list”>' + matches.map(function (m) {
+            var url = “timemachine.html?d=” + m.date + “&t=” + encodeURIComponent(m.time);
+            return '<li class=”tm-sr-item”><span class=”tm-sr-song”>' + tmEsc(m.ti) + “</span>” +
+              '<span class=”tm-sr-ar”>by ' + tmEsc(m.ar) + “</span>” +
+              '<span class=”tm-sr-when”>' + fmtDate(m.date) + “ at “ + fmt12(m.time) + “</span>” +
+              '<a class=”tm-sr-jump” href=”' + url + '”>jump →</a></li>';
+          }).join(“”) + “</ol>”;
         }
         srResultsEl.innerHTML = html;
       }
-      srResultsEl.innerHTML = '<p class="tm-sr-meta">Searching the full log&hellip;</p>';
-      function nextBatch(bi) {
-        if (aborted || bi >= batches.length) {
-          if (!aborted) {
-            if (!matches.length) srResultsEl.innerHTML = '<p class="tm-sr-meta">No results for “' + tmEsc(q) + '” in the full log.</p>';
-            else renderSR(true);
-          }
-          return;
-        }
-        var batch = batches[bi];
-        Promise.all(batch.map(function (date) {
-          return fetch(PLAYLOG + "?d=" + encodeURIComponent(date), { cache: "no-store" })
-            .then(function (r) { return r.ok ? r.json() : null; })
-            .catch(function () { return null; });
-        })).then(function (results) {
-          if (aborted) return;
-          batch.forEach(function (date, i) {
-            daysSearched++;
-            var j = results[i];
-            if (!j || !j.ok) return;
-            (j.plays || []).filter(isMusicPlay).forEach(function (p) {
-              var t = (p.ti || "").toLowerCase(), a = (p.ar || "").toLowerCase();
-              if (t.indexOf(q) !== -1 || a.indexOf(q) !== -1) matches.push({ date: date, time: p.t, ti: p.ti, ar: p.ar });
-            });
+      srResultsEl.innerHTML = '<p class=”tm-sr-meta”>Searching the full log&hellip;</p>';
+      function oneDone(date, j) {
+        inFlight--;
+        daysSearched++;
+        if (j && j.ok) {
+          (j.plays || []).filter(isMusicPlay).forEach(function (p) {
+            if (hit(p)) matches.push({ date: date, time: p.t, ti: p.ti, ar: p.ar });
           });
+        }
+        var isDone = daysSearched >= total;
+        if (isDone) {
+          if (!matches.length) srResultsEl.innerHTML = '<p class=”tm-sr-meta”>No results for “' + tmEsc(raw) + '” in the full log.</p>';
+          else renderSR(true);
+        } else {
           renderSR(false);
-          nextBatch(bi + 1);
-        });
+          pump();
+        }
       }
-      nextBatch(0);
+      function pump() {
+        while (!aborted && qIdx < total && inFlight < POOL) {
+          var date = allDates[qIdx++];
+          inFlight++;
+          (function (d) {
+            fetch(PLAYLOG + “?d=” + encodeURIComponent(d), { cache: “no-store” })
+              .then(function (r) { return r.ok ? r.json() : null; })
+              .catch(function () { return null; })
+              .then(function (j) { if (!aborted) oneDone(d, j); });
+          })(date);
+        }
+      }
+      pump();
     }
     /* ── CHARTS ───────────────────────────────────────────── */
     function renderCharts(c) {
@@ -8413,17 +8418,18 @@
      using played_at from AzuraCast as the clock anchor.
      ========================================================= */
   function initLyrics() {
-    var page = doc.querySelector("[data-lyrics-page]");
-    if (!page) return;
-
-    var titleEl = page.querySelector("[data-lyr-title]");
-    var artistEl = page.querySelector("[data-lyr-artist]");
-    var albumEl = page.querySelector("[data-lyr-album]");
-    var artEl = page.querySelector("[data-lyr-art]");
-    var bodyEl = page.querySelector("[data-lyr-body]");
-    var bioEl = page.querySelector("[data-lyr-bio]");
-    if (!bodyEl || bodyEl.getAttribute("data-lyr-init")) return;
+    // [data-lyrics-page] lives on <main> itself, which swapIn() does not replace —
+    // it only swaps main.innerHTML. Detect the lyrics page by an element INSIDE main.
+    var bodyEl = doc.querySelector("[data-lyr-body]");
+    if (!bodyEl) return;
+    if (bodyEl.getAttribute("data-lyr-init")) return;
     bodyEl.setAttribute("data-lyr-init", "1");
+
+    var titleEl = doc.querySelector("[data-lyr-title]");
+    var artistEl = doc.querySelector("[data-lyr-artist]");
+    var albumEl = doc.querySelector("[data-lyr-album]");
+    var artEl = doc.querySelector("[data-lyr-art]");
+    var bioEl = doc.querySelector("[data-lyr-bio]");
 
     var currentAt = null;
     var fetching = false;
@@ -8439,7 +8445,7 @@
     }, { passive: true });
     // HLS stream buffer adds ~20 s of latency; lyrics tick this many seconds behind
     // server clock so they match what the listener is actually hearing.
-    var STREAM_LAG = 13;
+    var STREAM_LAG = 12;
 
     bodyEl.classList.add("lyr-loading");
     bodyEl.innerHTML = "<p>Tuning in…</p>";
