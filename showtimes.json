@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-21T02:53:06.436Z",
+ "updated": "2026-07-21T08:33:17.597Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -437,6 +437,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "The Piano",
+   "date": "2026-08-14",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-piano/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/The-Piano-poster.jpg",
+   "summary": "Writer/director Jane Campion’s brilliant masterpiece “The Piano” has undergone a stunning 4K restoration and being re-released in theatres for a big screen theatrical encore. The film — starring Holly Hunter, Harvey…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Withdrawal",
    "date": "2026-08-14",
    "time": "19:00",
@@ -536,25 +547,14 @@
   },
   {
    "source": "Sedona Film Festival",
-   "title": "Trailblazers",
-   "date": "2026-10-14",
-   "time": "",
+   "title": "Feng E Concert",
+   "date": "2026-09-24",
+   "time": "19:00",
    "venue": "Mary D. Fisher Theatre",
    "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/trailblazers/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Trailblazers-poster.jpg",
-   "summary": "In 1982, brothers Troy and Gil Gillenwater decided to walk across the state of Arizona. Without GPS, mobile phones, or continuous trails, they cobbled together an 810-mile adventure that took over two months and two…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Psychic Standup Comedy Night with Karen Rontowski",
-   "date": "2027-01-23",
-   "time": "18:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
-   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
+   "url": "https://sedonafilmfestival.com/event/feng-e-concert/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Feng-E-poster.jpg",
+   "summary": "Prepare to be amazed by Feng E, the viral ukulele phenomenon whose explosive technique and soulful stage presence have wowed audiences worldwide. He is making a Sedona stop on his U.S. tour Thursday, Sept. 24 at 7…"
   }
  ]
 }
