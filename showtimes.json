@@ -1,22 +1,11 @@
 {
- "updated": "2026-07-20T19:46:16.390Z",
+ "updated": "2026-07-21T02:53:06.436Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: Rain Man",
-   "date": "2026-07-20",
-   "time": "19:30",
-   "venue": "Village of Oak Creek Association Park",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-rain-man/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Rainman-poster.jpg",
-   "summary": "“Rain Man” (1988) was the winner of four Academy Awards including Best Picture, Best Director (Barry Levinson), Best Actor (Dustin Hoffman) and Best Screenplay. It was nominated for four other Oscars as well."
-  },
   {
    "source": "Sedona Film Festival",
    "title": "The Story of the Baron of Arizona",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/trailblazers/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/Trailblazers-poster.jpg",
    "summary": "In 1982, brothers Troy and Gil Gillenwater decided to walk across the state of Arizona. Without GPS, mobile phones, or continuous trails, they cobbled together an 810-mile adventure that took over two months and two…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Psychic Standup Comedy Night with Karen Rontowski",
+   "date": "2027-01-23",
+   "time": "18:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
+   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
