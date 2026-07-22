@@ -7778,7 +7778,7 @@
   function isMusicPlay(p) {
     var t = p.ti || "", a = p.ar || "";
     if (!t || !a) return false;
-    if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update/i.test(t)) return false;
+    if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update|^AZ State News/i.test(t)) return false;
     if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(t)) return false;
     if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(a)) return false;
     return true;
