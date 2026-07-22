@@ -238,6 +238,170 @@ function buildServer() {
     }
   );
 
+  // 10. Show Schedule ────────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_show_schedule",
+    "Returns KAZM's weekly on-air program schedule. Optionally filter by day (weekday, saturday, sunday) or show name keyword.",
+    {
+      day:   z.enum(["weekday","saturday","sunday"]).optional().describe("Filter to a specific day group"),
+      query: z.string().optional().describe("Keyword to filter by show name or host"),
+    },
+    async ({ day, query }) => {
+      const data = await ghGet("schedule.json");
+      let result = {};
+      const days = day ? [day] : ["weekday", "saturday", "sunday"];
+      for (const d of days) {
+        let shows = data[d] || [];
+        if (query) {
+          const q = query.toLowerCase();
+          shows = shows.filter(s =>
+            (s.name || "").toLowerCase().includes(q) ||
+            (s.host || "").toLowerCase().includes(q) ||
+            (s.description || "").toLowerCase().includes(q)
+          );
+        }
+        if (shows.length) result[d] = shows;
+      }
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            station:  data.station  || "KAZM 106.5 FM & 780 AM",
+            timezone: data.timezone || "America/Phoenix",
+            schedule: result,
+          }),
+        }],
+      };
+    }
+  );
+
+  // 11. Horoscope ───────────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_horoscope",
+    "Returns daily, weekly, and monthly horoscopes for all signs or a specific sign.",
+    {
+      sign:   z.enum(["aries","taurus","gemini","cancer","leo","virgo","libra","scorpio","sagittarius","capricorn","aquarius","pisces"]).optional().describe("Zodiac sign (omit for all)"),
+      period: z.enum(["daily","weekly","monthly"]).optional().describe("Which forecast period (default: daily)"),
+    },
+    async ({ sign, period = "daily" }) => {
+      const data  = await ghGet("horoscopes.json");
+      const signs = data.signs || {};
+      const out   = {};
+      const keys  = sign ? [sign] : Object.keys(signs);
+      for (const k of keys) {
+        if (signs[k]) out[k] = { [period]: signs[k][period] || null, date: signs[k].daily_date || null };
+      }
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({ updated: data.updated || null, period, horoscopes: out }),
+        }],
+      };
+    }
+  );
+
+  // 12. Schumann Resonance ───────────────────────────────────────────────────────
+  mcp.tool(
+    "get_schumann_resonance",
+    "Returns the current Schumann resonance reading — Earth's electromagnetic pulse measured at the Tomsk observatory. Includes frequency, energy score, activity level, and spectrogram URL.",
+    {},
+    async () => {
+      const data = await ghGet("schumann.json");
+      return { content: [{ type: "text", text: JSON.stringify(data) }] };
+    }
+  );
+
+  // 13. Song Request Library ─────────────────────────────────────────────────────
+  mcp.tool(
+    "search_song_request_library",
+    "Search KAZM's requestable song library by artist or title keyword. Returns matching tracks the DJ can play on request.",
+    { query: z.string().describe("Artist name or song title to search for") },
+    async ({ query }) => {
+      const data = await ghGet("request-library.json");
+      const list = Array.isArray(data) ? data : [];
+      const q    = query.toLowerCase();
+      const hits = list.filter(s =>
+        (s.t || "").toLowerCase().includes(q) ||
+        (s.a || "").toLowerCase().includes(q)
+      ).map(s => ({ title: s.t, artist: s.a }));
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({ query, count: hits.length, results: hits.slice(0, 50) }),
+        }],
+      };
+    }
+  );
+
+  // 14. Rewind / Archive ─────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_rewind",
+    "Returns available on-demand rewind blocks — past KAZM broadcasts you can listen to, with dates and stream URLs.",
+    {},
+    async () => {
+      const data   = await ghGet("rewind-manifest.json");
+      const blocks = (data.blocks || []).map(b => ({
+        date:      b.date  || null,
+        start_hour: b.start ?? null,
+        url:       b.url   || null,
+      }));
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({ count: blocks.length, blocks }),
+        }],
+      };
+    }
+  );
+
+  // 15. Jeep Trails ──────────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_jeep_trails",
+    "Returns Sedona jeep trail names available on the KAZM trail map. Pass a trail name to get its GPS coordinate path.",
+    { trail: z.string().optional().describe("Trail slug, e.g. 'broken-arrow', 'schnebly'. Omit for the full list.") },
+    async ({ trail }) => {
+      const data   = await ghGet("jeeptrails-geo.json");
+      const names  = Object.keys(data);
+      if (!trail) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({ trails: names, map_url: "https://mellowmountainradio.com/jeeptrails.html" }),
+          }],
+        };
+      }
+      const key  = trail.toLowerCase().replace(/\s+/g, "-");
+      const geo  = data[key] || data[Object.keys(data).find(k => k.includes(key))] || null;
+      if (!geo) throw new Error(`Trail not found: ${trail}. Available: ${names.join(", ")}`);
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({ trail: key, coordinates: geo }),
+        }],
+      };
+    }
+  );
+
+  // 16. Movies ──────────────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_movies",
+    "Returns current movie showings at Sedona-area theaters (Mary D. Fisher Theatre, Harkins Sedona 6, and others).",
+    {},
+    async () => {
+      const data = await ghGet("showtimes.json");
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            updated:  data.updated  || null,
+            venues:   data.venues   || [],
+            showings: data.showings || [],
+          }),
+        }],
+      };
+    }
+  );
+
   return mcp;
 }
 
@@ -253,7 +417,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   9,
+    tools:   16,
   });
 });
 
@@ -288,7 +452,7 @@ app.get("/docs", (_req, res) => {
 <p>Live data from Sedona's Mellow Mountain Radio — available to any MCP-compatible AI assistant.</p>
 <h2>Connect</h2>
 <pre>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</pre>
-<h2>Tools (9)</h2>
+<h2>Tools (16)</h2>
 <div class="tool"><h3>get_now_playing</h3><p>Currently on-air song with artist, album, artwork, and stream URL.</p></div>
 <div class="tool"><h3>get_listener_count</h3><p>Live listener count across all mounts.</p></div>
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
@@ -298,6 +462,13 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>get_concerts</h3><p>Upcoming concerts. <code>state</code>: string (optional, e.g. "AZ")</p></div>
 <div class="tool"><h3>get_events</h3><p>Library events and local festivals.</p></div>
 <div class="tool"><h3>get_stream_url</h3><p>Live audio stream URLs (MP3 and AAC).</p></div>
+<div class="tool"><h3>get_show_schedule</h3><p>KAZM weekly on-air program schedule. <code>day</code>: weekday/saturday/sunday (optional). <code>query</code>: keyword (optional).</p></div>
+<div class="tool"><h3>get_horoscope</h3><p>Daily, weekly, or monthly horoscope for any sign. <code>sign</code>: zodiac sign (optional). <code>period</code>: daily/weekly/monthly (optional).</p></div>
+<div class="tool"><h3>get_schumann_resonance</h3><p>Earth's electromagnetic pulse from the Tomsk observatory — frequency, energy score, activity level.</p></div>
+<div class="tool"><h3>search_song_request_library</h3><p>Search KAZM's requestable song catalog. <code>query</code>: artist or title keyword (required).</p></div>
+<div class="tool"><h3>get_rewind</h3><p>Available on-demand past broadcasts with dates and stream URLs.</p></div>
+<div class="tool"><h3>get_jeep_trails</h3><p>Sedona jeep trail list and GPS paths. <code>trail</code>: trail slug, e.g. "broken-arrow" (optional).</p></div>
+<div class="tool"><h3>get_movies</h3><p>Current movie showings at Sedona-area theaters.</p></div>
 <p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
