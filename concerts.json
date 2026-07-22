@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-22T14:02:07.975Z",
+ "updated": "2026-07-22T16:34:33.379Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -211,21 +211,6 @@
    "lineup": []
   },
   {
-   "id": "rZ7HnEZ1Afa4GV",
-   "artist": "Linda Ronstadt",
-   "date": "2026-07-24",
-   "time": "17:00:00",
-   "venue": "Garden Amphitheatre",
-   "city": "Garden Grove",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/journey-linda-ronstadt-pat-benatar-garden-amphitheatre-tickets/14255334",
-   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
-   "price": 17,
-   "status": "onsale",
-   "saleStart": "2026-07-11T21:50:00Z",
-   "lineup": []
-  },
-  {
    "id": "vvG1IZ_aoni3o7",
    "artist": "Little River Band",
    "date": "2026-07-24",
@@ -255,23 +240,6 @@
    "saleStart": "2026-01-30T17:00:00Z",
    "lineup": [
     "Lionel Richie"
-   ]
-  },
-  {
-   "id": "G5vzZ_d-gMKAT",
-   "artist": "Lionel Richie",
-   "date": "2026-07-31",
-   "time": "19:30:00",
-   "venue": "Ball Arena",
-   "city": "Denver",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/club-level-seating-lionel-richie-and-denver-colorado-07-31-2026/event/1E00643875DD317F",
-   "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-02-06T17:00:00Z",
-   "lineup": [
-    "Club Level Seating: Ball Arena"
    ]
   },
   {
@@ -480,38 +448,6 @@
    ]
   },
   {
-   "id": "1AvjZ_6GkWHcz9k",
-   "artist": "The Guess Who",
-   "date": "2026-08-15",
-   "time": "19:30:00",
-   "venue": "Fontainebleau Las Vegas",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://ad.doubleclick.net/ddm/clk/636299075;442758508;z;dc_transparent=1;?https://travel.ticketmaster.com/en-US/package-forward/74040865?_uid=f63bc4f9-f806-4db3-9619-dad39d8eb19a&utm_source=FB_ArtistPage&utm_medium=TheGuessWho",
-   "img": "https://s1.ticketm.net/dam/a/cd1/786a8e7f-5b99-4fc6-b756-d6d9297d3cd1_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-03-06T18:00:00Z",
-   "lineup": [
-    "Don Felder"
-   ]
-  },
-  {
-   "id": "rZ7HnEZ1AfPa-d",
-   "artist": "Eagles",
-   "date": "2026-08-15",
-   "time": "21:00:00",
-   "venue": "Ivan'z House at Mozambique",
-   "city": "Laguna Beach",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/desperado-the-nations-ivanz-house-at-mozambique-tickets/14949843",
-   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
-   "price": 31,
-   "status": "onsale",
-   "saleStart": "2026-05-27T19:00:00Z",
-   "lineup": []
-  },
-  {
    "id": "vv1AaZkobGkdVLq1C",
    "artist": "The Guess Who",
    "date": "2026-08-19",
@@ -547,21 +483,6 @@
    ]
   },
   {
-   "id": "rZ7HnEZ1Afjyod",
-   "artist": "James Taylor",
-   "date": "2026-08-21",
-   "time": "21:00:00",
-   "venue": "Belly Up",
-   "city": "Solana Beach",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/billy-nation-never-die-young-belly-up-tickets/14739443",
-   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
-   "price": 30,
-   "status": "onsale",
-   "saleStart": "2026-04-03T17:00:00Z",
-   "lineup": []
-  },
-  {
    "id": "G5vzZbz2N2rVc",
    "artist": "Toto",
    "date": "2026-08-22",
@@ -580,23 +501,6 @@
    ]
   },
   {
-   "id": "G5vzZbznggb8x",
-   "artist": "Toto",
-   "date": "2026-08-22",
-   "time": "18:45:00",
-   "venue": "Ball Arena",
-   "city": "Denver",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/club-level-seating-toto-christopher-cross-denver-colorado-08-22-2026/event/1E00638AB5D58422",
-   "img": "https://s1.ticketm.net/dam/a/794/fe04dc13-2cbf-463b-93eb-b93e370e9794_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2025-12-19T17:00:00Z",
-   "lineup": [
-    "Club Level Seating: Ball Arena"
-   ]
-  },
-  {
    "id": "G5vzZbMxgtMAF",
    "artist": "Chicago",
    "date": "2026-08-28",
@@ -611,23 +515,6 @@
    "saleStart": "2025-12-05T17:00:00Z",
    "lineup": [
     "Styx"
-   ]
-  },
-  {
-   "id": "G5vzZbzniLMMU",
-   "artist": "Chicago",
-   "date": "2026-08-28",
-   "time": "19:00:00",
-   "venue": "Ball Arena",
-   "city": "Denver",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/club-level-seating-chicago-styx-denver-colorado-08-28-2026/event/1E00638AAC7F7DF6",
-   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2025-12-12T17:00:00Z",
-   "lineup": [
-    "Club Level Seating: Ball Arena"
    ]
   },
   {
@@ -899,21 +786,6 @@
    "lineup": []
   },
   {
-   "id": "1AvjZ_aGkU6vXnK",
-   "artist": "Eagles",
-   "date": "2026-09-18",
-   "time": "20:30:00",
-   "venue": "Sphere",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/eagles-live-at-sphere-las-vegas-nevada-09-18-2026/event/1700649D8707EA93",
-   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-05-15T17:00:00Z",
-   "lineup": []
-  },
-  {
    "id": "Z7r9jZ1A709uE",
    "artist": "Lynyrd Skynyrd",
    "date": "2026-09-19",
@@ -961,21 +833,6 @@
    "lineup": []
   },
   {
-   "id": "1AvjZ_aGkU6FCl6",
-   "artist": "Eagles",
-   "date": "2026-09-19",
-   "time": "20:30:00",
-   "venue": "Sphere",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/eagles-live-at-sphere-las-vegas-nevada-09-19-2026/event/1700649D8720EAC7",
-   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-05-15T17:00:00Z",
-   "lineup": []
-  },
-  {
    "id": "rZ7HnEZ1Afa74f",
    "artist": "Fleetwood Mac",
    "date": "2026-09-26",
@@ -988,21 +845,6 @@
    "price": 34,
    "status": "onsale",
    "saleStart": "2026-07-16T17:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "1AvjZ_6GklZwUW7",
-   "artist": "The Doobie Brothers",
-   "date": "2026-09-26",
-   "time": "20:00:00",
-   "venue": "Chrome Showroom at Santa Fe Station Hotel & Casino",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/albumpalooza-steve-miller-band-the-doobie-las-vegas-nevada-09-26-2026/event/1700647AC0CB6F44",
-   "img": "https://s1.ticketm.net/dam/e/07a/fd95bcca-d5ea-461c-8d07-297728a2a07a_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-06-08T19:00:00Z",
    "lineup": []
   },
   {
@@ -1059,21 +901,6 @@
    "city": "Las Vegas",
    "state": "NV",
    "url": "https://www.axs.com/events/1396982/lynyrd-skynyrd-tickets?skin=palmscasinoresort",
-   "img": "https://s1.ticketm.net/dam/a/df6/c98af635-cf92-4bf8-a46f-ee30555addf6_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-04-17T17:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "Z7r9jZ1A7x71o",
-   "artist": "Lynyrd Skynyrd",
-   "date": "2026-10-03",
-   "time": "20:00:00",
-   "venue": "Pearl Concert Theater at Palms Casino Resort",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7x71o",
    "img": "https://s1.ticketm.net/dam/a/df6/c98af635-cf92-4bf8-a46f-ee30555addf6_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
@@ -1138,21 +965,6 @@
    "price": null,
    "status": "onsale",
    "saleStart": "1900-01-01T06:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "17AYv0G65KozRL-",
-   "artist": "Chicago",
-   "date": "2026-10-17",
-   "time": "20:00:00",
-   "venue": "Chrome Showroom at Santa Fe Station Hotel & Casino",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/25-or-6-to-faux-chicago-las-vegas-nevada-10-17-2026/event/170064B4D1E2F7E1",
-   "img": "https://s1.ticketm.net/dam/e/74d/0b7bc574-6ec7-4a63-9bf5-b8ce1493474d_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-06-08T19:00:00Z",
    "lineup": []
   },
   {
@@ -1340,21 +1152,6 @@
    "lineup": []
   },
   {
-   "id": "1A9Zk37GkdXVozi",
-   "artist": "Eagles",
-   "date": "2026-11-13",
-   "time": "20:30:00",
-   "venue": "Sphere",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/eagles-live-at-sphere-las-vegas-nevada-11-13-2026/event/17006484FED11E2C",
-   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-05-15T17:00:00Z",
-   "lineup": []
-  },
-  {
    "id": "17AYv0G65p_1Ps9",
    "artist": "Eagles",
    "date": "2026-11-14",
@@ -1412,21 +1209,6 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-07-14T17:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "rZ7HnEZ1Af-ZPN",
-   "artist": "Fleetwood Mac",
-   "date": "2026-11-28",
-   "time": "20:00:00",
-   "venue": "Gaslamp Long Beach",
-   "city": "Long Beach",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/twisted-gypsy-tribute-gaslamp-long-beach-tickets/14840963",
-   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
-   "price": 29,
-   "status": "onsale",
-   "saleStart": "2026-04-11T22:00:00Z",
    "lineup": []
   },
   {
