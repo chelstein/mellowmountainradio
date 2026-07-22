@@ -7,6 +7,21 @@ import fs from "fs";
 const KEY = process.env.TM_KEY || "H39V0X17gyaXgi9T85ChGhGWsk3gTPdr"; // public consumer key
 const SW = { AZ: 1, NM: 1, NV: 1, CA: 1, UT: 1, CO: 1 };
 
+// Event-name fragments that signal tribute acts or premium-package duplicates.
+// Checked case-insensitively against the raw Ticketmaster event name.
+const SKIP_SIGNALS = [
+  "tribute", "experience", "the music of", "salute to", "a night of",
+  "desperado",      // Eagles tribute band
+  "billy nation",   // James Taylor tribute
+  "never die young",
+  "club level",     // Ticketmaster premium-package duplicate events
+  "travel package"
+];
+function isBadEvent(name) {
+  const n = (name || "").toLowerCase();
+  return SKIP_SIGNALS.some(function (s) { return n.indexOf(s) >= 0; });
+}
+
 const ARTISTS = [
   "Eagles", "Don Henley", "Joe Walsh", "Fleetwood Mac", "Stevie Nicks", "Lindsey Buckingham",
   "Steely Dan", "The Doobie Brothers", "Michael McDonald", "Chicago", "Toto", "Boz Scaggs",
@@ -43,7 +58,7 @@ async function fetchArtist(artist) {
     if (!r.ok) return [];
     const d = await r.json();
     const evs = (d && d._embedded && d._embedded.events) || [];
-    return evs.filter(function (e) { return tmMatch(e, artist); }).map(function (e) {
+    return evs.filter(function (e) { return tmMatch(e, artist) && !isBadEvent(e.name); }).map(function (e) {
       const v = (e._embedded && e._embedded.venues && e._embedded.venues[0]) || {};
       const st = (e.dates && e.dates.start) || {};
       const pr = (e.priceRanges && e.priceRanges[0]) || null;
@@ -69,9 +84,20 @@ async function fetchArtist(artist) {
     shows.forEach(function (e) { if (!seen[e.id]) { seen[e.id] = 1; all.push(e); } });
     await sleep(120); // gentle on the shared quota
   }
-  all.sort(function (a, b) {
+  // Secondary dedup: same artist + date + city keeps only the first entry seen.
+  // Catches cases where Ticketmaster lists the same show under multiple event IDs
+  // (e.g. the same tour stop appears once for the general public and once as a
+  // travel/VIP package with a different ID but identical artist/date/city).
+  const seenShow = {};
+  const deduped = all.filter(function (e) {
+    const key = e.artist + "|" + e.date + "|" + e.city;
+    if (seenShow[key]) return false;
+    seenShow[key] = 1;
+    return true;
+  });
+  deduped.sort(function (a, b) {
     return (a.state === "AZ" ? 0 : 1) - (b.state === "AZ" ? 0 : 1) || (a.date + a.time).localeCompare(b.date + b.time);
   });
-  fs.writeFileSync("concerts.json", JSON.stringify({ updated: new Date().toISOString(), concerts: all }, null, 1));
-  console.log("concerts:", all.length);
+  fs.writeFileSync("concerts.json", JSON.stringify({ updated: new Date().toISOString(), concerts: deduped }, null, 1));
+  console.log("concerts:", deduped.length);
 })();
