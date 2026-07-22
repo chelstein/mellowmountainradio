@@ -155,6 +155,7 @@ function buildServer() {
       );
       if (!res.ok) throw new Error(`AZ511 ${res.status}`);
       const data = await res.json();
+      // Trim to essential fields to keep response compact
       const events = (data.events || data || []).map(e => ({
         id:          e.id         || null,
         type:        e.event_type || null,
