@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>if(location.hostname==="www.mellowmountainradio.com")location.replace(location.href.replace("www.mellowmountainradio.com","mellowmountainradio.com"));</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAZM Goes AI-Native | Mellow Mountain Radio MCP Server</title>
+  <meta name="description" content="KAZM is the first radio station with an MCP server — live data for AI assistants. Now playing, fire restrictions, road conditions, concerts, and more, queryable by any AI." />
+  <link rel="canonical" href="https://mellowmountainradio.com/mcp.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="KAZM Mellow Mountain Radio" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://mellowmountainradio.com/mcp.html" />
+  <meta property="og:title" content="KAZM Goes AI-Native | The First Radio Station with an MCP Server" />
+  <meta property="og:description" content="KAZM is opening its live data to every AI assistant on earth — the first radio station to do it." />
+  <meta property="og:image" content="https://mellowmountainradio.com/Color%20logo%20with%20background.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="KAZM Goes AI-Native | The First Radio Station with an MCP Server" />
+  <meta name="twitter:description" content="KAZM is opening its live data to every AI assistant on earth — the first radio station to do it." />
+  <meta name="twitter:image" content="https://mellowmountainradio.com/Color%20logo%20with%20background.png" />
+  <meta name="theme-color" content="#223d6e" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="Color%20logo%20-%20no%20background.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=164" />
+  <style>
+    /* Page-specific styles for mcp.html */
+    .mcp-freq {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      background: #0d1f3e;
+      border-radius: 5px;
+      padding: .4rem .9rem .4rem .75rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: .8rem;
+      letter-spacing: .14em;
+      color: #6ab0f0;
+      text-shadow: 0 0 12px rgba(100,170,240,.5);
+      margin-bottom: 1.4rem;
+    }
+    .mcp-freq-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #6ab0f0;
+      box-shadow: 0 0 8px #6ab0f0;
+      flex-shrink: 0;
+      animation: mcp-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes mcp-pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .3; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mcp-freq-dot { animation: none; }
+    }
+
+    .mcp-wave {
+      display: block;
+      width: 100%;
+      height: 20px;
+      margin: 2.75rem 0;
+      overflow: visible;
+    }
+    .mcp-wave-path {
+      fill: none;
+      stroke: #c85820;
+      stroke-width: 1.5;
+      opacity: .45;
+      stroke-dasharray: 1200;
+      animation: mcp-signal 9s linear infinite;
+    }
+    @keyframes mcp-signal {
+      from { stroke-dashoffset: 1200; }
+      to   { stroke-dashoffset: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mcp-wave-path { animation: none; opacity: .3; }
+    }
+
+    .mcp-pull {
+      border-left: 3px solid #c85820;
+      padding: .8rem 0 .8rem 1.5rem;
+      margin: 2.25rem 0;
+      font-family: 'Alice', Georgia, serif;
+      font-size: 1.15rem;
+      line-height: 1.55;
+      font-style: italic;
+      text-wrap: balance;
+    }
+
+    .mcp-tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(34,61,110,.14);
+      border: 1px solid rgba(34,61,110,.14);
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 1.5rem 0 1rem;
+    }
+    @media (max-width: 560px) {
+      .mcp-tool-grid { grid-template-columns: 1fr; }
+    }
+    .mcp-tool-cell {
+      background: var(--card-bg, #fff);
+      padding: .9rem 1.1rem;
+    }
+    .mcp-tool-name {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: .76rem;
+      color: #223d6e;
+      display: block;
+      margin-bottom: .3rem;
+      letter-spacing: .02em;
+    }
+    .mcp-tool-desc {
+      font-size: .82rem;
+      line-height: 1.5;
+      opacity: .72;
+    }
+
+    .mcp-stat-row {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      padding: 1.75rem 1.5rem;
+      background: rgba(34,61,110,.06);
+      border-radius: 6px;
+      margin: 2rem 0;
+    }
+    .mcp-stat-num {
+      font-family: 'Alice', Georgia, serif;
+      font-size: 2.4rem;
+      line-height: 1;
+      color: #223d6e;
+      font-variant-numeric: tabular-nums;
+    }
+    .mcp-stat-label {
+      font-size: .72rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      opacity: .6;
+      margin-top: .25rem;
+      line-height: 1.45;
+    }
+
+    .mcp-callout {
+      background: rgba(34,61,110,.07);
+      border: 1px solid rgba(34,61,110,.18);
+      border-radius: 6px;
+      padding: 1.25rem 1.4rem;
+      margin: 2rem 0;
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+    .mcp-callout code {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: .82em;
+      background: rgba(34,61,110,.1);
+      padding: .1em .4em;
+      border-radius: 3px;
+      color: #223d6e;
+      word-break: break-all;
+    }
+
+    .mcp-label {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      opacity: .55;
+      display: block;
+      margin-bottom: .6rem;
+    }
+
+    /* Dark mode overrides */
+    @media (prefers-color-scheme: dark) {
+      .mcp-tool-cell { background: rgba(255,255,255,.04); }
+      .mcp-tool-name { color: #7ab4f0; }
+      .mcp-stat-num  { color: #7ab4f0; }
+      .mcp-stat-row  { background: rgba(255,255,255,.04); }
+      .mcp-callout   { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.1); }
+      .mcp-callout code { background: rgba(100,160,240,.12); color: #9ac8ff; }
+      .mcp-tool-grid { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.06); }
+    }
+  </style>
+</head>
+<body data-page="about">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div data-site-header></div>
+  <main id="main">
+
+<section class="page-hero page-hero--studio"><div class="wrap">
+  <div class="mcp-freq" aria-label="On air: 106.5 FM and 780 AM">
+    <span class="mcp-freq-dot" aria-hidden="true"></span>
+    106.5 FM &nbsp;·&nbsp; 780 AM
+  </div>
+  <p class="eyebrow">Announcement &middot; July 2026</p>
+  <h1>The first radio station with an MCP server.</h1>
+  <p class="lead">KAZM is opening its live data to every AI assistant on earth &mdash; now playing, fire restrictions, road conditions, upcoming concerts, and more, queryable in real time. No other station has done this.</p>
+  <div class="page-hero-cta">
+    <a class="btn btn-primary" href="https://mcp.mellowmountainradio.com" target="_blank" rel="noopener">Connect to the server</a>
+    <button class="btn btn-ghost btn-ghost--light" data-listen aria-pressed="false"><svg viewBox="0 0 256 256" width="18" height="18" aria-hidden="true"><path d="M232.4 114.5 88.3 26.6a16 16 0 0 0-24.3 13.5v175.8a16 16 0 0 0 24.3 13.5l144.1-87.9a15.9 15.9 0 0 0 0-27z"/></svg><span data-listen-label>Listen Live</span></button>
+  </div>
+</div></section>
+
+<section class="page-section"><div class="wrap">
+
+  <svg class="mcp-wave" viewBox="0 0 800 20" preserveAspectRatio="none" aria-hidden="true">
+    <path class="mcp-wave-path" d="M0,10 C33,1 67,19 100,10 C133,1 167,19 200,10 C233,1 267,19 300,10 C333,1 367,19 400,10 C433,1 467,19 500,10 C533,1 567,19 600,10 C633,1 667,19 700,10 C733,1 767,19 800,10"/>
+  </svg>
+
+  <div class="prose" style="max-width:72ch;">
+    <span class="mcp-label">Background</span>
+    <h2>How a mountain radio station got ahead of the networks</h2>
+    <p>When most people think about a radio station&rsquo;s technology, they picture a mixing board, a transmitter tower, maybe a streaming player on the website. KAZM has all of that. But it also runs something unusual for a small-market station: a live data infrastructure that&rsquo;s been quietly powering one of the most feature-rich independent radio websites in the country.</p>
+    <p>Fire restriction levels from the Coconino National Forest, refreshed every six hours. Road conditions pulled from ADOT&rsquo;s live feeds. Sedona weather straight from National Weather Service coordinates at the transmitter site. Concert tour dates for every artist in rotation, deduplicated and verified. A 14-day rewind archive, block by block. A song history going back to October 2023 that can answer what was playing at any minute since then.</p>
+    <p>All of that already exists. The MCP server simply opens a door into it.</p>
+  </div>
+
+  <svg class="mcp-wave" viewBox="0 0 800 20" preserveAspectRatio="none" aria-hidden="true">
+    <path class="mcp-wave-path" d="M0,10 C33,1 67,19 100,10 C133,1 167,19 200,10 C233,1 267,19 300,10 C333,1 367,19 400,10 C433,1 467,19 500,10 C533,1 567,19 600,10 C633,1 667,19 700,10 C733,1 767,19 800,10" style="animation-delay:-4.5s"/>
+  </svg>
+
+  <div class="prose" style="max-width:72ch;">
+    <span class="mcp-label">The Technology</span>
+    <h2>What MCP is, in plain terms</h2>
+    <p>Model Context Protocol is Anthropic&rsquo;s open standard for connecting AI assistants to live data and tools. Think of it as a USB port &mdash; but for knowledge. When an AI assistant needs real-world information to answer a question, it queries an MCP server. The server responds. The AI tells you, with the source intact.</p>
+
+    <blockquote class="mcp-pull">
+      &ldquo;Right now, if you ask an AI &lsquo;what are the fire restrictions in Sedona today?&rsquo; it either guesses, searches, or admits it doesn&rsquo;t know. With KAZM&rsquo;s MCP server, it knows.&rdquo;
+    </blockquote>
+
+    <p>The protocol is model-agnostic and already supported by Claude, with integrations moving fast across the AI ecosystem. A station that has an MCP server today is positioned the way a station with a strong website was positioned in 2002 &mdash; early enough that being there matters.</p>
+  </div>
+
+  <svg class="mcp-wave" viewBox="0 0 800 20" preserveAspectRatio="none" aria-hidden="true">
+    <path class="mcp-wave-path" d="M0,10 C33,1 67,19 100,10 C133,1 167,19 200,10 C233,1 267,19 300,10 C333,1 367,19 400,10 C433,1 467,19 500,10 C533,1 567,19 600,10 C633,1 667,19 700,10 C733,1 767,19 800,10" style="animation-delay:-2s"/>
+  </svg>
+
+  <div style="max-width:72ch;">
+    <span class="mcp-label">What&rsquo;s Exposed</span>
+    <h2 style="font-family:'Alice',Georgia,serif;font-size:1.45rem;font-weight:normal;margin-bottom:1rem;line-height:1.3;">Nine live tools, all real data</h2>
+    <p style="margin-bottom:1.25rem;">Every tool below reads from a live source. Nothing is cached longer than the underlying data warrants. Nothing is fabricated.</p>
+
+    <div class="mcp-tool-grid" role="list">
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">get_now_playing()</span>
+        <span class="mcp-tool-desc">Current song, artist, and album from broadcast automation &mdash; the actual air signal, not a guess.</span>
+      </div>
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">get_listener_count()</span>
+        <span class="mcp-tool-desc">How many people are tuned in right now, across all three streams.</span>
+      </div>
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">search_song_history(date, time)</span>
+        <span class="mcp-tool-desc">What was playing at any hour since October 2023, from the station&rsquo;s own broadcast logs.</span>
+      </div>
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">get_fire_restrictions()</span>
+        <span class="mcp-tool-desc">Current Coconino National Forest fire level, refreshed every six hours from the Forest Service.</span>
+      </div>
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">get_weather()</span>
+        <span class="mcp-tool-desc">Conditions at the Sedona transmitter site from the National Weather Service &mdash; not a stock forecast.</span>
+      </div>
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">get_road_conditions()</span>
+        <span class="mcp-tool-desc">89A, Oak Creek Canyon, and I-17 from ADOT live camera and incident feeds via AZ511.</span>
+      </div>
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">get_concerts(artist?, location?)</span>
+        <span class="mcp-tool-desc">Verified, deduplicated tour dates for every artist in KAZM&rsquo;s rotation &mdash; Southwest-first.</span>
+      </div>
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">get_events()</span>
+        <span class="mcp-tool-desc">Sedona community and library events, fetched from local sources and updated daily.</span>
+      </div>
+      <div class="mcp-tool-cell" role="listitem">
+        <span class="mcp-tool-name">get_stream_url()</span>
+        <span class="mcp-tool-desc">The direct listen-live URL &mdash; so an AI can hand someone a working link, not a homepage.</span>
+      </div>
+    </div>
+  </div>
+
+  <svg class="mcp-wave" viewBox="0 0 800 20" preserveAspectRatio="none" aria-hidden="true">
+    <path class="mcp-wave-path" d="M0,10 C33,1 67,19 100,10 C133,1 167,19 200,10 C233,1 267,19 300,10 C333,1 367,19 400,10 C433,1 467,19 500,10 C533,1 567,19 600,10 C633,1 667,19 700,10 C733,1 767,19 800,10" style="animation-delay:-7s"/>
+  </svg>
+
+  <div class="prose" style="max-width:72ch;">
+    <span class="mcp-label">Why It Matters</span>
+    <h2>Search indexes what you publish. AI queries what you make available.</h2>
+    <p>These are not the same thing, and the distinction will matter more with every passing year.</p>
+    <p>A page on a website gets discovered when someone searches for it. An MCP tool gets called when an AI needs it &mdash; which is increasingly whenever anyone asks a question. The shift from &ldquo;I&rsquo;ll Google it&rdquo; to &ldquo;I&rsquo;ll ask Claude&rdquo; is already in progress, and most media organizations haven&rsquo;t thought about what that means for their distribution.</p>
+
+    <div class="mcp-stat-row" aria-label="By the numbers">
+      <div>
+        <div class="mcp-stat-num">0</div>
+        <div class="mcp-stat-label">Other radio stations<br>with MCP servers</div>
+      </div>
+      <div>
+        <div class="mcp-stat-num">9</div>
+        <div class="mcp-stat-label">Live tools exposed<br>at launch</div>
+      </div>
+      <div>
+        <div class="mcp-stat-num">52</div>
+        <div class="mcp-stat-label">Years KAZM has been<br>on the mountain</div>
+      </div>
+    </div>
+
+    <p>No other radio station &mdash; not iHeart, not NPR, not the big-market FM flagships with full engineering teams &mdash; has done this. That&rsquo;s not an indictment of them. It&rsquo;s an opportunity for KAZM. Being first in a distribution channel has historically been worth more than being second with a bigger budget.</p>
+    <p>And there&rsquo;s a specifically local dimension here. When an AI helps someone plan a Sedona trip, or check road conditions before heading up Oak Creek Canyon, or ask about fire restrictions before lighting a campfire &mdash; KAZM is the answer. Real local data, properly attributed, in AI conversations instead of aggregator sites that scraped it from somewhere else.</p>
+  </div>
+
+</div></section>
+
+<section class="page-section page-section--tint"><div class="wrap">
+  <div class="section-head"><h2>Get connected</h2><p class="lead">One line of configuration. No API key required for read tools.</p></div>
+
+  <div class="mcp-callout" style="max-width:68ch;">
+    <strong>To connect any MCP-compatible AI client:</strong><br><br>
+    Add <code>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</code> to your client&rsquo;s MCP server configuration. Full tool documentation, parameters, and response schemas at <code>mcp.mellowmountainradio.com/docs</code>.
+  </div>
+
+  <p style="max-width:68ch;margin-top:1.5rem;">KAZM has been broadcasting from the mountain since 1974. The signal just got a lot farther.</p>
+</div></section>
+
+  </main>
+  <div data-site-footer></div>
+  <script src="main.js?v=183" defer></script>
+</body>
+</html>
