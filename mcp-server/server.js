@@ -402,6 +402,59 @@ function buildServer() {
     }
   );
 
+  // 17. Emergency Alerts (EAS) ──────────────────────────────────────────────────
+  mcp.tool(
+    "get_emergency_alerts",
+    "Returns active Emergency Alert System (EAS) alerts for the Sedona area — Yavapai and Coconino counties. Covers weather emergencies, evacuation orders, Amber Alerts, and all FEMA IPAWS-distributed alerts. Data is live from the National Weather Service public API.",
+    {
+      severity: z.enum(["Extreme","Severe","Moderate","Minor"]).optional()
+        .describe("Filter to alerts at or above this severity level (Extreme > Severe > Moderate > Minor)"),
+    },
+    async ({ severity }) => {
+      const SEVERITY_RANK = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1, Unknown: 0 };
+      const minRank = severity ? (SEVERITY_RANK[severity] ?? 0) : 0;
+
+      const res = await fetch(
+        "https://api.weather.gov/alerts/active?zone=AZC025,AZC005",
+        { headers: { "Accept": "application/geo+json", "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" } }
+      );
+      if (!res.ok) throw new Error(`NWS alerts ${res.status}`);
+      const data = await res.json();
+
+      const features = (data.features || []);
+      const alerts = features
+        .map(f => f.properties || {})
+        .filter(p => (SEVERITY_RANK[p.severity] ?? 0) >= minRank)
+        .map(p => ({
+          id:          p.id            || null,
+          event:       p.event         || null,
+          headline:    p.headline       || null,
+          description: p.description   || null,
+          instruction: p.instruction   || null,
+          severity:    p.severity      || null,
+          urgency:     p.urgency       || null,
+          certainty:   p.certainty     || null,
+          areas:       p.areaDesc      || null,
+          sender:      p.senderName    || null,
+          effective:   p.effective     || null,
+          expires:     p.expires       || null,
+          url:         p["@id"]        || null,
+        }));
+
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            updated:  new Date().toISOString(),
+            counties: ["Yavapai", "Coconino"],
+            count:    alerts.length,
+            alerts,
+          }),
+        }],
+      };
+    }
+  );
+
   return mcp;
 }
 
@@ -417,7 +470,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   16,
+    tools:   17,
   });
 });
 
@@ -452,7 +505,7 @@ app.get("/docs", (_req, res) => {
 <p>Live data from Sedona's Mellow Mountain Radio — available to any MCP-compatible AI assistant.</p>
 <h2>Connect</h2>
 <pre>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</pre>
-<h2>Tools (16)</h2>
+<h2>Tools (17)</h2>
 <div class="tool"><h3>get_now_playing</h3><p>Currently on-air song with artist, album, artwork, and stream URL.</p></div>
 <div class="tool"><h3>get_listener_count</h3><p>Live listener count across all mounts.</p></div>
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
@@ -469,6 +522,7 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>get_rewind</h3><p>Available on-demand past broadcasts with dates and stream URLs.</p></div>
 <div class="tool"><h3>get_jeep_trails</h3><p>Sedona jeep trail list and GPS paths. <code>trail</code>: trail slug, e.g. "broken-arrow" (optional).</p></div>
 <div class="tool"><h3>get_movies</h3><p>Current movie showings at Sedona-area theaters.</p></div>
+<div class="tool"><h3>get_emergency_alerts</h3><p>Live EAS alerts for Yavapai and Coconino counties — weather emergencies, evacuations, Amber Alerts. <code>severity</code>: Extreme/Severe/Moderate/Minor (optional filter).</p></div>
 <p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
