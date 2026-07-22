@@ -415,7 +415,7 @@ function buildServer() {
       const minRank = severity ? (SEVERITY_RANK[severity] ?? 0) : 0;
 
       const res = await fetch(
-        "https://api.weather.gov/alerts/active?zone=AZC025,AZC007",
+        "https://api.weather.gov/alerts/active?zone=AZC025,AZC005",
         { headers: { "Accept": "application/geo+json", "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" } }
       );
       if (!res.ok) throw new Error(`NWS alerts ${res.status}`);
