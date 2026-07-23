@@ -425,6 +425,24 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
   50%      { box-shadow: 0 0 0 1px rgba(207, 118, 105, .55), 0 0 46px -4px rgba(207, 118, 105, .72); }
 }
 .nowcard-play { margin-top: 20px; width: 100%; }
+.nowcard-show {
+  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,.45); margin-top: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nowcard-actions {
+  display: flex; gap: 8px; margin-top: 10px;
+}
+.nowcard-action-btn {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: .03em;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.75); border-radius: var(--r-sm); padding: 7px 10px;
+  cursor: pointer; transition: background .18s, color .18s, border-color .18s;
+  white-space: nowrap;
+}
+.nowcard-action-btn:hover { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.28); }
+.nowcard-action-btn:disabled { opacity: .6; cursor: default; }
 
 /* =========================================================
    WAYS TO LISTEN
