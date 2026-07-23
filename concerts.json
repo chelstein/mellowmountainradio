@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-23T02:57:55.597Z",
+ "updated": "2026-07-23T19:22:44.897Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -179,21 +179,6 @@
     "The Hondo Rodeo Fest",
     "Parker McCollum"
    ]
-  },
-  {
-   "id": "rZ7HnEZ1Afqs0K",
-   "artist": "Ambrosia",
-   "date": "2026-07-22",
-   "time": "19:30:00",
-   "venue": "Belly Up",
-   "city": "Solana Beach",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/ambrosia-belly-up-tickets/14771913",
-   "img": "https://s1.ticketm.net/dam/a/6bd/98c7c94d-22d4-4fb6-9698-623379f046bd_607941_RETINA_PORTRAIT_16_9.jpg",
-   "price": 48,
-   "status": "offsale",
-   "saleStart": "2026-03-13T17:00:00Z",
-   "lineup": []
   },
   {
    "id": "rZ7HnEZ1Af-w_d",
@@ -1145,21 +1130,6 @@
    "city": "Las Vegas",
    "state": "NV",
    "url": "https://www.gofevo.com/event/EaglesSphere111326",
-   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-05-20T17:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "17AYv0G65p_1Ps9",
-   "artist": "Eagles",
-   "date": "2026-11-14",
-   "time": "20:30:00",
-   "venue": "Sphere",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.gofevo.com/event/EaglesSphere111426",
    "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
