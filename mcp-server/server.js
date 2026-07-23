@@ -192,29 +192,71 @@ function buildServer() {
   // 6. Road Conditions ──────────────────────────────────────────────────────────
   mcp.tool(
     "get_road_conditions",
-    "Returns active road incidents and closures in Yavapai and Coconino counties (AZ511 API).",
+    "Returns active road and trail closures for the Sedona / Oak Creek area from the Coconino National Forest alerts page. Also includes AZ511 highway incidents for Yavapai and Coconino counties when the AZ511_KEY environment variable is set.",
     {},
     async () => {
-      const res = await fetch(
-        "https://az511.gov/api/v2/get/event?format=json&status=active&county=Yavapai,Coconino"
-      );
-      if (!res.ok) throw new Error(`AZ511 ${res.status}`);
-      const data = await res.json();
-      // Trim to essential fields to keep response compact
-      const events = (data.events || data || []).map(e => ({
-        id:          e.id         || null,
-        type:        e.event_type || null,
-        headline:    e.headline   || null,
-        description: e.description || null,
-        road:        e.road_name  || null,
-        direction:   e.direction  || null,
-        start:       e.start_time || null,
-        end:         e.end_time   || null,
-        county:      e.county     || null,
-        lat:         e.latitude   || null,
-        lon:         e.longitude  || null,
-      }));
-      return { content: [{ type: "text", text: JSON.stringify({ count: events.length, events }) }] };
+      const result = {
+        updated:    new Date().toISOString(),
+        sources:    [],
+        closures:   [],
+        incidents:  [],
+      };
+
+      // Coconino NF alerts — free, no key, covers Sedona-area forest roads and trails
+      try {
+        const res = await fetch("https://www.fs.usda.gov/r03/coconino/alerts", {
+          headers: { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" },
+          signal: AbortSignal.timeout(8000),
+        });
+        if (res.ok) {
+          const html = await res.text();
+          for (const m of html.matchAll(/<li[^>]+usa-card[^>]*>([\s\S]*?)<\/li>/g)) {
+            const card   = m[1];
+            const titleM = card.match(/<span>([^<]+)<\/span>/);
+            const bodyM  = card.match(/usa-card__body[^>]*>\s*([\s\S]*?)\s*<\/div>/);
+            const levelM = card.match(/alert_level--(\w+)/);
+            const dateM  = card.match(/Alert Start Date[^:]*:\s*([A-Za-z]+ \d+, \d{4})/);
+            if (titleM && bodyM) {
+              result.closures.push({
+                title:  titleM[1].trim(),
+                desc:   bodyM[1].replace(/<[^>]+>/g, "").trim().slice(0, 250),
+                level:  levelM ? levelM[1] : null,
+                start:  dateM  ? dateM[1]  : null,
+                source: "Coconino National Forest",
+              });
+            }
+          }
+          result.sources.push(`Coconino National Forest (${result.closures.length} alerts)`);
+        }
+      } catch (_) {}
+
+      // AZ511 highway incidents — requires AZ511_KEY env var (free account at az511.gov)
+      const AZ511_KEY = process.env.AZ511_KEY || "";
+      if (AZ511_KEY) {
+        try {
+          const res = await fetch(
+            `https://az511.gov/api/v2/get/event?format=json&status=active&county=Yavapai,Coconino&key=${encodeURIComponent(AZ511_KEY)}`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            result.incidents = (data.events || data || []).map(e => ({
+              type:        e.event_type  || null,
+              headline:    e.headline    || null,
+              description: e.description || null,
+              road:        e.road_name   || null,
+              direction:   e.direction   || null,
+              start:       e.start_time  || null,
+              county:      e.county      || null,
+            }));
+            result.sources.push(`AZ511 (${result.incidents.length} highway incidents)`);
+          }
+        } catch (_) {}
+      } else {
+        result.az511_note = "AZ highway incidents unavailable — set AZ511_KEY env var. Free registration at az511.gov/my511/register.";
+      }
+
+      return { content: [{ type: "text", text: JSON.stringify(result) }] };
     }
   );
 
