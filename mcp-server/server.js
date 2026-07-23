@@ -500,6 +500,201 @@ function buildServer() {
     }
   );
 
+  // 18. Submit Song Request ──────────────────────────────────────────────────────
+  mcp.tool(
+    "submit_song_request",
+    "Submit a song request to KAZM to be played on air. Searches the requestable library for the best match, then queues it with the station. Returns confirmation with the queued song details. This is a live, bidirectional action — the song will actually be queued for broadcast.",
+    { query: z.string().describe("Song title or artist name to request, e.g. 'Grateful Dead' or 'Truckin'") },
+    async ({ query }) => {
+      // Step 1: search AzuraCast requestable songs
+      const searchData = await azGet(
+        `/api/station/${STATION}/requests?searchPhrase=${encodeURIComponent(query)}&limit=5`
+      );
+      const rows = Array.isArray(searchData) ? searchData : (searchData.rows || []);
+
+      if (!rows.length) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              message: `No requestable songs found matching "${query}". Try a different spelling or search by artist name. Use search_song_request_library to browse what's available.`,
+            }),
+          }],
+        };
+      }
+
+      const best      = rows[0];
+      const song      = best.song || {};
+      const requestId = best.request_id;
+      if (!requestId) throw new Error("Request ID missing from AzuraCast response");
+
+      // Step 2: submit the request
+      const postRes = await fetch(
+        `${AZ_HOST}/api/station/${STATION}/request/${encodeURIComponent(requestId)}`,
+        {
+          method:  "POST",
+          headers: {
+            ...(AZ_KEY ? { "X-API-Key": AZ_KEY } : {}),
+            "Content-Type": "application/json",
+            "User-Agent":   "KAZM-MCP/1.0 (mellowmountainradio.com)",
+          },
+        }
+      );
+
+      if (!postRes.ok) {
+        let errMsg = `Request failed (HTTP ${postRes.status})`;
+        try {
+          const errBody = await postRes.json();
+          errMsg = errBody.message || errBody.error || JSON.stringify(errBody);
+        } catch (_) {
+          errMsg = (await postRes.text()) || errMsg;
+        }
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({ success: false, message: errMsg }),
+          }],
+        };
+      }
+
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            success: true,
+            queued: {
+              title:  song.title  || null,
+              artist: song.artist || null,
+              album:  song.album  || null,
+              art:    song.art    || null,
+            },
+            message: `"${song.title || query}" by ${song.artist || "unknown"} has been queued for play on KAZM Mellow Mountain Radio!`,
+          }),
+        }],
+      };
+    }
+  );
+
+  // 19. Local News Headlines ─────────────────────────────────────────────────────
+  mcp.tool(
+    "get_local_news_headlines",
+    "Returns the latest Sedona and Verde Valley local news headlines. Pulls live from the Sedona Red Rock News and Verde Independent RSS feeds. Covers local government, arts, community events, real estate, and Verde Valley news.",
+    {
+      limit: z.number().int().min(1).max(20).optional()
+        .describe("Max headlines to return per source (default 8)"),
+    },
+    async ({ limit = 8 }) => {
+      const sources = [
+        { name: "Sedona Red Rock News", url: "https://www.redrocknews.com/feed/" },
+        { name: "Verde Independent",    url: "https://www.verdenews.com/feed/"   },
+      ];
+
+      const results = await Promise.allSettled(
+        sources.map(async (src) => {
+          const res = await fetch(src.url, {
+            headers: { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" },
+            signal:  AbortSignal.timeout(7000),
+          });
+          if (!res.ok) throw new Error(`${src.name} HTTP ${res.status}`);
+          const xml = await res.text();
+
+          const items = [];
+          const itemRe = /<item>([\s\S]*?)<\/item>/gi;
+          for (const m of xml.matchAll(itemRe)) {
+            const block = m[1];
+            const titleM = block.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/)
+                        || block.match(/<title>([\s\S]*?)<\/title>/);
+            const linkM  = block.match(/<link>([\s\S]*?)<\/link>/)
+                        || block.match(/<guid[^>]*>([\s\S]*?)<\/guid>/);
+            const dateM  = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/);
+            const descM  = block.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/)
+                        || block.match(/<description>([\s\S]*?)<\/description>/);
+            const title = titleM?.[1]?.trim();
+            if (!title) continue;
+            const summary = descM?.[1]?.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().slice(0, 200) || null;
+            items.push({
+              title,
+              link:      linkM?.[1]?.trim() || null,
+              published: dateM?.[1]?.trim()  || null,
+              summary,
+            });
+            if (items.length >= limit) break;
+          }
+          return { source: src.name, count: items.length, items };
+        })
+      );
+
+      const feeds = results
+        .filter(r => r.status === "fulfilled")
+        .map(r => r.value);
+
+      const errors = results
+        .filter(r => r.status === "rejected")
+        .map((r, i) => ({ source: sources[i]?.name, error: r.reason?.message }));
+
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            updated: new Date().toISOString(),
+            feeds,
+            ...(errors.length ? { errors } : {}),
+          }),
+        }],
+      };
+    }
+  );
+
+  // 20. Air Quality ──────────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_air_quality",
+    "Returns current air quality index (AQI) and pollutant readings for Sedona, AZ from Open-Meteo. Includes US AQI category, PM2.5, PM10, ozone, and UV index. Especially useful during wildfire season for tracking smoke and outdoor safety.",
+    {},
+    async () => {
+      const url = "https://air-quality-api.open-meteo.com/v1/air-quality"
+        + "?latitude=34.8697&longitude=-111.7610"
+        + "&current=us_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,ozone,dust,uv_index"
+        + "&timezone=America%2FPhoenix";
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Open-Meteo AQI ${res.status}`);
+      const data    = await res.json();
+      const current = data.current || {};
+      const aqi     = current.us_aqi;
+
+      let category = "Unknown";
+      if (aqi !== undefined && aqi !== null) {
+        if      (aqi <= 50)  category = "Good";
+        else if (aqi <= 100) category = "Moderate";
+        else if (aqi <= 150) category = "Unhealthy for Sensitive Groups";
+        else if (aqi <= 200) category = "Unhealthy";
+        else if (aqi <= 300) category = "Very Unhealthy";
+        else                 category = "Hazardous";
+      }
+
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            location:          "Sedona, AZ",
+            coordinates:       { lat: 34.8697, lon: -111.7610 },
+            updated:           current.time || new Date().toISOString(),
+            us_aqi:            aqi          ?? null,
+            category,
+            pm2_5_ug_m3:       current.pm2_5             ?? null,
+            pm10_ug_m3:        current.pm10              ?? null,
+            ozone_ug_m3:       current.ozone             ?? null,
+            uv_index:          current.uv_index          ?? null,
+            dust_ug_m3:        current.dust              ?? null,
+            carbon_monoxide:   current.carbon_monoxide   ?? null,
+            nitrogen_dioxide:  current.nitrogen_dioxide  ?? null,
+            source:            "Open-Meteo Air Quality API (open-meteo.com)",
+          }),
+        }],
+      };
+    }
+  );
+
   return mcp;
 }
 
@@ -515,7 +710,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   17,
+    tools:   20,
   });
 });
 
@@ -543,6 +738,7 @@ app.get("/docs", (_req, res) => {
   pre{background:#0d1f3e;color:#c8d8f0;padding:16px;border-radius:8px;overflow-x:auto}
   .tool{border:1px solid #dde4f0;border-radius:8px;padding:16px 20px;margin:16px 0}
   .tool h3{margin:0 0 4px;color:#223d6e}.tool p{margin:4px 0;color:#444}
+  .new{display:inline-block;background:#e8f5e9;color:#2e7d32;font-size:.75em;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -550,11 +746,11 @@ app.get("/docs", (_req, res) => {
 <p>Live data from Sedona's Mellow Mountain Radio — available to any MCP-compatible AI assistant.</p>
 <h2>Connect</h2>
 <pre>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</pre>
-<h2>Tools (17)</h2>
+<h2>Tools (20)</h2>
 <div class="tool"><h3>get_now_playing</h3><p>Currently on-air song with artist, album, artwork, and stream URL.</p></div>
 <div class="tool"><h3>get_listener_count</h3><p>Live listener count across all mounts.</p></div>
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
-<div class="tool"><h3>get_fire_restrictions</h3><p>Current fire restriction level for the Sedona area.</p></div>
+<div class="tool"><h3>get_fire_restrictions</h3><p>Current fire restriction level for the Sedona area — live from the Forest Service.</p></div>
 <div class="tool"><h3>get_weather</h3><p>Current conditions and 7-day forecast for Sedona, AZ.</p></div>
 <div class="tool"><h3>get_road_conditions</h3><p>Active incidents on Yavapai and Coconino county roads (AZ511).</p></div>
 <div class="tool"><h3>get_concerts</h3><p>Upcoming concerts. <code>state</code>: string (optional, e.g. "AZ")</p></div>
@@ -568,6 +764,9 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>get_jeep_trails</h3><p>Sedona jeep trail list and GPS paths. <code>trail</code>: trail slug, e.g. "broken-arrow" (optional).</p></div>
 <div class="tool"><h3>get_movies</h3><p>Current movie showings at Sedona-area theaters.</p></div>
 <div class="tool"><h3>get_emergency_alerts</h3><p>Live EAS alerts for Yavapai and Coconino counties — weather emergencies, evacuations, Amber Alerts. <code>severity</code>: Extreme/Severe/Moderate/Minor (optional filter).</p></div>
+<div class="tool"><h3>submit_song_request <span class="new">NEW</span></h3><p>Queue a song for broadcast on KAZM — live, bidirectional. <code>query</code>: song title or artist (required).</p></div>
+<div class="tool"><h3>get_local_news_headlines <span class="new">NEW</span></h3><p>Latest Sedona &amp; Verde Valley headlines from Red Rock News and Verde Independent. <code>limit</code>: max per source (optional).</p></div>
+<div class="tool"><h3>get_air_quality <span class="new">NEW</span></h3><p>US AQI, PM2.5, PM10, ozone, and UV index for Sedona — from Open-Meteo. Wildfire smoke tracking built in.</p></div>
 <p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
