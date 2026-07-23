@@ -117,11 +117,56 @@ function buildServer() {
   // 4. Fire Restrictions ────────────────────────────────────────────────────────
   mcp.tool(
     "get_fire_restrictions",
-    "Returns current fire restriction level and details for the Sedona / Coconino / Yavapai area.",
+    "Returns current fire restriction level and fire danger rating for the Sedona / Coconino National Forest area. Includes any active Stage 1 or Stage 2 restrictions and Sedona-area alerts.",
     {},
     async () => {
-      const data = await ghGet("fire.json");
-      return { content: [{ type: "text", text: JSON.stringify(data) }] };
+      try {
+        const res = await fetch("https://www.fs.usda.gov/r03/coconino/alerts", {
+          headers: { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" },
+          signal: AbortSignal.timeout(8000),
+        });
+        if (!res.ok) throw new Error(`FS ${res.status}`);
+        const html = await res.text();
+
+        // Danger level from CSS class e.g. danger_level--low
+        const levelMatch = html.match(/danger_level--(\w+)/);
+        const danger = levelMatch
+          ? levelMatch[1].charAt(0).toUpperCase() + levelMatch[1].slice(1)
+          : null;
+
+        // Stage 1/2 restrictions
+        const stageMatch = html.match(/Stage\s+([12])\s+(?:fire\s+)?restrictions?/i);
+        const stage = stageMatch ? parseInt(stageMatch[1]) : null;
+
+        // Sedona / Oak Creek alerts with their URLs
+        const sedonaAlerts = [];
+        const alertRe = /<a[^>]+href="(\/[^"]+)"[^>]*>([^<]*(?:Oak.Creek|Sedona|Red.Rock)[^<]*)<\/a>/gi;
+        for (const m of html.matchAll(alertRe)) {
+          const text = m[2].replace(/\s+/g, " ").trim();
+          if (text) sedonaAlerts.push({ text, url: `https://www.fs.usda.gov${m[1]}` });
+        }
+
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              updated:       new Date().toISOString(),
+              agency:        "Coconino National Forest",
+              source:        "https://www.fs.usda.gov/r03/coconino/alerts",
+              stage:         stage,
+              danger:        danger || "Unknown",
+              sedona_alerts: sedonaAlerts,
+              notes:         stage
+                ? `Stage ${stage} fire restrictions are in effect for the Coconino National Forest.`
+                : "No Stage 1 or Stage 2 fire restrictions currently in effect. Year-round campfire and camping restrictions apply to the Sedona and Oak Creek Canyon areas.",
+            }),
+          }],
+        };
+      } catch (_) {
+        // Fall back to the cached fire.json if live fetch fails
+        const data = await ghGet("fire.json");
+        return { content: [{ type: "text", text: JSON.stringify({ ...data, cached: true }) }] };
+      }
     }
   );
 
