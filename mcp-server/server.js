@@ -503,89 +503,86 @@ function buildServer() {
   // 18. Submit Song Request ──────────────────────────────────────────────────────
   mcp.tool(
     "submit_song_request",
-    "Submit a song request to KAZM to be played on air. Searches the requestable library for the best match, then queues it with the station. Returns confirmation with the queued song details. This is a live, bidirectional action — the song will actually be queued for broadcast.",
-    { query: z.string().describe("Song title or artist name to request, e.g. 'Grateful Dead' or 'Truckin'") },
-    async ({ query }) => {
-      // Step 1: search AzuraCast requestable songs
-      let searchData;
-      try {
-        searchData = await azGet(
-          `/api/station/${STATION}/requests?searchPhrase=${encodeURIComponent(query)}&limit=5`
-        );
-      } catch (err) {
-        return {
-          content: [{
-            type: "text",
-            text: JSON.stringify({
-              success: false,
-              message: "Song requests are not currently enabled on KAZM. To enable this feature, turn on Song Requests in AzuraCast → Station Settings → Features. Once enabled, this tool will queue songs for live broadcast.",
-            }),
-          }],
-        };
+    "Submit a song request to KAZM 106.5 FM & 780 AM via the station website. Searches the real studio library, then logs the request for the DJ — every request gets read. Provide both song title and artist for best results.",
+    {
+      query: z.string().describe("Song title and/or artist name, e.g. 'Sailing Christopher Cross' or 'Truckin Grateful Dead'"),
+      name:  z.string().max(60).optional().describe("Your name and town for the request card, e.g. 'Sarah from Sedona' (optional)"),
+      note:  z.string().max(140).optional().describe("A dedication or message, e.g. 'Happy birthday Maria!' (optional)"),
+    },
+    async ({ query, name = "", note = "" }) => {
+      const LIBRARY_URL = "https://mellowmountainradio.com/request-library.json";
+      const REQUEST_URL = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
+
+      // Fetch the station's requestable library (format: [{ t: title, a: artist }, ...])
+      const libRes = await fetch(LIBRARY_URL, { headers: { "User-Agent": "KAZM-MCP/1.0" } });
+      if (!libRes.ok) {
+        return { content: [{ type: "text", text: JSON.stringify({
+          success: false,
+          message: "Could not load the KAZM request library right now. Try again in a moment.",
+        }) }] };
       }
-      const rows = Array.isArray(searchData) ? searchData : (searchData.rows || []);
+      const library = await libRes.json();
 
-      if (!rows.length) {
-        return {
-          content: [{
-            type: "text",
-            text: JSON.stringify({
-              success: false,
-              message: `No requestable songs found matching "${query}". Try a different spelling or search by artist name. Use search_song_request_library to browse what's available.`,
-            }),
-          }],
-        };
+      // Fuzzy search: normalize text, score by substring / word-hit count
+      function norm(s) {
+        return String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
       }
+      const q     = norm(query);
+      const words = q.split(" ").filter(Boolean);
 
-      const best      = rows[0];
-      const song      = best.song || {};
-      const requestId = best.request_id;
-      if (!requestId) throw new Error("Request ID missing from AzuraCast response");
+      const scored = library
+        .map(s => {
+          const t = norm(s.t), a = norm(s.a), combo = t + " " + a;
+          if (t === q)           return { s, score: 110 }; // exact title match
+          if (combo === q)       return { s, score: 105 }; // exact full-combo match
+          if (combo.includes(q)) return { s, score: 100 }; // full query is a substring
+          const hits = words.filter(w => combo.includes(w)).length;
+          return hits > 0 ? { s, score: hits } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.score - a.score);
 
-      // Step 2: submit the request
-      const postRes = await fetch(
-        `${AZ_HOST}/api/station/${STATION}/request/${encodeURIComponent(requestId)}`,
-        {
-          method:  "POST",
-          headers: {
-            ...(AZ_KEY ? { "X-API-Key": AZ_KEY } : {}),
-            "Content-Type": "application/json",
-            "User-Agent":   "KAZM-MCP/1.0 (mellowmountainradio.com)",
-          },
-        }
-      );
-
-      if (!postRes.ok) {
-        let errMsg = `Request failed (HTTP ${postRes.status})`;
-        try {
-          const errBody = await postRes.json();
-          errMsg = errBody.message || errBody.error || JSON.stringify(errBody);
-        } catch (_) {
-          errMsg = (await postRes.text()) || errMsg;
-        }
-        return {
-          content: [{
-            type: "text",
-            text: JSON.stringify({ success: false, message: errMsg }),
-          }],
-        };
+      if (!scored.length) {
+        return { content: [{ type: "text", text: JSON.stringify({
+          success: false,
+          message: `No songs matching "${query}" found in the KAZM request library. Try a different spelling or include both title and artist. KAZM plays soft-rock and yacht-rock from the 70s–90s.`,
+        }) }] };
       }
 
-      return {
-        content: [{
-          type: "text",
-          text: JSON.stringify({
-            success: true,
-            queued: {
-              title:  song.title  || null,
-              artist: song.artist || null,
-              album:  song.album  || null,
-              art:    song.art    || null,
-            },
-            message: `"${song.title || query}" by ${song.artist || "unknown"} has been queued for play on KAZM Mellow Mountain Radio!`,
-          }),
-        }],
-      };
+      // Multiple songs tie for top score — ambiguous, return choices
+      if (scored.length > 1 && scored[0].score === scored[1].score) {
+        return { content: [{ type: "text", text: JSON.stringify({
+          success: false,
+          matches: scored.slice(0, 5).map(x => ({ title: x.s.t, artist: x.s.a })),
+          message: `Found ${scored.length} songs matching "${query}". Re-call with both title and artist, e.g. "${scored[0].s.t} ${scored[0].s.a}".`,
+        }) }] };
+      }
+
+      // Clear winner — submit to the n8n webhook (same endpoint the website uses)
+      const pick    = scored[0].s;
+      const postRes = await fetch(REQUEST_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json", "User-Agent": "KAZM-MCP/1.0" },
+        body:    JSON.stringify({ title: pick.t, artist: pick.a, name: name.slice(0, 60), note: note.slice(0, 140) }),
+      });
+
+      let result = {};
+      try { result = await postRes.json(); } catch (_) {}
+
+      if (!postRes.ok || result.success === false) {
+        return { content: [{ type: "text", text: JSON.stringify({
+          success: false,
+          message: result.message || `Studio webhook returned HTTP ${postRes.status}. Try again in a moment.`,
+        }) }] };
+      }
+
+      return { content: [{ type: "text", text: JSON.stringify({
+        success:   true,
+        submitted: { title: pick.t, artist: pick.a },
+        name:      name || null,
+        note:      note || null,
+        message:   `"${pick.t}" by ${pick.a} has been logged for the KAZM studio. Every request gets read — no auto-queue, but your request just landed on the DJ's desk.`,
+      }) }] };
     }
   );
 
