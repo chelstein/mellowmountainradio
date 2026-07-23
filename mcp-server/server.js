@@ -26,6 +26,13 @@ if (VAPID_PRIVATE) {
 function loadSubs()    { try { return JSON.parse(readFileSync(SUBS_FILE, "utf8")); } catch { return []; } }
 function saveSubs(arr) { writeFileSync(SUBS_FILE, JSON.stringify(arr, null, 2)); }
 
+const REQUESTS_FILE = join(__dirname, "requests.json");
+const PULSE_FILE    = join(__dirname, "pulse.json");
+function loadRequests()    { try { return JSON.parse(readFileSync(REQUESTS_FILE, "utf8")); } catch { return []; } }
+function saveRequests(arr) { writeFileSync(REQUESTS_FILE, JSON.stringify(arr, null, 2)); }
+function loadPulse()       { try { return JSON.parse(readFileSync(PULSE_FILE,    "utf8")); } catch { return {}; } }
+function savePulse(obj)    { writeFileSync(PULSE_FILE, JSON.stringify(obj, null, 2)); }
+
 const PORT      = process.env.PORT      || 3000;
 const AZ_HOST   = (process.env.AZ_HOST  || "https://streaming.mellowmountainradio.com").replace(/\/$/,"");
 const STATION   = process.env.STATION_ID || "kazm";
@@ -576,7 +583,7 @@ function buildServer() {
     },
     async ({ query, name = "", note = "" }) => {
       const LIBRARY_URL = "https://mellowmountainradio.com/request-library.json";
-      const REQUEST_URL = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
+      const REQUEST_URL = "https://mcp.mellowmountainradio.com/request";
 
       // Fetch the station's requestable library (format: [{ t: title, a: artist }, ...])
       const libRes = await fetch(LIBRARY_URL, { headers: { "User-Agent": "KAZM-MCP/1.0" } });
@@ -839,6 +846,167 @@ app.post("/push/send", async (req, res) => {
   const sent   = results.filter(r => r.status === "fulfilled").length;
   const failed = results.filter(r => r.status === "rejected").length;
   res.json({ ok: true, sent, failed, pruned: dead.length });
+});
+
+// ── Site REST endpoints ───────────────────────────────────────────────────────
+
+function setCors(res) {
+  res.set({ "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
+}
+
+app.options(/^\/(request|requests|pulse|playlog|charts|roads)$/, (_req, res) => {
+  setCors(res); res.sendStatus(204);
+});
+
+// POST /request — probe or submit a song request
+app.post("/request", (req, res) => {
+  setCors(res);
+  const body = req.body || {};
+  if (body.probe) return res.json({ success: true });
+  const { title, artist, name = "", note = "" } = body;
+  if (!title || !artist) return res.status(400).json({ success: false, error: "title and artist required" });
+  const reqs = loadRequests();
+  reqs.push({ title, artist, name, note, at: new Date().toISOString() });
+  if (reqs.length > 200) reqs.splice(0, reqs.length - 200);
+  saveRequests(reqs);
+  res.json({ success: true });
+});
+
+// GET /requests — jukebox board wall (last 20, newest first)
+app.get("/requests", (_req, res) => {
+  setCors(res);
+  const all = loadRequests();
+  res.json({ requests: all.slice(-20).reverse(), total: all.length });
+});
+
+// POST /pulse — love / nah vote for a song
+app.post("/pulse", (req, res) => {
+  setCors(res);
+  const { title, artist, vote } = req.body || {};
+  if (!title || !artist || !["love", "nah"].includes(vote))
+    return res.status(400).json({ ok: false, error: "title, artist, and vote (love|nah) required" });
+  const pulse = loadPulse();
+  const key = `${title}\x00${artist}`;
+  if (!pulse[key]) pulse[key] = { title, artist, love: 0, nah: 0 };
+  pulse[key][vote]++;
+  pulse[key].at = Date.now();
+  savePulse(pulse);
+  res.json({ ok: true });
+});
+
+// Music-play filter matching the client-side isMusicPlay()
+function serverIsMusicPlay(ti, ar) {
+  if (!ti || !ar) return false;
+  if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update|^AZ State News/i.test(ti)) return false;
+  if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(ti)) return false;
+  if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(ar)) return false;
+  return true;
+}
+
+// GET /playlog?d=YYYY-MM-DD — plays for a day in Phoenix time (UTC-7)
+app.get("/playlog", async (req, res) => {
+  setCors(res);
+  const d = String(req.query.d || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d))
+    return res.status(400).json({ ok: false, error: "d=YYYY-MM-DD required" });
+  try {
+    // Phoenix = UTC-7 (no DST). Midnight Phoenix = 07:00 UTC.
+    const dayStart = new Date(d + "T07:00:00Z");
+    const dayEnd   = new Date(dayStart.getTime() + 86400000);
+    const start_ts = Math.floor(dayStart.getTime() / 1000);
+    const end_ts   = Math.floor(dayEnd.getTime()   / 1000);
+    const data = await azGet(`/api/station/${STATION}/history?start_timestamp=${start_ts}&end_timestamp=${end_ts}&rows=5000`);
+    const plays = [];
+    for (const p of (Array.isArray(data) ? data : [])) {
+      const ti = p.song?.title  || p.title  || "";
+      const ar = p.song?.artist || p.artist || "";
+      if (!serverIsMusicPlay(ti, ar)) continue;
+      const playedAt = p.played_at || p.timestamp || 0;
+      // Shift unix UTC to Phoenix local (UTC-7) then read as UTC for HH:MM
+      const phxDate = new Date((playedAt - 7 * 3600) * 1000);
+      const hh = String(phxDate.getUTCHours()).padStart(2, "0");
+      const mm = String(phxDate.getUTCMinutes()).padStart(2, "0");
+      plays.push({ ti, ar, t: `${hh}:${mm}` });
+    }
+    res.json({ ok: true, plays });
+  } catch (e) {
+    res.status(502).json({ ok: false, error: String(e.message) });
+  }
+});
+
+// GET /charts — rolling 7-day top songs, artists, debut slots
+app.get("/charts", async (_req, res) => {
+  setCors(res);
+  try {
+    const now     = Math.floor(Date.now() / 1000);
+    const weekAgo = now - 7 * 86400;
+    const data    = await azGet(`/api/station/${STATION}/history?start_timestamp=${weekAgo}&end_timestamp=${now}&rows=5000`);
+    const since   = new Date(weekAgo * 1000).toISOString().slice(0, 10);
+    const songMap = {}, artistMap = {};
+    for (const p of (Array.isArray(data) ? data : [])) {
+      const ti = p.song?.title  || p.title  || "";
+      const ar = p.song?.artist || p.artist || "";
+      if (!serverIsMusicPlay(ti, ar)) continue;
+      const key = `${ti}\x00${ar}`;
+      songMap[key]   = (songMap[key]   || 0) + 1;
+      artistMap[ar]  = (artistMap[ar]  || 0) + 1;
+    }
+    const spins      = Object.values(songMap).reduce((a, b) => a + b, 0);
+    const uniques    = Object.keys(songMap).length;
+    const top        = Object.entries(songMap).sort((a, b) => b[1] - a[1]).slice(0, 20)
+                         .map(([k, n]) => { const [ti, ar] = k.split("\x00"); return { ti, ar, n }; });
+    const topArtists = Object.entries(artistMap).sort((a, b) => b[1] - a[1]).slice(0, 10)
+                         .map(([ar, n]) => ({ ar, n }));
+    res.json({ ok: true, since, spins, uniques, top, topArtists, debuts: [] });
+  } catch (e) {
+    res.status(502).json({ ok: false, error: String(e.message) });
+  }
+});
+
+// GET /roads — AZ511 incidents for Yavapai & Coconino counties
+function miFromSedona(lat, lon) {
+  if (lat == null || lon == null) return null;
+  const R    = 3958.8;
+  const dLat = (lat - 34.8697) * Math.PI / 180;
+  const dLon = (lon - (-111.7610)) * Math.PI / 180;
+  const a    = Math.sin(dLat / 2) ** 2 + Math.cos(34.8697 * Math.PI / 180) * Math.cos(lat * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return Math.round(2 * R * Math.asin(Math.sqrt(a)));
+}
+
+app.get("/roads", async (_req, res) => {
+  setCors(res);
+  const AZ511_KEY = process.env.AZ511_KEY || "";
+  if (!AZ511_KEY) return res.status(503).json({ ok: false, error: "AZ511_KEY not configured" });
+  try {
+    const r = await fetch(
+      `https://az511.gov/api/v2/get/event?format=json&status=active&county=Yavapai,Coconino&key=${encodeURIComponent(AZ511_KEY)}`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!r.ok) return res.status(502).json({ ok: false, error: `AZ511 ${r.status}` });
+    const data   = await r.json();
+    const events = (data.events || data || []).map(e => {
+      const lat  = e.latitude  ?? e.lat  ?? null;
+      const lon  = e.longitude ?? e.lon  ?? null;
+      const type = (e.event_type    || "").toLowerCase();
+      const sub  = (e.event_subtype || "").toLowerCase();
+      const desc = e.headline || e.description || "";
+      return {
+        road:    e.road_name  || null,
+        dir:     e.direction  || null,
+        desc,
+        type,
+        sub,
+        full:    /full.closure|road.closed/i.test(sub + " " + desc),
+        mi:      miFromSedona(lat, lon),
+        updated: e.last_updated || e.update_time || e.start_time || null,
+        lat,
+        lon,
+      };
+    }).filter(e => e.desc);
+    res.json({ ok: true, events });
+  } catch (e) {
+    res.status(502).json({ ok: false, error: String(e.message) });
+  }
 });
 
 // ── MCP auto-discovery endpoints (Smithery, official registry, etc.)
