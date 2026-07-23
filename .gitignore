@@ -1,3 +1,5 @@
 node_modules/
 mcp-server/.env
 mcp-server/push-subs.json
+mcp-server/requests.json
+mcp-server/pulse.json

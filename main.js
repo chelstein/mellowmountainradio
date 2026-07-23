@@ -2232,7 +2232,7 @@
      and weather-aware canyon caution. Incident board hides itself if
      the relay is offline — cameras and the flow map never depend on it.
      ========================================================= */
-  var ROADS_RELAY = "https://n8n.mellowmountainradio.com/webhook/kazm-roads";
+  var ROADS_RELAY = "https://mcp.mellowmountainradio.com/roads";
   var ROAD_CAMS = [
     { img: 704, n: "SR-89A — Oak Creek Canyon, lower switchbacks (MP 375)", c: "canyon" },
     { img: 706, n: "SR-89A — Oak Creek Canyon, top (Flagstaff side)", c: "canyon" },
@@ -4188,7 +4188,7 @@
         var vuBars = vuEl ? [].slice.call(vuEl.querySelectorAll("span")) : [];
         var shareBtn = root.querySelector("[data-tape-share]");
         var upNextEl = root.querySelector("[data-tape-upnext]");
-        var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
+        var PLAYLOG = "https://mcp.mellowmountainradio.com/playlog";
         var currentBlock = null;
         var tapePlaylog = null, tapeNextPlaylog = null, lastSongKey = "";
         var lastHashUpdate = 0;
@@ -6726,7 +6726,7 @@
   /* THE PULSE — one tap per song on the player: "more like this" or "not my
      vibe". Votes aggregate on the studio's nudge sheet (never touch playout)
      and, locally, tune this listener's own suggestions. */
-  var PULSE_API = "https://n8n.mellowmountainradio.com/webhook/kazm-pulse";
+  var PULSE_API = "https://mcp.mellowmountainradio.com/pulse";
   function pulseStore() { try { return JSON.parse(localStorage.getItem("kazm-pulse") || "{}"); } catch (e) { return {}; } }
   function pulseSave(st) {
     try {
@@ -6769,8 +6769,8 @@
     }
   }
 
-  var REQUEST_HOOK = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
-  var REQUEST_BOARD = "https://n8n.mellowmountainradio.com/webhook/kazm-request-board";
+  var REQUEST_HOOK = "https://mcp.mellowmountainradio.com/request";
+  var REQUEST_BOARD = "https://mcp.mellowmountainradio.com/requests";
   function rqNorm(x) { return String(x || "").toLowerCase().replace(/\(.*?\)|\[.*?\]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
   function rqOnAir(song) {
     if (!song || !song.title) return;
@@ -7832,7 +7832,7 @@
     var el = doc.querySelector("[data-music-dna]");
     if (!el || el.getAttribute("data-dna-init")) return;
     el.setAttribute("data-dna-init", "1");
-    var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
+    var PLAYLOG = "https://mcp.mellowmountainradio.com/playlog";
     var DAYS = 60, POOL = 8;
     function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]; }); }
     var dates = [], d0 = new Date();
@@ -7902,7 +7902,7 @@
     var el = doc.querySelector("[data-music-streaks]");
     if (!el || el.getAttribute("data-streaks-init")) return;
     el.setAttribute("data-streaks-init", "1");
-    var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
+    var PLAYLOG = "https://mcp.mellowmountainradio.com/playlog";
     var DAYS = 90, POOL = 8;
     function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function(m) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]; }); }
     function normAr(s) { return (s || "").toLowerCase().replace(/^the\s+/, "").trim(); }
@@ -7973,8 +7973,8 @@
     var root = doc.querySelector("[data-tm]"); if (!root || root.getAttribute("data-init")) return;
     root.setAttribute("data-init", "1");
     var off = doc.querySelector("[data-tm-off]");
-    var PLAYLOG = "https://n8n.mellowmountainradio.com/webhook/kazm-playlog";
-    var CHARTS = "https://n8n.mellowmountainradio.com/webhook/kazm-charts";
+    var PLAYLOG = "https://mcp.mellowmountainradio.com/playlog";
+    var CHARTS = "https://mcp.mellowmountainradio.com/charts";
     var dial = root.querySelector("[data-tm-dial]"), dateIn = root.querySelector("[data-tm-date]"),
       timeIn = root.querySelector("[data-tm-time]"), timeRange = root.querySelector("[data-tm-timerange]"),
       goBtn = root.querySelector("[data-tm-go]"), ansEl = root.querySelector("[data-tm-answer]"),
