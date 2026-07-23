@@ -2,6 +2,20 @@ import express from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
+import { readFileSync, writeFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import webpush from "web-push";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const SUBS_FILE = join(__dirname, "push-subs.json");
+const VAPID_PUBLIC  = "BH1bX1nN1mAHuXoKxJXiwCq3cCGAxAvzha3gUHeT7gk2leZkb4dnHErh07Jmz8IeiAsO4CKcYOAe6wYw8WVqDLE";
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || "";
+if (VAPID_PRIVATE) {
+  webpush.setVapidDetails("mailto:chuck@mellowmountainradio.com", VAPID_PUBLIC, VAPID_PRIVATE);
+}
+function loadSubs()    { try { return JSON.parse(readFileSync(SUBS_FILE, "utf8")); } catch { return []; } }
+function saveSubs(arr) { writeFileSync(SUBS_FILE, JSON.stringify(arr, null, 2)); }
 
 const PORT      = process.env.PORT      || 3000;
 const AZ_HOST   = (process.env.AZ_HOST  || "https://streaming.mellowmountainradio.com").replace(/\/$/,"");
@@ -755,7 +769,70 @@ function buildServer() {
 const app = express();
 app.use(express.json());
 
-// MCP auto-discovery endpoints (Smithery, official registry, etc.)
+// ── Push notification hub ─────────────────────────────────────────────────────
+
+// CORS preflight for browser push subscription calls
+app.options("/push/:any", (_req, res) => {
+  res.set({ "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
+  res.sendStatus(204);
+});
+
+// Store / update a subscription
+app.post("/push/subscribe", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  const { subscription, topic = "alerts", song = null } = req.body || {};
+  if (!subscription?.endpoint) return res.status(400).json({ error: "Missing subscription.endpoint" });
+  const subs = loadSubs();
+  const idx  = subs.findIndex(s => s.endpoint === subscription.endpoint);
+  const entry = { endpoint: subscription.endpoint, keys: subscription.keys || {}, topic, song, ts: new Date().toISOString() };
+  if (idx >= 0) subs[idx] = entry; else subs.push(entry);
+  saveSubs(subs);
+  res.json({ ok: true, total: subs.length });
+});
+
+// Remove a subscription
+app.post("/push/unsubscribe", (req, res) => {
+  const { endpoint } = req.body || {};
+  if (!endpoint) return res.status(400).json({ error: "Missing endpoint" });
+  const subs = loadSubs().filter(s => s.endpoint !== endpoint);
+  saveSubs(subs);
+  res.json({ ok: true });
+});
+
+// List subscriptions — internal, for n8n and the push sender
+app.get("/push/subscriptions", (req, res) => {
+  const { topic } = req.query;
+  let subs = loadSubs();
+  if (topic) subs = subs.filter(s => s.topic === topic);
+  res.json({ subscriptions: subs, total: subs.length });
+});
+
+// Send a push notification to all subscribers matching a topic
+app.post("/push/send", async (req, res) => {
+  const { topic, title, body, url = "/", icon = "/icon-192.png", tag } = req.body || {};
+  if (!title || !body) return res.status(400).json({ error: "Missing title or body" });
+  if (!VAPID_PRIVATE)  return res.status(503).json({ error: "VAPID_PRIVATE_KEY not set" });
+
+  const subs    = loadSubs().filter(s => !topic || s.topic === topic);
+  const payload = JSON.stringify({ title, body, url, icon, tag: tag || `kazm-${topic || "alert"}` });
+  const opts    = { vapidDetails: { subject: "mailto:chuck@mellowmountainradio.com", publicKey: VAPID_PUBLIC, privateKey: VAPID_PRIVATE } };
+
+  const results = await Promise.allSettled(
+    subs.map(s => webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, payload, opts))
+  );
+
+  // Prune gone subscriptions (410 / 404)
+  const dead = subs
+    .filter((_, i) => results[i].status === "rejected" && [404, 410].includes(results[i].reason?.statusCode))
+    .map(s => s.endpoint);
+  if (dead.length) saveSubs(loadSubs().filter(s => !dead.includes(s.endpoint)));
+
+  const sent   = results.filter(r => r.status === "fulfilled").length;
+  const failed = results.filter(r => r.status === "rejected").length;
+  res.json({ ok: true, sent, failed, pruned: dead.length });
+});
+
+// ── MCP auto-discovery endpoints (Smithery, official registry, etc.)
 app.get("/.well-known/mcp-registry-auth", (_req, res) => {
   res.setHeader("Content-Type", "text/plain");
   res.send("v=MCPv1; k=ed25519; p=1RUaBvZhCCxIHpcOcFbQueEHsX5ameBW7GlG67C+hXA=");

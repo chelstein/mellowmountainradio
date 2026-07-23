@@ -56,6 +56,58 @@ Edit the `sources` map in the **Resolve source** Code node. To add a brand-new
 feed, also add the key → URL pair to the `FEEDS` map in `main.js` and reference
 it with `data-feed="<key>"` on the page.
 
+## Push notifications, contest entries, and fire/weather alerts
+
+Three new workflows live alongside the feed proxy.
+
+### Prerequisites (one time)
+
+On the VPS, set the VAPID private key as an environment variable before restarting the MCP server:
+```
+VAPID_PRIVATE_KEY=7M8asR22DbHH-Ii52brxrrNwSJXxY0cVGLuK2x60zNs
+```
+Add it to whatever process manager config keeps the `kazm-mcp` PM2 process running
+(e.g. `ecosystem.config.cjs` or `/etc/environment`). The key is never in this repo.
+
+### kazm-push-register — push subscription storage
+
+**File:** `kazm-push-register.workflow.json`  
+**Endpoint:** `POST https://n8n.mellowmountainradio.com/webhook/kazm-push-register`
+
+Receives a PushSubscription object from the site's service worker and stores it in
+the MCP server's push hub at `mcp.mellowmountainradio.com/push/subscribe`.
+Subscriptions are deduplicated by endpoint and persisted to `push-subs.json` on the MCP VPS.
+
+### kazm-contest-entry — contest entry collection
+
+**File:** `kazm-contest-entry.workflow.json`  
+**Endpoint:** `POST https://n8n.mellowmountainradio.com/webhook/kazm-contest-entry`
+
+Accepts `{ name, phone, email, contest, ts }` and stores in the workflow's static data
+(persisted in n8n's database — survives restarts). Up to 10,000 entries per workflow.
+To export, open the workflow in n8n and inspect the Code node's static data via
+**Executions → View data**, or add a Google Sheets node to sync.
+
+### kazm-push-alerts — fire and EAS alert sender
+
+**File:** `kazm-push-alerts.workflow.json`
+
+Runs every 10 minutes. Calls the KAZM MCP server (`mcp.mellowmountainradio.com/mcp`)
+for live fire restriction level and NWS/EAS alerts. When either changes, it sends a
+Web Push notification to all `alerts` subscribers via the MCP push hub.
+
+### Import & activate
+
+1. **Workflows → Import from File** — import each `.workflow.json`.
+2. **Activate** each workflow (top-right toggle).
+3. Verify the push-register endpoint:
+   ```
+   curl -X POST https://n8n.mellowmountainradio.com/webhook/kazm-push-register \
+     -H 'Content-Type: application/json' \
+     -d '{"subscription":{"endpoint":"https://test.example/push/abc","keys":{"p256dh":"test","auth":"test"}},"topic":"alerts"}'
+   ```
+   Should return `{"ok":true,"total":1}`.
+
 ## Scoreboards: make them CORS-open too
 
 The scoreboard webhooks already work, but if they're locked to a single origin

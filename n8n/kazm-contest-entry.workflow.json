@@ -1,0 +1,54 @@
+{
+  "name": "KAZM Contest Entry",
+  "nodes": [
+    {
+      "id": "ce-001",
+      "name": "Receive Entry",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kazm-contest-entry",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "webhookId": "kazm-contest-entry"
+    },
+    {
+      "id": "ce-002",
+      "name": "Validate and Store",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\nif (!body.name || !body.contest) throw new Error('Missing name or contest');\n\nconst entry = {\n  name:    String(body.name    || '').slice(0, 120),\n  phone:   String(body.phone   || '').slice(0, 30),\n  email:   String(body.email   || '').slice(0, 120),\n  contest: String(body.contest || '').slice(0, 120),\n  ts:      body.ts || new Date().toISOString()\n};\n\nconst sd = $getWorkflowStaticData('global');\nsd.entries = sd.entries || [];\nsd.entries.push(entry);\nif (sd.entries.length > 10000) sd.entries = sd.entries.slice(-10000);\n\nreturn [{ json: { ok: true, total: sd.entries.length, entry } }];"
+      }
+    },
+    {
+      "id": "ce-003",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [680, 300],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, message: 'Entry received — good luck!' }) }}",
+        "options": { "responseCode": 200 }
+      }
+    }
+  ],
+  "connections": {
+    "Receive Entry":      { "main": [[{ "node": "Validate and Store", "type": "main", "index": 0 }]] },
+    "Validate and Store": { "main": [[{ "node": "Respond 200", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "KAZM" }]
+}

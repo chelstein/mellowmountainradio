@@ -1,0 +1,124 @@
+{
+  "name": "KAZM Push Alerts",
+  "nodes": [
+    {
+      "id": "pa-001",
+      "name": "Every 10 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 300],
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "minutes", "minutesInterval": 10 }]
+        }
+      }
+    },
+    {
+      "id": "pa-002",
+      "name": "Get Fire Restrictions (mmr MCP)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 200],
+      "parameters": {
+        "method": "POST",
+        "url": "https://mcp.mellowmountainradio.com/mcp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Accept", "value": "application/json, text/event-stream" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"get_fire_restrictions\",\"arguments\":{}},\"id\":1}",
+        "options": {}
+      }
+    },
+    {
+      "id": "pa-003",
+      "name": "Get EAS Alerts (mmr MCP)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 400],
+      "parameters": {
+        "method": "POST",
+        "url": "https://mcp.mellowmountainradio.com/mcp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Accept", "value": "application/json, text/event-stream" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"get_emergency_alerts\",\"arguments\":{\"severity\":\"Severe\"}},\"id\":2}",
+        "options": {}
+      }
+    },
+    {
+      "id": "pa-004",
+      "name": "Detect Changes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Parse mmr MCP responses\nfunction mcpText(item) {\n  try {\n    const r = item.json;\n    // Streamable HTTP may return result.content[0].text\n    const content = (r.result || {}).content || [];\n    if (content.length) return JSON.parse(content[0].text || '{}');\n    // Or result directly\n    return r.result || {};\n  } catch { return {}; }\n}\n\nconst fire = mcpText($('Get Fire Restrictions (mmr MCP)').first());\nconst eas  = mcpText($('Get EAS Alerts (mmr MCP)').first());\n\nconst sd = $getWorkflowStaticData('global');\n\nconst alerts = [];\n\n// Fire restriction change\nconst fireLevel = String(fire.level || fire.restriction_level || '').toLowerCase();\nif (fireLevel && fireLevel !== (sd.lastFireLevel || '')) {\n  sd.lastFireLevel = fireLevel;\n  const closed = ['high','very high','extreme','closure'].some(w => fireLevel.includes(w));\n  alerts.push({\n    topic: 'alerts',\n    title: `🔥 Fire Restriction Update — Sedona`,\n    body:  `${fire.summary || fire.description || ('Level: ' + fireLevel)}. Stay safe out there.`,\n    url:   '/weather.html',\n    tag:   'kazm-fire'\n  });\n}\n\n// New EAS alert\nconst easAlerts = eas.alerts || eas.features || [];\nconst easIds = easAlerts.map(a => a.id || a.properties?.id || '').filter(Boolean);\nconst newIds = easIds.filter(id => !(sd.lastEasIds || []).includes(id));\nif (newIds.length) {\n  sd.lastEasIds = easIds.slice(0, 50);\n  const top = easAlerts.find(a => newIds.includes(a.id || (a.properties || {}).id));\n  const props = top?.properties || top || {};\n  alerts.push({\n    topic: 'alerts',\n    title: `⚠️ ${props.event || 'Emergency Alert'} — Sedona Area`,\n    body:  `${props.headline || props.description || 'Check mellowmountainradio.com for details.'} `.slice(0, 180),\n    url:   '/weather.html',\n    tag:   'kazm-eas'\n  });\n}\n\nreturn alerts.map(a => ({ json: a }));"
+      }
+    },
+    {
+      "id": "pa-005",
+      "name": "Any Alerts?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [940, 300],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false, "typeValidation": "loose" },
+          "conditions": [
+            {
+              "leftValue": "={{ $items().length }}",
+              "operator": { "type": "number", "operation": "gt" },
+              "rightValue": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pa-006",
+      "name": "Send Push via MCP Hub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1180, 200],
+      "parameters": {
+        "method": "POST",
+        "url": "https://mcp.mellowmountainradio.com/push/send",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify({ topic: $json.topic, title: $json.title, body: $json.body, url: $json.url, tag: $json.tag }) }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Every 10 Minutes": {
+      "main": [
+        [
+          { "node": "Get Fire Restrictions (mmr MCP)", "type": "main", "index": 0 },
+          { "node": "Get EAS Alerts (mmr MCP)", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Get Fire Restrictions (mmr MCP)": { "main": [[{ "node": "Detect Changes", "type": "main", "index": 0 }]] },
+    "Get EAS Alerts (mmr MCP)": { "main": [[{ "node": "Detect Changes", "type": "main", "index": 0 }]] },
+    "Detect Changes": { "main": [[{ "node": "Any Alerts?", "type": "main", "index": 0 }]] },
+    "Any Alerts?": { "main": [[{ "node": "Send Push via MCP Hub", "type": "main", "index": 0 }], []] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "KAZM" }]
+}
