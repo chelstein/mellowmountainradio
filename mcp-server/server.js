@@ -8,6 +8,15 @@ import { dirname, join } from "path";
 import webpush from "web-push";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Load .env file from server directory (VPS-only, never committed)
+try {
+  const envLines = readFileSync(join(__dirname, ".env"), "utf8").split("\n");
+  for (const line of envLines) {
+    const m = line.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
+    if (m && !process.env[m[1]]) process.env[m[1]] = m[2].trim().replace(/^["']|["']$/g, "");
+  }
+} catch { /* no .env file is fine */ }
 const SUBS_FILE = join(__dirname, "push-subs.json");
 const VAPID_PUBLIC  = "BH1bX1nN1mAHuXoKxJXiwCq3cCGAxAvzha3gUHeT7gk2leZkb4dnHErh07Jmz8IeiAsO4CKcYOAe6wYw8WVqDLE";
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || "";
