@@ -911,11 +911,9 @@ app.get("/playlog", async (req, res) => {
     return res.status(400).json({ ok: false, error: "d=YYYY-MM-DD required" });
   try {
     // Phoenix = UTC-7 (no DST). Midnight Phoenix = 07:00 UTC.
-    const dayStart = new Date(d + "T07:00:00Z");
-    const dayEnd   = new Date(dayStart.getTime() + 86400000);
-    const start_ts = Math.floor(dayStart.getTime() / 1000);
-    const end_ts   = Math.floor(dayEnd.getTime()   / 1000);
-    const data = await azGet(`/api/station/${STATION}/history?start=${start_ts}&end=${end_ts}&rows=5000`);
+    const startISO = d + "T07:00:00Z";
+    const endISO   = new Date(new Date(startISO).getTime() + 86400000).toISOString().replace(/\.\d+Z$/, "Z");
+    const data = await azGet(`/api/station/${STATION}/history?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&rows=5000`);
     const plays = [];
     for (const p of (Array.isArray(data) ? data : [])) {
       const ti = p.song?.title  || p.title  || "";
@@ -938,10 +936,12 @@ app.get("/playlog", async (req, res) => {
 app.get("/charts", async (_req, res) => {
   setCors(res);
   try {
-    const now     = Math.floor(Date.now() / 1000);
-    const weekAgo = now - 7 * 86400;
-    const data    = await azGet(`/api/station/${STATION}/history?start=${weekAgo}&end=${now}&rows=5000`);
-    const since   = new Date(weekAgo * 1000).toISOString().slice(0, 10);
+    const nowMs     = Date.now();
+    const weekAgoMs = nowMs - 7 * 86400 * 1000;
+    const startISO  = new Date(weekAgoMs).toISOString().replace(/\.\d+Z$/, "Z");
+    const endISO    = new Date(nowMs).toISOString().replace(/\.\d+Z$/, "Z");
+    const data      = await azGet(`/api/station/${STATION}/history?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&rows=5000`);
+    const since     = new Date(weekAgoMs).toISOString().slice(0, 10);
     const songMap = {}, artistMap = {};
     for (const p of (Array.isArray(data) ? data : [])) {
       const ti = p.song?.title  || p.title  || "";
