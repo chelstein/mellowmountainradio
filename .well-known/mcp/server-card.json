@@ -1,0 +1,10 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.mellowmountainradio/kazm",
+  "title": "KAZM Mellow Mountain Radio",
+  "description": "20 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, concerts, and more for the Sedona/Verde Valley area.",
+  "version": "1.0.0",
+  "websiteUrl": "https://mellowmountainradio.com",
+  "repository": { "url": "https://github.com/chelstein/mellowmountainradio", "source": "github" },
+  "remotes": [{ "type": "streamable-http", "url": "https://mcp.mellowmountainradio.com/mcp" }]
+}

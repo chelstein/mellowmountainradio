@@ -9,7 +9,7 @@
      Google fonts, AzuraCast now-playing): NOT intercepted — straight to network,
      so streaming and live APIs are never touched by the cache.
 */
-var VERSION = "kazm-v140";
+var VERSION = "kazm-v141";
 var CORE = [
   "/", "/index.html", "/styles.css", "/main.js", "/manifest.webmanifest",
   "/offline.html", "/icon-192.png", "/icon-512.png",
@@ -86,29 +86,33 @@ self.addEventListener("fetch", function (e) {
 });
 
 /* ---------------------------------------------------------------------------
-   FUTURE: EAS / fire / severe-weather PUSH NOTIFICATIONS
-   ---------------------------------------------------------------------------
-   Intentionally NOT wired up yet — real push needs a backend to hold VAPID
-   keys and store subscriptions (n8n at n8n.mellowmountainradio.com could send
-   them). buoyIQ already delivers EAS today, so this stays a clean hook until
-   we stand up web-push. When ready:
-     1. Generate a VAPID keypair; expose the public key to the client.
-     2. Client: navigator.serviceWorker.ready -> pushManager.subscribe({
-          userVisibleOnly: true, applicationServerKey: <VAPID public> })
-        then POST the subscription to the backend.
-     3. Backend sends a Web Push payload on a new fire-level / severe alert.
-   Uncomment and implement against the real backend — do NOT ship fake pushes.
-
+   PUSH NOTIFICATIONS — fire/weather/EAS alerts + on-air request confirmations
+   VAPID public key: BH1bX1nN1mAHuXoKxJXiwCq3cCGAxAvzha3gUHeT7gk2leZkb4dnHErh07Jmz8IeiAsO4CKcYOAe6wYw8WVqDLE
+   Private key lives in n8n (kazm-push-register webhook).
+   Payload shape: { title, body, tag, url, icon }
+   ---------------------------------------------------------------------------*/
 self.addEventListener("push", function (e) {
   var data = {};
   try { data = e.data ? e.data.json() : {}; } catch (err) {}
-  e.waitUntil(self.registration.showNotification(data.title || "KAZM Alert", {
-    body: data.body || "", icon: "/icon-192.png", badge: "/icon-192.png",
-    tag: data.tag || "kazm-alert", data: { url: data.url || "/news.html#weather" }
-  }));
+  var opts = {
+    body: data.body || "Tune in to KAZM 106.5 Mellow Mountain Radio",
+    icon: data.icon || "/icon-192.png",
+    badge: "/icon-192.png",
+    tag: data.tag || "kazm-alert",
+    renotify: true,
+    data: { url: data.url || "/" }
+  };
+  e.waitUntil(self.registration.showNotification(data.title || "KAZM Mellow Mountain Radio", opts));
 });
 self.addEventListener("notificationclick", function (e) {
   e.notification.close();
-  e.waitUntil(self.clients.openWindow((e.notification.data && e.notification.data.url) || "/"));
+  e.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (cs) {
+      var target = (e.notification.data && e.notification.data.url) || "/";
+      for (var i = 0; i < cs.length; i++) {
+        if (cs[i].url.includes("mellowmountainradio.com")) { cs[i].focus(); cs[i].navigate(target); return; }
+      }
+      return self.clients.openWindow(target);
+    })
+  );
 });
---------------------------------------------------------------------------- */

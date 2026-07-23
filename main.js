@@ -8535,6 +8535,10 @@
     renderNow(lastNowData);
     onScroll();
     initContactSent();
+    initCurrentShow();
+    initNowShare();
+    initContests();
+    initPushNotifications();
   }
 
   function initContactSent() {
@@ -8907,6 +8911,241 @@
   // Install prompt: show a small, dismissible chip only when the browser says
   // the app is installable; hide it on install or dismiss. Remembers dismissal.
   var deferredPrompt = null, installChip = null;
+  /* =========================================================
+     PUSH NOTIFICATIONS
+     VAPID public key — matching private key lives in n8n
+     Supports two topics:
+       "alerts"  — fire/weather/EAS from NWS, sent by n8n
+       "request" — on-air notification when your requested song plays
+     ========================================================= */
+  var VAPID_PUB = "BH1bX1nN1mAHuXoKxJXiwCq3cCGAxAvzha3gUHeT7gk2leZkb4dnHErh07Jmz8IeiAsO4CKcYOAe6wYw8WVqDLE";
+  var PUSH_ENDPOINT = "https://n8n.mellowmountainradio.com/webhook/kazm-push-register";
+
+  function urlB64ToUint8(b64) {
+    var pad = "=".repeat((4 - b64.length % 4) % 4);
+    var raw = atob((b64 + pad).replace(/-/g, "+").replace(/_/g, "/"));
+    var arr = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
+
+  function initPushNotifications() {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+
+    function sendSub(sub, topic, song) {
+      return fetch(PUSH_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription: sub.toJSON(), topic: topic || "alerts", song: song || null })
+      }).catch(function () {});
+    }
+
+    function subscribePush(onDone) {
+      navigator.serviceWorker.ready.then(function (reg) {
+        return reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlB64ToUint8(VAPID_PUB)
+        });
+      }).then(function (sub) {
+        return sendSub(sub, "alerts", null).then(function () { onDone(sub, true); });
+      }).catch(function () { onDone(null, false); });
+    }
+
+    var alertBtn = doc.getElementById("push-alerts-btn");
+    if (alertBtn) {
+      var perm; try { perm = Notification.permission; } catch (e) { perm = "denied"; }
+      if (perm === "denied") {
+        alertBtn.style.display = "none";
+      } else {
+        navigator.serviceWorker.ready.then(function (reg) {
+          return reg.pushManager.getSubscription();
+        }).then(function (sub) {
+          if (sub) { alertBtn.textContent = "✓ Alerts on"; alertBtn.disabled = true; }
+          else alertBtn.style.display = "inline-flex";
+        }).catch(function () { alertBtn.style.display = "inline-flex"; });
+
+        alertBtn.addEventListener("click", function () {
+          alertBtn.textContent = "…";
+          alertBtn.disabled = true;
+          subscribePush(function (sub, ok) {
+            if (ok) { alertBtn.textContent = "✓ Alerts on"; }
+            else { alertBtn.textContent = "🔔 Get alerts"; alertBtn.disabled = false; }
+          });
+        });
+      }
+    }
+
+    // When a request is sent, register with push so n8n can notify when song airs
+    doc.addEventListener("kazm-request-sent", function (e) {
+      var song = e && e.detail;
+      if (!song) return;
+      navigator.serviceWorker.ready.then(function (reg) {
+        return reg.pushManager.getSubscription().then(function (sub) {
+          if (sub) return sendSub(sub, "request", { t: song.t, a: song.a });
+          var p; try { p = Notification.permission; } catch (_) { return; }
+          if (p !== "granted") return;
+          return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8(VAPID_PUB) })
+            .then(function (ns) { return sendSub(ns, "request", { t: song.t, a: song.a }); });
+        });
+      }).catch(function () {});
+    });
+  }
+
+  // Patch localStorage so we can detect when a song request is saved and
+  // fire a custom event — push subscription code listens for it above.
+  (function () {
+    var _set = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, val) {
+      _set.call(this, key, val);
+      if (key === "kazm-request-song") {
+        try { doc.dispatchEvent(new CustomEvent("kazm-request-sent", { detail: JSON.parse(val) })); } catch (_) {}
+      }
+    };
+  })();
+
+  /* =========================================================
+     SOCIAL SHARE — now playing
+     ========================================================= */
+  var _SHARE_SVG = '<svg viewBox="0 0 256 256" width="14" height="14" aria-hidden="true" style="fill:currentColor;flex-shrink:0"><path d="M229.7 109.7l-80-80A8 8 0 0 0 136 36v44c-90.8 9.4-128 63.4-128 140a8 8 0 0 0 15.4 2.9C38.3 168.5 73.3 140 136 137v43a8 8 0 0 0 13.7 5.7l80-80a8 8 0 0 0 0-11.3Z"/></svg>';
+
+  function initNowShare() {
+    var btn = doc.getElementById("nowcard-share");
+    if (!btn) return;
+    btn.innerHTML = _SHARE_SVG + " Share";
+    btn.addEventListener("click", function () {
+      var track = (doc.querySelector("[data-now-track]") || {}).textContent || "the music";
+      var artist = (doc.querySelector("[data-now-artist]") || {}).textContent || "";
+      var clean = artist && artist !== "Mellow Mountain Radio";
+      var text = (clean ? artist + " — " : "") + track + " on KAZM 106.5 Mellow Mountain Radio";
+      var url = "https://mellowmountainradio.com";
+      if (navigator.share) { navigator.share({ title: "KAZM", text: text, url: url }).catch(function () {}); return; }
+      var full = text + " " + url;
+      function fallback() {
+        window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url), "_blank", "width=560,height=420,noopener");
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(full).then(function () {
+          btn.textContent = "✓ Copied!";
+          setTimeout(function () { btn.innerHTML = _SHARE_SVG + " Share"; }, 2400);
+        }).catch(fallback);
+      } else { fallback(); }
+    });
+  }
+
+  /* =========================================================
+     CURRENT SHOW — auto-labels the nowcard with what's on air
+     ========================================================= */
+  var _SHOW_SCHED = [
+    { start: 6,  end: 12, label: "Mellow Mountain Music" },
+    { start: 12, end: 15, label: "Midday Mellow Mountain Music" },
+    { start: 15, end: 16, label: "The World Famous 3 O’Clock Three Pack" },
+    { start: 16, end: 22, label: "Sports & Music Block" },
+    { start: 22, end: 2,  label: "Coast to Coast AM" },
+    { start: 2,  end: 6,  label: "Overnight Mountain Music" }
+  ];
+
+  function getCurrentShow() {
+    // KAZM schedule is in America/Phoenix (UTC-7, no DST year-round)
+    var h;
+    try {
+      var px = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Phoenix" }));
+      h = px.getHours() + px.getMinutes() / 60;
+    } catch (_) {
+      // Intl unavailable — fall back to UTC-7 offset
+      var utc7 = new Date(Date.now() - 7 * 3600000);
+      h = utc7.getUTCHours() + utc7.getUTCMinutes() / 60;
+    }
+    for (var i = 0; i < _SHOW_SCHED.length; i++) {
+      var s = _SHOW_SCHED[i];
+      if (s.start > s.end ? (h >= s.start || h < s.end) : (h >= s.start && h < s.end)) return s.label;
+    }
+    return null;
+  }
+
+  function initCurrentShow() {
+    var el = doc.getElementById("nowcard-show");
+    if (!el) return;
+    function refresh() {
+      var name = getCurrentShow();
+      el.textContent = name || "";
+      el.style.display = name ? "" : "none";
+    }
+    refresh();
+    setInterval(refresh, 5 * 60000);
+  }
+
+  /* =========================================================
+     CONTESTS — entry form injected into contests.html
+     ========================================================= */
+  function initContests() {
+    // Gate strictly to contests.html — many other pages also have .card-grid
+    if (!/contests/.test(location.pathname)) return;
+    var main = doc.getElementById("main");
+    if (!main) return;
+
+    var sec = doc.createElement("section");
+    sec.className = "page-section";
+    sec.id = "contest-entry";
+    sec.innerHTML =
+      '<div class="wrap"><div class="section-head"><p class="eyebrow">Play along</p>' +
+      '<h2>Enter this week</h2>' +
+      '<p class="lead">Drop your name for this week’s giveaway. Winners are called live on-air — keep 106.5 locked.</p></div>' +
+      '<form class="contact-form" id="kazm-contest-form" novalidate>' +
+      '<div class="field"><label for="cf-name">Your name</label>' +
+      '<input id="cf-name" type="text" placeholder="First and last" required maxlength="80" autocomplete="name" /></div>' +
+      '<div class="field"><label for="cf-phone">Phone number</label>' +
+      '<input id="cf-phone" type="tel" placeholder="(928) 555-0100" required maxlength="20" autocomplete="tel" /></div>' +
+      '<div class="field"><label for="cf-email">Email <span style="font-weight:400;opacity:.65">(optional)</span></label>' +
+      '<input id="cf-email" type="email" placeholder="you@example.com" maxlength="120" autocomplete="email" /></div>' +
+      '<div class="field"><label for="cf-contest">Contest</label>' +
+      '<select id="cf-contest">' +
+      '<option value="ticket-tuesday">Ticket Tuesday</option>' +
+      '<option value="food-friday">Food Fridays</option>' +
+      '<option value="three-pack">3 O’Clock Three Pack</option>' +
+      '</select></div>' +
+      '<p style="font-size:13px;color:var(--muted);margin:0">Must be 18 or older to win. One entry per person per contest period.</p>' +
+      '<button type="submit" class="btn btn-primary">Enter now</button>' +
+      '<p class="rq-status" id="kazm-contest-status" aria-live="polite" style="margin-top:14px"></p>' +
+      '</form></div>';
+    main.appendChild(sec);
+
+    var form = doc.getElementById("kazm-contest-form");
+    var status = doc.getElementById("kazm-contest-status");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = (doc.getElementById("cf-name").value || "").trim();
+      var phone = (doc.getElementById("cf-phone").value || "").trim();
+      if (!name || !phone) {
+        status.textContent = "Name and phone are required.";
+        status.className = "rq-status rq-status--err";
+        return;
+      }
+      var submitBtn = form.querySelector("[type=submit]");
+      submitBtn.disabled = true; submitBtn.textContent = "Entering…";
+      fetch("https://n8n.mellowmountainradio.com/webhook/kazm-contest-entry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name,
+          phone: phone,
+          email: (doc.getElementById("cf-email").value || "").trim(),
+          contest: doc.getElementById("cf-contest").value,
+          ts: new Date().toISOString()
+        })
+      }).then(function (r) {
+        if (!r.ok && r.status !== 200) throw new Error("err");
+        return r.json().catch(function () { return {}; });
+      }).then(function () {
+        form.innerHTML = '<div class="cf-sent"><svg viewBox="0 0 256 256" width="36" height="36" aria-hidden="true" style="fill:currentColor;flex-shrink:0"><path d="M173.7 98.3a8 8 0 0 1 0 11.4l-56 56a8 8 0 0 1-11.4 0l-24-24a8 8 0 0 1 11.4-11.4L112 148.7l50.3-50.4a8 8 0 0 1 11.4 0zM232 128A104 104 0 1 1 128 24a104.1 104.1 0 0 1 104 104zm-16 0a88 88 0 1 0-88 88 88.1 88.1 0 0 0 88-88z"/></svg><p>You’re in the drawing! We’ll call if you win — stay tuned to 106.5.</p></div>';
+      }).catch(function () {
+        submitBtn.disabled = false; submitBtn.textContent = "Enter now";
+        status.textContent = "Something went wrong — try again in a moment.";
+        status.className = "rq-status rq-status--err";
+      });
+    });
+  }
+
   var INSTALL_DISMISS = "kazm-install-dismissed";
   function removeChip() { if (installChip) { installChip.remove(); installChip = null; } }
   window.addEventListener("beforeinstallprompt", function (e) {
