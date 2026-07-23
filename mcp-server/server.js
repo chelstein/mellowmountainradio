@@ -507,9 +507,22 @@ function buildServer() {
     { query: z.string().describe("Song title or artist name to request, e.g. 'Grateful Dead' or 'Truckin'") },
     async ({ query }) => {
       // Step 1: search AzuraCast requestable songs
-      const searchData = await azGet(
-        `/api/station/${STATION}/requests?searchPhrase=${encodeURIComponent(query)}&limit=5`
-      );
+      let searchData;
+      try {
+        searchData = await azGet(
+          `/api/station/${STATION}/requests?searchPhrase=${encodeURIComponent(query)}&limit=5`
+        );
+      } catch (err) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              message: "Song requests are not currently enabled on KAZM. To enable this feature, turn on Song Requests in AzuraCast → Station Settings → Features. Once enabled, this tool will queue songs for live broadcast.",
+            }),
+          }],
+        };
+      }
       const rows = Array.isArray(searchData) ? searchData : (searchData.rows || []);
 
       if (!rows.length) {
@@ -630,8 +643,8 @@ function buildServer() {
         .map(r => r.value);
 
       const errors = results
-        .filter(r => r.status === "rejected")
-        .map((r, i) => ({ source: sources[i]?.name, error: r.reason?.message }));
+        .map((r, i) => r.status === "rejected" ? { source: sources[i].name, error: r.reason?.message } : null)
+        .filter(Boolean);
 
       return {
         content: [{
