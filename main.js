@@ -54,7 +54,7 @@
           '<a role="menuitem" href="vibe.html">Cosmic Conditions</a><a role="menuitem" href="horoscope.html">Astrology</a><a role="menuitem" href="chakras.html">Chakras &amp; Tarot</a><a role="menuitem" href="soundhealing.html">Sound Healing</a><a role="menuitem" href="wildlife.html">Seen around Sedona</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="about"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">About</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="rewind.html">The Listeners&rsquo; Lounge</a><a role="menuitem" href="firstpeoples.html">First Peoples</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="ifoughtthelaw.html">I Fought the Law&hellip;</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="advertising.html">Advertising</a><a role="menuitem" href="contact.html">Contact</a>' +
+          '<a role="menuitem" href="about.html">About KAZM</a><a role="menuitem" href="rewind.html">The Listeners&rsquo; Lounge</a><a role="menuitem" href="firstpeoples.html">First Peoples</a><a role="menuitem" href="archives.html">KAZM Archives</a><a role="menuitem" href="ifoughtthelaw.html">I Fought the Law&hellip;</a><a role="menuitem" href="staff.html">Staff</a><a role="menuitem" href="advertising.html">Advertising</a><a role="menuitem" href="mcp.html">MCP Server</a><a role="menuitem" href="contact.html">Contact</a>' +
         '</div></li>' +
       '</ul></nav>' +
       '<div class="header-actions">' +
