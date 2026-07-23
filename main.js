@@ -9045,7 +9045,16 @@
   ];
 
   function getCurrentShow() {
-    var h = new Date().getHours() + new Date().getMinutes() / 60;
+    // KAZM schedule is in America/Phoenix (UTC-7, no DST year-round)
+    var h;
+    try {
+      var px = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Phoenix" }));
+      h = px.getHours() + px.getMinutes() / 60;
+    } catch (_) {
+      // Intl unavailable — fall back to UTC-7 offset
+      var utc7 = new Date(Date.now() - 7 * 3600000);
+      h = utc7.getUTCHours() + utc7.getUTCMinutes() / 60;
+    }
     for (var i = 0; i < _SHOW_SCHED.length; i++) {
       var s = _SHOW_SCHED[i];
       if (s.start > s.end ? (h >= s.start || h < s.end) : (h >= s.start && h < s.end)) return s.label;
@@ -9069,8 +9078,10 @@
      CONTESTS — entry form injected into contests.html
      ========================================================= */
   function initContests() {
+    // Gate strictly to contests.html — many other pages also have .card-grid
+    if (!/contests/.test(location.pathname)) return;
     var main = doc.getElementById("main");
-    if (!main || !main.querySelector(".card-grid")) return;
+    if (!main) return;
 
     var sec = doc.createElement("section");
     sec.className = "page-section";
