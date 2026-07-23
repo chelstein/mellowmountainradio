@@ -1116,4 +1116,62 @@ app.get("/docs", (_req, res) => {
 </html>`);
 });
 
+// POST /push/loves — link a push subscription to an artist for live alerts
+app.post("/push/loves", (req, res) => {
+  setCors(res);
+  const { endpoint, artist } = req.body || {};
+  if (!endpoint || !artist) return res.status(400).json({ ok: false, error: "endpoint and artist required" });
+  const subs = loadSubs();
+  const idx  = subs.findIndex(s => s.endpoint === endpoint);
+  if (idx < 0) return res.status(404).json({ ok: false, error: "subscription not found" });
+  if (!Array.isArray(subs[idx].loves)) subs[idx].loves = [];
+  const norm = artist.toLowerCase().trim();
+  if (!subs[idx].loves.some(a => a.toLowerCase() === norm)) subs[idx].loves.push(artist);
+  saveSubs(subs);
+  res.json({ ok: true, loves: subs[idx].loves });
+});
+
+app.options("/push/loves", (_req, res) => {
+  res.set({ "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
+  res.sendStatus(204);
+});
+
+// ── Artist alert polling loop ─────────────────────────────────────────────────
+// Check now-playing every 60s; push "your artist is on" to subscribers who loved them.
+
+let _lastAlertKey = "";
+setInterval(async () => {
+  if (!VAPID_PRIVATE) return;
+  try {
+    const data   = await azGet(`/api/station/${STATION}/nowplaying`);
+    const np     = Array.isArray(data) ? data[0] : data;
+    const title  = np?.now_playing?.song?.title  || "";
+    const artist = np?.now_playing?.song?.artist || "";
+    const key    = `${title}\x00${artist}`;
+    if (!title || !artist || key === _lastAlertKey) return;
+    _lastAlertKey = key;
+
+    const norm = artist.toLowerCase().trim();
+    const targets = loadSubs().filter(s => Array.isArray(s.loves) && s.loves.some(a => a.toLowerCase().trim() === norm));
+    if (!targets.length) return;
+
+    const payload = JSON.stringify({
+      title: `${artist} on KAZM right now`,
+      body:  title,
+      url:   "/",
+      icon:  "/icon-192.png",
+      tag:   "kazm-artist-alert",
+    });
+    const opts = { vapidDetails: { subject: "mailto:chuck@mellowmountainradio.com", publicKey: VAPID_PUBLIC, privateKey: VAPID_PRIVATE } };
+
+    const results = await Promise.allSettled(
+      targets.map(s => webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, payload, opts))
+    );
+    const dead = targets
+      .filter((_, i) => results[i].status === "rejected" && [404, 410].includes(results[i].reason?.statusCode))
+      .map(s => s.endpoint);
+    if (dead.length) saveSubs(loadSubs().filter(s => !dead.includes(s.endpoint)));
+  } catch {}
+}, 60000);
+
 app.listen(PORT, () => console.log(`KAZM MCP server listening on :${PORT}`));

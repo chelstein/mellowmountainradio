@@ -6763,6 +6763,15 @@
         lb.disabled = nb.disabled = true;
         fetch(PULSE_API, { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: now.title, artist: now.artist, vote: dir === 1 ? "love" : "nah" }) }).catch(function () {});
+        if (dir === 1 && now.artist && "serviceWorker" in navigator) {
+          navigator.serviceWorker.ready.then(function (reg) {
+            return reg.pushManager.getSubscription();
+          }).then(function (sub) {
+            if (!sub) return;
+            fetch(PUSH_LOVES, { method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ endpoint: sub.endpoint, artist: now.artist }) }).catch(function () {});
+          }).catch(function () {});
+        }
       }
       lb.addEventListener("click", function () { vote(1); });
       nb.addEventListener("click", function () { vote(-1); });
@@ -8919,7 +8928,8 @@
        "request" — on-air notification when your requested song plays
      ========================================================= */
   var VAPID_PUB = "BH1bX1nN1mAHuXoKxJXiwCq3cCGAxAvzha3gUHeT7gk2leZkb4dnHErh07Jmz8IeiAsO4CKcYOAe6wYw8WVqDLE";
-  var PUSH_ENDPOINT = "https://n8n.mellowmountainradio.com/webhook/kazm-push-register";
+  var PUSH_ENDPOINT = "https://mcp.mellowmountainradio.com/push/subscribe";
+  var PUSH_LOVES    = "https://mcp.mellowmountainradio.com/push/loves";
 
   function urlB64ToUint8(b64) {
     var pad = "=".repeat((4 - b64.length % 4) % 4);
