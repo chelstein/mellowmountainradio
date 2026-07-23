@@ -915,7 +915,7 @@ app.get("/playlog", async (req, res) => {
     const dayEnd   = new Date(dayStart.getTime() + 86400000);
     const start_ts = Math.floor(dayStart.getTime() / 1000);
     const end_ts   = Math.floor(dayEnd.getTime()   / 1000);
-    const data = await azGet(`/api/station/${STATION}/history?start_timestamp=${start_ts}&end_timestamp=${end_ts}&rows=5000`);
+    const data = await azGet(`/api/station/${STATION}/history?start=${start_ts}&end=${end_ts}&rows=5000`);
     const plays = [];
     for (const p of (Array.isArray(data) ? data : [])) {
       const ti = p.song?.title  || p.title  || "";
@@ -940,7 +940,7 @@ app.get("/charts", async (_req, res) => {
   try {
     const now     = Math.floor(Date.now() / 1000);
     const weekAgo = now - 7 * 86400;
-    const data    = await azGet(`/api/station/${STATION}/history?start_timestamp=${weekAgo}&end_timestamp=${now}&rows=5000`);
+    const data    = await azGet(`/api/station/${STATION}/history?start=${weekAgo}&end=${now}&rows=5000`);
     const since   = new Date(weekAgo * 1000).toISOString().slice(0, 10);
     const songMap = {}, artistMap = {};
     for (const p of (Array.isArray(data) ? data : [])) {
