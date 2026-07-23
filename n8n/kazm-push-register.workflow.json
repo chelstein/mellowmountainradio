@@ -1,0 +1,70 @@
+{
+  "name": "KAZM Push Register",
+  "nodes": [
+    {
+      "id": "pr-001",
+      "name": "Receive Subscription",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kazm-push-register",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "webhookId": "kazm-push-register"
+    },
+    {
+      "id": "pr-002",
+      "name": "Validate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\nconst sub  = body.subscription || body;\nif (!sub || !sub.endpoint) throw new Error('Missing subscription.endpoint');\nreturn [{ json: { subscription: sub, topic: body.topic || 'alerts', song: body.song || null } }];"
+      }
+    },
+    {
+      "id": "pr-003",
+      "name": "Store in MCP Push Hub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://mcp.mellowmountainradio.com/push/subscribe",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify({ subscription: $json.subscription, topic: $json.topic, song: $json.song }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "pr-004",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [920, 300],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}",
+        "options": { "responseCode": 200 }
+      }
+    }
+  ],
+  "connections": {
+    "Receive Subscription": { "main": [[{ "node": "Validate", "type": "main", "index": 0 }]] },
+    "Validate":             { "main": [[{ "node": "Store in MCP Push Hub", "type": "main", "index": 0 }]] },
+    "Store in MCP Push Hub":{ "main": [[{ "node": "Respond 200", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "KAZM" }]
+}
