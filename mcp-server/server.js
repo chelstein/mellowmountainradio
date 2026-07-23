@@ -4,10 +4,10 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { z } from "zod";
 
 const PORT      = process.env.PORT      || 3000;
-const AZ_HOST   = (process.env.AZ_HOST  || "https://streaming.mellowmountainradio.com").replace(/\/$/, "");
+const AZ_HOST   = (process.env.AZ_HOST  || "https://streaming.mellowmountainradio.com").replace(/\/$/,"");
 const STATION   = process.env.STATION_ID || "kazm";
 const AZ_KEY    = process.env.AZ_KEY    || "";
-const GH_RAW    = (process.env.GH_RAW   || "https://raw.githubusercontent.com/chelstein/mellowmountainradio/main").replace(/\/$/, "");
+const GH_RAW    = (process.env.GH_RAW   || "https://raw.githubusercontent.com/chelstein/mellowmountainradio/main").replace(/\/$/,"");
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -754,6 +754,44 @@ function buildServer() {
 
 const app = express();
 app.use(express.json());
+
+// MCP auto-discovery endpoints (Smithery, official registry, etc.)
+app.get("/.well-known/mcp-registry-auth", (_req, res) => {
+  res.setHeader("Content-Type", "text/plain");
+  res.send("v=MCPv1; k=ed25519; p=MCowBQYDK2VwAyEA1RUaBvZhCCxIHpcOcFbQueEHsX5ameBW7GlG67C+hXA=");
+});
+
+app.get("/.well-known/mcp.json", (_req, res) => {
+  res.json({
+    name: "KAZM Mellow Mountain Radio",
+    description: "20 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, concerts, and more for the Sedona/Verde Valley area.",
+    version: "1.0.0",
+    url: "https://mcp.mellowmountainradio.com/mcp",
+    documentation: "https://mcp.mellowmountainradio.com/docs",
+    transport: "streamable-http",
+    repository: "https://github.com/chelstein/mellowmountainradio",
+  });
+});
+
+app.get("/.well-known/mcp/server-card.json", (_req, res) => {
+  res.json({
+    $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    name: "com.mellowmountainradio/kazm",
+    title: "KAZM Mellow Mountain Radio",
+    description: "20 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, concerts, and more for the Sedona/Verde Valley area.",
+    version: "1.0.0",
+    websiteUrl: "https://mellowmountainradio.com",
+    repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
+    remotes: [{ type: "streamable-http", url: "https://mcp.mellowmountainradio.com/mcp" }],
+    _meta: {
+      "io.modelcontextprotocol.registry/publisher-provided": {
+        categories: ["radio", "local", "media", "weather", "entertainment"],
+        keywords: ["radio", "sedona", "arizona", "kazm", "music-request", "now-playing", "weather", "fire-restrictions"],
+        contact: "chuck@mellowmountainradio.com",
+      }
+    }
+  });
+});
 
 // Health / info
 app.get("/", (_req, res) => {
