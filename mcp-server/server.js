@@ -862,7 +862,7 @@ function setCors(res) {
   res.set({ "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
 }
 
-app.options(/^\/(request|requests|pulse|playlog|charts|roads)$/, (_req, res) => {
+app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft)$/, (_req, res) => {
   setCors(res); res.sendStatus(204);
 });
 
@@ -1013,6 +1013,34 @@ app.get("/roads", async (_req, res) => {
       };
     }).filter(e => e.desc);
     res.json({ ok: true, events });
+  } catch (e) {
+    res.status(502).json({ ok: false, error: String(e.message) });
+  }
+});
+
+// GET /aircraft — adsb.lol CORS proxy for the Living Scene aircraft layer
+app.get("/aircraft", async (req, res) => {
+  setCors(res);
+  const lat    = parseFloat(req.query.lat    || "34.8697");
+  const lon    = parseFloat(req.query.lon    || "-111.7610");
+  const radius = Math.min(parseInt(req.query.radius || "45", 10), 250);
+  try {
+    const r = await fetch(
+      `https://api.adsb.lol/v2/lat/${lat}/lon/${lon}/dist/${radius}`,
+      { headers: { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" }, signal: AbortSignal.timeout(8000) }
+    );
+    if (!r.ok) return res.status(502).json({ ok: false, error: `adsb.lol ${r.status}` });
+    const data = await r.json();
+    const aircraft = (data.ac || [])
+      .filter(a => a && a.alt_baro != null && a.alt_baro !== "ground" && a.dir != null)
+      .map(a => ({
+        flight:   (a.flight || "").trim(),
+        dir:      a.dir,
+        track:    a.track != null ? a.track : a.dir,
+        alt_baro: a.alt_baro,
+        dst:      a.dst || 0,
+      }));
+    res.json({ aircraft });
   } catch (e) {
     res.status(502).json({ ok: false, error: String(e.message) });
   }
