@@ -1104,6 +1104,345 @@ function buildServer() {
     }
   );
 
+  // 23. Moon Phase ──────────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_moon_phase",
+    "Returns tonight's moon phase for Sedona, AZ — illumination percent, phase name, and a 7-day lunar calendar. Perfect for stargazing and outdoor planning.",
+    { date: z.string().optional().describe("Date YYYY-MM-DD (default today)") },
+    async ({ date }) => {
+      const d = date || new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
+      function moonPhase(ds) {
+        const jd = new Date(ds + "T12:00:00Z").getTime() / 86400000 + 2440587.5;
+        let age = (jd - 2451549.5) % 29.53058867;
+        if (age < 0) age += 29.53058867;
+        const illum = Math.round(50 * (1 - Math.cos(age / 29.53058867 * 2 * Math.PI)) * 10) / 10;
+        let phase, emoji;
+        if      (age < 1.85)  { phase = "New Moon";        emoji = "🌑"; }
+        else if (age < 7.38)  { phase = "Waxing Crescent"; emoji = "🌒"; }
+        else if (age < 9.22)  { phase = "First Quarter";   emoji = "🌓"; }
+        else if (age < 14.77) { phase = "Waxing Gibbous";  emoji = "🌔"; }
+        else if (age < 16.61) { phase = "Full Moon";       emoji = "🌕"; }
+        else if (age < 22.15) { phase = "Waning Gibbous";  emoji = "🌖"; }
+        else if (age < 23.99) { phase = "Third Quarter";   emoji = "🌗"; }
+        else                  { phase = "Waning Crescent"; emoji = "🌘"; }
+        return { date: ds, phase, emoji, illumination_pct: illum, moon_age_days: Math.round(age * 10) / 10 };
+      }
+      const base = new Date(d + "T12:00:00Z");
+      const calendar = Array.from({ length: 7 }, (_, i) => {
+        const ds = new Date(base.getTime() + i * 86400000).toISOString().slice(0, 10);
+        return moonPhase(ds);
+      });
+      return { content: [{ type: "text", text: JSON.stringify({
+        location: "Sedona, AZ",
+        today: moonPhase(d),
+        next_7_days: calendar,
+        source: "Astronomical calculation",
+      }) }] };
+    }
+  );
+
+  // 24. Sedona Vortex Guide ─────────────────────────────────────────────────────
+  mcp.tool(
+    "get_vortex_guide",
+    "Returns a guide to Sedona's four famous energy vortex sites — Bell Rock, Cathedral Rock, Airport Mesa, and Boynton Canyon. Includes directions, hiking info, best visit times, and energy type.",
+    { site: z.enum(["bell_rock","cathedral_rock","airport_mesa","boynton_canyon"]).optional().describe("Filter to one vortex site") },
+    async ({ site }) => {
+      const vortexes = {
+        bell_rock: {
+          name: "Bell Rock", type: "Electric (masculine/upflow)",
+          coordinates: { lat: 34.7940, lon: -111.7614 },
+          trailhead: "Bell Rock Pathway trailhead, AZ-179, Village of Oak Creek",
+          hike: "Easy–moderate. Loop around base ~1.5 mi; summit scramble ~3 mi RT.",
+          best_time: "Sunrise or late afternoon golden hour",
+          parking: "Bell Rock Vista parking (free)",
+          description: "One of the most iconic and accessible vortexes. The bell-shaped red butte radiates an upward, energizing force said to strengthen the spirit and inspire action. Twisted junipers near the base are often cited as visible evidence of the vortex energy.",
+          distance_mi_from_kazm: 7,
+        },
+        cathedral_rock: {
+          name: "Cathedral Rock", type: "Magnetic (feminine/inflow)",
+          coordinates: { lat: 34.8214, lon: -111.7892 },
+          trailhead: "Back O' Beyond trailhead off AZ-179",
+          hike: "Moderate–strenuous. ~1.2 mi RT, 700 ft gain to saddle.",
+          best_time: "Late afternoon — rocks glow orange at sunset",
+          parking: "Red Rock Crossing / Crescent Moon picnic area ($12/car)",
+          description: "One of the most photographed spots in Arizona. The magnetic, inward-drawing energy is associated with feminine power, calm, and introspection. Oak Creek flows below, creating a reflective pool that mirrors the spires at sunset.",
+          distance_mi_from_kazm: 4,
+        },
+        airport_mesa: {
+          name: "Airport Mesa", type: "Electric (upflow)",
+          coordinates: { lat: 34.8717, lon: -111.7878 },
+          trailhead: "Airport Road, Sedona — turnout on the left climbing the mesa",
+          hike: "Easy. Flat loop ~0.7 mi along the rim.",
+          best_time: "Sunset — 360° panoramic views",
+          parking: "Small pullout on Airport Road (free, fills fast at sunset)",
+          description: "The most accessible vortex, a short walk from town. At 4,500 ft, it offers sweeping views of the red rocks in every direction. The electric energy here promotes clarity, vitality, and a sense of possibility.",
+          distance_mi_from_kazm: 2,
+        },
+        boynton_canyon: {
+          name: "Boynton Canyon", type: "Balanced (electric + magnetic)",
+          coordinates: { lat: 34.9053, lon: -111.8497 },
+          trailhead: "Boynton Canyon trailhead, Enchantment Resort road",
+          hike: "Moderate. ~6 mi RT through the canyon, 500 ft gain.",
+          best_time: "Morning — canyon fills with light from the east",
+          parking: "Boynton Canyon trailhead ($12 Red Rock Pass)",
+          description: "The most secluded of the four major vortexes, tucked in a red-walled canyon near Enchantment Resort. Both masculine and feminine energies converge here — a place of balance and deep renewal. Kachina Woman spire near the trailhead is sacred in Yavapai-Apache tradition.",
+          distance_mi_from_kazm: 6,
+        },
+      };
+      return { content: [{ type: "text", text: JSON.stringify({
+        location: "Sedona, AZ",
+        note: "Red Rock Pass required at most trailhead parking areas — buy at the Sedona Chamber visitor center or automated kiosks.",
+        vortex_sites: site ? { [site]: vortexes[site] } : vortexes,
+      }) }] };
+    }
+  );
+
+  // 25. NWS Weather Alerts ──────────────────────────────────────────────────────
+  mcp.tool(
+    "get_nws_alerts",
+    "Returns active National Weather Service alerts for the Sedona / Yavapai County area — watches, warnings, and advisories. Returns empty when conditions are clear.",
+    {},
+    async () => {
+      const r = await fetch(
+        "https://api.weather.gov/alerts/active?zone=AZZ018",
+        { headers: { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)", "Accept": "application/geo+json" }, signal: AbortSignal.timeout(8000) }
+      );
+      if (!r.ok) throw new Error(`NWS ${r.status}`);
+      const data = await r.json();
+      const alerts = (data.features || []).map(f => {
+        const p = f.properties || {};
+        return {
+          event:       p.event,
+          severity:    p.severity,
+          urgency:     p.urgency,
+          headline:    p.headline,
+          description: (p.description || "").slice(0, 500),
+          instruction: (p.instruction || "").slice(0, 300),
+          effective:   p.effective,
+          expires:     p.expires,
+          areas:       p.areaDesc,
+        };
+      });
+      return { content: [{ type: "text", text: JSON.stringify({
+        location: "Sedona / Yavapai County, AZ (NWS zone AZZ018)",
+        updated: new Date().toISOString(),
+        alert_count: alerts.length,
+        alerts,
+        source: "National Weather Service (weather.gov)",
+      }) }] };
+    }
+  );
+
+  // 26. Oak Creek Water Levels ──────────────────────────────────────────────────
+  mcp.tool(
+    "get_oak_creek_levels",
+    "Returns current Oak Creek stream level and discharge at the Sedona USGS gauge. Useful for creek crossing safety, swimming holes, and recreation planning.",
+    {},
+    async () => {
+      const r = await fetch(
+        "https://waterservices.usgs.gov/nwis/iv/?sites=09504420&parameterCd=00060,00065&format=json&siteStatus=all",
+        { headers: { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" }, signal: AbortSignal.timeout(10000) }
+      );
+      if (!r.ok) throw new Error(`USGS ${r.status}`);
+      const data = await r.json();
+      const result = {};
+      for (const ts of (data.value?.timeSeries || [])) {
+        const code = ts.variable?.variableCode?.[0]?.value;
+        const vals = ts.values?.[0]?.value || [];
+        const latest = vals[vals.length - 1];
+        if (latest) {
+          const key = code === "00060" ? "discharge_cfs" : code === "00065" ? "gage_height_ft" : code;
+          result[key] = { value: parseFloat(latest.value), dateTime: latest.dateTime };
+        }
+      }
+      const cfs = result.discharge_cfs?.value;
+      let level_label = null;
+      if      (cfs != null && cfs < 10)  level_label = "Very low — some sections may be dry";
+      else if (cfs != null && cfs < 50)  level_label = "Low — easy wading";
+      else if (cfs != null && cfs < 200) level_label = "Moderate — ankle to knee-deep";
+      else if (cfs != null && cfs < 500) level_label = "High — strong current, use caution";
+      else if (cfs != null)              level_label = "Flood stage — do not enter";
+      return { content: [{ type: "text", text: JSON.stringify({
+        station: "Oak Creek near Sedona, AZ",
+        station_id: "USGS 09504420",
+        updated: new Date().toISOString(),
+        level_label, ...result,
+        source: "USGS National Water Information System (waterservices.usgs.gov)",
+      }) }] };
+    }
+  );
+
+  // 27. Artist Info ─────────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_artist_info",
+    "Returns biography, genre tags, and album discography for the artist currently on KAZM, or any named artist, from MusicBrainz (open music encyclopedia).",
+    { artist: z.string().optional().describe("Artist name — omit to use the current now-playing artist") },
+    async ({ artist }) => {
+      let name = artist;
+      if (!name) {
+        const np = await azGet(`/api/nowplaying/${STATION}`);
+        name = np?.now_playing?.song?.artist || null;
+      }
+      if (!name) return { content: [{ type: "text", text: JSON.stringify({ error: "No artist playing and none provided" }) }] };
+      const hdrs = { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)", Accept: "application/json" };
+      const sr = await fetch(`https://musicbrainz.org/ws/2/artist?query=${encodeURIComponent(name)}&limit=1&fmt=json`, { headers: hdrs, signal: AbortSignal.timeout(8000) });
+      if (!sr.ok) throw new Error(`MusicBrainz ${sr.status}`);
+      const mb = (await sr.json()).artists?.[0];
+      if (!mb) return { content: [{ type: "text", text: JSON.stringify({ searched_for: name, found: false }) }] };
+      const dr = await fetch(`https://musicbrainz.org/ws/2/artist/${mb.id}?inc=url-rels+release-groups&fmt=json`, { headers: hdrs, signal: AbortSignal.timeout(8000) });
+      const full = dr.ok ? await dr.json() : mb;
+      const albums = (full["release-groups"] || []).filter(rg => rg["primary-type"] === "Album").slice(0, 10).map(rg => ({
+        title: rg.title, year: rg["first-release-date"]?.slice(0, 4) || null,
+      }));
+      return { content: [{ type: "text", text: JSON.stringify({
+        searched_for: name,
+        name:           full.name || mb.name,
+        disambiguation: full.disambiguation || mb.disambiguation || null,
+        type:           full.type || mb.type || null,
+        country:        full.country || mb.country || null,
+        life_span:      full["life-span"] || mb["life-span"] || null,
+        tags: (full.tags || mb.tags || []).slice(0, 8).map(t => t.name),
+        albums,
+        musicbrainz_id: mb.id,
+        source: "MusicBrainz (musicbrainz.org)",
+      }) }] };
+    }
+  );
+
+  // 28. Active Wildfires ─────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_wildfire_perimeters",
+    "Returns active wildfire incidents within ~150 miles of Sedona from the National Interagency Fire Center (NIFC). Especially critical during Arizona fire season (April–July). Returns name, acreage, containment, and distance from Sedona.",
+    {},
+    async () => {
+      const url = "https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/Active_Fires/FeatureServer/0/query"
+        + "?where=1%3D1&outFields=IncidentName,State,Lat,Long_,GISAcres,PercentContained,FireDiscoveryDateTime,FireBehaviorGeneral,IncidentTypeCategory"
+        + "&geometry=-114%2C32%2C-109%2C37&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects"
+        + "&outSR=4326&f=json&resultRecordCount=25";
+      const r = await fetch(url, { headers: { "User-Agent": "KAZM-MCP/1.0" }, signal: AbortSignal.timeout(12000) });
+      if (!r.ok) throw new Error(`NIFC ${r.status}`);
+      const data = await r.json();
+      const fires = (data.features || []).map(f => {
+        const a = f.attributes || {};
+        const lat = a.Lat || f.geometry?.y;
+        const lon = a.Long_ || f.geometry?.x;
+        let dist_mi = null;
+        if (lat && lon) {
+          const dLat = (lat - 34.8697) * Math.PI / 180;
+          const dLon = (lon - (-111.7610)) * Math.PI / 180;
+          const aa = Math.sin(dLat / 2) ** 2 + Math.cos(34.8697 * Math.PI / 180) * Math.cos(lat * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+          dist_mi = Math.round(2 * 3958.8 * Math.asin(Math.sqrt(aa)));
+        }
+        return {
+          name: a.IncidentName, state: a.State,
+          acres: a.GISAcres != null ? Math.round(a.GISAcres) : null,
+          contained_pct: a.PercentContained ?? null,
+          discovered: a.FireDiscoveryDateTime ? new Date(a.FireDiscoveryDateTime).toISOString() : null,
+          behavior: a.FireBehaviorGeneral || null,
+          lat, lon, dist_mi_from_sedona: dist_mi,
+        };
+      }).filter(f => f.name).sort((a, b) => (a.dist_mi_from_sedona || 999) - (b.dist_mi_from_sedona || 999));
+      return { content: [{ type: "text", text: JSON.stringify({
+        updated: new Date().toISOString(),
+        search_area: "Arizona and surrounding states",
+        active_fire_count: fires.length,
+        fires,
+        source: "National Interagency Fire Center (nifc.gov)",
+      }) }] };
+    }
+  );
+
+  // 29. Day in Music History ─────────────────────────────────────────────────────
+  mcp.tool(
+    "get_day_in_music_history",
+    "Returns notable music events that happened on this day in history — album releases, iconic concerts, chart milestones, artist birthdays — from Wikipedia's On This Day feed. Great for on-air trivia.",
+    { date: z.string().optional().describe("Date as MM-DD or YYYY-MM-DD — omit for today") },
+    async ({ date }) => {
+      let month, day;
+      if (date) {
+        const parts = date.replace(/^\d{4}-/, "").split("-");
+        month = parts[0]; day = parts[1];
+      } else {
+        const now = new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
+        [, month, day] = now.split("-");
+      }
+      const monthNames = ["","January","February","March","April","May","June","July","August","September","October","November","December"];
+      const r = await fetch(
+        `https://en.wikipedia.org/api/rest_v1/feed/onthisday/events/${month}/${day}`,
+        { headers: { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" }, signal: AbortSignal.timeout(10000) }
+      );
+      if (!r.ok) throw new Error(`Wikipedia OTD ${r.status}`);
+      const data = await r.json();
+      const re = /\b(music|song|album|band|singer|record|chart|concert|grammy|billboard|rock|pop|jazz|blues|country|hip.?hop|rapper|guitarist|drummer|piano|guitar|released|debut|tour|label|studio|lp|ep|single|top 40|hit|number one|mtv|radio)\b/i;
+      const events = (data.events || []).filter(e => re.test(e.text)).slice(0, 10)
+        .map(e => ({ year: e.year, event: e.text }));
+      const births = (data.births || []).filter(b => re.test(b.text)).slice(0, 5)
+        .map(b => ({ year: b.year, person: b.text }));
+      const deaths = (data.deaths || []).filter(d => re.test(d.text)).slice(0, 3)
+        .map(d => ({ year: d.year, person: d.text }));
+      return { content: [{ type: "text", text: JSON.stringify({
+        date: `${monthNames[parseInt(month, 10)]} ${parseInt(day, 10)}`,
+        music_events: events, music_birthdays: births, music_passings: deaths,
+        source: "Wikipedia On This Day (en.wikipedia.org)",
+      }) }] };
+    }
+  );
+
+  // 30. Sedona Visitor Info ──────────────────────────────────────────────────────
+  mcp.tool(
+    "get_visitor_info",
+    "Returns practical visitor information for Sedona, AZ — Red Rock Pass requirements, state park hours and fees, popular attractions, best seasons to visit, and local tips. Perfect for tourist queries.",
+    { topic: z.enum(["parks","passes","attractions","seasons","tips","all"]).optional().describe("Category of info — omit for all") },
+    async ({ topic = "all" }) => {
+      const info = {
+        passes: {
+          red_rock_pass: {
+            required_at: "Most Coconino National Forest trailheads, picnic areas, and developed sites",
+            day_pass: "$12/vehicle", weekly_pass: "$20/vehicle", annual_pass: "$40/vehicle",
+            where_to_buy: "Sedona Chamber Visitor Center (331 Forest Rd), automated kiosks at most trailheads, Recreation.gov",
+            note: "America the Beautiful (National Parks) pass covers Red Rock Pass sites",
+          },
+        },
+        parks: {
+          slide_rock_state_park: { hours: "8am–6pm (summer) / 8am–5pm (winter)", fee: "$30/vehicle summer, $20 winter", note: "Oak Creek natural water slide — timed entry required in summer" },
+          red_rock_state_park: { hours: "8am–5pm daily", fee: "$15/vehicle", note: "Nature center, guided hikes, birding along Oak Creek" },
+          dead_horse_ranch_state_park: { hours: "Open year-round", fee: "$10/vehicle", location: "Cottonwood, AZ (20 min from Sedona)", note: "Birding, fishing, camping along the Verde River" },
+        },
+        attractions: {
+          chapel_of_holy_cross: { hours: "9am–5pm Mon–Sat, 10am–5pm Sun", fee: "Free", note: "Iconic chapel built into the red rocks — one of Sedona's most visited sites" },
+          tlaquepaque: { hours: "Shops 10am–5pm daily", fee: "Free to enter", note: "Arts village with galleries, boutiques, and fountains" },
+          airport_mesa_overlook: { hours: "Sunrise to sunset", fee: "Free", note: "Best 360° panoramic sunset view in Sedona" },
+          pink_jeep_tours: { note: "Book in advance — most popular guided off-road tours in Sedona" },
+        },
+        seasons: {
+          spring: { months: "March–May", weather: "60s–80s°F", highlights: "Wildflower bloom, creek swimming, ideal hiking", note: "Busiest season — book lodging 3+ months ahead" },
+          summer: { months: "June–August", weather: "80s–100°F", highlights: "Monsoon storms (dramatic skies), Slide Rock, swimming", note: "Hike early morning. Monsoons start mid-July" },
+          fall: { months: "September–November", weather: "50s–80°F", highlights: "Best hiking weather, fall color, fewer crowds", note: "Shoulder season — better rates" },
+          winter: { months: "December–February", weather: "30s–60s°F", highlights: "Snow on red rocks (rare), quiet trails, astronomy", note: "Some trails may be icy. Gallery events and festivals" },
+        },
+        tips: [
+          "Arrive at popular trailheads before 8am — lots fill by 9am on weekends year-round",
+          "Download offline maps — cell service is spotty in Oak Creek Canyon and backcountry",
+          "Dogs are allowed on most trails but must be leashed in National Forest",
+          "KAZM 106.5 FM broadcasts emergency info during wildfires and floods",
+          "Oak Creek Canyon (Hwy 89A) can close during flash floods — check road conditions first",
+          "Stock up on groceries in Cottonwood (20 min) or Flagstaff (30 min) — limited options in Sedona",
+        ],
+        contact: {
+          sedona_chamber: "928-282-7722 | sedonachamber.com",
+          coconino_nf_ranger: "928-203-7500",
+          slide_rock_state_park: "928-282-3034",
+          kazm: "mellowmountainradio.com",
+        },
+      };
+      return { content: [{ type: "text", text: JSON.stringify({
+        location: "Sedona, AZ",
+        last_verified: "2025",
+        info: topic === "all" ? info : { [topic]: info[topic] },
+      }) }] };
+    }
+  );
+
   return mcp;
 }
 
@@ -1374,7 +1713,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "20 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, concerts, and more for the Sedona/Verde Valley area.",
+    description: "33 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, sports scores, moon phases, vortex guide, wildfires, Oak Creek levels, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -1388,7 +1727,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "20 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, concerts, and more for the Sedona/Verde Valley area.",
+    description: "33 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, sports scores, moon phases, vortex guide, wildfires, Oak Creek levels, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
@@ -1410,7 +1749,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   20,
+    tools:   33,
   });
 });
 
@@ -1446,7 +1785,7 @@ app.get("/docs", (_req, res) => {
 <p>Live data from Sedona's Mellow Mountain Radio — available to any MCP-compatible AI assistant.</p>
 <h2>Connect</h2>
 <pre>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</pre>
-<h2>Tools (20)</h2>
+<h2>Tools (30)</h2>
 <div class="tool"><h3>get_now_playing</h3><p>Currently on-air song with artist, album, artwork, and stream URL.</p></div>
 <div class="tool"><h3>get_listener_count</h3><p>Live listener count across all mounts.</p></div>
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
@@ -1472,6 +1811,14 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>get_air_quality <span class="new">NEW</span></h3><p>US AQI, PM2.5, PM10, ozone, and UV index for Sedona — from Open-Meteo. Wildfire smoke tracking built in.</p></div>
 <div class="tool"><h3>get_sports_scores</h3><p>Scores for Cardinals, Suns, D-backs, Mercury, ASU, Arizona Wildcats, NAU, and UFC. <code>team</code>: optional filter.</p></div>
 <div class="tool"><h3>get_sun_times</h3><p>Sunrise, sunset, solar noon, day length, twilight, and next solstice/equinox for Sedona. <code>date</code>: YYYY-MM-DD (optional).</p></div>
+<div class="tool"><h3>get_moon_phase <span class="new">NEW</span></h3><p>Tonight's moon phase, illumination %, and 7-day lunar calendar for Sedona stargazers. <code>date</code>: YYYY-MM-DD (optional).</p></div>
+<div class="tool"><h3>get_vortex_guide <span class="new">NEW</span></h3><p>Full guide to Sedona's 4 energy vortex sites — Bell Rock, Cathedral Rock, Airport Mesa, Boynton Canyon. Directions, hiking, best times. <code>site</code>: optional filter.</p></div>
+<div class="tool"><h3>get_nws_alerts <span class="new">NEW</span></h3><p>Active NWS weather watches, warnings, and advisories for Yavapai County / Sedona. Empty when skies are clear.</p></div>
+<div class="tool"><h3>get_oak_creek_levels <span class="new">NEW</span></h3><p>Current Oak Creek stream level and discharge from the USGS Sedona gauge — safe for wading or flood stage.</p></div>
+<div class="tool"><h3>get_artist_info <span class="new">NEW</span></h3><p>Biography, genre tags, and album discography for the current KAZM artist or any named artist. <code>artist</code>: optional.</p></div>
+<div class="tool"><h3>get_wildfire_perimeters <span class="new">NEW</span></h3><p>Active wildfire incidents near Sedona from NIFC — name, acreage, containment %, and distance from Sedona.</p></div>
+<div class="tool"><h3>get_day_in_music_history <span class="new">NEW</span></h3><p>Notable music events, birthdays, and milestones that happened on this day in history. <code>date</code>: MM-DD (optional).</p></div>
+<div class="tool"><h3>get_visitor_info <span class="new">NEW</span></h3><p>Practical Sedona visitor guide — Red Rock Pass, park hours/fees, attractions, best seasons, local tips. <code>topic</code>: optional filter.</p></div>
 <p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
