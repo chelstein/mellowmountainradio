@@ -1779,6 +1779,138 @@ function buildServer() {
     }
   );
 
+  // 36. Tarot Card ──────────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_tarot_card",
+    "Draws from the full 78-card Rider-Waite tarot deck. Returns the card of the day over Sedona (same for all listeners, turns at midnight MST), a single random draw, or a three-card past/present/future spread. Each card includes upright and reversed meanings, astrological correspondence, and suit element.",
+    {
+      spread: z.enum(["daily","single","three"]).optional()
+        .describe("daily = today's card of the day (deterministic, Sedona date); single = one random card; three = past/present/future. Defaults to daily."),
+      card_name: z.string().optional()
+        .describe("Look up a specific card by name, e.g. 'The Tower' or 'Ten of Cups'. Returns full upright and reversed meanings."),
+    },
+    async ({ spread, card_name }) => {
+      const MAJORS = [
+        { name: "The Fool",          glyph: "🌄", upright: "a leap of faith, fresh starts, innocence",                           reversed: "recklessness, cold feet, a start delayed",                 astro: "Air",            tag: "0 · Major Arcana" },
+        { name: "The Magician",      glyph: "✨", upright: "manifestation, skill, as above so below",                            reversed: "untapped talent, trickery, scattered will",                 astro: "Mercury ☿",      tag: "I · Major Arcana" },
+        { name: "The High Priestess",glyph: "🔮", upright: "intuition, the inner voice, mystery",                               reversed: "secrets kept from you, ignoring your gut",                  astro: "Moon ☽",         tag: "II · Major Arcana" },
+        { name: "The Empress",       glyph: "🌹", upright: "abundance, nurture, creation in bloom",                             reversed: "creative block, smothering, self-neglect",                  astro: "Venus ♀",        tag: "III · Major Arcana" },
+        { name: "The Emperor",       glyph: "🏛",  upright: "structure, authority, solid foundations",                           reversed: "rigidity, control, a challenge to power",                   astro: "Aries ♈",        tag: "IV · Major Arcana" },
+        { name: "The Hierophant",    glyph: "🗝",  upright: "tradition, teachers, spiritual guidance",                           reversed: "breaking convention, dogma, your own path",                 astro: "Taurus ♉",       tag: "V · Major Arcana" },
+        { name: "The Lovers",        glyph: "💞", upright: "union, alignment, a choice of the heart",                           reversed: "disharmony, imbalance, values at odds",                     astro: "Gemini ♊",       tag: "VI · Major Arcana" },
+        { name: "The Chariot",       glyph: "🏆", upright: "willpower, momentum, hard-won victory",                             reversed: "scattered force, stalling, losing the reins",               astro: "Cancer ♋",       tag: "VII · Major Arcana" },
+        { name: "Strength",          glyph: "🦁", upright: "quiet courage, gentle power, patience",                             reversed: "self-doubt, raw nerves, forcing it",                        astro: "Leo ♌",          tag: "VIII · Major Arcana" },
+        { name: "The Hermit",        glyph: "🏮", upright: "introspection, seeking, the inner lamp",                            reversed: "isolation, withdrawal, lost in the cave",                   astro: "Virgo ♍",        tag: "IX · Major Arcana" },
+        { name: "Wheel of Fortune",  glyph: "☸",  upright: "cycles turning, luck, a pivotal moment",                            reversed: "resisting change, a rough turn, delays",                    astro: "Jupiter ♃",      tag: "X · Major Arcana" },
+        { name: "Justice",           glyph: "⚖",  upright: "truth, fairness, cause and effect",                                 reversed: "imbalance, avoidance, unfair dealings",                     astro: "Libra ♎",        tag: "XI · Major Arcana" },
+        { name: "The Hanged Man",    glyph: "🙃", upright: "surrender, a new angle, sacred pause",                              reversed: "stalling, martyrdom, sacrifice in vain",                    astro: "Water",          tag: "XII · Major Arcana" },
+        { name: "Death",             glyph: "🦋", upright: "endings that free you, transformation",                             reversed: "clinging to what's done, stagnation",                       astro: "Scorpio ♏",      tag: "XIII · Major Arcana" },
+        { name: "Temperance",        glyph: "🕊",  upright: "balance, blending, the middle way",                                 reversed: "excess, impatience, forces out of mix",                     astro: "Sagittarius ♐",  tag: "XIV · Major Arcana" },
+        { name: "The Devil",         glyph: "⛓",  upright: "attachment, shadow work, the tether seen",                          reversed: "release, reclaiming power, chains loosening",               astro: "Capricorn ♑",    tag: "XV · Major Arcana" },
+        { name: "The Tower",         glyph: "🌩", upright: "sudden truth, upheaval that clears",                                reversed: "disaster averted, fear of the shake-up",                    astro: "Mars ♂",         tag: "XVI · Major Arcana" },
+        { name: "The Star",          glyph: "⭐", upright: "hope, healing, quiet renewal",                                      reversed: "dimmed faith, doubt, refill the well",                      astro: "Aquarius ♒",     tag: "XVII · Major Arcana" },
+        { name: "The Moon",          glyph: "🌙", upright: "dreams, the unknown, trust the tide",                               reversed: "confusion lifting, fear losing its grip",                   astro: "Pisces ♓",       tag: "XVIII · Major Arcana" },
+        { name: "The Sun",           glyph: "☀",  upright: "joy, vitality, everything illuminated",                             reversed: "clouded optimism, small delays, look up",                   astro: "Sun ☉",          tag: "XIX · Major Arcana" },
+        { name: "Judgement",         glyph: "📯", upright: "awakening, the call, rising renewed",                               reversed: "self-doubt, ignoring the call, harsh review",               astro: "Fire",           tag: "XX · Major Arcana" },
+        { name: "The World",         glyph: "🌍", upright: "completion, wholeness, the circle closed",                          reversed: "loose ends, almost there, close the loop",                  astro: "Saturn ♄",       tag: "XXI · Major Arcana" },
+      ];
+      const SUITS = [
+        { suit: "Wands",    glyph: "🔥", element: "Fire · will & creativity",
+          upright:  ["a spark of pure inspiration","planning, the world in your hand","expansion, ships coming in","celebration, homecoming, stable joy","friction, creative competition","victory, public recognition","defending your ground","swift movement, news in flight","resilience, the last push","a heavy load nearly carried home","an eager message, curiosity lit","bold pursuit, adventure at speed","warm confidence, magnetic energy","visionary leadership, the long view"],
+          reversed: ["a spark delayed, false starts","fear of the leap, small plans","obstacles, watch the horizon","shaky ground, celebrate later","conflict avoided or gone sour","a fall from favor, ego's cost","worn down, ground given","delays, crossed signals","paranoia, guard too high","burnout, put something down","bad news, a message astray","haste, a scattered chase","jealousy, warmth withdrawn","tyranny, vision without care"] },
+        { suit: "Cups",     glyph: "💧", element: "Water · heart & feeling",
+          upright:  ["new love, the heart overflows","partnership, mutual attraction","friendship, celebration shared","apathy, a gift unnoticed","grief, spilled cups — two remain","nostalgia, kindness returned","choices, dreams and illusions","walking away toward deeper meaning","contentment, the wish fulfilled","lasting happiness, family harmony","a tender message, imagination","romance, the offer of the heart","compassion, emotional depth","calm mastery of the heart"],
+          reversed: ["a blocked heart, self-love first","a bond strained, imbalance","overindulgence, the third wheel","waking up, new appetite","acceptance, moving through grief","stuck in the past, come home to now","clarity cutting through fog","one more try, fear of change","smugness, hollow satisfaction","discord at home, a dream deferred","creative block, moody waters","moodiness, a flatterer","emotions overflowing their banks","manipulation, the cold current"] },
+        { suit: "Swords",   glyph: "🗡",  element: "Air · mind & truth",
+          upright:  ["breakthrough, clarity's blade","a stalemate, eyes covered","heartbreak that tells the truth","rest, recovery, quiet the mind","a hollow win, count the cost","transition, calmer waters ahead","strategy, moving quietly","restriction that is mostly mental","anxiety in the small hours","an ending, rock bottom's gift","hunger for ideas, watchfulness","charging thought, the direct route","sharp perception, independent mind","intellectual command, hard truth"],
+          reversed: ["fog, a truth resisted","the blindfold slips, decision due","healing begins, forgiveness","restlessness, burnout warning","make amends, an old grudge","carrying baggage, rough water","conscience calls, come clean","self-imposed limits released","the dread was worse than the day","recovery, the worst is behind","gossip, all talk","recklessness, slow the charge","coldness, the edge overused","cruelty, abuse of the mind's power"] },
+        { suit: "Pentacles", glyph: "🪙", element: "Earth · body & work",
+          upright:  ["a seed of prosperity, opportunity","juggling, graceful balance","teamwork, craft recognized","holding on, security kept close","hard times, help nearby unseen","generosity, giving and receiving","patience, the long investment","apprenticeship, devoted craft","earned luxury, self-sufficiency","legacy, lasting wealth, roots","a student's spark, good news of work","steady effort, the reliable path","practical warmth, the nurturing home","abundance mastered, the good steward"],
+          reversed: ["an opportunity missed, greed","dropped balls, overcommitment","mediocrity, credit taken","letting go, generosity opens","recovery, the door was open","strings attached, debt's weight","impatience, effort misplaced","cut corners, half-hearted work","overwork, hollow success","a windfall with strings, family friction","procrastination, a lesson unheeded","boredom, stuck in a rut","self-care neglected, clutter","hoarding, worth measured wrong"] },
+      ];
+      const RANKS = ["Ace","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Page","Knight","Queen","King"];
+
+      // Build the full 78-card deck
+      const deck = [
+        ...MAJORS,
+        ...SUITS.flatMap(su => RANKS.map((r, i) => ({
+          name: `${r} of ${su.suit}`,
+          glyph: su.glyph,
+          upright: su.upright[i],
+          reversed: su.reversed[i],
+          astro: "",
+          tag: su.element,
+        }))),
+      ];
+
+      // Lookup by card name
+      if (card_name) {
+        const q = card_name.trim().toLowerCase();
+        const found = deck.find(c => c.name.toLowerCase() === q)
+          || deck.find(c => c.name.toLowerCase().includes(q));
+        if (!found) return { content: [{ type: "text", text: JSON.stringify({ error: `Card not found: "${card_name}". Try "The Tower", "Ten of Cups", "The Fool", etc.` }) }] };
+        return { content: [{ type: "text", text: JSON.stringify({
+          card: found.name, glyph: found.glyph, tag: found.tag, astro: found.astro || undefined,
+          upright: found.upright, reversed: found.reversed,
+          tarot_page: "https://mellowmountainradio.com/chakras.html",
+        }) }] };
+      }
+
+      const mode = spread || "daily";
+
+      // Card of the day — seeded by Sedona date (same for all listeners until midnight MST)
+      function dailyCard() {
+        const mstOffset = -7; // Arizona never observes DST
+        const day = Math.floor((Date.now() / 86400000) + (mstOffset / 24));
+        let h = (day * 2654435761) >>> 0;
+        h = (h ^ (h >>> 13)) >>> 0;
+        const idx = h % 78;
+        const isReversed = ((h >>> 8) % 100) < 20; // ~20% reversed for daily
+        return [{ card: deck[idx], reversed: isReversed, position: "Card of the Day" }];
+      }
+
+      // Cryptographically random draw using Node's crypto
+      function randomDraw(n) {
+        const { randomInt } = require("crypto");
+        const pool = [...deck];
+        const draws = [];
+        const positions = n === 3 ? ["Past", "Present", "Future"] : ["Your draw"];
+        for (let i = 0; i < n; i++) {
+          const idx = randomInt(0, pool.length);
+          const isReversed = randomInt(0, 100) < 30; // ~30% reversed, tradition-adjacent
+          draws.push({ card: pool.splice(idx, 1)[0], reversed: isReversed, position: positions[i] });
+        }
+        return draws;
+      }
+
+      const draws = mode === "daily" ? dailyCard()
+        : mode === "three" ? randomDraw(3)
+        : randomDraw(1);
+
+      const cards = draws.map(d => ({
+        position: d.position,
+        card: d.card.name,
+        glyph: d.card.glyph,
+        tag: d.card.tag,
+        astro: d.card.astro || undefined,
+        orientation: d.reversed ? "reversed" : "upright",
+        meaning: d.reversed ? d.card.reversed : d.card.upright,
+        upright: d.card.upright,
+        reversed: d.card.reversed,
+      }));
+
+      const sedonaDate = new Date(Date.now() + (-7 * 3600000)).toISOString().slice(0, 10);
+
+      return { content: [{ type: "text", text: JSON.stringify({
+        spread: mode === "daily" ? "Card of the Day — Sedona" : mode === "three" ? "Past · Present · Future" : "Single Draw",
+        date: sedonaDate,
+        note: mode === "daily" ? "Same card for every listener all day — turns at midnight Sedona time." : "Drawn fresh for this reading.",
+        cards,
+        tarot_page: "https://mellowmountainradio.com/chakras.html",
+      }) }] };
+    }
+  );
+
   // ── MCP Prompts ──────────────────────────────────────────────────────────────
   // Pre-built conversation starters that chain multiple KAZM tools together.
 
@@ -2144,7 +2276,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "36 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "37 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -2158,7 +2290,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "36 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "37 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
@@ -2180,7 +2312,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   36,
+    tools:   37,
   });
 });
 
@@ -2216,7 +2348,7 @@ app.get("/docs", (_req, res) => {
 <p>Live data from Sedona's Mellow Mountain Radio — available to any MCP-compatible AI assistant.</p>
 <h2>Connect</h2>
 <pre>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</pre>
-<h2>Tools (36)</h2>
+<h2>Tools (37)</h2>
 <div class="tool"><h3>get_now_playing</h3><p>Currently on-air song with artist, album, artwork, and stream URL.</p></div>
 <div class="tool"><h3>get_listener_count</h3><p>Live listener count across all mounts.</p></div>
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
@@ -2253,6 +2385,7 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>get_visitor_info <span class="new">NEW</span></h3><p>Practical Sedona visitor guide — Red Rock Pass, park hours/fees, attractions, best seasons, local tips. <code>topic</code>: optional filter.</p></div>
 <div class="tool"><h3>get_stargazing_conditions <span class="new">NEW</span></h3><p>Tonight's darkness window, moon interference rating, Milky Way status, and top astrophotography sites. <code>date</code>: YYYY-MM-DD (optional).</p></div>
 <div class="tool"><h3>get_photography_guide <span class="new">NEW</span></h3><p>Real golden hour / blue hour times, current light score, shooting tips, and camera settings for 6 iconic Sedona spots. <code>location</code>: optional filter.</p></div>
+<div class="tool"><h3>get_tarot_card <span class="new">NEW</span></h3><p>Full 78-card Rider-Waite tarot deck. <code>spread</code>: daily (card of the day over Sedona, same for all listeners), single (random draw), three (past/present/future). <code>card_name</code>: look up any specific card.</p></div>
 <p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
