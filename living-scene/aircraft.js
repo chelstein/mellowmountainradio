@@ -71,9 +71,16 @@ export function createAircraftLayer(canvas) {
       ctx.moveTo(px, y);
       ctx.lineTo(px - Math.sin(ang) * trail, y - Math.cos(ang) * trail * 0.3);
       ctx.stroke();
-      ctx.globalAlpha = 0.75 * fade;
+      ctx.save();
+      ctx.translate(px, y);
+      ctx.rotate(ang - Math.PI / 2); // track 0=north → canvas up
+      ctx.globalAlpha = 0.85 * fade;
       ctx.fillStyle = "rgba(255,255,255,1)";
-      ctx.beginPath(); ctx.arc(px, y, 1.6 * dpr, 0, Math.PI * 2); ctx.fill();
+      ctx.font = `${Math.round(13 * dpr)}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("✈", 0, 0);
+      ctx.restore();
       if (CONFIG.enableLabels && p.flight) {
         ctx.globalAlpha = 0.6 * fade;
         ctx.font = (10 * dpr) + "px sans-serif";
