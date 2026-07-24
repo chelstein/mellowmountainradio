@@ -1443,6 +1443,225 @@ function buildServer() {
     }
   );
 
+  // 34. Stargazing Conditions ───────────────────────────────────────────────────
+  mcp.tool(
+    "get_stargazing_conditions",
+    "Returns tonight's stargazing forecast for Sedona, AZ — astronomical darkness window, moon interference, Milky Way galactic core visibility, and best times to shoot the night sky. Sedona sits near the Verde Valley Dark Sky corridor.",
+    { date: z.string().optional().describe("Date YYYY-MM-DD (default tonight)") },
+    async ({ date }) => {
+      const d = date || new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
+      const r = await fetch(
+        `https://api.sunrise-sunset.org/json?lat=34.8697&lng=-111.7610&date=${d}&formatted=0`,
+        { signal: AbortSignal.timeout(8000) }
+      );
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const json = await r.json();
+      if (json.status !== "OK") throw new Error(json.status);
+      const res = json.results;
+
+      // Moon phase
+      const jd = new Date(d + "T12:00:00Z").getTime() / 86400000 + 2440587.5;
+      let age = (jd - 2451549.5) % 29.53058867;
+      if (age < 0) age += 29.53058867;
+      const moonIllum = Math.round(50 * (1 - Math.cos(age / 29.53058867 * 2 * Math.PI)) * 10) / 10;
+      let moonPhase, moonEmoji;
+      if      (age < 1.85)  { moonPhase = "New Moon";        moonEmoji = "🌑"; }
+      else if (age < 7.38)  { moonPhase = "Waxing Crescent"; moonEmoji = "🌒"; }
+      else if (age < 9.22)  { moonPhase = "First Quarter";   moonEmoji = "🌓"; }
+      else if (age < 14.77) { moonPhase = "Waxing Gibbous";  moonEmoji = "🌔"; }
+      else if (age < 16.61) { moonPhase = "Full Moon";       moonEmoji = "🌕"; }
+      else if (age < 22.15) { moonPhase = "Waning Gibbous";  moonEmoji = "🌖"; }
+      else if (age < 23.99) { moonPhase = "Third Quarter";   moonEmoji = "🌗"; }
+      else                  { moonPhase = "Waning Crescent"; moonEmoji = "🌘"; }
+
+      // Moon interference rating
+      let moonRating, moonNote;
+      if      (moonIllum < 15)  { moonRating = "Excellent"; moonNote = "Dark skies — minimal moon interference"; }
+      else if (moonIllum < 35)  { moonRating = "Good";      moonNote = "Crescent moon sets early — good window after moonset"; }
+      else if (moonIllum < 65)  { moonRating = "Fair";      moonNote = "Partial moon — shoot before moonrise or after moonset"; }
+      else if (moonIllum < 85)  { moonRating = "Poor";      moonNote = "Bright moon washes out fainter stars and Milky Way"; }
+      else                      { moonRating = "Bad";       moonNote = "Full or near-full moon — not recommended for deep-sky work"; }
+
+      // Milky Way galactic core season (best April–October, peak May–July at Sedona lat 34.9°N)
+      const [, mo] = d.split("-").map(Number);
+      let mwStatus, mwNote;
+      if      (mo >= 5 && mo <= 7) { mwStatus = "Peak season"; mwNote = "Galactic core rises ~9–11pm, crosses south, sets before dawn — best views of the year"; }
+      else if (mo === 4 || mo === 8) { mwStatus = "Good season"; mwNote = "Core visible 10pm–3am, high enough for wide-angle shots"; }
+      else if (mo === 3 || mo === 9) { mwStatus = "Shoulder season"; mwNote = "Core barely clears the southern horizon after midnight"; }
+      else                          { mwStatus = "Off season"; mwNote = "Galactic core below horizon or behind the sun — not visible"; }
+
+      return { content: [{ type: "text", text: JSON.stringify({
+        date: d,
+        location: "Sedona, AZ (Verde Valley Dark Sky corridor)",
+        darkness: {
+          astronomical_twilight_end:   res.astronomical_twilight_end,
+          astronomical_twilight_begin: res.astronomical_twilight_begin,
+          note: "True astronomical darkness between these two times — zero sky glow from the sun",
+        },
+        moon: {
+          phase: moonPhase, emoji: moonEmoji,
+          illumination_pct: moonIllum,
+          moon_age_days: Math.round(age * 10) / 10,
+          interference_rating: moonRating,
+          note: moonNote,
+        },
+        milky_way: { status: mwStatus, note: mwNote },
+        top_sites: [
+          { name: "Airport Mesa", why: "360° unobstructed horizon; low horizon to south means more Milky Way arc" },
+          { name: "Cathedral Rock reflection (Red Rock Crossing)", why: "Oak Creek creates mirror images; shoot south for the galactic core" },
+          { name: "Bell Rock", why: "Rock silhouette against star trails; flat parking lot for tripod setup" },
+          { name: "Boynton Canyon", why: "No light pollution to the west; good for Milky Way setting shots" },
+        ],
+        source: "sunrise-sunset.org + astronomical calculation",
+      }) }] };
+    }
+  );
+
+  // 35. Photography Guide ────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_photography_guide",
+    "Returns Sedona photography locations with today's real golden hour / blue hour times, current light quality score, and camera settings for each scenario. Great for landscape and astrophotography planning.",
+    { location: z.enum(["cathedral_rock","airport_mesa","bell_rock","chapel_holy_cross","devils_bridge","oak_creek_canyon"]).optional()
+        .describe("Filter to a single location — omit for all 6") },
+    async ({ location }) => {
+      const d = new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
+      const r = await fetch(
+        `https://api.sunrise-sunset.org/json?lat=34.8697&lng=-111.7610&date=${d}&formatted=0`,
+        { signal: AbortSignal.timeout(8000) }
+      );
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const json = await r.json();
+      const res = json.results;
+
+      // Compute light phase at current UTC moment
+      const nowMs = Date.now();
+      const sunriseMs  = new Date(res.sunrise).getTime();
+      const sunsetMs   = new Date(res.sunset).getTime();
+      const civilEndMs = new Date(res.civil_twilight_end).getTime();
+      const civilBegMs = new Date(res.civil_twilight_begin).getTime();
+      const astroEndMs = new Date(res.astronomical_twilight_end).getTime();
+      const astroBegMs = new Date(res.astronomical_twilight_begin).getTime();
+
+      // Golden hour: ~1 hour after sunrise and ~1 hour before sunset
+      const ghAMend  = sunriseMs  + 60 * 60 * 1000;
+      const ghPMbeg  = sunsetMs   - 60 * 60 * 1000;
+
+      let currentLight;
+      if      (nowMs < astroBegMs || nowMs > astroEndMs) currentLight = "Night — stars";
+      else if (nowMs < civilBegMs || nowMs > civilEndMs)  currentLight = "Astronomical twilight";
+      else if (nowMs < sunriseMs  || nowMs > sunsetMs)    currentLight = "Blue hour";
+      else if (nowMs < ghAMend)                           currentLight = "Morning golden hour";
+      else if (nowMs > ghPMbeg)                           currentLight = "Evening golden hour";
+      else                                                 currentLight = "Midday / flat light";
+
+      const lightScore = ["Morning golden hour","Evening golden hour"].includes(currentLight) ? 10
+        : currentLight === "Blue hour" ? 9
+        : currentLight.includes("twilight") ? 7
+        : currentLight === "Night — stars" ? 8
+        : 4;
+
+      function iso(ms) { return new Date(ms).toISOString(); }
+
+      const today_times = {
+        sunrise:        res.sunrise,
+        morning_golden_hour: { start: res.sunrise, end: iso(ghAMend) },
+        solar_noon:     res.solar_noon,
+        evening_golden_hour: { start: iso(ghPMbeg), end: res.sunset },
+        sunset:         res.sunset,
+        civil_twilight_blue_hour: { start: res.sunset, end: res.civil_twilight_end },
+        astronomical_darkness:    { start: res.astronomical_twilight_end, end: res.astronomical_twilight_begin },
+      };
+
+      const locations = {
+        cathedral_rock: {
+          name: "Cathedral Rock — Red Rock Crossing",
+          why: "Iconic spires reflected in Oak Creek. One of the 10 most photographed spots in the US.",
+          best_light: ["Sunset / evening golden hour", "Blue hour", "Milky Way (April–Oct)"],
+          composition_tips: "Wade or stand on rocks in the creek — reflection doubles the drama. Shoot south at sunset for color behind the towers.",
+          camera_settings: {
+            golden_hour_landscape: { aperture: "f/8–f/11", shutter: "1/60–1/200s", iso: "ISO 100–400", note: "Use polarizer to cut reflection glare" },
+            blue_hour_long_expo: { aperture: "f/8", shutter: "10–30s", iso: "ISO 100", note: "Tripod required; remote shutter recommended" },
+            milky_way: { aperture: "f/2.8–f/4", shutter: "15–20s", iso: "ISO 3200–6400", note: "Focus on a bright star, shoot south" },
+          },
+          parking: "Red Rock Crossing / Crescent Moon picnic area ($12/car). Fills by 4pm on weekends.",
+          coordinates: { lat: 34.8214, lon: -111.7892 },
+        },
+        airport_mesa: {
+          name: "Airport Mesa Overlook",
+          why: "360° panoramic views over Sedona. Best spot for Milky Way arcs and city-light foregrounds.",
+          best_light: ["Sunset", "Blue hour", "Night / astrophotography"],
+          composition_tips: "Hike 5 min past the main overlook for unobstructed southern horizon. The twinkling Sedona lights below add depth to night shots.",
+          camera_settings: {
+            sunset_landscape: { aperture: "f/8–f/11", shutter: "1/100–1/400s", iso: "ISO 100" },
+            blue_hour: { aperture: "f/8", shutter: "5–15s", iso: "ISO 400–800", note: "Bracket 3 exposures for HDR" },
+            milky_way: { aperture: "f/2.8", shutter: "20s (500 rule: 500/focal_len)", iso: "ISO 3200–12800" },
+          },
+          parking: "Small pullout on Airport Road (free). Arrives fast at sunset — be there 90 min early.",
+          coordinates: { lat: 34.8717, lon: -111.7878 },
+        },
+        bell_rock: {
+          name: "Bell Rock & Courthouse Butte",
+          why: "Iconic bell-shaped butte glowing orange at sunrise. Great for silhouettes and foreground interest.",
+          best_light: ["Sunrise / morning golden hour", "Late afternoon warm light"],
+          composition_tips: "Position Bell Rock on the left third, Courthouse Butte on the right. Walk the loop trail to find leading-line paths toward the rocks.",
+          camera_settings: {
+            sunrise: { aperture: "f/8", shutter: "1/60–1/250s", iso: "ISO 100–400", note: "Expose for the sky — rocks will glow in warm light" },
+            telephoto_detail: { aperture: "f/5.6–f/8", shutter: "1/500s", iso: "ISO 200–400", lens: "70–200mm for rock texture" },
+          },
+          parking: "Bell Rock Vista parking (free). Arrive by 7am for sunrise.",
+          coordinates: { lat: 34.7940, lon: -111.7614 },
+        },
+        chapel_holy_cross: {
+          name: "Chapel of the Holy Cross — Blue Hour",
+          why: "Modernist chapel built directly into the red rock. The interior and spire light up beautifully at blue hour.",
+          best_light: ["Blue hour (20–40 min after sunset)", "Overcast / diffused light for exterior"],
+          composition_tips: "Stand on the approach road looking up — the chapel frames perfectly in a 24mm or 35mm lens. Include the cross and rock in the same shot.",
+          camera_settings: {
+            blue_hour: { aperture: "f/5.6", shutter: "2–8s", iso: "ISO 400–800", note: "Chapel interior lights come on at dusk — perfect contrast" },
+            overcast_exterior: { aperture: "f/8", shutter: "1/60–1/250s", iso: "ISO 400" },
+          },
+          parking: "Chapel Road parking lot (free). Chapel open 9am–5pm but the exterior and overlook are always accessible.",
+          coordinates: { lat: 34.8398, lon: -111.7670 },
+        },
+        devils_bridge: {
+          name: "Devil's Bridge — Natural Arch",
+          why: "Largest natural sandstone arch in the Verde Valley. Classic shot: person standing on the bridge with blue sky and red rock canyon below.",
+          best_light: ["Sunrise — soft light, empty trail", "Overcast days — even exposure, no harsh shadows"],
+          composition_tips: "Hike in by 6:30am to beat crowds for the bridge-standing shot. Shoot with wide angle (16–24mm) from the overlook rock to include canyon depth.",
+          camera_settings: {
+            person_on_bridge: { aperture: "f/8–f/11", shutter: "1/250s", iso: "ISO 200–400", note: "Expose for the sky — use fill flash or reflector for the person" },
+            sunrise_canyon: { aperture: "f/8", shutter: "1/100s", iso: "ISO 100", note: "Polarizer reduces haze and deepens blue sky" },
+          },
+          parking: "Dry Creek trailhead ($12 Red Rock Pass). 4.4 mi RT — moderate. Runs out of parking by 8am on weekends.",
+          coordinates: { lat: 34.9047, lon: -111.8164 },
+        },
+        oak_creek_canyon: {
+          name: "Oak Creek Canyon — Slide Rock Area",
+          why: "Towering canyon walls, rushing water, and brilliant fall color in October–November. One of Arizona's most scenic drives.",
+          best_light: ["Midday (canyon walls block direct sunrise/sunset)", "Fall color (mid-Oct to mid-Nov)", "After rain for rich saturation"],
+          composition_tips: "The canyon runs N-S; midday light bounces off the walls and illuminates the creek. Shoot up-canyon for leading lines. Slide Rock's red slick is best photographed in the first and last hours of canyon light (~10am and ~3pm).",
+          camera_settings: {
+            canyon_landscape: { aperture: "f/8–f/11", shutter: "1/100–1/500s", iso: "ISO 100–400", note: "CPL filter essential for water reflections" },
+            running_water: { aperture: "f/16", shutter: "1/4–1s", iso: "ISO 100", note: "ND filter for silky water in bright midday" },
+            fall_color: { aperture: "f/8", shutter: "1/100s", iso: "ISO 200", note: "Shoot on overcast days — cloudy light saturates the yellows and reds without blowing highlights" },
+          },
+          parking: "Slide Rock State Park ($30/car summer, $20 winter). Timed entry required in summer.",
+          coordinates: { lat: 34.9420, lon: -111.7515 },
+        },
+      };
+
+      const result = location ? { [location]: locations[location] } : locations;
+      return { content: [{ type: "text", text: JSON.stringify({
+        location_context: "Sedona, AZ",
+        date: d,
+        current_light_phase: currentLight,
+        current_light_score: `${lightScore}/10`,
+        today_times,
+        locations: result,
+      }) }] };
+    }
+  );
+
   return mcp;
 }
 
@@ -1713,7 +1932,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "33 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, sports scores, moon phases, vortex guide, wildfires, Oak Creek levels, and more for Sedona/Verde Valley.",
+    description: "35 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -1727,7 +1946,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "33 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, road conditions, sports scores, moon phases, vortex guide, wildfires, Oak Creek levels, and more for Sedona/Verde Valley.",
+    description: "35 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
@@ -1749,7 +1968,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   33,
+    tools:   35,
   });
 });
 
@@ -1785,7 +2004,7 @@ app.get("/docs", (_req, res) => {
 <p>Live data from Sedona's Mellow Mountain Radio — available to any MCP-compatible AI assistant.</p>
 <h2>Connect</h2>
 <pre>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</pre>
-<h2>Tools (30)</h2>
+<h2>Tools (35)</h2>
 <div class="tool"><h3>get_now_playing</h3><p>Currently on-air song with artist, album, artwork, and stream URL.</p></div>
 <div class="tool"><h3>get_listener_count</h3><p>Live listener count across all mounts.</p></div>
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
@@ -1819,6 +2038,8 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>get_wildfire_perimeters <span class="new">NEW</span></h3><p>Active wildfire incidents near Sedona from NIFC — name, acreage, containment %, and distance from Sedona.</p></div>
 <div class="tool"><h3>get_day_in_music_history <span class="new">NEW</span></h3><p>Notable music events, birthdays, and milestones that happened on this day in history. <code>date</code>: MM-DD (optional).</p></div>
 <div class="tool"><h3>get_visitor_info <span class="new">NEW</span></h3><p>Practical Sedona visitor guide — Red Rock Pass, park hours/fees, attractions, best seasons, local tips. <code>topic</code>: optional filter.</p></div>
+<div class="tool"><h3>get_stargazing_conditions <span class="new">NEW</span></h3><p>Tonight's darkness window, moon interference rating, Milky Way status, and top astrophotography sites. <code>date</code>: YYYY-MM-DD (optional).</p></div>
+<div class="tool"><h3>get_photography_guide <span class="new">NEW</span></h3><p>Real golden hour / blue hour times, current light score, shooting tips, and camera settings for 6 iconic Sedona spots. <code>location</code>: optional filter.</p></div>
 <p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
