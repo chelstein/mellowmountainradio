@@ -537,23 +537,107 @@ function buildServer() {
     }
   );
 
-  // 14. Chakra Frequencies ──────────────────────────────────────────────────────
+  // 14. Chakra Guide ────────────────────────────────────────────────────────────
   mcp.tool(
-    "get_chakra_frequencies",
-    "Returns all seven chakras with their associated sound healing frequencies, musical notes, colors, body locations, and themes. Useful for guiding listeners to the right singing bowl or tone session.",
+    "get_chakra_guide",
+    "Full guide to the seven chakras — Sanskrit name, Solfeggio frequency, musical note, color, element, bija mantra, petal count, governing theme, balanced and blocked states, affirmation, crystals, essential oils, yoga pose, and the Sedona vortex tied to each center.",
     {
       chakra: z.enum(["root","sacral","solar_plexus","heart","throat","third_eye","crown"]).optional()
         .describe("Specific chakra — omit for all seven"),
     },
     async ({ chakra }) => {
       const CHAKRAS = [
-        { id: "root",         name: "Root",         sanskrit: "Muladhara",     hz: 396, note: "C", color: "red",          location: "Base of spine",      element: "Earth",         theme: "Safety, grounding, survival, belonging",                   affirmation: "I am safe. I am grounded. I belong." },
-        { id: "sacral",       name: "Sacral",       sanskrit: "Svadhisthana",  hz: 417, note: "D", color: "orange",       location: "Below navel",        element: "Water",         theme: "Creativity, emotion, pleasure, flow",                      affirmation: "I feel. I create. I flow." },
-        { id: "solar_plexus", name: "Solar Plexus", sanskrit: "Manipura",      hz: 528, note: "E", color: "yellow",       location: "Upper abdomen",      element: "Fire",          theme: "Confidence, personal power, transformation",               affirmation: "I act. I choose. I am powerful." },
-        { id: "heart",        name: "Heart",        sanskrit: "Anahata",       hz: 639, note: "F", color: "green",        location: "Center of chest",    element: "Air",           theme: "Love, compassion, connection, forgiveness",                affirmation: "I love. I am loved. I forgive." },
-        { id: "throat",       name: "Throat",       sanskrit: "Vishuddha",     hz: 741, note: "G", color: "blue",         location: "Throat",             element: "Ether / Sound", theme: "Expression, truth, communication, clarity",                affirmation: "I speak. I am heard. I express my truth." },
-        { id: "third_eye",    name: "Third Eye",    sanskrit: "Ajna",          hz: 852, note: "A", color: "indigo",       location: "Between the brows",  element: "Light",         theme: "Intuition, insight, inner vision, perception",             affirmation: "I see. I know. I trust my intuition." },
-        { id: "crown",        name: "Crown",        sanskrit: "Sahasrara",     hz: 963, note: "B", color: "violet/white", location: "Top of head",        element: "Consciousness", theme: "Unity, transcendence, divine connection, pure awareness",  affirmation: "I am. I am connected to all." },
+        {
+          id: "root", name: "Root", sanskrit: "Muladhara",
+          location: "Base of the spine", color: "#e0393f", element: "Earth",
+          bija_mantra: "LAM", hz: 396, note: "G", petals: 4,
+          governs: "Safety, grounding, survival, belonging",
+          when_balanced: "Steady, secure, present in your body",
+          when_blocked: "Anxious, ungrounded, scattered, insecure about money or home",
+          affirmation: "I am safe. I belong here.",
+          crystals: ["Red jasper", "Hematite", "Black tourmaline"],
+          essential_oils: ["Cedarwood", "Patchouli", "Vetiver"],
+          yoga_pose: "Mountain pose (Tadasana)",
+          sedona_vortex: "Bell Rock — stand at the base and feel your feet on the red rock.",
+        },
+        {
+          id: "sacral", name: "Sacral", sanskrit: "Svadhisthana",
+          location: "Lower belly", color: "#f07a24", element: "Water",
+          bija_mantra: "VAM", hz: 417, note: "G♯", petals: 6,
+          governs: "Creativity, emotion, pleasure, flow",
+          when_balanced: "Playful, feeling, open to change",
+          when_blocked: "Numb or overwhelmed, creatively stuck, guilt around pleasure",
+          affirmation: "I feel, I create, I flow.",
+          crystals: ["Carnelian", "Orange calcite", "Sunstone"],
+          essential_oils: ["Sweet orange", "Ylang-ylang", "Sandalwood"],
+          yoga_pose: "Goddess pose (Utkata Konasana)",
+          sedona_vortex: "Oak Creek — let moving water pull the stuck stuff loose.",
+        },
+        {
+          id: "solar_plexus", name: "Solar Plexus", sanskrit: "Manipura",
+          location: "Upper belly", color: "#f2c53d", element: "Fire",
+          bija_mantra: "RAM", hz: 528, note: "C", petals: 10,
+          governs: "Willpower, confidence, identity",
+          when_balanced: "Empowered, decisive, warm",
+          when_blocked: "Powerless or controlling, low self-worth, digestive tension",
+          affirmation: "I am strong. I choose my path.",
+          crystals: ["Citrine", "Tiger's eye", "Yellow calcite"],
+          essential_oils: ["Lemon", "Ginger", "Bergamot"],
+          yoga_pose: "Boat pose (Navasana)",
+          sedona_vortex: "Airport Mesa at sunset — claim your fire as the rocks glow.",
+        },
+        {
+          id: "heart", name: "Heart", sanskrit: "Anahata",
+          location: "Center of the chest", color: "#4fae58", element: "Air",
+          bija_mantra: "YAM", hz: 639, note: "E", petals: 12,
+          governs: "Love, compassion, connection",
+          when_balanced: "Open-hearted, forgiving, at peace",
+          when_blocked: "Guarded, grieving, resentful, hard to trust",
+          affirmation: "I give and receive love freely.",
+          crystals: ["Rose quartz", "Green aventurine", "Malachite"],
+          essential_oils: ["Rose", "Bergamot", "Geranium"],
+          yoga_pose: "Camel pose (Ustrasana)",
+          sedona_vortex: "Boynton Canyon — the tender heart of the red rocks.",
+        },
+        {
+          id: "throat", name: "Throat", sanskrit: "Vishuddha",
+          location: "The throat", color: "#3aa0d8", element: "Ether / Sound",
+          bija_mantra: "HAM", hz: 741, note: "F♯", petals: 16,
+          governs: "Truth, expression, your voice",
+          when_balanced: "Honest, clear, heard",
+          when_blocked: "Held back, unheard, throat tension, fear of speaking up",
+          affirmation: "I speak my truth with ease.",
+          crystals: ["Lapis lazuli", "Aquamarine", "Blue lace agate"],
+          essential_oils: ["Eucalyptus", "Peppermint", "Chamomile"],
+          yoga_pose: "Fish pose (Matsyasana)",
+          sedona_vortex: "Sing along on 106.5 — your voice carries across the canyon.",
+        },
+        {
+          id: "third_eye", name: "Third Eye", sanskrit: "Ajna",
+          location: "Between the brows", color: "#3d5aa8", element: "Light",
+          bija_mantra: "OM", hz: 852, note: "A", petals: 2,
+          governs: "Intuition, insight, imagination",
+          when_balanced: "Perceptive, focused, trusting your knowing",
+          when_blocked: "Foggy, doubtful, over-thinking, cut off from intuition",
+          affirmation: "I trust my inner knowing.",
+          crystals: ["Amethyst", "Lapis lazuli", "Fluorite"],
+          essential_oils: ["Clary sage", "Frankincense", "Juniper"],
+          yoga_pose: "Child's pose (Balasana)",
+          sedona_vortex: "Cathedral Rock — the seer's vortex, where the veil goes thin.",
+        },
+        {
+          id: "crown", name: "Crown", sanskrit: "Sahasrara",
+          location: "Top of the head", color: "#9b5fc0", element: "Thought / Cosmos",
+          bija_mantra: "OM (or silence)", hz: 963, note: "B", petals: 1000,
+          governs: "Connection, transcendence, the infinite",
+          when_balanced: "Awake, unified, part of something vast",
+          when_blocked: "Cynical, isolated, spiritually flat, stuck in the head",
+          affirmation: "I am one with all that is.",
+          crystals: ["Clear quartz", "Selenite", "Amethyst"],
+          essential_oils: ["Frankincense", "Lotus", "Myrrh"],
+          yoga_pose: "Corpse pose (Savasana)",
+          sedona_vortex: "The dark sky over Sedona — dissolve up into the Milky Way.",
+        },
       ];
       const result = chakra ? CHAKRAS.filter(c => c.id === chakra) : CHAKRAS;
       return {
@@ -561,8 +645,41 @@ function buildServer() {
           type: "text",
           text: JSON.stringify({
             chakras: result,
-            singing_bowl_page: "https://mellowmountainradio.com/chakras.html",
+            note: "Frequencies are the Solfeggio healing set used in sound baths. Vortex connections are Sedona-specific.",
+            chakra_sound_bath: "https://mellowmountainradio.com/chakras.html",
             sound_healing_page: "https://mellowmountainradio.com/soundhealing.html",
+          }),
+        }],
+      };
+    }
+  );
+
+  // 14b. Chakra Frequencies (legacy alias — thin version kept for back-compat) ──
+  mcp.tool(
+    "get_chakra_frequencies",
+    "Returns the seven Solfeggio chakra frequencies with musical notes, colors, and affirmations. For the full guide (crystals, oils, poses, Sedona vortex) use get_chakra_guide.",
+    {
+      chakra: z.enum(["root","sacral","solar_plexus","heart","throat","third_eye","crown"]).optional()
+        .describe("Specific chakra — omit for all seven"),
+    },
+    async ({ chakra }) => {
+      const CHAKRAS = [
+        { id: "root",         name: "Root",         sanskrit: "Muladhara",    hz: 396, note: "G",  color: "#e0393f", affirmation: "I am safe. I belong here." },
+        { id: "sacral",       name: "Sacral",       sanskrit: "Svadhisthana", hz: 417, note: "G♯", color: "#f07a24", affirmation: "I feel, I create, I flow." },
+        { id: "solar_plexus", name: "Solar Plexus", sanskrit: "Manipura",    hz: 528, note: "C",  color: "#f2c53d", affirmation: "I am strong. I choose my path." },
+        { id: "heart",        name: "Heart",        sanskrit: "Anahata",      hz: 639, note: "E",  color: "#4fae58", affirmation: "I give and receive love freely." },
+        { id: "throat",       name: "Throat",       sanskrit: "Vishuddha",    hz: 741, note: "F♯", color: "#3aa0d8", affirmation: "I speak my truth with ease." },
+        { id: "third_eye",    name: "Third Eye",    sanskrit: "Ajna",         hz: 852, note: "A",  color: "#3d5aa8", affirmation: "I trust my inner knowing." },
+        { id: "crown",        name: "Crown",        sanskrit: "Sahasrara",    hz: 963, note: "B",  color: "#9b5fc0", affirmation: "I am one with all that is." },
+      ];
+      const result = chakra ? CHAKRAS.filter(c => c.id === chakra) : CHAKRAS;
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            chakras: result,
+            tip: "Use get_chakra_guide for crystals, essential oils, yoga poses, and Sedona vortex connections.",
+            chakra_sound_bath: "https://mellowmountainradio.com/chakras.html",
           }),
         }],
       };
@@ -2027,7 +2144,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "35 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "36 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -2041,7 +2158,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "35 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "36 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
@@ -2063,7 +2180,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   35,
+    tools:   36,
   });
 });
 
@@ -2099,7 +2216,7 @@ app.get("/docs", (_req, res) => {
 <p>Live data from Sedona's Mellow Mountain Radio — available to any MCP-compatible AI assistant.</p>
 <h2>Connect</h2>
 <pre>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</pre>
-<h2>Tools (35)</h2>
+<h2>Tools (36)</h2>
 <div class="tool"><h3>get_now_playing</h3><p>Currently on-air song with artist, album, artwork, and stream URL.</p></div>
 <div class="tool"><h3>get_listener_count</h3><p>Live listener count across all mounts.</p></div>
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
@@ -2113,7 +2230,8 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>get_horoscope</h3><p>Daily, weekly, or monthly horoscope for any sign. <code>sign</code>: zodiac sign (optional). <code>period</code>: daily/weekly/monthly (optional).</p></div>
 <div class="tool"><h3>get_schumann_resonance</h3><p>Earth's electromagnetic pulse from the Tomsk observatory — frequency, energy score, activity level.</p></div>
 <div class="tool"><h3>get_sound_session</h3><p>Recommends a binaural or tonal session based on goal or time of day. <code>goal</code>: sleep/focus/meditation/energy/calm/anxiety/creativity/healing (optional).</p></div>
-<div class="tool"><h3>get_chakra_frequencies</h3><p>All seven chakras with Hz, note, color, body location, and affirmation. <code>chakra</code>: root/sacral/solar_plexus/heart/throat/third_eye/crown (optional).</p></div>
+<div class="tool"><h3>get_chakra_guide <span class="new">NEW</span></h3><p>Full chakra guide — Sanskrit name, Solfeggio Hz, note, color, element, bija mantra, petal count, governs, balanced/blocked states, affirmation, crystals, essential oils, yoga pose, and Sedona vortex connection. <code>chakra</code>: root/sacral/solar_plexus/heart/throat/third_eye/crown (optional).</p></div>
+<div class="tool"><h3>get_chakra_frequencies</h3><p>All seven chakras with Hz, note, color, body location, and affirmation. <code>chakra</code>: root/sacral/solar_plexus/heart/throat/third_eye/crown (optional). For the full guide use <code>get_chakra_guide</code>.</p></div>
 <div class="tool"><h3>get_solfeggio</h3><p>Nine-tone Solfeggio scale with healing properties. <code>hz</code>: specific frequency like 528 (optional).</p></div>
 <div class="tool"><h3>search_song_request_library</h3><p>Search KAZM's requestable song catalog. <code>query</code>: artist or title keyword (required).</p></div>
 <div class="tool"><h3>get_rewind</h3><p>Available on-demand past broadcasts with dates and stream URLs.</p></div>
