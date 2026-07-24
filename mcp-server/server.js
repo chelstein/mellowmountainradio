@@ -951,6 +951,159 @@ function buildServer() {
     }
   );
 
+  // 21. Sports Scores ───────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_sports_scores",
+    "Returns current and recent scores for Arizona sports teams — Cardinals (NFL), Suns (NBA), D-backs (MLB), Mercury (WNBA), ASU Sun Devils, Arizona Wildcats, NAU Lumberjacks, and UFC events. Powered by ESPN.",
+    {
+      team: z.enum(["cardinals","suns","dbacks","mercury","asu","wildcats","arizona","nau","ufc"]).optional()
+        .describe("Filter by team — omit for all Arizona teams"),
+    },
+    async ({ team }) => {
+      const headers = { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" };
+      async function espn(path) {
+        try {
+          const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${path}`, { headers, signal: AbortSignal.timeout(7000) });
+          return r.ok ? r.json() : null;
+        } catch { return null; }
+      }
+      function parseGame(event) {
+        const comp = (event.competitions || [])[0] || {};
+        const teams = (comp.competitors || []).map(c => ({
+          team:   c.team?.displayName || c.team?.name || "?",
+          abbr:   c.team?.abbreviation || "?",
+          score:  c.score ?? "–",
+          home:   c.homeAway === "home",
+          winner: c.winner ?? false,
+        }));
+        const st = comp.status?.type || event.status?.type || {};
+        return {
+          game:   event.name || event.shortName || teams.map(t => t.team).join(" vs "),
+          date:   event.date || null,
+          status: st.description || st.name || "–",
+          live:   st.name === "STATUS_IN_PROGRESS",
+          period: comp.status?.displayClock ? `Q${comp.status.period} ${comp.status.displayClock}` : null,
+          teams,
+        };
+      }
+      function azGames(data, abbrs) {
+        return (data?.events || []).filter(e =>
+          !abbrs || (e.competitions || []).some(c =>
+            (c.competitors || []).some(t => abbrs.includes(t.team?.abbreviation?.toUpperCase()))
+          )
+        ).map(parseGame);
+      }
+      function recentAndNext(data) {
+        const events = data?.events || [];
+        const now = Date.now();
+        const done = events.filter(e => e.competitions?.[0]?.status?.type?.name === "STATUS_FINAL");
+        const next = events.filter(e => new Date(e.date).getTime() > now);
+        return [...done.slice(-2), ...next.slice(0, 1)].map(parseGame);
+      }
+
+      const [nfl, nba, mlb, wnba, ufc, cfb_asu, cbb_asu, cfb_ua, cbb_ua, cfb_nau, cbb_nau] = await Promise.all([
+        espn("football/nfl/scoreboard"),
+        espn("basketball/nba/scoreboard"),
+        espn("baseball/mlb/scoreboard"),
+        espn("basketball/wnba/scoreboard"),
+        espn("mma/ufc/scoreboard"),
+        espn("football/college-football/teams/9/schedule"),
+        espn("basketball/mens-college-basketball/teams/9/schedule"),
+        espn("football/college-football/teams/12/schedule"),
+        espn("basketball/mens-college-basketball/teams/12/schedule"),
+        espn("football/college-football/teams/2038/schedule"),
+        espn("basketball/mens-college-basketball/teams/2038/schedule"),
+      ]);
+
+      const all = {
+        cardinals:           { sport: "NFL",  team: "Arizona Cardinals",        games: azGames(nfl,  ["ARI"]) },
+        suns:                { sport: "NBA",  team: "Phoenix Suns",              games: azGames(nba,  ["PHX"]) },
+        dbacks:              { sport: "MLB",  team: "Arizona Diamondbacks",      games: azGames(mlb,  ["ARI"]) },
+        mercury:             { sport: "WNBA", team: "Phoenix Mercury",           games: azGames(wnba, ["PHX"]) },
+        ufc:                 { sport: "UFC",  team: "UFC",                       games: azGames(ufc,  null).slice(0, 10) },
+        asu_football:        { sport: "CFB",  team: "ASU Sun Devils Football",   games: recentAndNext(cfb_asu) },
+        asu_basketball:      { sport: "CBB",  team: "ASU Sun Devils Basketball", games: recentAndNext(cbb_asu) },
+        wildcats_football:   { sport: "CFB",  team: "Arizona Wildcats Football", games: recentAndNext(cfb_ua) },
+        wildcats_basketball: { sport: "CBB",  team: "Arizona Wildcats Basketball",games: recentAndNext(cbb_ua) },
+        nau_football:        { sport: "CFB",  team: "NAU Lumberjacks Football",  games: recentAndNext(cfb_nau) },
+        nau_basketball:      { sport: "CBB",  team: "NAU Lumberjacks Basketball",games: recentAndNext(cbb_nau) },
+      };
+
+      const FILTERS = {
+        cardinals: ["cardinals"],
+        suns:      ["suns"],
+        dbacks:    ["dbacks"],
+        mercury:   ["mercury"],
+        ufc:       ["ufc"],
+        asu:       ["asu_football","asu_basketball"],
+        wildcats:  ["wildcats_football","wildcats_basketball"],
+        arizona:   ["wildcats_football","wildcats_basketball"],
+        nau:       ["nau_football","nau_basketball"],
+      };
+
+      let scores = team && FILTERS[team]
+        ? Object.fromEntries(FILTERS[team].map(k => [k, all[k]]))
+        : all;
+      Object.keys(scores).forEach(k => { if (!scores[k].games.length) delete scores[k]; });
+
+      return { content: [{ type: "text", text: JSON.stringify({ updated: new Date().toISOString(), scores }) }] };
+    }
+  );
+
+  // 22. Sun Times & Solstice ────────────────────────────────────────────────────
+  mcp.tool(
+    "get_sun_times",
+    "Returns sunrise, sunset, solar noon, day length, golden hours, and astronomical twilight for Sedona from the KAZM transmitter site. Optional date param for any day. Also flags next solstice and equinox.",
+    {
+      date: z.string().optional().describe("Date in YYYY-MM-DD format — omit for today"),
+    },
+    async ({ date }) => {
+      const d = date || new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
+      try {
+        const r = await fetch(
+          `https://api.sunrise-sunset.org/json?lat=34.8697&lng=-111.7610&date=${d}&formatted=0`,
+          { signal: AbortSignal.timeout(8000) }
+        );
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const json = await r.json();
+        if (json.status !== "OK") throw new Error(json.status);
+        const res = json.results;
+        // Next solstice/equinox relative to today
+        const today = new Date(d + "T12:00:00-07:00");
+        const year = today.getFullYear();
+        const events = [
+          { name: "Spring Equinox",  date: new Date(`${year}-03-20T10:00:00-07:00`) },
+          { name: "Summer Solstice", date: new Date(`${year}-06-20T16:00:00-07:00`) },
+          { name: "Fall Equinox",    date: new Date(`${year}-09-22T18:00:00-07:00`) },
+          { name: "Winter Solstice", date: new Date(`${year}-12-21T04:00:00-07:00`) },
+          { name: "Spring Equinox",  date: new Date(`${year + 1}-03-20T10:00:00-07:00`) },
+          { name: "Summer Solstice", date: new Date(`${year + 1}-06-20T16:00:00-07:00`) },
+        ];
+        const next = events.filter(e => e.date > today)[0];
+        const daysUntilNext = next ? Math.ceil((next.date - today) / 86400000) : null;
+
+        return { content: [{ type: "text", text: JSON.stringify({
+          date: d,
+          location:             "Sedona, AZ (KAZM transmitter site)",
+          sunrise:              res.sunrise,
+          sunset:               res.sunset,
+          solar_noon:           res.solar_noon,
+          day_length_seconds:   res.day_length,
+          civil_twilight_begin: res.civil_twilight_begin,
+          civil_twilight_end:   res.civil_twilight_end,
+          nautical_twilight_begin: res.nautical_twilight_begin,
+          nautical_twilight_end:   res.nautical_twilight_end,
+          astronomical_twilight_begin: res.astronomical_twilight_begin,
+          astronomical_twilight_end:   res.astronomical_twilight_end,
+          next_solstice_or_equinox: next ? { name: next.name, date: next.date.toISOString(), days_away: daysUntilNext } : null,
+          source: "sunrise-sunset.org",
+        }) }] };
+      } catch (e) {
+        return { content: [{ type: "text", text: JSON.stringify({ error: String(e.message), date: d }) }] };
+      }
+    }
+  );
+
   return mcp;
 }
 
@@ -1317,6 +1470,8 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>submit_song_request <span class="new">NEW</span></h3><p>Queue a song for broadcast on KAZM — live, bidirectional. <code>query</code>: song title or artist (required).</p></div>
 <div class="tool"><h3>get_local_news_headlines <span class="new">NEW</span></h3><p>Latest Sedona &amp; Verde Valley headlines from Red Rock News and Verde Independent. <code>limit</code>: max per source (optional).</p></div>
 <div class="tool"><h3>get_air_quality <span class="new">NEW</span></h3><p>US AQI, PM2.5, PM10, ozone, and UV index for Sedona — from Open-Meteo. Wildfire smoke tracking built in.</p></div>
+<div class="tool"><h3>get_sports_scores</h3><p>Scores for Cardinals, Suns, D-backs, Mercury, ASU, Arizona Wildcats, NAU, and UFC. <code>team</code>: optional filter.</p></div>
+<div class="tool"><h3>get_sun_times</h3><p>Sunrise, sunset, solar noon, day length, twilight, and next solstice/equinox for Sedona. <code>date</code>: YYYY-MM-DD (optional).</p></div>
 <p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
