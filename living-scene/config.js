@@ -17,12 +17,10 @@ export const CONFIG = {
     "&current=temperature_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,precipitation" +
     "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/Phoenix",
 
-  // TODO(real-provider): aircraft.lol has no CORS header for browser fetch,
-  // so this must be proxied. Deployed as the "KAZM Aircraft Proxy" n8n
-  // workflow — see studio-bridge/n8n-kazm-aircraft.json. If this endpoint
-  // 404s, the aircraft layer simply shows no traffic (never fakes planes).
+  // adsb.lol has no browser CORS headers, so this goes through the VPS proxy
+  // at /aircraft on the MCP server. If the fetch fails the layer shows nothing.
   aircraftProvider: "adsb.lol (proxied)",
-  aircraftEndpoint: "https://n8n.mellowmountainradio.com/webhook/kazm-aircraft",
+  aircraftEndpoint: "https://mcp.mellowmountainradio.com/aircraft",
   aircraftRadiusNm: 45,
   maxAircraft: 3,
 
