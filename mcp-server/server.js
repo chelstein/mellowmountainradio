@@ -222,7 +222,7 @@ function buildServer() {
   // 6. Road Conditions ──────────────────────────────────────────────────────────
   mcp.tool(
     "get_road_conditions",
-    "Returns active road and trail closures for the Sedona / Oak Creek area from the Coconino National Forest alerts page. Also includes AZ511 highway incidents for Yavapai and Coconino counties when the AZ511_KEY environment variable is set.",
+    "Returns active road and trail closures for the Sedona / Oak Creek area from the Coconino National Forest alerts page. Also includes highway incidents for SR-89A, SR-179, and I-17 via Road511 when ROAD511_KEY is set.",
     {},
     async () => {
       const result = {
@@ -260,30 +260,38 @@ function buildServer() {
         }
       } catch (_) {}
 
-      // AZ511 highway incidents — requires AZ511_KEY env var (free account at az511.gov)
-      const AZ511_KEY = process.env.AZ511_KEY || "";
-      if (AZ511_KEY) {
+      // Road511 highway incidents — requires ROAD511_KEY env var (free account at road511.com)
+      const ROAD511_KEY = process.env.ROAD511_KEY || "";
+      if (ROAD511_KEY) {
         try {
+          // bbox covers SR-89A, Oak Creek Canyon, SR-179, and I-17 near Sedona/Verde Valley
+          const bbox = "-112.2,34.5,-111.5,35.35";
           const res = await fetch(
-            `https://az511.gov/api/v2/get/event?format=json&status=active&county=Yavapai,Coconino&key=${encodeURIComponent(AZ511_KEY)}`,
-            { signal: AbortSignal.timeout(8000) }
+            `https://api.road511.com/api/v1/events/geojson?bbox=${bbox}&status=active`,
+            { headers: { "X-API-Key": ROAD511_KEY }, signal: AbortSignal.timeout(8000) }
           );
           if (res.ok) {
             const data = await res.json();
-            result.incidents = (data.events || data || []).map(e => ({
-              type:        e.event_type  || null,
-              headline:    e.headline    || null,
-              description: e.description || null,
-              road:        e.road_name   || null,
-              direction:   e.direction   || null,
-              start:       e.start_time  || null,
-              county:      e.county      || null,
-            }));
-            result.sources.push(`AZ511 (${result.incidents.length} highway incidents)`);
+            result.incidents = (data.features || []).map(f => {
+              const p      = f.properties || {};
+              const coords = f.geometry?.coordinates;
+              return {
+                type:        p.type        || null,
+                headline:    p.headline    || p.description || null,
+                description: p.description || null,
+                road:        Array.isArray(p.roads) ? p.roads.join(", ") : (p.road || null),
+                direction:   p.direction   || null,
+                severity:    p.severity    || null,
+                start:       p.start       || null,
+                lat:         coords ? coords[1] : null,
+                lon:         coords ? coords[0] : null,
+              };
+            });
+            result.sources.push(`Road511 (${result.incidents.length} highway incidents)`);
           }
         } catch (_) {}
       } else {
-        result.az511_note = "AZ highway incidents unavailable — set AZ511_KEY env var. Free registration at az511.gov/my511/register.";
+        result.road511_note = "AZ highway incidents unavailable — set ROAD511_KEY env var. Free key at road511.com.";
       }
 
       return { content: [{ type: "text", text: JSON.stringify(result) }] };
@@ -963,7 +971,7 @@ app.get("/charts", async (_req, res) => {
   }
 });
 
-// GET /roads — AZ511 incidents for Yavapai & Coconino counties
+// GET /roads — Road511 incidents for Sedona / Verde Valley area
 function miFromSedona(lat, lon) {
   if (lat == null || lon == null) return null;
   const R    = 3958.8;
@@ -975,30 +983,31 @@ function miFromSedona(lat, lon) {
 
 app.get("/roads", async (_req, res) => {
   setCors(res);
-  const AZ511_KEY = process.env.AZ511_KEY || "";
-  if (!AZ511_KEY) return res.status(503).json({ ok: false, error: "AZ511_KEY not configured" });
+  const ROAD511_KEY = process.env.ROAD511_KEY || "";
+  if (!ROAD511_KEY) return res.status(503).json({ ok: false, error: "ROAD511_KEY not configured" });
   try {
+    const bbox = "-112.2,34.5,-111.5,35.35";
     const r = await fetch(
-      `https://az511.gov/api/v2/get/event?format=json&status=active&county=Yavapai,Coconino&key=${encodeURIComponent(AZ511_KEY)}`,
-      { signal: AbortSignal.timeout(8000) }
+      `https://api.road511.com/api/v1/events/geojson?bbox=${bbox}&status=active`,
+      { headers: { "X-API-Key": ROAD511_KEY }, signal: AbortSignal.timeout(8000) }
     );
-    if (!r.ok) return res.status(502).json({ ok: false, error: `AZ511 ${r.status}` });
+    if (!r.ok) return res.status(502).json({ ok: false, error: `Road511 ${r.status}` });
     const data   = await r.json();
-    const events = (data.events || data || []).map(e => {
-      const lat  = e.latitude  ?? e.lat  ?? null;
-      const lon  = e.longitude ?? e.lon  ?? null;
-      const type = (e.event_type    || "").toLowerCase();
-      const sub  = (e.event_subtype || "").toLowerCase();
-      const desc = e.headline || e.description || "";
+    const events = (data.features || []).map(f => {
+      const p      = f.properties || {};
+      const coords = f.geometry?.coordinates;
+      const lat    = coords ? coords[1] : null;
+      const lon    = coords ? coords[0] : null;
+      const desc   = p.headline || p.description || "";
       return {
-        road:    e.road_name  || null,
-        dir:     e.direction  || null,
+        road:    Array.isArray(p.roads) ? p.roads.join(", ") : (p.road || null),
+        dir:     p.direction   || null,
         desc,
-        type,
-        sub,
-        full:    /full.closure|road.closed/i.test(sub + " " + desc),
+        type:    (p.type    || "").toLowerCase(),
+        sub:     (p.subtype || "").toLowerCase(),
+        full:    /full.closure|road.closed/i.test((p.subtype || "") + " " + desc),
         mi:      miFromSedona(lat, lon),
-        updated: e.last_updated || e.update_time || e.start_time || null,
+        updated: p.updated || p.start || null,
         lat,
         lon,
       };
@@ -1096,7 +1105,7 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
 <div class="tool"><h3>get_fire_restrictions</h3><p>Current fire restriction level for the Sedona area — live from the Forest Service.</p></div>
 <div class="tool"><h3>get_weather</h3><p>Current conditions and 7-day forecast for Sedona, AZ.</p></div>
-<div class="tool"><h3>get_road_conditions</h3><p>Active incidents on Yavapai and Coconino county roads (AZ511).</p></div>
+<div class="tool"><h3>get_road_conditions</h3><p>Active incidents on SR-89A, Oak Creek Canyon, and I-17 (Road511).</p></div>
 <div class="tool"><h3>get_concerts</h3><p>Upcoming concerts. <code>state</code>: string (optional, e.g. "AZ")</p></div>
 <div class="tool"><h3>get_events</h3><p>Library events and local festivals.</p></div>
 <div class="tool"><h3>get_stream_url</h3><p>Live audio stream URLs (MP3 and AAC).</p></div>
