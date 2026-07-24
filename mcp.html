@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KAZM Goes AI-Native | Mellow Mountain Radio MCP Server</title>
-  <meta name="description" content="KAZM is the first radio station with an MCP server — 25 live tools giving AI assistants real data: now playing, fire restrictions, road conditions, emergency alerts, local news, air quality, sports scores, sun times, sound healing, and more." />
+  <meta name="description" content="KAZM is the first radio station with an MCP server — 33 live tools giving AI assistants real data: now playing, fire restrictions, road conditions, sports scores, moon phases, vortex guide, wildfires, Oak Creek levels, sound healing, and more." />
   <link rel="canonical" href="https://mellowmountainradio.com/mcp.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="KAZM Mellow Mountain Radio" />
@@ -308,7 +308,7 @@
 
   <div>
     <span class="mcp-label">What&rsquo;s Exposed</span>
-    <h2 style="font-family:'Alice',Georgia,serif;font-size:1.5rem;font-weight:normal;margin-bottom:.4rem;line-height:1.3;">25 live tools, all real data</h2>
+    <h2 style="font-family:'Alice',Georgia,serif;font-size:1.5rem;font-weight:normal;margin-bottom:.4rem;line-height:1.3;">33 live tools, all real data</h2>
     <p style="margin-bottom:1.75rem;max-width:60ch;color:var(--muted);font-size:.92rem;">Every tool reads from a live source. Nothing is cached longer than the underlying data warrants. Nothing is fabricated.</p>
 
     <div class="mcp-cats">
@@ -392,7 +392,7 @@
         <div class="mcp-cat-head">
           <span class="mcp-cat-ic" aria-hidden="true">🏜️</span>
           <span class="mcp-cat-title">Sedona Life</span>
-          <span class="mcp-cat-count">6 tools</span>
+          <span class="mcp-cat-count">13 tools</span>
         </div>
         <div>
           <div class="mcp-tool">
@@ -419,6 +419,26 @@
             <span class="mcp-tool-fn">get_sun_times(date?)</span>
             <span class="mcp-tool-desc">Sunrise, sunset, solar noon, golden hour, and next solstice or equinox for the KAZM transmitter site.</span>
           </div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_moon_phase(date?)</span>
+            <span class="mcp-tool-desc">Tonight's moon phase, illumination %, and 7-day lunar calendar for Sedona — perfect for stargazers.</span>
+          </div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_nws_alerts()</span>
+            <span class="mcp-tool-desc">Active NWS weather watches, warnings, and advisories for Yavapai County. Empty when skies are clear.</span>
+          </div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_oak_creek_levels()</span>
+            <span class="mcp-tool-desc">Oak Creek stream level and discharge from the USGS Sedona gauge — safe for wading or approaching flood stage.</span>
+          </div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_wildfire_perimeters()</span>
+            <span class="mcp-tool-desc">Active wildfires within ~150 miles of Sedona from NIFC — name, acreage, containment %, distance from KAZM.</span>
+          </div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_visitor_info(topic?)</span>
+            <span class="mcp-tool-desc">Practical Sedona visitor guide — Red Rock Pass, park hours and fees, top attractions, best seasons, and local tips.</span>
+          </div>
         </div>
       </div>
 
@@ -427,7 +447,7 @@
         <div class="mcp-cat-head">
           <span class="mcp-cat-ic" aria-hidden="true">✨</span>
           <span class="mcp-cat-title">The Vibe</span>
-          <span class="mcp-cat-count">6 tools</span>
+          <span class="mcp-cat-count">9 tools</span>
         </div>
         <div>
           <div class="mcp-tool">
@@ -454,6 +474,18 @@
             <span class="mcp-tool-fn">get_solfeggio(hz?)</span>
             <span class="mcp-tool-desc">Nine-tone Solfeggio scale (174–963 Hz) with each frequency&rsquo;s traditional healing properties and use cases.</span>
           </div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_vortex_guide(site?)</span>
+            <span class="mcp-tool-desc">Full guide to Sedona's 4 energy vortex sites — Bell Rock, Cathedral Rock, Airport Mesa, Boynton Canyon. Directions, hiking info, and energy type.</span>
+          </div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_artist_info(artist?)</span>
+            <span class="mcp-tool-desc">Biography, genre tags, and album discography for the current KAZM artist or any named artist from MusicBrainz.</span>
+          </div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_day_in_music_history(date?)</span>
+            <span class="mcp-tool-desc">Notable music events, birthdays, and milestones that happened on this day in history — great for on-air trivia.</span>
+          </div>
         </div>
       </div>
 
@@ -471,7 +503,7 @@
         <span class="mcp-stat-label">Other radio stations<br>with MCP servers</span>
       </div>
       <div class="mcp-stat">
-        <span class="mcp-stat-num">25</span>
+        <span class="mcp-stat-num">33</span>
         <span class="mcp-stat-label">Live tools<br>and growing</span>
       </div>
       <div class="mcp-stat">
