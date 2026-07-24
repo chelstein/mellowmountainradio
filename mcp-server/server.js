@@ -1662,6 +1662,101 @@ function buildServer() {
     }
   );
 
+  // ── MCP Prompts ──────────────────────────────────────────────────────────────
+  // Pre-built conversation starters that chain multiple KAZM tools together.
+
+  mcp.prompt(
+    "plan_sedona_trip",
+    "Complete Sedona trip brief — weather, fire conditions, concerts, events, photography golden hours, vortex sites, and visitor tips.",
+    { days: z.string().optional().describe("Number of days visiting (e.g. '3')") },
+    ({ days }) => ({
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: `I'm planning a trip to Sedona, AZ${days ? ` for ${days} day${days !== "1" ? "s" : ""}` : ""}. Please use the KAZM Mellow Mountain Radio tools to build me a complete trip brief covering:\n\n1. Current weather and 7-day forecast\n2. Active fire restrictions and air quality\n3. Any NWS weather alerts\n4. Upcoming concerts and local events\n5. Today's photography golden hour times and the best shooting spots right now\n6. The Sedona energy vortex sites — which one to visit first\n7. Practical visitor info: Red Rock Pass, park fees, tips\n\nGive me a concise but complete trip brief.`,
+        },
+      }],
+    })
+  );
+
+  mcp.prompt(
+    "whats_on_kazm",
+    "Full KAZM radio status — what's playing, who's listening, what's on next, and artist background.",
+    {},
+    () => ({
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: "Tell me everything about what's happening on KAZM Mellow Mountain Radio right now. Use the KAZM tools to check: what song is currently playing, the artist info and discography, current listener count, recent song history (last 5 songs), today's show schedule, and the live stream URL. Give me the full picture.",
+        },
+      }],
+    })
+  );
+
+  mcp.prompt(
+    "outdoor_safety_check",
+    "Full outdoor safety brief for Sedona — fire, weather, air quality, alerts, road conditions, and Oak Creek levels.",
+    {},
+    () => ({
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: "I'm planning to spend the day outdoors in Sedona. Use the KAZM tools to run a complete safety check: fire restriction level, current weather and any storm risk, air quality index and smoke conditions, active NWS weather alerts, active wildfire perimeters near Sedona, current road conditions on SR-89A and Oak Creek Canyon, and Oak Creek water level at the Sedona gauge. Give me a go/no-go summary for hiking, swimming, and driving.",
+        },
+      }],
+    })
+  );
+
+  mcp.prompt(
+    "stargazing_tonight",
+    "Tonight's stargazing forecast for Sedona — darkness window, moon phase, Milky Way visibility, and best sites.",
+    {},
+    () => ({
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: "What are tonight's stargazing conditions in Sedona, AZ? Use the KAZM tools to check: tonight's astronomical darkness window, the current moon phase and interference rating, Milky Way galactic core visibility status, and the top astrophotography sites. Also pull today's weather to flag any cloud cover risk. Give me a go/no-go for astrophotography and the best site to head to tonight.",
+        },
+      }],
+    })
+  );
+
+  mcp.prompt(
+    "request_a_song",
+    "Walk through requesting a song on KAZM — search the library and submit the request.",
+    { song: z.string().optional().describe("Song title or artist to search for") },
+    ({ song }) => ({
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: song
+            ? `I want to request "${song}" on KAZM 106.5 FM Mellow Mountain Radio. First search the song request library to find the exact title and artist, then submit the request for me. Let me know when it's been sent to the studio.`
+            : "I'd like to request a song on KAZM 106.5 FM Mellow Mountain Radio. What's currently playing? Check the song history for the last few songs too, so I can pick something that fits the vibe. Then help me search the request library and submit my request.",
+        },
+      }],
+    })
+  );
+
+  mcp.prompt(
+    "sedona_drive_check",
+    "Road and weather check before driving to or through Sedona — 89A, Oak Creek Canyon, I-17.",
+    { destination: z.string().optional().describe("Where you're headed (e.g. 'Flagstaff', 'Oak Creek Canyon', 'Jerome')") },
+    ({ destination }) => ({
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: `I'm about to drive${destination ? ` to ${destination}` : " through Sedona"}. Use the KAZM tools to check current road conditions on SR-89A, Oak Creek Canyon, and I-17, Oak Creek water levels (flash flood risk), active NWS weather alerts, and the current weather forecast. Tell me if it's safe to drive and what to watch out for.`,
+        },
+      }],
+    })
+  );
+
   return mcp;
 }
 
