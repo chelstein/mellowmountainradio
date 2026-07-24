@@ -583,7 +583,7 @@ function buildServer() {
     },
     async ({ query, name = "", note = "" }) => {
       const LIBRARY_URL = "https://mellowmountainradio.com/request-library.json";
-      const REQUEST_URL = "https://mcp.mellowmountainradio.com/request";
+      const REQUEST_URL = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
 
       // Fetch the station's requestable library (format: [{ t: title, a: artist }, ...])
       const libRes = await fetch(LIBRARY_URL, { headers: { "User-Agent": "KAZM-MCP/1.0" } });
