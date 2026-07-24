@@ -436,7 +436,173 @@ function buildServer() {
     }
   );
 
-  // 13. Song Request Library ─────────────────────────────────────────────────────
+  // 13. Sound Session Recommendation ───────────────────────────────────────────
+  mcp.tool(
+    "get_sound_session",
+    "Recommends a KAZM sound healing session — binaural or tonal — based on the listener's goal or current time of day. Returns session name, description, frequency, duration, and link.",
+    {
+      goal: z.enum(["sleep","focus","meditation","energy","calm","anxiety","creativity","healing"]).optional()
+        .describe("Listener's intent — omit to get a time-of-day recommendation"),
+    },
+    async ({ goal }) => {
+      const SESSIONS = {
+        delta: {
+          name: "Delta Drift",
+          type: "binaural",
+          hz_beat: 2,
+          brainwave: "Delta (0.5–4 Hz)",
+          description: "A 2 Hz binaural beat guides the brain toward delta waves — the deepest brainwave state, associated with dreamless sleep and cellular repair.",
+          best_for: ["sleep","healing","anxiety"],
+          timing: "30–60 min before sleep",
+          requires: "headphones",
+          url: "https://mellowmountainradio.com/soundhealing.html",
+        },
+        theta: {
+          name: "Theta Gate",
+          type: "binaural",
+          hz_beat: 5,
+          brainwave: "Theta (4–8 Hz)",
+          description: "A 5 Hz binaural beat targets the hypnagogic edge between waking and sleep — where insight, creativity, and deep meditation occur.",
+          best_for: ["meditation","creativity","healing"],
+          timing: "20–45 min, seated or reclined",
+          requires: "headphones",
+          url: "https://mellowmountainradio.com/soundhealing.html",
+        },
+        alpha: {
+          name: "Alpha Clear",
+          type: "binaural",
+          hz_beat: 10,
+          brainwave: "Alpha (8–12 Hz)",
+          description: "A 10 Hz binaural beat promotes alpha waves — the relaxed-alert state optimal for focused work, studying, or gentle stress relief.",
+          best_for: ["focus","calm","energy","anxiety"],
+          timing: "15–30 min",
+          requires: "headphones",
+          url: "https://mellowmountainradio.com/soundhealing.html",
+        },
+        kazm: {
+          name: "The KAZM Harmonic Stack",
+          type: "tones",
+          frequencies_hz: [54, 72, 84, 111],
+          description: "Four sub-bass tones (54, 72, 84, 111 Hz) cycling individually then together — KAZM's year-long overnight experiment on 780 AM. Works through any speakers; no headphones required.",
+          best_for: ["meditation","calm","healing","sleep"],
+          timing: "Any length — designed for 5-min segments or overnight",
+          requires: "any speakers or headphones",
+          url: "https://mellowmountainradio.com/soundhealing.html",
+        },
+      };
+      const hour = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Phoenix" })).getHours();
+      let recommendation, reason;
+      if (goal) {
+        if (["sleep","healing"].includes(goal)) {
+          recommendation = SESSIONS.delta;
+          reason = `For ${goal}, Delta Drift's 2 Hz binaural beat guides the nervous system toward its deepest rest state.`;
+        } else if (["meditation","creativity"].includes(goal)) {
+          recommendation = SESSIONS.theta;
+          reason = `For ${goal}, Theta Gate's 5 Hz beat opens the hypnagogic channel — where insight and deep meditation live.`;
+        } else if (["focus","energy"].includes(goal)) {
+          recommendation = SESSIONS.alpha;
+          reason = `For ${goal}, Alpha Clear's 10 Hz beat promotes relaxed alertness without sedation.`;
+        } else if (goal === "anxiety") {
+          recommendation = SESSIONS.alpha;
+          reason = "Alpha Clear gently shifts the nervous system toward calm focus. For deeper relief, follow with Delta Drift before sleep.";
+        } else {
+          recommendation = SESSIONS.kazm;
+          reason = "The KAZM harmonic stack works without headphones and suits any listening environment.";
+        }
+      } else {
+        if (hour >= 22 || hour < 5) {
+          recommendation = SESSIONS.delta; reason = "Late night — Delta Drift supports sleep onset and overnight repair.";
+        } else if (hour < 10) {
+          recommendation = SESSIONS.alpha; reason = "Morning — Alpha Clear promotes calm focus to start the day.";
+        } else if (hour < 16) {
+          recommendation = SESSIONS.kazm;  reason = "Daytime — the KAZM harmonic stack suits an ambient background session without headphones.";
+        } else if (hour < 20) {
+          recommendation = SESSIONS.theta; reason = "Evening — Theta Gate eases the transition from work-mode to rest.";
+        } else {
+          recommendation = SESSIONS.delta; reason = "Pre-sleep hours — Delta Drift begins guiding the nervous system toward deep rest.";
+        }
+      }
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            recommended: recommendation,
+            reason,
+            also_available: Object.values(SESSIONS)
+              .filter(s => s.name !== recommendation.name)
+              .map(s => ({ name: s.name, best_for: s.best_for })),
+          }),
+        }],
+      };
+    }
+  );
+
+  // 14. Chakra Frequencies ──────────────────────────────────────────────────────
+  mcp.tool(
+    "get_chakra_frequencies",
+    "Returns all seven chakras with their associated sound healing frequencies, musical notes, colors, body locations, and themes. Useful for guiding listeners to the right singing bowl or tone session.",
+    {
+      chakra: z.enum(["root","sacral","solar_plexus","heart","throat","third_eye","crown"]).optional()
+        .describe("Specific chakra — omit for all seven"),
+    },
+    async ({ chakra }) => {
+      const CHAKRAS = [
+        { id: "root",         name: "Root",         sanskrit: "Muladhara",     hz: 396, note: "C", color: "red",          location: "Base of spine",      element: "Earth",         theme: "Safety, grounding, survival, belonging",                   affirmation: "I am safe. I am grounded. I belong." },
+        { id: "sacral",       name: "Sacral",       sanskrit: "Svadhisthana",  hz: 417, note: "D", color: "orange",       location: "Below navel",        element: "Water",         theme: "Creativity, emotion, pleasure, flow",                      affirmation: "I feel. I create. I flow." },
+        { id: "solar_plexus", name: "Solar Plexus", sanskrit: "Manipura",      hz: 528, note: "E", color: "yellow",       location: "Upper abdomen",      element: "Fire",          theme: "Confidence, personal power, transformation",               affirmation: "I act. I choose. I am powerful." },
+        { id: "heart",        name: "Heart",        sanskrit: "Anahata",       hz: 639, note: "F", color: "green",        location: "Center of chest",    element: "Air",           theme: "Love, compassion, connection, forgiveness",                affirmation: "I love. I am loved. I forgive." },
+        { id: "throat",       name: "Throat",       sanskrit: "Vishuddha",     hz: 741, note: "G", color: "blue",         location: "Throat",             element: "Ether / Sound", theme: "Expression, truth, communication, clarity",                affirmation: "I speak. I am heard. I express my truth." },
+        { id: "third_eye",    name: "Third Eye",    sanskrit: "Ajna",          hz: 852, note: "A", color: "indigo",       location: "Between the brows",  element: "Light",         theme: "Intuition, insight, inner vision, perception",             affirmation: "I see. I know. I trust my intuition." },
+        { id: "crown",        name: "Crown",        sanskrit: "Sahasrara",     hz: 963, note: "B", color: "violet/white", location: "Top of head",        element: "Consciousness", theme: "Unity, transcendence, divine connection, pure awareness",  affirmation: "I am. I am connected to all." },
+      ];
+      const result = chakra ? CHAKRAS.filter(c => c.id === chakra) : CHAKRAS;
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            chakras: result,
+            singing_bowl_page: "https://mellowmountainradio.com/chakras.html",
+            sound_healing_page: "https://mellowmountainradio.com/soundhealing.html",
+          }),
+        }],
+      };
+    }
+  );
+
+  // 15. Solfeggio Frequencies ───────────────────────────────────────────────────
+  mcp.tool(
+    "get_solfeggio",
+    "Returns the nine-tone Solfeggio frequency scale with each tone's traditional healing properties, note name, and use cases. These frequencies underpin modern sound healing practice.",
+    {
+      hz: z.number().int().optional().describe("Look up a specific frequency in Hz — e.g. 528"),
+    },
+    async ({ hz }) => {
+      const SOLFEGGIO = [
+        { hz: 174, note: "—",   name: "Foundation",    theme: "Pain relief, security, physical grounding. The lowest Solfeggio tone — felt more than heard, working on the physical body and nervous system." },
+        { hz: 285, note: "—",   name: "Renewal",       theme: "Tissue healing, cellular repair, field coherence. Said to influence energy fields around the body and accelerate recovery." },
+        { hz: 396, note: "Ut",  name: "Liberation",    theme: "Releases guilt and fear. Transforms grief into joy. The root of the original Gregorian hexachord." },
+        { hz: 417, note: "Re",  name: "Undoing",       theme: "Facilitates change. Clears traumatic imprints and negative cycles. Helps break patterns that no longer serve." },
+        { hz: 528, note: "Mi",  name: "Transformation",theme: "The 'love frequency.' Associated with DNA repair, cellular transformation, and fundamental healing. The most-cited frequency in sound healing." },
+        { hz: 639, note: "Fa",  name: "Connection",    theme: "Harmonizes relationships, promotes empathy and tolerance. Used for healing interpersonal conflicts and deepening connection." },
+        { hz: 741, note: "Sol", name: "Awakening",     theme: "Cleanses and detoxifies. Promotes expression and problem-solving. Associated with the throat — speaking truth." },
+        { hz: 852, note: "La",  name: "Returning",     theme: "Returns the body to spiritual order. Awakens intuition and elevates awareness. Third-eye frequency." },
+        { hz: 963, note: "—",   name: "Transcendence", theme: "The crown frequency. Pure tone associated with divine consciousness, unity, and the return to oneness." },
+      ];
+      const result = hz ? SOLFEGGIO.filter(s => s.hz === hz) : SOLFEGGIO;
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            frequencies: result,
+            note: "The six original Solfeggio tones (396–852 Hz) derive from a Medieval hymn; 174, 285, and 963 Hz were identified later as extensions of the same mathematical pattern.",
+            sound_healing_page: "https://mellowmountainradio.com/soundhealing.html",
+          }),
+        }],
+      };
+    }
+  );
+
+  // 16. Song Request Library ─────────────────────────────────────────────────────
   mcp.tool(
     "search_song_request_library",
     "Search KAZM's requestable song library by artist or title keyword. Returns matching tracks the DJ can play on request.",
@@ -458,7 +624,7 @@ function buildServer() {
     }
   );
 
-  // 14. Rewind / Archive ─────────────────────────────────────────────────────────
+  // 17. Rewind / Archive ─────────────────────────────────────────────────────────
   mcp.tool(
     "get_rewind",
     "Returns available on-demand rewind blocks — past KAZM broadcasts you can listen to, with dates and stream URLs.",
@@ -1140,6 +1306,9 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>get_show_schedule</h3><p>KAZM weekly on-air program schedule. <code>day</code>: weekday/saturday/sunday (optional). <code>query</code>: keyword (optional).</p></div>
 <div class="tool"><h3>get_horoscope</h3><p>Daily, weekly, or monthly horoscope for any sign. <code>sign</code>: zodiac sign (optional). <code>period</code>: daily/weekly/monthly (optional).</p></div>
 <div class="tool"><h3>get_schumann_resonance</h3><p>Earth's electromagnetic pulse from the Tomsk observatory — frequency, energy score, activity level.</p></div>
+<div class="tool"><h3>get_sound_session</h3><p>Recommends a binaural or tonal session based on goal or time of day. <code>goal</code>: sleep/focus/meditation/energy/calm/anxiety/creativity/healing (optional).</p></div>
+<div class="tool"><h3>get_chakra_frequencies</h3><p>All seven chakras with Hz, note, color, body location, and affirmation. <code>chakra</code>: root/sacral/solar_plexus/heart/throat/third_eye/crown (optional).</p></div>
+<div class="tool"><h3>get_solfeggio</h3><p>Nine-tone Solfeggio scale with healing properties. <code>hz</code>: specific frequency like 528 (optional).</p></div>
 <div class="tool"><h3>search_song_request_library</h3><p>Search KAZM's requestable song catalog. <code>query</code>: artist or title keyword (required).</p></div>
 <div class="tool"><h3>get_rewind</h3><p>Available on-demand past broadcasts with dates and stream URLs.</p></div>
 <div class="tool"><h3>get_jeep_trails</h3><p>Sedona jeep trail list and GPS paths. <code>trail</code>: trail slug, e.g. "broken-arrow" (optional).</p></div>
