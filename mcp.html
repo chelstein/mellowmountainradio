@@ -612,7 +612,8 @@
   <div class="mcp-tabs" role="tablist">
     <button class="mcp-tab is-active" role="tab" aria-selected="true"  aria-controls="mcp-p-claude"  id="mcp-t-claude">Claude</button>
     <button class="mcp-tab"           role="tab" aria-selected="false" aria-controls="mcp-p-chatgpt" id="mcp-t-chatgpt">ChatGPT</button>
-    <button class="mcp-tab"           role="tab" aria-selected="false" aria-controls="mcp-p-other"   id="mcp-t-other">Other AI tools</button>
+    <button class="mcp-tab"           role="tab" aria-selected="false" aria-controls="mcp-p-other"     id="mcp-t-other">Other AI tools</button>
+    <button class="mcp-tab"           role="tab" aria-selected="false" aria-controls="mcp-p-smithery" id="mcp-t-smithery">Smithery</button>
   </div>
 
   <!-- ── Claude panel ── -->
@@ -797,6 +798,21 @@
         <strong>Continue</strong>: MCP server block in <code>config.json</code><br>
         Full docs and tool list: <a href="https://mcp.mellowmountainradio.com/docs" target="_blank" rel="noopener">mcp.mellowmountainradio.com/docs</a>
       </p>
+    </div>
+  </div>
+
+  <!-- ── Smithery panel ── -->
+  <div class="mcp-panel" id="mcp-p-smithery" role="tabpanel" aria-labelledby="mcp-t-smithery" hidden>
+    <div class="mcp-platform-card">
+      <h3 class="mcp-platform-name">Smithery</h3>
+      <p class="mcp-platform-sub">Smithery is a public registry for MCP servers &mdash; it lets you discover and install them across many AI apps from one place. KAZM is listed there with all 45 tools. Click below to open the listing and connect from any supported AI client.</p>
+      <a class="mcp-big-btn" href="https://smithery.ai/servers/chuck/mellowmountainradio" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="15 3 21 3 21 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Open KAZM on Smithery &rarr;
+      </a>
+      <div class="mcp-payoff">
+        <strong>Works with Claude, ChatGPT, Cursor, and more.</strong> Smithery handles the connection &mdash; pick your AI app on their page and follow the prompts.
+      </div>
     </div>
   </div>
 
