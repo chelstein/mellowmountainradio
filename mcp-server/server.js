@@ -1651,7 +1651,50 @@ function buildServer() {
     }
   );
 
-  // 35. Stargazing Conditions ───────────────────────────────────────────────────
+  // 35. Hiking Trails ──────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_hiking_trails",
+    "Sedona hiking trail guide — distance, elevation gain, difficulty, trailhead location, Red Rock Pass requirement, access restrictions (shuttle/permit), and pro tips for 15 of the best trails in Red Rock Country.",
+    { trail: z.string().optional().describe("Trail name keyword, e.g. 'devil' or 'cathedral' — omit for all trails"), difficulty: z.enum(["easy","moderate","strenuous"]).optional().describe("Filter by difficulty") },
+    async ({ trail, difficulty }) => {
+      const TRAILS = [
+        { name: "Bell Rock Trail", slug: "bell-rock", distance_mi: 1.1, distance_note: "to summit scramble; 4 mi full loop", elevation_ft: 400, difficulty: "moderate", trailhead: "Bell Rock Pathway Trailhead, Hwy 179, Village of Oak Creek", red_rock_pass: true, vortex: true, tip: "One of Sedona's 4 energy vortexes. Most people hike partway up the rock face — the summit scramble is Class 3 and requires route-finding.", best_for: "Views, vortex energy, sunrise/sunset", shuttle: false, permit: false },
+        { name: "Cathedral Rock Trail", slug: "cathedral-rock", distance_mi: 1.2, distance_note: "round trip to saddle", elevation_ft: 700, difficulty: "moderate", trailhead: "Cathedral Rock Trailhead, Back O' Beyond Rd (off Hwy 179)", red_rock_pass: true, vortex: true, tip: "Steepest trail in Sedona per mile. Requires rock scrambling in the upper section. Shuttle required Thu–Sun — private vehicles barred at trailhead those days.", best_for: "Iconic photos, vortex, red rock scrambling", shuttle: true, shuttle_days: "Thu–Sun", permit: false },
+        { name: "Devil's Bridge Trail", slug: "devils-bridge", distance_mi: 4.2, distance_note: "round trip from main trailhead", elevation_ft: 500, difficulty: "moderate", trailhead: "Devil's Bridge Trailhead, Dry Creek Rd (FR 152)", red_rock_pass: true, vortex: false, tip: "Most photographed spot in Sedona — the natural sandstone arch you can walk across. Trailhead parking is extremely limited; arrive before 7am on weekends or take the shuttle. 4WD shortens hike to 1.8 mi.", best_for: "Iconic arch photo, moderate scramble", shuttle: true, shuttle_days: "weekends & holidays", permit: false },
+        { name: "Fay Canyon Trail", slug: "fay-canyon", distance_mi: 2.4, distance_note: "round trip", elevation_ft: 150, difficulty: "easy", trailhead: "Fay Canyon Trailhead, Boynton Pass Rd", red_rock_pass: true, vortex: false, tip: "Features Sedona's largest natural arch (94 ft span) just off the main trail. Flat, shaded canyon walk — great for families and hot days.", best_for: "Families, arch, shade", shuttle: false, permit: false },
+        { name: "Boynton Canyon Trail", slug: "boynton-canyon", distance_mi: 6.1, distance_note: "round trip", elevation_ft: 974, difficulty: "moderate", trailhead: "Boynton Canyon Trailhead, Boynton Pass Rd", red_rock_pass: true, vortex: true, tip: "One of Sedona's 4 vortex sites. Combines with the Boynton Vista spur (0.4 mi) for the best elevated vortex view. Add the optional Subway Cave spur for a full 7.5 mi day.", best_for: "Long canyon hike, vortex, solitude", shuttle: false, permit: false },
+        { name: "West Fork (Oak Creek Canyon) Trail", slug: "west-fork", distance_mi: 6.0, distance_note: "round trip to turnaround; trail continues further", elevation_ft: 535, difficulty: "easy", trailhead: "Call of the Canyon / West Fork Trailhead, Hwy 89A (Oak Creek Canyon)", red_rock_pass: false, coconino_pass: true, vortex: false, tip: "Requires Coconino Annual Pass ($50) or day fee — NOT the standard Red Rock Pass. Creekside trail through a slot-canyon-like gorge. Multiple creek crossings — waterproof shoes recommended. Can extend indefinitely upstream.", best_for: "Shaded canyon, creek crossings, photography", shuttle: false, permit: false },
+        { name: "Soldier Pass Trail", slug: "soldier-pass", distance_mi: 4.0, distance_note: "round trip", elevation_ft: 800, difficulty: "moderate", trailhead: "Soldier Pass Trailhead, Soldier Pass Rd", red_rock_pass: true, vortex: false, tip: "No private vehicle access — free permit required (recreation.gov #4251901, 15 vehicles/day) or take the free Sedona Shuttle. Passes the Seven Sacred Pools, a 60-ft sinkhole, and a hidden cave.", best_for: "Sinkhole, pools, cave, less-crowded vortex area", shuttle: true, shuttle_days: "Thu–Sun", permit: true, permit_url: "https://www.recreation.gov/permits/4251901" },
+        { name: "Airport Loop Trail", slug: "airport-loop", distance_mi: 3.3, distance_note: "loop", elevation_ft: 400, difficulty: "easy", trailhead: "Airport Mesa Trailhead, Airport Rd (off Hwy 89A)", red_rock_pass: true, vortex: true, tip: "Best 360° panoramic sunset view in Sedona and one of the 4 vortex sites. The western overlook is the spot — arrive 45 min before sunset. Moderate traffic noise near the start.", best_for: "Sunset, panoramic views, vortex", shuttle: false, permit: false },
+        { name: "Bear Mountain Trail", slug: "bear-mountain", distance_mi: 5.0, distance_note: "round trip", elevation_ft: 1800, difficulty: "strenuous", trailhead: "Bear Mountain Trailhead, Boynton Pass Rd", red_rock_pass: true, vortex: false, tip: "Most challenging trail in Sedona. Four distinct summits — the true summit at 6,520 ft gives unobstructed 360° views from Flagstaff to the Verde Valley. Start before 7am in summer.", best_for: "Summit views, serious hikers, solitude", shuttle: false, permit: false },
+        { name: "Birthing Cave Trail", slug: "birthing-cave", distance_mi: 2.0, distance_note: "round trip", elevation_ft: 250, difficulty: "easy", trailhead: "Long Canyon Trailhead, Long Canyon Rd (Boynton Pass area)", red_rock_pass: true, vortex: false, tip: "Short hike to a large sandstone alcove used ceremonially by the Sinagua people. Final approach requires easy scrambling. Great morning light.", best_for: "History, photography, short adventure", shuttle: false, permit: false },
+        { name: "Brins Mesa Trail", slug: "brins-mesa", distance_mi: 6.0, distance_note: "round trip", elevation_ft: 1200, difficulty: "moderate", trailhead: "Brins Mesa Trailhead, Jordan Rd (north Sedona)", red_rock_pass: true, vortex: false, tip: "Quieter than most Sedona trails. The mesa top is a huge flat expanse with unobstructed views of Wilson Mountain, Capitol Butte, and Chimney Rock. Combine with Soldier Pass for a 10-mile loop.", best_for: "Solitude, mesa views, longer adventure", shuttle: false, permit: false },
+        { name: "Huckaby Trail", slug: "huckaby", distance_mi: 6.0, distance_note: "round trip (Midgley Bridge to Schnebly Hill and back)", elevation_ft: 700, difficulty: "moderate", trailhead: "Midgley Bridge Trailhead, Hwy 89A", red_rock_pass: true, vortex: false, tip: "One of the most scenic canyon trails in Sedona following Oak Creek. Multiple creek crossings in winter/spring — check water levels via get_oak_creek_levels. Less crowded than Bell Rock area.", best_for: "Creek canyon, local favorite, off-peak solitude", shuttle: false, permit: false },
+        { name: "Doe Mountain Trail", slug: "doe-mountain", distance_mi: 2.0, distance_note: "round trip to summit", elevation_ft: 400, difficulty: "easy", trailhead: "Doe Mountain Trailhead, Boynton Pass Rd", red_rock_pass: true, vortex: false, tip: "Short steep climb onto a flat-topped mesa with 360° views. One of the best quick summit payoffs in Sedona. Combines well with Fay Canyon for a half-day Boynton Pass outing.", best_for: "Quick summit, families, views", shuttle: false, permit: false },
+        { name: "Marg's Draw Trail", slug: "margas-draw", distance_mi: 5.4, distance_note: "out and back", elevation_ft: 300, difficulty: "easy", trailhead: "Marg's Draw Trailhead, Sombart Lane (Tlaquepaque area)", red_rock_pass: true, vortex: false, tip: "Hidden gem walkable from Uptown Sedona. Flat sandy wash through pinyon-juniper forest with Courthouse Butte views. Connects to Bell Rock Pathway for a longer loop.", best_for: "Locals, dogs, quick escape from town", shuttle: false, permit: false },
+        { name: "Vultee Arch Trail", slug: "vultee-arch", distance_mi: 3.6, distance_note: "round trip", elevation_ft: 700, difficulty: "moderate", trailhead: "Sterling Canyon Trailhead, Dry Creek Rd / FR 152C", red_rock_pass: true, vortex: false, tip: "Less crowded than Devil's Bridge. Natural arch named after aviation pioneer Gerard Vultee whose plane crashed near here in 1938. The canyon narrows dramatically near the arch.", best_for: "Arch, history, less-crowded adventure", shuttle: false, permit: false },
+      ];
+
+      let results = TRAILS;
+      if (trail) {
+        const kw = trail.toLowerCase();
+        results = results.filter(t => t.name.toLowerCase().includes(kw) || t.slug.includes(kw) || t.best_for.toLowerCase().includes(kw));
+      }
+      if (difficulty) results = results.filter(t => t.difficulty === difficulty);
+
+      return { content: [{ type: "text", text: JSON.stringify({
+        trails: results,
+        total: results.length,
+        red_rock_pass_required: "Required at almost all Sedona trailheads — $5/day, $15/week, $20/year. America the Beautiful pass accepted. See get_red_rock_pass for the full guide.",
+        shuttle_info: "Free Sedona Shuttle runs Thu–Sun 7am–5:30pm serving Cathedral Rock, Little Horse, Soldier Pass, Dry Creek Vista, Mescal. Check sedonaaz.gov.",
+        oak_creek_tip: "Check get_oak_creek_levels before creek-crossing hikes (Huckaby, West Fork) after rain.",
+        source: "Trail data verified 2025 — conditions change seasonally. Check fs.usda.gov/coconino for current closures.",
+        kazm_note: "KAZM 106.5 FM broadcasts fire restrictions and trail closures in real time — tune in or use get_fire_restrictions.",
+      }) }] };
+    }
+  );
+
+  // 36. Stargazing Conditions ───────────────────────────────────────────────────
   mcp.tool(
     "get_stargazing_conditions",
     "Returns tonight's stargazing forecast for Sedona, AZ — astronomical darkness window, moon interference, Milky Way galactic core visibility, and best times to shoot the night sky. Sedona sits near the Verde Valley Dark Sky corridor.",
@@ -2367,7 +2410,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "38 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "39 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -2381,7 +2424,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "38 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "39 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
@@ -2403,7 +2446,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   38,
+    tools:   39,
   });
 });
 
