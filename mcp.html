@@ -626,29 +626,58 @@
       </a>
       <button class="mcp-manual-toggle" id="mcp-claude-fallback-toggle" style="display:none">Claude Desktop didn&rsquo;t open? Click here to add it manually</button>
       <div class="mcp-fallback" id="mcp-claude-fallback" style="display:none">
-        <span class="mcp-fallback-hd">Paste this into your Claude config file, then restart Claude</span>
-        <div class="mcp-term-wrap" style="margin:.75rem 0 .5rem;">
-          <div class="mcp-term">
-            <div class="mcp-term-bar">
-              <span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span>
-              <span class="mcp-term-title">claude_desktop_config.json</span>
-            </div>
-            <div class="mcp-term-body">
-              <code><span class="t-pun">{</span>
+        <span class="mcp-fallback-hd">Add KAZM manually &mdash; 4 steps</span>
+        <ol class="mcp-steps" style="margin-top:1rem;">
+          <li class="mcp-step">
+            <span class="mcp-step-num" aria-hidden="true">1</span>
+            <span>
+              <strong>Copy KAZM&rsquo;s config</strong>
+              <div class="mcp-term-wrap" style="margin:.6rem 0 0;">
+                <div class="mcp-term">
+                  <div class="mcp-term-bar">
+                    <span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span>
+                    <span class="mcp-term-title">KAZM config</span>
+                  </div>
+                  <div class="mcp-term-body">
+                    <code><span class="t-pun">{</span>
   <span class="t-key">"mcpServers"</span><span class="t-pun">: {</span>
     <span class="t-key">"kazm"</span><span class="t-pun">: {</span>
       <span class="t-key">"url"</span><span class="t-pun">:</span> <span class="t-str">"https://mcp.mellowmountainradio.com/mcp"</span>
     <span class="t-pun">}</span>
   <span class="t-pun">}</span>
 <span class="t-pun">}</span></code>
-            </div>
-          </div>
-          <button class="mcp-copy-btn" data-copy='{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com/mcp"}}}'>Copy</button>
-        </div>
-        <p style="font-size:.8rem;color:var(--muted);margin:.5rem 0 0;line-height:1.7;">Config file location &mdash; open the file in any text editor, paste the snippet above, save, then restart Claude:<br>
-          <span class="mcp-filepath"><span class="mcp-filepath-os">Mac</span>~/Library/Application Support/Claude/claude_desktop_config.json</span>
-          <span class="mcp-filepath"><span class="mcp-filepath-os">Win</span>%APPDATA%\Claude\claude_desktop_config.json</span>
-        </p>
+                  </div>
+                </div>
+                <button class="mcp-copy-btn" data-copy='{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com/mcp"}}}'>Copy</button>
+              </div>
+            </span>
+          </li>
+          <li class="mcp-step">
+            <span class="mcp-step-num" aria-hidden="true">2</span>
+            <span>
+              <strong>Open the Claude config file</strong>
+              <span class="mcp-step-detail">In Claude Desktop: click <strong>Claude</strong> in the top menu bar &rarr; <strong>Settings</strong> &rarr; <strong>Developer</strong> &rarr; <strong>Edit Config</strong>. The file opens in a text editor automatically.</span>
+              <span class="mcp-step-detail" style="margin-top:.35rem;">Can&rsquo;t find that menu? Open the file directly &mdash;<br>
+                <span class="mcp-filepath" style="display:inline-block;margin:.2rem 0"><span class="mcp-filepath-os">Mac</span>~/Library/Application Support/Claude/claude_desktop_config.json</span>
+                <span class="mcp-filepath" style="display:inline-block;margin:.2rem 0"><span class="mcp-filepath-os">Win</span>%APPDATA%\Claude\claude_desktop_config.json</span>
+              </span>
+            </span>
+          </li>
+          <li class="mcp-step">
+            <span class="mcp-step-num" aria-hidden="true">3</span>
+            <span>
+              <strong>Paste and save</strong>
+              <span class="mcp-step-detail">Click inside the text editor, press <strong>Ctrl+A</strong> (Windows) or <strong>&#8984;+A</strong> (Mac) to select everything, then paste with <strong>Ctrl+V</strong> / <strong>&#8984;+V</strong>. Save the file.</span>
+            </span>
+          </li>
+          <li class="mcp-step">
+            <span class="mcp-step-num" aria-hidden="true">4</span>
+            <span>
+              <strong>Quit Claude and reopen it</strong>
+              <span class="mcp-step-detail">Fully close Claude (don&rsquo;t just minimize it), then open it again. That&rsquo;s it &mdash; KAZM is now connected.</span>
+            </span>
+          </li>
+        </ol>
       </div>
       <div class="mcp-payoff">
         <strong>Then try it &mdash;</strong> ask Claude: &ldquo;What song is playing on KAZM right now?&rdquo; or &ldquo;Are there any fire restrictions near Sedona?&rdquo;
