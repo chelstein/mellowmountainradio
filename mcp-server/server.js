@@ -2373,7 +2373,7 @@ function buildServer() {
   );
 
   mcp.prompt(
-    "whats_on_kazm",
+    "get_kazm_status",
     "Full KAZM radio status — what's playing, who's listening, what's on next, and artist background.",
     {},
     () => ({
@@ -2388,7 +2388,7 @@ function buildServer() {
   );
 
   mcp.prompt(
-    "outdoor_safety_check",
+    "check_outdoor_safety",
     "Full outdoor safety brief for Sedona — fire, weather, air quality, alerts, road conditions, and Oak Creek levels.",
     {},
     () => ({
@@ -2403,7 +2403,7 @@ function buildServer() {
   );
 
   mcp.prompt(
-    "stargazing_tonight",
+    "get_stargazing_forecast",
     "Tonight's stargazing forecast for Sedona — darkness window, moon phase, Milky Way visibility, and best sites.",
     {},
     () => ({
@@ -2435,7 +2435,7 @@ function buildServer() {
   );
 
   mcp.prompt(
-    "sedona_drive_check",
+    "check_drive_conditions",
     "Road and weather check before driving to or through Sedona — 89A, Oak Creek Canyon, I-17.",
     { destination: z.string().optional().describe("Where you're headed (e.g. 'Flagstaff', 'Oak Creek Canyon', 'Jerome')") },
     ({ destination }) => ({
