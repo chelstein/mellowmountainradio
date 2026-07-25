@@ -6778,8 +6778,8 @@
     }
   }
 
-  var REQUEST_HOOK = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
-  var REQUEST_BOARD = "https://n8n.mellowmountainradio.com/webhook/kazm-request-board";
+  var REQUEST_HOOK = "https://mcp.mellowmountainradio.com/request";
+  var REQUEST_BOARD = "https://mcp.mellowmountainradio.com/requests";
   function rqNorm(x) { return String(x || "").toLowerCase().replace(/\(.*?\)|\[.*?\]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
   function rqOnAir(song) {
     if (!song || !song.title) return;
