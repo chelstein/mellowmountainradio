@@ -7,7 +7,7 @@
         "path": "kazm-request-line",
         "responseMode": "responseNode",
         "options": {
-          "allowedOrigins": "https://mellowmountainradio.com"
+          "allowedOrigins": "*"
         }
       },
       "id": "wh-submit",
@@ -97,7 +97,7 @@
         "path": "kazm-request-board",
         "responseMode": "responseNode",
         "options": {
-          "allowedOrigins": "https://mellowmountainradio.com"
+          "allowedOrigins": "*"
         }
       },
       "id": "wh-board",
@@ -143,7 +143,7 @@
         "path": "kazm-pulse",
         "responseMode": "responseNode",
         "options": {
-          "allowedOrigins": "https://mellowmountainradio.com"
+          "allowedOrigins": "*"
         }
       },
       "id": "wh-pulse",

@@ -1,0 +1,110 @@
+{
+  "name": "KAZM Request Line",
+  "nodes": [
+    {
+      "id": "rl-001",
+      "name": "Receive Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kazm-request-line",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "webhookId": "kazm-request-line"
+    },
+    {
+      "id": "rl-002",
+      "name": "Probe or Request?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [440, 300],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "probe-check",
+              "leftValue": "={{ ($input.first().json.body || $input.first().json).probe }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "rl-003",
+      "name": "Respond Probe OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [680, 160],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"success\":true}",
+        "options": { "responseCode": 200 }
+      }
+    },
+    {
+      "id": "rl-004",
+      "name": "Store Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 440],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\nconst { title, artist, name = '', note = '', listener_id = '' } = body;\nif (!title || !artist) throw new Error('title and artist required');\n\nconst entry = {\n  title:       String(title).slice(0, 200),\n  artist:      String(artist).slice(0, 200),\n  name:        String(name).slice(0, 60),\n  note:        String(note).slice(0, 140),\n  listener_id: String(listener_id).slice(0, 40),\n  at:          new Date().toISOString()\n};\n\nconst sd = $getWorkflowStaticData('global');\nsd.requests = sd.requests || [];\nsd.requests.push(entry);\nif (sd.requests.length > 500) sd.requests = sd.requests.slice(-500);\n\nreturn [{ json: { success: true, total: sd.requests.length, entry } }];"
+      }
+    },
+    {
+      "id": "rl-005",
+      "name": "Forward to MCP Server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 440],
+      "parameters": {
+        "method": "POST",
+        "url": "https://mcp.mellowmountainradio.com/request",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify($input.first().json.entry) }}",
+        "options": { "timeout": 5000, "response": { "response": { "neverError": true } } }
+      }
+    },
+    {
+      "id": "rl-006",
+      "name": "Respond Request OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1160, 440],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"success\":true}",
+        "options": { "responseCode": 200 }
+      }
+    }
+  ],
+  "connections": {
+    "Receive Request":    { "main": [[{ "node": "Probe or Request?",  "type": "main", "index": 0 }]] },
+    "Probe or Request?":  {
+      "main": [
+        [{ "node": "Respond Probe OK",     "type": "main", "index": 0 }],
+        [{ "node": "Store Request",         "type": "main", "index": 0 }]
+      ]
+    },
+    "Store Request":      { "main": [[{ "node": "Forward to MCP Server", "type": "main", "index": 0 }]] },
+    "Forward to MCP Server": { "main": [[{ "node": "Respond Request OK", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "KAZM" }]
+}
