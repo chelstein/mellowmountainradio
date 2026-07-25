@@ -265,10 +265,13 @@
     :root[data-theme="light"] .mcp-tab.is-active { background: var(--surface); }
 
     /* ── ChatGPT step flow ── */
-    .mcp-steps { list-style: none; padding: 0; margin: .85rem 0 0; display: flex; flex-direction: column; gap: .65rem; }
-    .mcp-step { display: flex; align-items: flex-start; gap: .85rem; font-size: .875rem; line-height: 1.55; color: var(--muted); }
-    .mcp-step-num { flex-shrink: 0; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent); color: #fff; font-size: .74rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: .18rem; }
+    .mcp-steps { list-style: none; padding: 0; margin: 1.1rem 0 0; display: flex; flex-direction: column; gap: 1rem; }
+    .mcp-step { display: flex; align-items: flex-start; gap: 1rem; font-size: .95rem; line-height: 1.6; color: var(--muted); }
+    .mcp-step-num { flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent); color: #fff; font-size: .85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: .15rem; }
     .mcp-step strong { color: var(--ink); }
+    .mcp-step-detail { display: block; font-size: .82rem; color: var(--muted); opacity: .8; margin-top: .2rem; }
+    .mcp-chatgpt-payoff { font-size: .88rem; color: var(--muted); background: var(--bg-2); border-radius: var(--r-sm); padding: .85rem 1rem; margin: 1.25rem 0 0; line-height: 1.6; }
+    .mcp-chatgpt-payoff strong { color: var(--ink); }
   </style>
 </head>
 <body data-page="about">
@@ -649,33 +652,56 @@
   <!-- ── ChatGPT panel ── -->
   <div class="mcp-panel" id="mcp-p-chatgpt" role="tabpanel" aria-labelledby="mcp-t-chatgpt" hidden>
     <div class="mcp-platform-card">
-      <h3 class="mcp-platform-name">ChatGPT Desktop</h3>
-      <p class="mcp-platform-sub">Works in the ChatGPT desktop app on Windows &amp; Mac. Start by copying the URL, then follow three quick steps to connect.</p>
+      <h3 class="mcp-platform-name">ChatGPT</h3>
+      <p class="mcp-platform-sub">Once you do this, you can ask ChatGPT things like <em>&ldquo;What&rsquo;s playing on KAZM right now?&rdquo;</em> and it will actually know. Takes about two minutes. You only do it once.</p>
+
       <button class="mcp-big-btn" id="mcp-chatgpt-copy-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>
-        Copy Server URL
+        Step 1 &mdash; Copy KAZM&rsquo;s address
       </button>
+
       <div class="mcp-fallback">
-        <span class="mcp-fallback-hd">Then in ChatGPT Desktop</span>
+        <span class="mcp-fallback-hd">Then follow these steps in the ChatGPT app on your computer</span>
         <ol class="mcp-steps">
           <li class="mcp-step">
-            <span class="mcp-step-num" aria-hidden="true">1</span>
-            <span>Go to <strong>Settings &rarr; Connectors</strong> and click <strong>Add MCP Server</strong></span>
-          </li>
-          <li class="mcp-step">
             <span class="mcp-step-num" aria-hidden="true">2</span>
-            <span>Paste the URL you copied, then set the name to <strong>KAZM</strong></span>
+            <span>
+              <strong>Open ChatGPT on your computer</strong> (the app, not the website)
+              <span class="mcp-step-detail">Don&rsquo;t have it? <a href="https://openai.com/chatgpt/download/" target="_blank" rel="noopener" style="color:var(--accent-strong);">Download it free here &rarr;</a></span>
+            </span>
           </li>
           <li class="mcp-step">
             <span class="mcp-step-num" aria-hidden="true">3</span>
-            <span>Click <strong>Save</strong> &mdash; KAZM&rsquo;s live data is now in every ChatGPT conversation</span>
+            <span>
+              <strong>Click the gear icon &#9881; to open Settings</strong>, then click <strong>Connectors</strong>
+              <span class="mcp-step-detail">The gear is usually in the bottom-left corner of the app.</span>
+            </span>
+          </li>
+          <li class="mcp-step">
+            <span class="mcp-step-num" aria-hidden="true">4</span>
+            <span>
+              <strong>Click &ldquo;Add MCP Server&rdquo;</strong> and paste the address you copied in Step 1
+              <span class="mcp-step-detail">To paste: click in the box and press Ctrl+V on Windows or &#8984;+V on Mac.</span>
+            </span>
+          </li>
+          <li class="mcp-step">
+            <span class="mcp-step-num" aria-hidden="true">5</span>
+            <span>
+              <strong>Type <em>KAZM</em> as the name</strong>, then click <strong>Save</strong>
+              <span class="mcp-step-detail">That&rsquo;s it &mdash; you&rsquo;re connected.</span>
+            </span>
           </li>
         </ol>
+
+        <div class="mcp-chatgpt-payoff">
+          <strong>Now try it:</strong> ask ChatGPT &ldquo;What song is KAZM playing right now?&rdquo; or &ldquo;Are there any fires near Sedona today?&rdquo; &mdash; it will pull live answers straight from KAZM.
+        </div>
+
         <div class="mcp-term-wrap" style="margin:1.25rem 0 .5rem;">
           <div class="mcp-term">
             <div class="mcp-term-bar">
               <span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span>
-              <span class="mcp-term-title">Server URL</span>
+              <span class="mcp-term-title">KAZM&rsquo;s address (if you need to paste it manually)</span>
             </div>
             <div class="mcp-term-body">
               <code><span class="t-str">https://mcp.mellowmountainradio.com/mcp</span></code>
@@ -683,7 +709,6 @@
           </div>
           <button class="mcp-copy-btn" data-copy="https://mcp.mellowmountainradio.com/mcp">Copy</button>
         </div>
-        <p class="mcp-connect-note">No API key required. &nbsp;&middot;&nbsp; <a href="https://openai.com/chatgpt/download/" target="_blank" rel="noopener">Download ChatGPT Desktop &rarr;</a></p>
       </div>
     </div>
   </div>
@@ -755,14 +780,14 @@
   if (cgCopyBtn) {
     cgCopyBtn.addEventListener("click", function () {
       navigator.clipboard.writeText("https://mcp.mellowmountainradio.com/mcp").then(function () {
-        cgCopyBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> URL Copied — now open ChatGPT Desktop';
+        cgCopyBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied! Now follow Steps 2–5 below';
         cgCopyBtn.style.background = "var(--accent-deep)";
         setTimeout(function () {
-          cgCopyBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg> Copy Server URL';
+          cgCopyBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg> Step 1 — Copy KAZM’s address';
           cgCopyBtn.style.background = "";
         }, 3000);
       }).catch(function () {
-        cgCopyBtn.textContent = "Copy failed — use the box below";
+        cgCopyBtn.textContent = "Couldn't copy automatically — use the box below to copy it manually";
         setTimeout(function () { cgCopyBtn.textContent = "Copy Server URL"; }, 2500);
       });
     });
