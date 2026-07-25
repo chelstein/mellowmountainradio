@@ -270,8 +270,12 @@
     .mcp-step-num { flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent); color: #fff; font-size: .85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: .15rem; }
     .mcp-step strong { color: var(--ink); }
     .mcp-step-detail { display: block; font-size: .82rem; color: var(--muted); opacity: .8; margin-top: .2rem; }
+    .mcp-payoff { font-size: .88rem; color: var(--muted); background: var(--bg-2); border-radius: var(--r-sm); padding: .85rem 1rem; margin: 1.25rem 0 0; line-height: 1.6; }
+    .mcp-payoff strong { color: var(--ink); }
     .mcp-chatgpt-payoff { font-size: .88rem; color: var(--muted); background: var(--bg-2); border-radius: var(--r-sm); padding: .85rem 1rem; margin: 1.25rem 0 0; line-height: 1.6; }
     .mcp-chatgpt-payoff strong { color: var(--ink); }
+    .mcp-manual-toggle { background: none; border: none; padding: .35rem 0 0; color: var(--muted); font-size: .8rem; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; display: block; }
+    .mcp-manual-toggle:hover { color: var(--ink); }
   </style>
 </head>
 <body data-page="about">
@@ -601,27 +605,28 @@
 
 <section class="page-section page-section--tint" id="connect"><div class="wrap">
   <div class="section-head">
-    <h2>Connect in 30 seconds</h2>
-    <p class="lead">Pick your AI client. One click adds KAZM&rsquo;s live data to every conversation.</p>
+    <h2>Add KAZM to your AI assistant</h2>
+    <p class="lead">Do this once and your AI can answer questions like &ldquo;What&rsquo;s playing on KAZM?&rdquo; or &ldquo;Are there fires near Sedona today?&rdquo; with live, real answers. Pick your app below.</p>
   </div>
 
   <div class="mcp-tabs" role="tablist">
     <button class="mcp-tab is-active" role="tab" aria-selected="true"  aria-controls="mcp-p-claude"  id="mcp-t-claude">Claude</button>
     <button class="mcp-tab"           role="tab" aria-selected="false" aria-controls="mcp-p-chatgpt" id="mcp-t-chatgpt">ChatGPT</button>
-    <button class="mcp-tab"           role="tab" aria-selected="false" aria-controls="mcp-p-other"   id="mcp-t-other">Cursor &amp; others</button>
+    <button class="mcp-tab"           role="tab" aria-selected="false" aria-controls="mcp-p-other"   id="mcp-t-other">Other AI tools</button>
   </div>
 
   <!-- ── Claude panel ── -->
   <div class="mcp-panel" id="mcp-p-claude" role="tabpanel" aria-labelledby="mcp-t-claude">
     <div class="mcp-platform-card">
       <h3 class="mcp-platform-name">Claude Desktop</h3>
-      <p class="mcp-platform-sub">Hit the button &mdash; Claude Desktop opens and asks you to confirm adding KAZM as an MCP server. Done in one click.</p>
+      <p class="mcp-platform-sub">You need the <strong>Claude Desktop app</strong> on your Mac or Windows PC (not the website &mdash; the actual app). <a href="https://claude.ai/download" target="_blank" rel="noopener" style="color:var(--accent-strong);">Get it free here</a> if you don&rsquo;t have it yet. Then click the button below &mdash; Claude opens, asks you to confirm, and you&rsquo;re done. After that, just ask Claude anything about KAZM and it will have live answers.</p>
       <a class="mcp-big-btn" href="claude://install-mcp?name=KAZM+Mellow+Mountain+Radio&url=https%3A%2F%2Fmcp.mellowmountainradio.com%2Fmcp" id="mcp-claude-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Add to Claude Desktop
       </a>
-      <div class="mcp-fallback" id="mcp-claude-fallback">
-        <span class="mcp-fallback-hd">Or add manually &mdash; paste this into your Claude config file</span>
+      <button class="mcp-manual-toggle" id="mcp-claude-fallback-toggle" style="display:none">Claude Desktop didn&rsquo;t open? Click here to add it manually</button>
+      <div class="mcp-fallback" id="mcp-claude-fallback" style="display:none">
+        <span class="mcp-fallback-hd">Paste this into your Claude config file, then restart Claude</span>
         <div class="mcp-term-wrap" style="margin:.75rem 0 .5rem;">
           <div class="mcp-term">
             <div class="mcp-term-bar">
@@ -640,11 +645,13 @@
           </div>
           <button class="mcp-copy-btn" data-copy='{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com/mcp"}}}'>Copy</button>
         </div>
-        <p style="font-size:.8rem;color:var(--muted);margin:.5rem 0 0;line-height:1.6;">Config file location:<br>
+        <p style="font-size:.8rem;color:var(--muted);margin:.5rem 0 0;line-height:1.7;">Config file location &mdash; open the file in any text editor, paste the snippet above, save, then restart Claude:<br>
           <span class="mcp-filepath"><span class="mcp-filepath-os">Mac</span>~/Library/Application Support/Claude/claude_desktop_config.json</span>
           <span class="mcp-filepath"><span class="mcp-filepath-os">Win</span>%APPDATA%\Claude\claude_desktop_config.json</span>
-        After saving, restart Claude Desktop.
         </p>
+      </div>
+      <div class="mcp-payoff">
+        <strong>Then try it &mdash;</strong> ask Claude: &ldquo;What song is playing on KAZM right now?&rdquo; or &ldquo;Are there any fire restrictions near Sedona?&rdquo;
       </div>
     </div>
   </div>
@@ -653,7 +660,7 @@
   <div class="mcp-panel" id="mcp-p-chatgpt" role="tabpanel" aria-labelledby="mcp-t-chatgpt" hidden>
     <div class="mcp-platform-card">
       <h3 class="mcp-platform-name">ChatGPT</h3>
-      <p class="mcp-platform-sub">Once you do this, you can ask ChatGPT things like <em>&ldquo;What&rsquo;s playing on KAZM right now?&rdquo;</em> and it will actually know. Takes about two minutes. You only do it once.</p>
+      <p class="mcp-platform-sub">Works in the <strong>ChatGPT app on your computer</strong> (Windows or Mac) &mdash; not the website. Takes about two minutes, and you only do it once. After that, ask ChatGPT anything about KAZM and it will know.</p>
 
       <button class="mcp-big-btn" id="mcp-chatgpt-copy-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>
@@ -661,47 +668,47 @@
       </button>
 
       <div class="mcp-fallback">
-        <span class="mcp-fallback-hd">Then follow these steps in the ChatGPT app on your computer</span>
+        <span class="mcp-fallback-hd">Then do these steps inside the ChatGPT app</span>
         <ol class="mcp-steps">
           <li class="mcp-step">
             <span class="mcp-step-num" aria-hidden="true">2</span>
             <span>
-              <strong>Open ChatGPT on your computer</strong> (the app, not the website)
-              <span class="mcp-step-detail">Don&rsquo;t have it? <a href="https://openai.com/chatgpt/download/" target="_blank" rel="noopener" style="color:var(--accent-strong);">Download it free here &rarr;</a></span>
+              <strong>Open the ChatGPT app</strong> on your computer
+              <span class="mcp-step-detail">Don&rsquo;t have it yet? <a href="https://openai.com/chatgpt/download/" target="_blank" rel="noopener" style="color:var(--accent-strong);">Download it free here &rarr;</a></span>
             </span>
           </li>
           <li class="mcp-step">
             <span class="mcp-step-num" aria-hidden="true">3</span>
             <span>
-              <strong>Click the gear icon &#9881; to open Settings</strong>, then click <strong>Connectors</strong>
-              <span class="mcp-step-detail">The gear is usually in the bottom-left corner of the app.</span>
+              <strong>Open Settings</strong> (click your name or the gear icon &#9881;), then find <strong>Connectors</strong> or <strong>Integrations</strong>
+              <span class="mcp-step-detail">The exact name depends on your version &mdash; look for something about connected apps or plugins.</span>
             </span>
           </li>
           <li class="mcp-step">
             <span class="mcp-step-num" aria-hidden="true">4</span>
             <span>
-              <strong>Click &ldquo;Add MCP Server&rdquo;</strong> and paste the address you copied in Step 1
-              <span class="mcp-step-detail">To paste: click in the box and press Ctrl+V on Windows or &#8984;+V on Mac.</span>
+              <strong>Click &ldquo;Add&rdquo; or &ldquo;Add MCP Server&rdquo;</strong> and paste the address you copied in Step 1
+              <span class="mcp-step-detail">To paste: click in the box, then press Ctrl+V (Windows) or &#8984;+V (Mac).</span>
             </span>
           </li>
           <li class="mcp-step">
             <span class="mcp-step-num" aria-hidden="true">5</span>
             <span>
-              <strong>Type <em>KAZM</em> as the name</strong>, then click <strong>Save</strong>
-              <span class="mcp-step-detail">That&rsquo;s it &mdash; you&rsquo;re connected.</span>
+              <strong>Name it <em>KAZM</em></strong> and click <strong>Save</strong>
+              <span class="mcp-step-detail">Done. KAZM&rsquo;s live data is now in every ChatGPT conversation.</span>
             </span>
           </li>
         </ol>
 
-        <div class="mcp-chatgpt-payoff">
-          <strong>Now try it:</strong> ask ChatGPT &ldquo;What song is KAZM playing right now?&rdquo; or &ldquo;Are there any fires near Sedona today?&rdquo; &mdash; it will pull live answers straight from KAZM.
+        <div class="mcp-payoff">
+          <strong>Then try it &mdash;</strong> ask ChatGPT: &ldquo;What song is playing on KAZM?&rdquo; or &ldquo;Are there fires near Sedona today?&rdquo;
         </div>
 
         <div class="mcp-term-wrap" style="margin:1.25rem 0 .5rem;">
           <div class="mcp-term">
             <div class="mcp-term-bar">
               <span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span>
-              <span class="mcp-term-title">KAZM&rsquo;s address (if you need to paste it manually)</span>
+              <span class="mcp-term-title">KAZM&rsquo;s address (copy this if you need it again)</span>
             </div>
             <div class="mcp-term-body">
               <code><span class="t-str">https://mcp.mellowmountainradio.com/mcp</span></code>
@@ -713,11 +720,11 @@
     </div>
   </div>
 
-  <!-- ── Cursor / Other panel ── -->
+  <!-- ── Other AI tools panel ── -->
   <div class="mcp-panel" id="mcp-p-other" role="tabpanel" aria-labelledby="mcp-t-other" hidden>
     <div class="mcp-platform-card">
-      <h3 class="mcp-platform-name">Cursor, Windsurf, Continue &amp; other MCP clients</h3>
-      <p class="mcp-platform-sub">Any client that supports the Model Context Protocol can connect with one line. Copy the config snippet and paste it into your client&rsquo;s MCP server settings.</p>
+      <h3 class="mcp-platform-name">Cursor, Windsurf, Continue &amp; any other MCP client</h3>
+      <p class="mcp-platform-sub">If your AI tool supports MCP, add KAZM with one line of config. Copy the snippet below and paste it into your client&rsquo;s MCP server settings file.</p>
       <div class="mcp-term-wrap" style="margin:1rem 0 .5rem;">
         <div class="mcp-term">
           <div class="mcp-term-bar">
@@ -736,7 +743,12 @@
         </div>
         <button class="mcp-copy-btn" data-copy='{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com/mcp"}}}'>Copy</button>
       </div>
-      <p class="mcp-connect-note" style="margin-top:1rem;">Cursor: paste into <code>.cursor/mcp.json</code> &nbsp;&middot;&nbsp; Windsurf: <code>~/.codeium/windsurf/mcp_config.json</code> &nbsp;&middot;&nbsp; Continue: MCP server block in <code>config.json</code>. Full docs at <a href="https://mcp.mellowmountainradio.com/docs" target="_blank" rel="noopener">mcp.mellowmountainradio.com/docs</a>.</p>
+      <p class="mcp-connect-note" style="margin-top:1rem;">
+        <strong>Cursor</strong>: <code>.cursor/mcp.json</code> &nbsp;&middot;&nbsp;
+        <strong>Windsurf</strong>: <code>~/.codeium/windsurf/mcp_config.json</code> &nbsp;&middot;&nbsp;
+        <strong>Continue</strong>: MCP server block in <code>config.json</code><br>
+        Full docs and tool list: <a href="https://mcp.mellowmountainradio.com/docs" target="_blank" rel="noopener">mcp.mellowmountainradio.com/docs</a>
+      </p>
     </div>
   </div>
 
@@ -793,14 +805,22 @@
     });
   }
 
-  /* ── Claude deep-link: show manual fallback after 1.8s if app didn't open ── */
-  var claudeBtn = document.getElementById("mcp-claude-btn");
-  var claudeFallback = document.getElementById("mcp-claude-fallback");
-  if (claudeBtn && claudeFallback) {
+  /* ── Claude deep-link: show toggle after 2s (only if app didn't open) ── */
+  var claudeBtn          = document.getElementById("mcp-claude-btn");
+  var claudeFallback     = document.getElementById("mcp-claude-fallback");
+  var claudeFallbackToggle = document.getElementById("mcp-claude-fallback-toggle");
+  if (claudeBtn && claudeFallback && claudeFallbackToggle) {
     claudeBtn.addEventListener("click", function () {
       setTimeout(function () {
-        claudeFallback.style.display = "";
-      }, 1800);
+        claudeFallbackToggle.style.display = "block";
+      }, 2000);
+    });
+    claudeFallbackToggle.addEventListener("click", function () {
+      var open = claudeFallback.style.display === "block";
+      claudeFallback.style.display = open ? "none" : "block";
+      claudeFallbackToggle.textContent = open
+        ? "Claude Desktop didn’t open? Click here to add it manually"
+        : "Hide manual instructions";
     });
   }
 })();
