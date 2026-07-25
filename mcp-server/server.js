@@ -73,6 +73,7 @@ function buildServer() {
     "get_now_playing",
     "Returns the song currently on air: title, artist, album, artwork URL, start time, and stream URL.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const data = await azGet(`/api/nowplaying/${STATION}`);
       const np   = data.now_playing || {};
@@ -100,6 +101,7 @@ function buildServer() {
     "get_listener_count",
     "Returns the current live listener count across all mounts, plus per-mount breakdown.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const data    = await azGet(`/api/nowplaying/${STATION}`);
       const live    = data.listeners || {};
@@ -126,6 +128,7 @@ function buildServer() {
     "search_song_history",
     "Returns the most recently played songs (up to 25). Optionally filter by keyword in title or artist.",
     { query: z.string().optional().describe("Keyword to filter by title or artist") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ query }) => {
       const data  = await azGet(`/api/station/${STATION}/history?rows=25`);
       let items   = Array.isArray(data) ? data : [];
@@ -154,6 +157,7 @@ function buildServer() {
     "get_fire_restrictions",
     "Returns current fire restriction level and fire danger rating for the Sedona / Coconino National Forest area. Includes any active Stage 1 or Stage 2 restrictions and Sedona-area alerts.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       try {
         const res = await fetch("https://www.fs.usda.gov/r03/coconino/alerts", {
@@ -210,6 +214,7 @@ function buildServer() {
     "get_weather",
     "Returns current conditions and a 7-day forecast for Sedona AZ from Open-Meteo (free, no key required).",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const url = "https://api.open-meteo.com/v1/forecast"
         + "?latitude=34.8697&longitude=-111.7610"
@@ -229,6 +234,7 @@ function buildServer() {
     "get_road_conditions",
     "Returns active road and trail closures for the Sedona / Oak Creek area from the Coconino National Forest alerts page. Also includes highway incidents for SR-89A, SR-179, and I-17 via Road511 when ROAD511_KEY is set.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const result = {
         updated:    new Date().toISOString(),
@@ -308,6 +314,7 @@ function buildServer() {
     "get_concerts",
     "Returns upcoming concerts and shows sourced from KAZM's data, primarily AZ and regional venues.",
     { state: z.string().optional().describe("Filter by state abbreviation, e.g. 'AZ'") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ state }) => {
       const data = await ghGet("concerts.json");
       let list   = (data.concerts || data || []);
@@ -326,6 +333,7 @@ function buildServer() {
     "get_events",
     "Returns upcoming local Sedona events including library events and festivals.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const [library, festivals] = await Promise.all([
         ghGet("library-events.json").catch(() => []),
@@ -348,6 +356,7 @@ function buildServer() {
     "get_stream_url",
     "Returns the live audio stream URLs for KAZM (MP3 and AAC mounts) plus the station web player URL.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const data   = await azGet(`/api/nowplaying/${STATION}`);
       const mounts = (data.station && data.station.mounts) || [];
@@ -376,6 +385,7 @@ function buildServer() {
       day:   z.enum(["weekday","saturday","sunday"]).optional().describe("Filter to a specific day group"),
       query: z.string().optional().describe("Keyword to filter by show name or host"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ day, query }) => {
       const data = await ghGet("schedule.json");
       let result = {};
@@ -413,6 +423,7 @@ function buildServer() {
       sign:   z.enum(["aries","taurus","gemini","cancer","leo","virgo","libra","scorpio","sagittarius","capricorn","aquarius","pisces"]).optional().describe("Zodiac sign (omit for all)"),
       period: z.enum(["daily","weekly","monthly"]).optional().describe("Which forecast period (default: daily)"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ sign, period = "daily" }) => {
       const data  = await ghGet("horoscopes.json");
       const signs = data.signs || {};
@@ -435,6 +446,7 @@ function buildServer() {
     "get_schumann_resonance",
     "Returns the current Schumann resonance reading — Earth's electromagnetic pulse measured at the Tomsk observatory. Includes frequency, energy score, activity level, and spectrogram URL.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const data = await ghGet("schumann.json");
       return { content: [{ type: "text", text: JSON.stringify(data) }] };
@@ -449,6 +461,7 @@ function buildServer() {
       goal: z.enum(["sleep","focus","meditation","energy","calm","anxiety","creativity","healing"]).optional()
         .describe("Listener's intent — omit to get a time-of-day recommendation"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ goal }) => {
       const SESSIONS = {
         delta: {
@@ -550,6 +563,7 @@ function buildServer() {
       chakra: z.enum(["root","sacral","solar_plexus","heart","throat","third_eye","crown"]).optional()
         .describe("Specific chakra — omit for all seven"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ chakra }) => {
       const CHAKRAS = [
         {
@@ -667,6 +681,7 @@ function buildServer() {
       chakra: z.enum(["root","sacral","solar_plexus","heart","throat","third_eye","crown"]).optional()
         .describe("Specific chakra — omit for all seven"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ chakra }) => {
       const CHAKRAS = [
         { id: "root",         name: "Root",         sanskrit: "Muladhara",    hz: 396, note: "G",  color: "#e0393f", affirmation: "I am safe. I belong here." },
@@ -698,6 +713,7 @@ function buildServer() {
     {
       hz: z.number().int().optional().describe("Look up a specific frequency in Hz — e.g. 528"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ hz }) => {
       const SOLFEGGIO = [
         { hz: 174, note: "—",   name: "Foundation",    theme: "Pain relief, security, physical grounding. The lowest Solfeggio tone — felt more than heard, working on the physical body and nervous system." },
@@ -729,6 +745,7 @@ function buildServer() {
     "search_song_request_library",
     "Search KAZM's requestable song library by artist or title keyword. Returns matching tracks the DJ can play on request.",
     { query: z.string().describe("Artist name or song title to search for") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ query }) => {
       const data = await ghGet("request-library.json");
       const list = Array.isArray(data) ? data : [];
@@ -751,6 +768,7 @@ function buildServer() {
     "get_rewind",
     "Returns available on-demand rewind blocks — past KAZM broadcasts you can listen to, with dates and stream URLs.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const data   = await ghGet("rewind-manifest.json");
       const blocks = (data.blocks || []).map(b => ({
@@ -772,6 +790,7 @@ function buildServer() {
     "get_jeep_trails",
     "Returns Sedona jeep trail names available on the KAZM trail map. Pass a trail name to get its GPS coordinate path.",
     { trail: z.string().optional().describe("Trail slug, e.g. 'broken-arrow', 'schnebly'. Omit for the full list.") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ trail }) => {
       const data   = await ghGet("jeeptrails-geo.json");
       const names  = Object.keys(data);
@@ -800,6 +819,7 @@ function buildServer() {
     "get_movies",
     "Returns current movie showings at Sedona-area theaters (Mary D. Fisher Theatre, Harkins Sedona 6, and others).",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const data = await ghGet("showtimes.json");
       return {
@@ -823,6 +843,7 @@ function buildServer() {
       severity: z.enum(["Extreme","Severe","Moderate","Minor"]).optional()
         .describe("Filter to alerts at or above this severity level (Extreme > Severe > Moderate > Minor)"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ severity }) => {
       const SEVERITY_RANK = { Extreme: 4, Severe: 3, Moderate: 2, Minor: 1, Unknown: 0 };
       const minRank = severity ? (SEVERITY_RANK[severity] ?? 0) : 0;
@@ -877,6 +898,7 @@ function buildServer() {
       name:  z.string().max(60).optional().describe("Your name and town for the request card, e.g. 'Sarah from Sedona' (optional)"),
       note:  z.string().max(140).optional().describe("A dedication or message, e.g. 'Happy birthday Maria!' (optional)"),
     },
+    { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     async ({ query, name = "", note = "" }) => {
       const LIBRARY_URL = "https://mellowmountainradio.com/request-library.json";
       const REQUEST_URL = "https://n8n.mellowmountainradio.com/webhook/kazm-request-line";
@@ -962,6 +984,7 @@ function buildServer() {
       limit: z.number().int().min(1).max(20).optional()
         .describe("Max headlines to return per source (default 8)"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ limit = 8 }) => {
       const sources = [
         { name: "Sedona Red Rock News", url: "https://www.redrocknews.com/feed/" },
@@ -1029,6 +1052,7 @@ function buildServer() {
     "get_air_quality",
     "Returns current air quality index (AQI) and pollutant readings for Sedona, AZ from Open-Meteo. Includes US AQI category, PM2.5, PM10, ozone, and UV index. Especially useful during wildfire season for tracking smoke and outdoor safety.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const url = "https://air-quality-api.open-meteo.com/v1/air-quality"
         + "?latitude=34.8697&longitude=-111.7610"
@@ -1081,6 +1105,7 @@ function buildServer() {
       team: z.enum(["cardinals","suns","dbacks","mercury","asu","wildcats","arizona","nau","ufc"]).optional()
         .describe("Filter by team — omit for all Arizona teams"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ team }) => {
       const headers = { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" };
       async function espn(path) {
@@ -1179,6 +1204,7 @@ function buildServer() {
     {
       date: z.string().optional().describe("Date in YYYY-MM-DD format — omit for today"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ date }) => {
       const d = date || new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
       try {
@@ -1231,6 +1257,7 @@ function buildServer() {
     "get_moon_phase",
     "Returns tonight's moon phase for Sedona, AZ — illumination percent, phase name, and a 7-day lunar calendar. Perfect for stargazing and outdoor planning.",
     { date: z.string().optional().describe("Date YYYY-MM-DD (default today)") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ date }) => {
       const d = date || new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
       function moonPhase(ds) {
@@ -1268,6 +1295,7 @@ function buildServer() {
     "get_vortex_guide",
     "Returns a guide to Sedona's four famous energy vortex sites — Bell Rock, Cathedral Rock, Airport Mesa, and Boynton Canyon. Includes directions, hiking info, best visit times, and energy type.",
     { site: z.enum(["bell_rock","cathedral_rock","airport_mesa","boynton_canyon"]).optional().describe("Filter to one vortex site") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ site }) => {
       const vortexes = {
         bell_rock: {
@@ -1324,6 +1352,7 @@ function buildServer() {
     "get_nws_alerts",
     "Returns active National Weather Service alerts for the Sedona / Yavapai County area — watches, warnings, and advisories. Returns empty when conditions are clear.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const r = await fetch(
         "https://api.weather.gov/alerts/active?zone=AZZ018",
@@ -1360,6 +1389,7 @@ function buildServer() {
     "get_oak_creek_levels",
     "Returns current Oak Creek stream level and discharge at the Sedona USGS gauge. Useful for creek crossing safety, swimming holes, and recreation planning.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const r = await fetch(
         "https://waterservices.usgs.gov/nwis/iv/?sites=09504420&parameterCd=00060,00065&format=json&siteStatus=all",
@@ -1399,6 +1429,7 @@ function buildServer() {
     "get_artist_info",
     "Returns biography, genre tags, and album discography for the artist currently on KAZM, or any named artist, from MusicBrainz (open music encyclopedia).",
     { artist: z.string().optional().describe("Artist name — omit to use the current now-playing artist") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ artist }) => {
       let name = artist;
       if (!name) {
@@ -1436,6 +1467,7 @@ function buildServer() {
     "get_wildfire_perimeters",
     "Returns active wildfire incidents within ~150 miles of Sedona from the National Interagency Fire Center (NIFC). Especially critical during Arizona fire season (April–July). Returns name, acreage, containment, and distance from Sedona.",
     {},
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const url = "https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/Active_Fires/FeatureServer/0/query"
         + "?where=1%3D1&outFields=IncidentName,State,Lat,Long_,GISAcres,PercentContained,FireDiscoveryDateTime,FireBehaviorGeneral,IncidentTypeCategory"
@@ -1479,6 +1511,7 @@ function buildServer() {
     "get_day_in_music_history",
     "Returns notable music events that happened on this day in history — album releases, iconic concerts, chart milestones, artist birthdays — from Wikipedia's On This Day feed. Great for on-air trivia.",
     { date: z.string().optional().describe("Date as MM-DD or YYYY-MM-DD — omit for today") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ date }) => {
       let month, day;
       if (date) {
@@ -1515,6 +1548,7 @@ function buildServer() {
     "get_visitor_info",
     "Returns practical visitor information for Sedona, AZ — Red Rock Pass requirements, state park hours and fees, popular attractions, best seasons to visit, and local tips. Perfect for tourist queries.",
     { topic: z.enum(["parks","passes","attractions","seasons","tips","all"]).optional().describe("Category of info — omit for all") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ topic = "all" }) => {
       const info = {
         passes: {
@@ -1570,6 +1604,7 @@ function buildServer() {
     "get_red_rock_pass",
     "Complete Red Rock Pass guide for Sedona / Coconino National Forest — all 19 required sites, current fees, accepted passes (America the Beautiful, Senior, Access), where to buy, shuttle info, and Soldier Pass permit details. Answers the most common Sedona visitor question.",
     { topic: z.enum(["fees","sites","shuttles","passes","buy","all"]).optional().describe("fees | sites | shuttles | passes | buy | all (default)") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ topic = "all" }) => {
       const data = {
         fees: {
@@ -1661,6 +1696,7 @@ function buildServer() {
     "get_hiking_trails",
     "Sedona hiking trail guide — distance, elevation gain, difficulty, trailhead location, Red Rock Pass requirement, access restrictions (shuttle/permit), and pro tips for 15 of the best trails in Red Rock Country.",
     { trail: z.string().optional().describe("Trail name keyword, e.g. 'devil' or 'cathedral' — omit for all trails"), difficulty: z.enum(["easy","moderate","strenuous"]).optional().describe("Filter by difficulty") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ trail, difficulty }) => {
       const TRAILS = [
         { name: "Bell Rock Trail", slug: "bell-rock", distance_mi: 1.1, distance_note: "to summit scramble; 4 mi full loop", elevation_ft: 400, difficulty: "moderate", trailhead: "Bell Rock Pathway Trailhead, Hwy 179, Village of Oak Creek", red_rock_pass: true, vortex: true, tip: "One of Sedona's 4 energy vortexes. Most people hike partway up the rock face — the summit scramble is Class 3 and requires route-finding.", best_for: "Views, vortex energy, sunrise/sunset", shuttle: false, permit: false },
@@ -1704,6 +1740,7 @@ function buildServer() {
     "get_stargazing_conditions",
     "Returns tonight's stargazing forecast for Sedona, AZ — astronomical darkness window, moon interference, Milky Way galactic core visibility, and best times to shoot the night sky. Sedona sits near the Verde Valley Dark Sky corridor.",
     { date: z.string().optional().describe("Date YYYY-MM-DD (default tonight)") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ date }) => {
       const d = date || new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
       const r = await fetch(
@@ -1779,6 +1816,7 @@ function buildServer() {
     "Returns Sedona photography locations with today's real golden hour / blue hour times, current light quality score, and camera settings for each scenario. Great for landscape and astrophotography planning.",
     { location: z.enum(["cathedral_rock","airport_mesa","bell_rock","chapel_holy_cross","devils_bridge","oak_creek_canyon"]).optional()
         .describe("Filter to a single location — omit for all 6") },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ location }) => {
       const d = new Date().toLocaleDateString("en-CA", { timeZone: "America/Phoenix" });
       const r = await fetch(
@@ -1928,6 +1966,7 @@ function buildServer() {
       card_name: z.string().optional()
         .describe("Look up a specific card by name, e.g. 'The Tower' or 'Ten of Cups'. Returns full upright and reversed meanings."),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ spread, card_name }) => {
       const MAJORS = [
         { name: "The Fool",          glyph: "🌄", upright: "a leap of faith, fresh starts, innocence",                           reversed: "recklessness, cold feet, a start delayed",                 astro: "Air",            tag: "0 · Major Arcana" },
@@ -2061,6 +2100,7 @@ function buildServer() {
       language: z.enum(["en","de","es","fr","pt","ja"]).optional().describe("Preferred language for KAZM content: en/de/es/fr/pt/ja (default en)"),
       genres:   z.array(z.string()).optional().describe("Favorite music genres, e.g. ['classic rock','jazz','blues']"),
     },
+    { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     async ({ name, email, location, language = "en", genres = [] }) => {
       const listeners = loadListeners();
       let listener = email ? listeners.find(l => l.email === email) : null;
@@ -2113,6 +2153,7 @@ function buildServer() {
       location:    z.string().optional().describe("City and country — set on creation or update"),
       genres:      z.array(z.string()).optional().describe("Favorite music genres — set on creation or update"),
     },
+    { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     async ({ listener_id, email, name, language = "en", location, genres = [] }) => {
       const listeners = loadListeners();
       let listener = listener_id
@@ -2174,6 +2215,7 @@ function buildServer() {
       listener_id: z.string().optional().describe("The listener's unique ID (from register_listener or saved in custom instructions)"),
       email:       z.string().optional().describe("Email address — alternative to listener_id. Use if the listener's email is known."),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ listener_id, email }) => {
       const listeners = loadListeners();
       const listener  = listener_id
@@ -2208,6 +2250,7 @@ function buildServer() {
       key:         z.string().describe("Preference key: 'language', 'location', 'genres' (comma-separated), 'favorite_show', or any custom key"),
       value:       z.string().describe("New value for the preference"),
     },
+    { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     async ({ listener_id, key, value }) => {
       const listeners = loadListeners();
       const idx       = listeners.findIndex(l => l.id === listener_id);
@@ -2237,6 +2280,7 @@ function buildServer() {
       artist:      z.string().optional().describe("Artist name (for songs)"),
       notes:       z.string().optional().describe("Extra context: 'loved it', 'skipped after 10s', 'requested via AI', etc."),
     },
+    { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },
     async ({ listener_id, event_type, title, artist, notes }) => {
       const listeners = loadListeners();
       const idx       = listeners.findIndex(l => l.id === listener_id);
@@ -2260,6 +2304,7 @@ function buildServer() {
       email:        z.string().optional().describe("Email address — alternative to listener_id"),
       content_type: z.enum(["greeting","recommendations","full"]).optional().describe("greeting = localized welcome only; recommendations = based on history; full = everything (default)"),
     },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async ({ listener_id, email, content_type = "full" }) => {
       const listeners = loadListeners();
       const listener  = listener_id
@@ -2826,44 +2871,52 @@ app.get("/docs", (_req, res) => {
 <p>Live data from Sedona's Mellow Mountain Radio — available to any MCP-compatible AI assistant.</p>
 <h2>Connect</h2>
 <pre>{"mcpServers":{"kazm":{"url":"https://mcp.mellowmountainradio.com"}}}</pre>
-<h2>Tools (37)</h2>
+<h2>Tools (45)</h2>
 <div class="tool"><h3>get_now_playing</h3><p>Currently on-air song with artist, album, artwork, and stream URL.</p></div>
 <div class="tool"><h3>get_listener_count</h3><p>Live listener count across all mounts.</p></div>
 <div class="tool"><h3>search_song_history</h3><p>Recently played songs; optional keyword filter. <code>query</code>: string (optional)</p></div>
-<div class="tool"><h3>get_fire_restrictions</h3><p>Current fire restriction level for the Sedona area — live from the Forest Service.</p></div>
-<div class="tool"><h3>get_weather</h3><p>Current conditions and 7-day forecast for Sedona, AZ.</p></div>
-<div class="tool"><h3>get_road_conditions</h3><p>Active incidents on SR-89A, Oak Creek Canyon, and I-17 (Road511).</p></div>
-<div class="tool"><h3>get_concerts</h3><p>Upcoming concerts. <code>state</code>: string (optional, e.g. "AZ")</p></div>
-<div class="tool"><h3>get_events</h3><p>Library events and local festivals.</p></div>
+<div class="tool"><h3>search_song_request_library</h3><p>Search KAZM's requestable song catalog. <code>query</code>: artist or title keyword (required).</p></div>
+<div class="tool"><h3>submit_song_request</h3><p>Queue a song for broadcast on KAZM — live, bidirectional. <code>query</code>: song title or artist (required).</p></div>
 <div class="tool"><h3>get_stream_url</h3><p>Live audio stream URLs (MP3 and AAC).</p></div>
 <div class="tool"><h3>get_show_schedule</h3><p>KAZM weekly on-air program schedule. <code>day</code>: weekday/saturday/sunday (optional). <code>query</code>: keyword (optional).</p></div>
-<div class="tool"><h3>get_horoscope</h3><p>Daily, weekly, or monthly horoscope for any sign. <code>sign</code>: zodiac sign (optional). <code>period</code>: daily/weekly/monthly (optional).</p></div>
-<div class="tool"><h3>get_schumann_resonance</h3><p>Earth's electromagnetic pulse from the Tomsk observatory — frequency, energy score, activity level.</p></div>
-<div class="tool"><h3>get_sound_session</h3><p>Recommends a binaural or tonal session based on goal or time of day. <code>goal</code>: sleep/focus/meditation/energy/calm/anxiety/creativity/healing (optional).</p></div>
-<div class="tool"><h3>get_chakra_guide <span class="new">NEW</span></h3><p>Full chakra guide — Sanskrit name, Solfeggio Hz, note, color, element, bija mantra, petal count, governs, balanced/blocked states, affirmation, crystals, essential oils, yoga pose, and Sedona vortex connection. <code>chakra</code>: root/sacral/solar_plexus/heart/throat/third_eye/crown (optional).</p></div>
-<div class="tool"><h3>get_chakra_frequencies</h3><p>All seven chakras with Hz, note, color, body location, and affirmation. <code>chakra</code>: root/sacral/solar_plexus/heart/throat/third_eye/crown (optional). For the full guide use <code>get_chakra_guide</code>.</p></div>
-<div class="tool"><h3>get_solfeggio</h3><p>Nine-tone Solfeggio scale with healing properties. <code>hz</code>: specific frequency like 528 (optional).</p></div>
-<div class="tool"><h3>search_song_request_library</h3><p>Search KAZM's requestable song catalog. <code>query</code>: artist or title keyword (required).</p></div>
 <div class="tool"><h3>get_rewind</h3><p>Available on-demand past broadcasts with dates and stream URLs.</p></div>
-<div class="tool"><h3>get_jeep_trails</h3><p>Sedona jeep trail list and GPS paths. <code>trail</code>: trail slug, e.g. "broken-arrow" (optional).</p></div>
-<div class="tool"><h3>get_movies</h3><p>Current movie showings at Sedona-area theaters.</p></div>
+<div class="tool"><h3>get_artist_info</h3><p>Biography, genre tags, and album discography for the current KAZM artist or any named artist. <code>artist</code>: optional.</p></div>
+<div class="tool"><h3>get_day_in_music_history</h3><p>Notable music events, birthdays, and milestones that happened on this day in history. <code>date</code>: MM-DD (optional).</p></div>
+<div class="tool"><h3>get_weather</h3><p>Current conditions and 7-day forecast for Sedona, AZ.</p></div>
+<div class="tool"><h3>get_fire_restrictions</h3><p>Current fire restriction level for the Sedona area — live from the Forest Service.</p></div>
+<div class="tool"><h3>get_road_conditions</h3><p>Active incidents on SR-89A, Oak Creek Canyon, and I-17 (Road511).</p></div>
+<div class="tool"><h3>get_air_quality</h3><p>US AQI, PM2.5, PM10, ozone, and UV index for Sedona — from Open-Meteo. Wildfire smoke tracking built in.</p></div>
 <div class="tool"><h3>get_emergency_alerts</h3><p>Live EAS alerts for Yavapai and Coconino counties — weather emergencies, evacuations, Amber Alerts. <code>severity</code>: Extreme/Severe/Moderate/Minor (optional filter).</p></div>
-<div class="tool"><h3>submit_song_request <span class="new">NEW</span></h3><p>Queue a song for broadcast on KAZM — live, bidirectional. <code>query</code>: song title or artist (required).</p></div>
-<div class="tool"><h3>get_local_news_headlines <span class="new">NEW</span></h3><p>Latest Sedona &amp; Verde Valley headlines from Red Rock News and Verde Independent. <code>limit</code>: max per source (optional).</p></div>
-<div class="tool"><h3>get_air_quality <span class="new">NEW</span></h3><p>US AQI, PM2.5, PM10, ozone, and UV index for Sedona — from Open-Meteo. Wildfire smoke tracking built in.</p></div>
+<div class="tool"><h3>get_nws_alerts</h3><p>Active NWS weather watches, warnings, and advisories for Yavapai County / Sedona. Empty when skies are clear.</p></div>
+<div class="tool"><h3>get_oak_creek_levels</h3><p>Current Oak Creek stream level and discharge from the USGS Sedona gauge — safe for wading or flood stage.</p></div>
+<div class="tool"><h3>get_wildfire_perimeters</h3><p>Active wildfire incidents near Sedona from NIFC — name, acreage, containment %, and distance from Sedona.</p></div>
+<div class="tool"><h3>get_local_news_headlines</h3><p>Latest Sedona &amp; Verde Valley headlines from Red Rock News and Verde Independent. <code>limit</code>: max per source (optional).</p></div>
+<div class="tool"><h3>get_concerts</h3><p>Upcoming concerts. <code>state</code>: string (optional, e.g. "AZ")</p></div>
+<div class="tool"><h3>get_events</h3><p>Library events and local festivals.</p></div>
+<div class="tool"><h3>get_movies</h3><p>Current movie showings at Sedona-area theaters.</p></div>
 <div class="tool"><h3>get_sports_scores</h3><p>Scores for Cardinals, Suns, D-backs, Mercury, ASU, Arizona Wildcats, NAU, and UFC. <code>team</code>: optional filter.</p></div>
 <div class="tool"><h3>get_sun_times</h3><p>Sunrise, sunset, solar noon, day length, twilight, and next solstice/equinox for Sedona. <code>date</code>: YYYY-MM-DD (optional).</p></div>
-<div class="tool"><h3>get_moon_phase <span class="new">NEW</span></h3><p>Tonight's moon phase, illumination %, and 7-day lunar calendar for Sedona stargazers. <code>date</code>: YYYY-MM-DD (optional).</p></div>
-<div class="tool"><h3>get_vortex_guide <span class="new">NEW</span></h3><p>Full guide to Sedona's 4 energy vortex sites — Bell Rock, Cathedral Rock, Airport Mesa, Boynton Canyon. Directions, hiking, best times. <code>site</code>: optional filter.</p></div>
-<div class="tool"><h3>get_nws_alerts <span class="new">NEW</span></h3><p>Active NWS weather watches, warnings, and advisories for Yavapai County / Sedona. Empty when skies are clear.</p></div>
-<div class="tool"><h3>get_oak_creek_levels <span class="new">NEW</span></h3><p>Current Oak Creek stream level and discharge from the USGS Sedona gauge — safe for wading or flood stage.</p></div>
-<div class="tool"><h3>get_artist_info <span class="new">NEW</span></h3><p>Biography, genre tags, and album discography for the current KAZM artist or any named artist. <code>artist</code>: optional.</p></div>
-<div class="tool"><h3>get_wildfire_perimeters <span class="new">NEW</span></h3><p>Active wildfire incidents near Sedona from NIFC — name, acreage, containment %, and distance from Sedona.</p></div>
-<div class="tool"><h3>get_day_in_music_history <span class="new">NEW</span></h3><p>Notable music events, birthdays, and milestones that happened on this day in history. <code>date</code>: MM-DD (optional).</p></div>
-<div class="tool"><h3>get_visitor_info <span class="new">NEW</span></h3><p>Practical Sedona visitor guide — Red Rock Pass, park hours/fees, attractions, best seasons, local tips. <code>topic</code>: optional filter.</p></div>
-<div class="tool"><h3>get_stargazing_conditions <span class="new">NEW</span></h3><p>Tonight's darkness window, moon interference rating, Milky Way status, and top astrophotography sites. <code>date</code>: YYYY-MM-DD (optional).</p></div>
-<div class="tool"><h3>get_photography_guide <span class="new">NEW</span></h3><p>Real golden hour / blue hour times, current light score, shooting tips, and camera settings for 6 iconic Sedona spots. <code>location</code>: optional filter.</p></div>
-<div class="tool"><h3>get_tarot_card <span class="new">NEW</span></h3><p>Full 78-card Rider-Waite tarot deck. <code>spread</code>: daily (card of the day over Sedona, same for all listeners), single (random draw), three (past/present/future). <code>card_name</code>: look up any specific card.</p></div>
+<div class="tool"><h3>get_moon_phase</h3><p>Tonight's moon phase, illumination %, and 7-day lunar calendar for Sedona stargazers. <code>date</code>: YYYY-MM-DD (optional).</p></div>
+<div class="tool"><h3>get_stargazing_conditions</h3><p>Tonight's darkness window, moon interference rating, Milky Way status, and top astrophotography sites. <code>date</code>: YYYY-MM-DD (optional).</p></div>
+<div class="tool"><h3>get_photography_guide</h3><p>Real golden hour / blue hour times, current light score, shooting tips, and camera settings for 6 iconic Sedona spots. <code>location</code>: optional filter.</p></div>
+<div class="tool"><h3>get_horoscope</h3><p>Daily, weekly, or monthly horoscope for any sign. <code>sign</code>: zodiac sign (optional). <code>period</code>: daily/weekly/monthly (optional).</p></div>
+<div class="tool"><h3>get_chakra_guide</h3><p>Full chakra guide — Sanskrit name, Solfeggio Hz, note, color, element, bija mantra, petal count, governs, balanced/blocked states, affirmation, crystals, essential oils, yoga pose, and Sedona vortex connection. <code>chakra</code>: root/sacral/solar_plexus/heart/throat/third_eye/crown (optional).</p></div>
+<div class="tool"><h3>get_chakra_frequencies</h3><p>All seven chakras with Hz, note, color, body location, and affirmation. <code>chakra</code>: root/sacral/solar_plexus/heart/throat/third_eye/crown (optional). For the full guide use <code>get_chakra_guide</code>.</p></div>
+<div class="tool"><h3>get_solfeggio</h3><p>Nine-tone Solfeggio scale with healing properties. <code>hz</code>: specific frequency like 528 (optional).</p></div>
+<div class="tool"><h3>get_sound_session</h3><p>Recommends a binaural or tonal session based on goal or time of day. <code>goal</code>: sleep/focus/meditation/energy/calm/anxiety/creativity/healing (optional).</p></div>
+<div class="tool"><h3>get_schumann_resonance</h3><p>Earth's electromagnetic pulse from the Tomsk observatory — frequency, energy score, activity level.</p></div>
+<div class="tool"><h3>get_vortex_guide</h3><p>Full guide to Sedona's 4 energy vortex sites — Bell Rock, Cathedral Rock, Airport Mesa, Boynton Canyon. Directions, hiking, best times. <code>site</code>: optional filter.</p></div>
+<div class="tool"><h3>get_tarot_card</h3><p>Full 78-card Rider-Waite tarot deck. <code>spread</code>: daily (card of the day over Sedona, same for all listeners), single (random draw), three (past/present/future). <code>card_name</code>: look up any specific card.</p></div>
+<div class="tool"><h3>get_hiking_trails</h3><p>Sedona hiking trail guide — distance, elevation gain, difficulty, trailhead location, Red Rock Pass requirement, and access restrictions for 15 top trails in Red Rock Country. <code>trail</code>: optional filter.</p></div>
+<div class="tool"><h3>get_jeep_trails</h3><p>Sedona jeep trail list and GPS paths. <code>trail</code>: trail slug, e.g. "broken-arrow" (optional).</p></div>
+<div class="tool"><h3>get_red_rock_pass</h3><p>Complete Red Rock Pass guide — all 19 required sites, current fees, accepted passes (America the Beautiful, Senior, Access), where to buy, shuttle info, and Soldier Pass permit details.</p></div>
+<div class="tool"><h3>get_visitor_info</h3><p>Practical Sedona visitor guide — Red Rock Pass, park hours/fees, attractions, best seasons, local tips. <code>topic</code>: optional filter.</p></div>
+<div class="tool"><h3>register_listener</h3><p>Create or update a KAZM listener profile. Returns a <code>listener_id</code> that persists across AI sessions — saves name, location, language, and favorite genres for a personalized experience. <code>name</code>, <code>email</code>: optional identifiers.</p></div>
+<div class="tool"><h3>get_or_create_listener</h3><p>Zero-friction entry point for KAZM personalization — pass whatever you know (<code>listener_id</code>, <code>email</code>, or just a name) and this tool returns the existing profile or silently creates one. Call this at the start of every listener session.</p></div>
+<div class="tool"><h3>get_listener_profile</h3><p>Retrieve a KAZM listener's full profile by <code>listener_id</code> or <code>email</code>. Use at the start of any session to instantly personalize the experience.</p></div>
+<div class="tool"><h3>update_listener_preference</h3><p>Update a specific preference for a KAZM listener — language, location, favorite genre, or any custom key. <code>listener_id</code> required.</p></div>
+<div class="tool"><h3>log_listener_history</h3><p>Log a listening event (song played, show tuned into, request made) for a KAZM listener. Builds history that powers smarter recommendations. <code>listener_id</code> required.</p></div>
+<div class="tool"><h3>get_personalized_content</h3><p>Returns a fully personalized KAZM experience — greeting in the listener's language, recommendations from their history, station brief. Accepts <code>listener_id</code> or <code>email</code>.</p></div>
 <p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
