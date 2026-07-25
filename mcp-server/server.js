@@ -66,6 +66,7 @@ function buildServer() {
   const mcp = new McpServer({
     name:    "mellowmountainradio",
     version: "1.0.0",
+    title:   "KAZM Mellow Mountain Radio",
   });
 
   // 1. Now Playing ─────────────────────────────────────────────────────────────
