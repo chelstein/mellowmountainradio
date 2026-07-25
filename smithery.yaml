@@ -1,0 +1,11 @@
+# Smithery configuration — https://smithery.ai/docs/build/project-config/smithery.yaml
+# KAZM Mellow Mountain Radio MCP Server
+# Live at https://mcp.mellowmountainradio.com/mcp — no user configuration required.
+
+startCommand:
+  type: http
+
+configSchema:
+  type: object
+  required: []
+  properties: {}
