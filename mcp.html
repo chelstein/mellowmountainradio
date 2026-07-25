@@ -667,8 +667,26 @@
             <span class="mcp-step-num" aria-hidden="true">3</span>
             <span>
               <strong>Paste and save</strong>
-              <span class="mcp-step-detail"><strong>If the file is empty or just has <code>{}</code></strong> &mdash; press <strong>Ctrl+A</strong> / <strong>&#8984;+A</strong> to select all, then paste (<strong>Ctrl+V</strong> / <strong>&#8984;+V</strong>) and save.</span>
-              <span class="mcp-step-detail" style="margin-top:.35rem;"><strong>If the file already has content</strong> &mdash; don&rsquo;t replace everything. Find the line that says <code>"mcpServers"</code> and add the <code>"kazm"</code> block inside it alongside any others already there. Then save.</span>
+              <span class="mcp-step-detail"><strong>File is empty or just <code>{}</code>?</strong> Press <strong>Ctrl+A</strong> / <strong>&#8984;+A</strong>, paste, save. Done.</span>
+              <span class="mcp-step-detail" style="margin-top:.4rem;"><strong>File already has <code>"mcpServers"</code> in it?</strong> Find that line and paste the <code>"kazm"</code> block inside it, alongside any existing entries. Save.</span>
+              <span class="mcp-step-detail" style="margin-top:.4rem;"><strong>File has other content but no <code>"mcpServers"</code>?</strong> Paste this block just before the last <code>}</code> in the file (add a comma after the line above it if there is one), then save:
+                <div class="mcp-term-wrap" style="margin:.5rem 0 0;">
+                  <div class="mcp-term">
+                    <div class="mcp-term-bar">
+                      <span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span><span class="mcp-term-dot" aria-hidden="true"></span>
+                      <span class="mcp-term-title">paste before the last }</span>
+                    </div>
+                    <div class="mcp-term-body">
+                      <code><span class="t-key">"mcpServers"</span><span class="t-pun">: {</span>
+  <span class="t-key">"kazm"</span><span class="t-pun">: {</span>
+    <span class="t-key">"url"</span><span class="t-pun">:</span> <span class="t-str">"https://mcp.mellowmountainradio.com/mcp"</span>
+  <span class="t-pun">}</span>
+<span class="t-pun">}</span></code>
+                    </div>
+                  </div>
+                  <button class="mcp-copy-btn" data-copy='"mcpServers": {"kazm": {"url": "https://mcp.mellowmountainradio.com/mcp"}}'>Copy</button>
+                </div>
+              </span>
             </span>
           </li>
           <li class="mcp-step">
