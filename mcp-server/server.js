@@ -2452,7 +2452,7 @@ function buildServer() {
   mcp.resource(
     "KAZM MCP Server Documentation",
     "kazm://docs",
-    { description: "Full documentation for the KAZM MCP server — all 45 tools, their parameters, and example queries.", mimeType: "text/html" },
+    { description: "Full documentation for the KAZM MCP server — all 45 tools, their parameters, and example queries.", mimeType: "text/uri-list" },
     async (uri) => ({
       contents: [{
         uri: uri.href,
