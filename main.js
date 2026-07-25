@@ -7927,7 +7927,8 @@
       var out = [];
       Object.keys(artistDays).forEach(function(k) {
         var info = artistDays[k], streak = 0;
-        for (var i = 0; i < dates.length; i++) {
+        // start from dates[1] (yesterday) — today is still in progress and breaks every streak
+        for (var i = 1; i < dates.length; i++) {
           if (info.days[dates[i]]) { streak++; } else { break; }
         }
         if (streak >= 7) out.push({ name: info.name, streak: streak });
