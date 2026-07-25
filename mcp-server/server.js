@@ -87,9 +87,9 @@ function buildServer() {
             artist:     song.artist       || null,
             album:      song.album        || null,
             art:        song.art          || null,
-            started_at: np.played_at      || null,
-            elapsed_s:  np.elapsed        || null,
-            duration_s: np.duration       || null,
+            started_at: np.played_at ? new Date(np.played_at * 1000).toISOString() : null,
+            elapsed_s:  np.elapsed        ?? null,
+            duration_s: np.duration       ?? null,
             stream_url: (data.station && data.station.listen_url) || null,
           }),
         }],
@@ -115,7 +115,9 @@ function buildServer() {
             unique: live.unique  || 0,
             mounts: mounts.map(m => ({
               name:      m.display_name || m.name,
-              listeners: m.listeners    || 0,
+              listeners: typeof m.listeners === "object"
+                           ? (m.listeners?.current ?? m.listeners?.total ?? 0)
+                           : (m.listeners || 0),
               url:       m.url          || null,
             })),
           }),
@@ -144,10 +146,16 @@ function buildServer() {
       return {
         content: [{
           type: "text",
-          text: JSON.stringify(items.slice(0, 25).map(i => {
-            const s = i.song || {};
-            return { title: s.title || null, artist: s.artist || null, played_at: i.played_at || null };
-          })),
+          text: JSON.stringify({
+            results: items.slice(0, 25).map(i => {
+              const s = i.song || {};
+              return {
+                title:     s.title  || null,
+                artist:    s.artist || null,
+                played_at: i.played_at ? new Date(i.played_at * 1000).toISOString() : null,
+              };
+            }),
+          }),
         }],
       };
     }
@@ -2529,15 +2537,15 @@ function buildServer() {
       mounts:  z.array(z.object({
         name:      z.string(),
         listeners: z.number(),
-        url:       z.string(),
+        url:       z.string().nullable(),
       })),
     });
 
     OS["search_song_history"].outputSchema = z.object({
       results: z.array(z.object({
-        title:     z.string(),
-        artist:    z.string(),
-        played_at: z.string(),
+        title:     z.string().nullable(),
+        artist:    z.string().nullable(),
+        played_at: z.string().nullable(),
       })),
     });
 
@@ -2545,9 +2553,9 @@ function buildServer() {
       updated:       z.string().nullable(),
       agency:        z.string().nullable(),
       source:        z.string().nullable(),
-      stage:         z.string().nullable(),
+      stage:         z.number().nullable(),
       danger:        z.string().nullable(),
-      sedona_alerts: z.array(z.string()),
+      sedona_alerts: z.array(z.object({ text: z.string(), url: z.string() })),
       notes:         z.string().nullable(),
     });
 
@@ -2570,15 +2578,16 @@ function buildServer() {
     OS["get_road_conditions"].outputSchema = z.object({
       updated:   z.string().nullable(),
       sources:   z.array(z.string()),
-      closures:  z.array(z.string()),
-      incidents: z.array(z.string()),
+      closures:  z.array(z.record(z.unknown())),
+      incidents: z.array(z.record(z.unknown())),
     });
 
     OS["get_concerts"].outputSchema = z.object({
       updated:  z.string().nullable(),
       count:    z.number(),
       concerts: z.array(z.object({
-        name:    z.string(),
+        artist:  z.string().optional(),
+        name:    z.string().optional(),
         venue:   z.string().optional(),
         date:    z.string().optional(),
         time:    z.string().optional(),
@@ -2596,8 +2605,8 @@ function buildServer() {
       streams:    z.array(z.object({
         name:    z.string(),
         url:     z.string(),
-        bitrate: z.string().optional(),
-        format:  z.string().optional(),
+        bitrate: z.union([z.string(), z.number()]).nullable().optional(),
+        format:  z.string().nullable().optional(),
       })),
     });
 
@@ -2610,7 +2619,7 @@ function buildServer() {
     OS["get_horoscope"].outputSchema = z.object({
       updated:    z.string().nullable(),
       period:     z.string().nullable(),
-      horoscopes: z.record(z.string()),
+      horoscopes: z.record(z.unknown()),
     });
 
     OS["get_schumann_resonance"].outputSchema = z.object({
@@ -2622,10 +2631,10 @@ function buildServer() {
     }).passthrough();
 
     OS["get_sound_session"].outputSchema = z.object({
-      recommended:    z.string(),
-      reason:         z.string(),
-      also_available: z.array(z.string()),
-    });
+      recommended:    z.union([z.string(), z.record(z.unknown())]),
+      reason:         z.string().optional(),
+      also_available: z.array(z.unknown()).optional(),
+    }).passthrough();
 
     OS["get_chakra_guide"].outputSchema = z.object({
       chakras:         z.array(z.record(z.unknown())),
@@ -2665,7 +2674,7 @@ function buildServer() {
     });
 
     OS["get_jeep_trails"].outputSchema = z.object({
-      trails:      z.array(z.record(z.unknown())).optional(),
+      trails:      z.array(z.unknown()).optional(),
       map_url:     z.string().optional(),
       trail:       z.string().optional(),
       coordinates: z.array(z.unknown()).optional(),
@@ -2673,7 +2682,7 @@ function buildServer() {
 
     OS["get_movies"].outputSchema = z.object({
       updated:  z.string().nullable(),
-      venues:   z.array(z.record(z.unknown())),
+      venues:   z.array(z.unknown()),
       showings: z.array(z.record(z.unknown())),
     });
 
@@ -2714,12 +2723,12 @@ function buildServer() {
         count:  z.number(),
         items:  z.array(z.object({
           title:     z.string(),
-          link:      z.string().optional(),
-          published: z.string().optional(),
-          summary:   z.string().optional(),
-        })),
+          link:      z.string().nullable().optional(),
+          published: z.string().nullable().optional(),
+          summary:   z.string().nullable().optional(),
+        }).passthrough()),
       })),
-      errors: z.array(z.string()).optional(),
+      errors: z.array(z.unknown()).optional(),
     });
 
     OS["get_air_quality"].outputSchema = z.object({
@@ -2776,7 +2785,7 @@ function buildServer() {
     OS["get_vortex_guide"].outputSchema = z.object({
       location:     z.string(),
       note:         z.string().optional(),
-      vortex_sites: z.array(z.record(z.unknown())),
+      vortex_sites: z.union([z.array(z.record(z.unknown())), z.record(z.unknown())]),
     });
 
     OS["get_nws_alerts"].outputSchema = z.object({
@@ -2802,8 +2811,8 @@ function buildServer() {
       station_id:     z.string(),
       updated:        z.string().nullable(),
       level_label:    z.string(),
-      discharge_cfs:  z.number().optional(),
-      gage_height_ft: z.number().optional(),
+      discharge_cfs:  z.union([z.number(), z.record(z.unknown())]).nullable().optional(),
+      gage_height_ft: z.union([z.number(), z.record(z.unknown())]).nullable().optional(),
       source:         z.string(),
     });
 
@@ -2858,12 +2867,12 @@ function buildServer() {
     OS["get_red_rock_pass"].outputSchema = z.object({
       fees:         z.record(z.unknown()).optional(),
       passes:       z.record(z.unknown()).optional(),
-      sites:        z.array(z.record(z.unknown())).optional(),
+      sites:        z.union([z.array(z.record(z.unknown())), z.record(z.unknown())]).optional(),
       shuttles:     z.record(z.unknown()).optional(),
-      where_to_buy: z.array(z.string()).optional(),
-      tips:         z.array(z.string()),
+      where_to_buy: z.array(z.unknown()).optional(),
+      tips:         z.array(z.string()).optional(),
       kazm_note:    z.string().optional(),
-    });
+    }).passthrough();
 
     OS["get_hiking_trails"].outputSchema = z.object({
       trails:                z.array(z.object({
@@ -2871,8 +2880,8 @@ function buildServer() {
         slug:         z.string().optional(),
         distance_mi:  z.number().optional(),
       }).passthrough()),
-      total:                 z.number(),
-      red_rock_pass_required:z.boolean().optional(),
+      total:                 z.number().optional(),
+      red_rock_pass_required:z.union([z.boolean(), z.string()]).optional(),
       shuttle_info:          z.string().optional(),
       oak_creek_tip:         z.string().optional(),
       source:                z.string().optional(),
@@ -2910,9 +2919,9 @@ function buildServer() {
       location_context:    z.string(),
       date:                z.string(),
       current_light_phase: z.string(),
-      current_light_score: z.number().optional(),
-      today_times:         z.record(z.string()),
-      locations:           z.array(z.record(z.unknown())),
+      current_light_score: z.union([z.number(), z.string()]).optional(),
+      today_times:         z.record(z.unknown()),
+      locations:           z.union([z.array(z.record(z.unknown())), z.record(z.unknown())]),
     });
 
     OS["get_tarot_card"].outputSchema = z.object({
@@ -3053,6 +3062,33 @@ function buildServer() {
     OS["update_listener_preference"].title = "Update Listener Preference";
     OS["log_listener_history"].title      = "Log Listener History";
     OS["get_personalized_content"].title  = "Personalized Content";
+
+    // The SDK rejects any call to a tool that declares an outputSchema unless the
+    // result carries structuredContent that validates against it. Parse each
+    // tool's JSON text into structuredContent; if live data drifts from the
+    // schema (spots/promos, upstream quirks), drop the schema for this call so
+    // the tool degrades to text-only instead of erroring. Safe because the
+    // server instance is built fresh per request.
+    for (const t of Object.values(OS)) {
+      if (!t.outputSchema) continue;
+      const key = typeof t.handler === "function" ? "handler"
+                : typeof t.callback === "function" ? "callback" : null;
+      if (!key) continue;
+      const inner = t[key];
+      t[key] = async (...cbArgs) => {
+        const out = await inner(...cbArgs);
+        if (out && !out.isError && !out.structuredContent) {
+          let ok = false;
+          try {
+            const parsed = JSON.parse(out.content?.[0]?.text);
+            const check  = t.outputSchema.safeParse(parsed);
+            if (check.success) { out.structuredContent = check.data; ok = true; }
+          } catch {}
+          if (!ok) t.outputSchema = undefined;
+        }
+        return out;
+      };
+    }
 
     // Patch ListTools handler to include title in tools/list response
     const _origListTools = mcp.server._requestHandlers.get("tools/list");
