@@ -40,6 +40,7 @@ function genListenerId()    { return "lsr_" + Date.now().toString(36) + Math.ran
 const PORT      = process.env.PORT      || 3000;
 const AZ_HOST   = (process.env.AZ_HOST  || "https://streaming.mellowmountainradio.com").replace(/\/$/,"");
 const STATION   = process.env.STATION_ID || "kazm";
+const LOG_SINCE = process.env.LOG_SINCE  || "2022-01-01"; // earliest date in the AzuraCast history log
 const AZ_KEY    = process.env.AZ_KEY    || "";
 const GH_RAW    = (process.env.GH_RAW   || "https://raw.githubusercontent.com/chelstein/mellowmountainradio/main").replace(/\/$/,"");
 
@@ -2530,11 +2531,13 @@ function serverIsMusicPlay(ti, ar) {
 }
 
 // GET /playlog?d=YYYY-MM-DD — plays for a day in Phoenix time (UTC-7)
+// d defaults to today (Phoenix = UTC-7, no DST) when omitted
 app.get("/playlog", async (req, res) => {
   setCors(res);
-  const d = String(req.query.d || "");
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(d))
-    return res.status(400).json({ ok: false, error: "d=YYYY-MM-DD required" });
+  const phxToday = new Date(Date.now() - 7 * 3600 * 1000).toISOString().slice(0, 10);
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(String(req.query.d || ""))
+    ? String(req.query.d)
+    : phxToday;
   try {
     // Phoenix = UTC-7 (no DST). Midnight Phoenix = 07:00 UTC.
     const startISO = d + "T07:00:00Z";
@@ -2552,7 +2555,7 @@ app.get("/playlog", async (req, res) => {
       const mm = String(phxDate.getUTCMinutes()).padStart(2, "0");
       plays.push({ ti, ar, t: `${hh}:${mm}` });
     }
-    res.json({ ok: true, plays });
+    res.json({ ok: true, day: d, plays, today: phxToday, log_since: LOG_SINCE });
   } catch (e) {
     res.status(502).json({ ok: false, error: String(e.message) });
   }
