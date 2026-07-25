@@ -2404,6 +2404,64 @@ function buildServer() {
     })
   );
 
+  // ── Resources ────────────────────────────────────────────────────────────────
+  mcp.resource(
+    "KAZM Station Info",
+    "kazm://station/info",
+    { description: "Basic KAZM station metadata — name, frequencies, location, and description.", mimeType: "application/json" },
+    async (uri) => ({
+      contents: [{
+        uri: uri.href,
+        mimeType: "application/json",
+        text: JSON.stringify({
+          name:        "KAZM Mellow Mountain Radio",
+          callsign:    "KAZM",
+          frequencies: ["106.5 FM", "780 AM"],
+          location:    "Sedona, Arizona",
+          slogan:      "The Sound of Sedona since 1974",
+          website:     "https://mellowmountainradio.com",
+          mcp_server:  "https://mcp.mellowmountainradio.com/mcp",
+          mcp_docs:    "https://mcp.mellowmountainradio.com/docs",
+          tools:       45,
+        }, null, 2)
+      }]
+    })
+  );
+
+  mcp.resource(
+    "KAZM Live Stream URLs",
+    "kazm://stream/urls",
+    { description: "Direct audio stream URLs for KAZM — MP3 and AAC formats.", mimeType: "application/json" },
+    async (uri) => {
+      try {
+        const data = await azGet(`/api/nowplaying/${STATION}`);
+        const mounts = (data.station?.mounts || []).map(m => ({
+          name:     m.name,
+          url:      m.url,
+          format:   m.format,
+          bitrate:  m.bitrate,
+          default:  m.is_default,
+        }));
+        return { contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify({ mounts, web_player: "https://mellowmountainradio.com" }, null, 2) }] };
+      } catch {
+        return { contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify({ error: "Stream info unavailable" }) }] };
+      }
+    }
+  );
+
+  mcp.resource(
+    "KAZM MCP Server Documentation",
+    "kazm://docs",
+    { description: "Full documentation for the KAZM MCP server — all 45 tools, their parameters, and example queries.", mimeType: "text/html" },
+    async (uri) => ({
+      contents: [{
+        uri: uri.href,
+        mimeType: "text/uri-list",
+        text: "https://mcp.mellowmountainradio.com/docs"
+      }]
+    })
+  );
+
   return mcp;
 }
 
