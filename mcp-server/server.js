@@ -64,7 +64,7 @@ async function ghGet(file) {
 
 function buildServer() {
   const mcp = new McpServer({
-    name:    "kazm-mellow-mountain-radio",
+    name:    "mellowmountainradio",
     version: "1.0.0",
   });
 
@@ -2663,16 +2663,12 @@ function buildServer() {
       })),
     });
 
-    OS["get_jeep_trails"].outputSchema = z.union([
-      z.object({
-        trails:  z.array(z.record(z.unknown())).optional(),
-        map_url: z.string().optional(),
-      }),
-      z.object({
-        trail:       z.string(),
-        coordinates: z.array(z.unknown()),
-      }),
-    ]);
+    OS["get_jeep_trails"].outputSchema = z.object({
+      trails:      z.array(z.record(z.unknown())).optional(),
+      map_url:     z.string().optional(),
+      trail:       z.string().optional(),
+      coordinates: z.array(z.unknown()).optional(),
+    });
 
     OS["get_movies"].outputSchema = z.object({
       updated:  z.string().nullable(),
@@ -2918,34 +2914,29 @@ function buildServer() {
       locations:           z.array(z.record(z.unknown())),
     });
 
-    OS["get_tarot_card"].outputSchema = z.union([
-      z.object({
-        spread:    z.string(),
-        date:      z.string(),
-        note:      z.string().optional(),
-        cards:     z.array(z.object({
-          position:    z.string().optional(),
-          card:        z.string(),
-          glyph:       z.string(),
-          tag:         z.string(),
-          astro:       z.string().optional(),
-          orientation: z.string(),
-          meaning:     z.string(),
-          upright:     z.string(),
-          reversed:    z.string(),
-        })),
-        tarot_page: z.string().optional(),
-      }),
-      z.object({
-        card:      z.string(),
-        glyph:     z.string(),
-        tag:       z.string(),
-        astro:     z.string().optional(),
-        upright:   z.string(),
-        reversed:  z.string(),
-        tarot_page:z.string().optional(),
-      }),
-    ]);
+    OS["get_tarot_card"].outputSchema = z.object({
+      spread:     z.string().optional(),
+      date:       z.string().optional(),
+      note:       z.string().optional(),
+      cards:      z.array(z.object({
+        position:    z.string().optional(),
+        card:        z.string(),
+        glyph:       z.string(),
+        tag:         z.string(),
+        astro:       z.string().optional(),
+        orientation: z.string().optional(),
+        meaning:     z.string().optional(),
+        upright:     z.string(),
+        reversed:    z.string(),
+      })).optional(),
+      card:       z.string().optional(),
+      glyph:      z.string().optional(),
+      tag:        z.string().optional(),
+      astro:      z.string().optional(),
+      upright:    z.string().optional(),
+      reversed:   z.string().optional(),
+      tarot_page: z.string().optional(),
+    });
 
     OS["register_listener"].outputSchema = z.object({
       listener_id: z.string(),
