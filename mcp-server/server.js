@@ -1514,10 +1514,10 @@ function buildServer() {
       const info = {
         passes: {
           red_rock_pass: {
-            required_at: "Most Coconino National Forest trailheads, picnic areas, and developed sites",
-            day_pass: "$12/vehicle", weekly_pass: "$20/vehicle", annual_pass: "$40/vehicle",
-            where_to_buy: "Sedona Chamber Visitor Center (331 Forest Rd), automated kiosks at most trailheads, Recreation.gov",
-            note: "America the Beautiful (National Parks) pass covers Red Rock Pass sites",
+            required_at: "19 Coconino National Forest day-use sites near Sedona — trailheads, picnic areas, and developed sites",
+            day_pass: "$5/vehicle", weekly_pass: "$15/vehicle", annual_pass: "$20/vehicle",
+            where_to_buy: "Sedona Chamber Visitor Center (331 Forest Rd), automated kiosks at most trailheads, recreation.gov",
+            note: "America the Beautiful Interagency Annual Pass ($80) covers all Red Rock Pass sites. Use get_red_rock_pass for the full guide.",
           },
         },
         parks: {
@@ -1560,7 +1560,98 @@ function buildServer() {
     }
   );
 
-  // 34. Stargazing Conditions ───────────────────────────────────────────────────
+  // 34. Red Rock Pass ──────────────────────────────────────────────────────────
+  mcp.tool(
+    "get_red_rock_pass",
+    "Complete Red Rock Pass guide for Sedona / Coconino National Forest — all 19 required sites, current fees, accepted passes (America the Beautiful, Senior, Access), where to buy, shuttle info, and Soldier Pass permit details. Answers the most common Sedona visitor question.",
+    { topic: z.enum(["fees","sites","shuttles","passes","buy","all"]).optional().describe("fees | sites | shuttles | passes | buy | all (default)") },
+    async ({ topic = "all" }) => {
+      const data = {
+        fees: {
+          red_rock_day_pass: { price: "$5/vehicle", duration: "1 day", note: "Covers one vehicle and all occupants" },
+          red_rock_weekly_pass: { price: "$15/vehicle", duration: "7 consecutive days" },
+          red_rock_annual_pass: { price: "$20/vehicle", duration: "12 months from purchase date" },
+          coconino_annual_pass: { price: "$50/vehicle", duration: "12 months", covers: ["Crescent Moon Ranch","Grasshopper Point","Call of the Canyon (West Fork)","Beaver Creek","Lower Lake Mary"], note: "Different areas than the standard Red Rock Pass — check which sites you plan to visit" },
+          note: "Fees current as of 2025. Verify at recreation.gov or the Sedona Ranger District before your visit.",
+        },
+        passes: {
+          america_the_beautiful: { name: "America the Beautiful Interagency Annual Pass", price: "$80/year", covers: "All Red Rock Pass sites plus every national park and federal recreation site in the US", where_to_buy: "recreation.gov, national park entrance stations, Sedona Ranger District", note: "Best value if you visit multiple national parks or forests in a year" },
+          senior_pass: { name: "America the Beautiful Senior Pass", price: "$20/year or $80 lifetime (US citizens 62+)", covers: "All Red Rock Pass and federal recreation sites" },
+          access_pass: { name: "America the Beautiful Access Pass", price: "Free (US residents with permanent disabilities)", covers: "All Red Rock Pass and federal recreation sites" },
+          military_pass: { name: "America the Beautiful Military Pass", price: "Free (active duty and dependents)", covers: "All Red Rock Pass and federal recreation sites" },
+          note: "All Interagency passes fully replace the Red Rock Pass — no additional fee needed at any site.",
+        },
+        sites: {
+          note: "A Red Rock Pass is required at all 19 developed day-use sites on Coconino National Forest land near Sedona.",
+          all_sites: [
+            { name: "Baldwin Trail", area: "Village of Oak Creek" },
+            { name: "Bell Rock Pathway", area: "Village of Oak Creek" },
+            { name: "Boynton Canyon Trailhead", area: "Boynton Pass Rd" },
+            { name: "Call of the Canyon / West Fork Trailhead", area: "Oak Creek Canyon (Hwy 89A)", pass_type: "Coconino Annual Pass or day fee" },
+            { name: "Cathedral Rock Trailhead", area: "Back O' Beyond Rd" },
+            { name: "Courthouse Vista", area: "Hwy 179 (Bell Rock area)" },
+            { name: "Crescent Moon Ranch / Red Rock Crossing", area: "Upper Red Rock Loop Rd", pass_type: "Coconino Annual Pass or day fee", note: "Oak Creek crossing with Cathedral Rock views — extremely popular at sunset" },
+            { name: "Devil's Bridge Trailhead", area: "Dry Creek Rd", note: "Shuttle or permit required on weekends and holidays — vehicle access very limited" },
+            { name: "Doe Mountain Trailhead", area: "Boynton Pass Rd" },
+            { name: "Fay Canyon Trailhead", area: "Boynton Pass Rd" },
+            { name: "Grasshopper Point", area: "Hwy 89A, Oak Creek Canyon", pass_type: "Coconino Annual Pass or day fee", note: "Popular swimming hole" },
+            { name: "Huckaby Trail", area: "Midgley Bridge area" },
+            { name: "Long Canyon Trailhead", area: "Boynton Pass Rd" },
+            { name: "Marg's Draw Trailhead", area: "Schnebly Hill area" },
+            { name: "Midgley Bridge", area: "Hwy 89A north of Uptown" },
+            { name: "Palatki Heritage Site", area: "Red Canyon Rd (FR 795)", note: "Sinagua cliff dwellings — free reservation required at recreation.gov" },
+            { name: "Slim Shady Trailhead", area: "Oak Creek Canyon" },
+            { name: "Soldier Pass Trailhead", area: "Soldier Pass Rd", note: "No self-drive access — free permit + shuttle required (see shuttles)" },
+            { name: "Vultee Arch Trailhead", area: "Sterling Canyon (off Dry Creek Rd)" },
+          ],
+          free_sites: [
+            { name: "Airport Mesa Scenic Overlook", note: "Free — one of the best panoramic views in Sedona" },
+            { name: "Sedona Uptown / SR-89A pullouts", note: "Quick scenic stops ≤15 min are free at any site" },
+            { name: "Slide Rock State Park", note: "Arizona State Park — separate fee ($30 summer / $20 winter), not covered by Red Rock Pass" },
+            { name: "Red Rock State Park", note: "Arizona State Park — $15/vehicle, not covered by Red Rock Pass" },
+          ],
+        },
+        shuttles: {
+          sedona_shuttle: {
+            operator: "Sedona Shuttle (City of Sedona / ADOT)",
+            trailheads_served: ["Cathedral Rock","Little Horse","Soldier Pass","Dry Creek Vista","Mescal"],
+            schedule: "Thursday–Sunday, 7am–5:30pm (daily during spring break, holidays, and peak periods)",
+            fares: "Free for Soldier Pass; small fee for other trailheads — check sedonaaz.gov for current schedule",
+            tip: "Download the Verde Lynx app or check sedonaaz.gov for real-time shuttle status",
+          },
+          devil_bridge_permit: {
+            note: "Devil's Bridge has extremely limited trailhead parking on weekends / holidays. Either arrive before 7am or use the Dry Creek Rd overflow lot and walk ~1 extra mile.",
+          },
+          soldier_pass_permit: {
+            how: "Free permit required — book at recreation.gov (permit ID 4251901) up to 2 weeks ahead",
+            vehicles_per_day: "15 vehicles max",
+            hours: "Permitted slots 7am–3pm",
+            alternative: "Take the free Sedona Shuttle from Uptown",
+          },
+        },
+        where_to_buy: [
+          { location: "Trailhead kiosks", note: "Credit card only — no cash accepted at automated kiosks" },
+          { location: "Sedona Chamber of Commerce Visitor Center", address: "331 Forest Rd, Sedona AZ 86336", phone: "928-282-7722", hours: "8am–5pm daily" },
+          { location: "Red Rock Visitor Center", address: "8375 S Hwy 179, Village of Oak Creek", hours: "9am–4:30pm daily (closed major holidays)" },
+          { location: "recreation.gov", url: "https://www.recreation.gov/sitepass/74387", note: "Buy online ahead of time and enter your license plate — no need to print" },
+          { location: "Local gas stations and some hotels", note: "Many Sedona gas stations and visitor-facing businesses sell daily/weekly passes" },
+        ],
+        tips: [
+          "Buy online at recreation.gov before you arrive — skip the kiosk line entirely",
+          "Trailhead lots fill by 9am on weekends year-round. Arrive before 7:30am or after 3pm",
+          "The annual pass at $20 pays for itself in 4 visits — best value for locals or multi-day trips",
+          "America the Beautiful pass is the best deal if you visit even one other national park that year",
+          "Sedona Ranger District: 928-203-7500 | fs.usda.gov/coconino",
+        ],
+        kazm_note: "KAZM 106.5 FM broadcasts emergency info, fire restrictions, and road closures affecting Sedona trailheads in real time.",
+      };
+      return { content: [{ type: "text", text: JSON.stringify(
+        topic === "all" ? data : { [topic]: data[topic], tips: data.tips }
+      ) }] };
+    }
+  );
+
+  // 35. Stargazing Conditions ───────────────────────────────────────────────────
   mcp.tool(
     "get_stargazing_conditions",
     "Returns tonight's stargazing forecast for Sedona, AZ — astronomical darkness window, moon interference, Milky Way galactic core visibility, and best times to shoot the night sky. Sedona sits near the Verde Valley Dark Sky corridor.",
@@ -2276,7 +2367,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "37 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "38 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -2290,7 +2381,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "37 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "38 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
@@ -2312,7 +2403,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   37,
+    tools:   38,
   });
 });
 
