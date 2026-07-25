@@ -8201,7 +8201,8 @@
           if (!j || !j.ok) return;
           dayData = j;
           dateIn.value = j.day;
-          if (j.since) { dateIn.min = j.since; if (!D.since) { D.since = j.since; } }
+          if (j.log_since) { dateIn.min = j.log_since; D.since = j.log_since; }
+          else if (j.since) { dateIn.min = j.since; if (!D.since) { D.since = j.since; } }
           dateIn.max = j.today;
           D.today = j.today;
           if (D.since) { D.pos = D.sel = dayIndex(j.day); drawDial(); setReadout(); }
@@ -8386,7 +8387,6 @@
           if (off) off.hidden = true;
           root.hidden = false;
           renderCharts(c);
-          if (c.since) D.since = c.since;
           var qs = new URLSearchParams(location.search);
           var d0 = qs.get("d"), t0 = qs.get("t");
           if (t0 && /^\d{2}:\d{2}$/.test(t0)) setTime(t0);
