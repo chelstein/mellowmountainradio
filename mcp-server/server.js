@@ -2524,9 +2524,16 @@ app.post("/pulse", (req, res) => {
 // Music-play filter matching the client-side isMusicPlay()
 function serverIsMusicPlay(ti, ar) {
   if (!ti || !ar) return false;
-  if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update|^AZ State News/i.test(ti)) return false;
+  // Title: system / automation / sweep prefixes
+  if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update|^AZ State News|^Coast to Coast AM/i.test(ti)) return false;
+  // Title: all-caps automation filenames (e.g. SWEEPER01, GO2SPOT)
   if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(ti)) return false;
-  if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(ar)) return false;
+  // Title: ad file naming conventions — FINAL, SPEC, REV n, year-prefixed spots
+  if (/\bFINAL\b|\(SPEC\b|\bREV\s*\d+\b|\bAIRCHECK\b/i.test(ti)) return false;
+  // Artist: known station identifiers / talk shows / advertisers
+  if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(ar)) return false;
+  // Artist: business-name indicators that never belong to a music artist
+  if (/\b(HDM|LLC|Inc\.?|Corp\.?)\b|\bOil\s+(and|&)\s+Lube\b|\bCity\s+of\s+\w|\bAccounting\s+Service|Frontburner\s+Media|~\s*Attention\b/i.test(ar)) return false;
   return true;
 }
 
@@ -2717,7 +2724,20 @@ app.get("/", (_req, res) => {
 });
 
 // MCP endpoint (stateless per-request)
+app.options("/mcp", (_req, res) => {
+  res.set({
+    "Access-Control-Allow-Origin":  "*",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization, Mcp-Session-Id",
+  });
+  res.sendStatus(204);
+});
 app.all("/mcp", async (req, res) => {
+  res.set({
+    "Access-Control-Allow-Origin":  "*",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization, Mcp-Session-Id",
+  });
   const server    = buildServer();
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
   await server.connect(transport);
