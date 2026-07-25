@@ -3479,7 +3479,17 @@ app.get("/docs", (_req, res) => {
 <div class="tool"><h3>update_listener_preference</h3><p>Update a specific preference for a KAZM listener — language, location, favorite genre, or any custom key. <code>listener_id</code> required.</p></div>
 <div class="tool"><h3>log_listener_history</h3><p>Log a listening event (song played, show tuned into, request made) for a KAZM listener. Builds history that powers smarter recommendations. <code>listener_id</code> required.</p></div>
 <div class="tool"><h3>get_personalized_content</h3><p>Returns a fully personalized KAZM experience — greeting in the listener's language, recommendations from their history, station brief. Accepts <code>listener_id</code> or <code>email</code>.</p></div>
-<p style="color:#888;margin-top:40px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
+<h2>Prompts (6)</h2>
+<div class="tool"><h3>plan_sedona_trip</h3><p>Complete Sedona trip planning brief — weather, events, road conditions, vortex guide, hiking, and what's on KAZM right now.</p></div>
+<div class="tool"><h3>get_kazm_status</h3><p>Full KAZM radio status — now playing, listener count, upcoming shows, and stream links.</p></div>
+<div class="tool"><h3>check_outdoor_safety</h3><p>Full outdoor safety brief for Sedona — fire restrictions, air quality, NWS alerts, Oak Creek levels, and active wildfires.</p></div>
+<div class="tool"><h3>get_stargazing_forecast</h3><p>Tonight's stargazing forecast for Sedona — darkness window, moon phase &amp; interference, Milky Way visibility, and best sites.</p></div>
+<div class="tool"><h3>request_a_song</h3><p>Walk through requesting a song on KAZM — search the catalog, confirm the track, and submit the request.</p></div>
+<div class="tool"><h3>check_drive_conditions</h3><p>Road and weather check before driving to or through Sedona — SR-89A incidents, Oak Creek Canyon status, I-17 alerts, and current conditions.</p></div>
+<p style="margin-top:40px">
+  <a href="https://smithery.ai/servers/chuck/mellowmountainradio"><img src="https://smithery.ai/badge/chuck/mellowmountainradio" alt="smithery badge" style="vertical-align:middle"></a>
+</p>
+<p style="color:#888;margin-top:12px">KAZM 106.5 FM &amp; 780 AM · Sedona, AZ · mellowmountainradio.com</p>
 </body>
 </html>`);
 });
