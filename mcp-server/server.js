@@ -2100,15 +2100,87 @@ function buildServer() {
     }
   );
 
-  // 41. Get Listener Profile ─────────────────────────────────────────────────────
+  // 41. Get or Create Listener ──────────────────────────────────────────────────
+  mcp.tool(
+    "get_or_create_listener",
+    "The zero-friction entry point for KAZM personalization. Pass whatever you know — listener_id, email, or just a name — and this tool either returns the existing profile or silently creates one in a single call. No separate registration step needed. Call this at the start of every listener session.",
+    {
+      listener_id: z.string().optional().describe("The listener's unique KAZM ID if already known (from custom instructions or previous session)"),
+      email:       z.string().optional().describe("Listener's email address — used to find or link their profile"),
+      name:        z.string().optional().describe("Listener's name — used when creating a new profile"),
+      language:    z.enum(["en","de","es","fr","pt","ja"]).optional().describe("Preferred language — set on creation, or updates existing profile"),
+      location:    z.string().optional().describe("City and country — set on creation or update"),
+      genres:      z.array(z.string()).optional().describe("Favorite music genres — set on creation or update"),
+    },
+    async ({ listener_id, email, name, language = "en", location, genres = [] }) => {
+      const listeners = loadListeners();
+      let listener = listener_id
+        ? listeners.find(l => l.id === listener_id)
+        : email
+          ? listeners.find(l => l.email && l.email.toLowerCase() === email.toLowerCase())
+          : null;
+      const now = new Date().toISOString();
+      let isNew = false;
+      if (listener) {
+        // Update any provided fields
+        if (name)     listener.name     = name;
+        if (location) listener.location = location;
+        if (language) listener.language = language;
+        if (genres.length) listener.genres = genres;
+        listener.updated_at = now;
+      } else {
+        isNew = true;
+        listener = {
+          id:          genListenerId(),
+          name:        name     || "Listener",
+          email:       email    || null,
+          location:    location || null,
+          language:    language || "en",
+          genres:      genres   || [],
+          preferences: {},
+          history:     [],
+          created_at:  now,
+          updated_at:  now,
+        };
+        listeners.push(listener);
+      }
+      // Log session start
+      listener.history = listener.history || [];
+      listener.history.push({ type: "session_start", timestamp: now });
+      if (listener.history.length > 500) listener.history = listener.history.slice(-500);
+      saveListeners(listeners);
+      const recentHistory = listener.history.filter(h => h.title).slice(-5).reverse();
+      return { content: [{ type: "text", text: JSON.stringify({
+        listener_id:   listener.id,
+        status:        isNew ? "created" : "resumed",
+        name:          listener.name,
+        language:      listener.language,
+        location:      listener.location,
+        genres:        listener.genres,
+        preferences:   listener.preferences,
+        recent_history: recentHistory,
+        save_hint:     isNew ? `New profile created! To persist this across Claude sessions, add to your custom instructions: "My KAZM listener ID: ${listener.id}"` : null,
+        personalization_tip: `Returning listener. Prefers ${listener.language} language${listener.genres.length ? `, enjoys ${listener.genres.join(", ")}` : ""}. Tailor all responses accordingly.`,
+      }) }] };
+    }
+  );
+
+  // 43. Get Listener Profile ─────────────────────────────────────────────────────
   mcp.tool(
     "get_listener_profile",
-    "Retrieve a KAZM listener's full profile by listener_id — name, location, language preference, favorite genres, custom preferences, and recent listening history. Call this at the start of any session to instantly personalize the experience.",
-    { listener_id: z.string().describe("The listener's unique ID returned by register_listener") },
-    async ({ listener_id }) => {
+    "Retrieve a KAZM listener's full profile — by listener_id OR by email address. Either identifier works. Use at the start of any session to instantly personalize the experience. If the listener has their KAZM ID saved in Claude custom instructions, use that; otherwise look them up by email.",
+    {
+      listener_id: z.string().optional().describe("The listener's unique ID (from register_listener or saved in custom instructions)"),
+      email:       z.string().optional().describe("Email address — alternative to listener_id. Use if the listener's email is known."),
+    },
+    async ({ listener_id, email }) => {
       const listeners = loadListeners();
-      const listener  = listeners.find(l => l.id === listener_id);
-      if (!listener) return { content: [{ type: "text", text: JSON.stringify({ error: "Listener not found. Call register_listener to create a profile." }) }] };
+      const listener  = listener_id
+        ? listeners.find(l => l.id === listener_id)
+        : email
+          ? listeners.find(l => l.email && l.email.toLowerCase() === email.toLowerCase())
+          : null;
+      if (!listener) return { content: [{ type: "text", text: JSON.stringify({ error: "Listener not found. Provide listener_id or email, or call register_listener to create a profile." }) }] };
       const recentHistory = (listener.history || []).slice(-20).reverse();
       return { content: [{ type: "text", text: JSON.stringify({
         id:             listener.id,
@@ -2126,7 +2198,7 @@ function buildServer() {
     }
   );
 
-  // 42. Update Listener Preference ──────────────────────────────────────────────
+  // 44. Update Listener Preference ──────────────────────────────────────────────
   mcp.tool(
     "update_listener_preference",
     "Update a specific preference for a KAZM listener — language, location, favorite genre, or any custom key. Persists across all future AI sessions.",
@@ -2153,7 +2225,7 @@ function buildServer() {
     }
   );
 
-  // 43. Log Listener History ────────────────────────────────────────────────────
+  // 45. Log Listener History ────────────────────────────────────────────────────
   mcp.tool(
     "log_listener_history",
     "Log a listening event for a KAZM listener — a song that played, a show they tuned into, a request they made. Builds the history that powers smarter recommendations in every future session. Call this whenever something notable happens in a listener's session.",
@@ -2178,18 +2250,23 @@ function buildServer() {
     }
   );
 
-  // 44. Get Personalized Content ─────────────────────────────────────────────────
+  // 46. Get Personalized Content ─────────────────────────────────────────────────
   mcp.tool(
     "get_personalized_content",
-    "Returns a fully personalized KAZM experience for a listener — greeting in their language, listening recommendations based on their history and genre preferences, and a station brief tailored to where they are in the world. The core of KAZM's AI-powered personal radio.",
+    "Returns a fully personalized KAZM experience — greeting in the listener's language, recommendations from their history, station brief. Accepts listener_id OR email, so no separate registration step is ever needed. Pairs perfectly with get_or_create_listener.",
     {
-      listener_id:  z.string().describe("The listener's unique ID"),
+      listener_id:  z.string().optional().describe("The listener's unique ID"),
+      email:        z.string().optional().describe("Email address — alternative to listener_id"),
       content_type: z.enum(["greeting","recommendations","full"]).optional().describe("greeting = localized welcome only; recommendations = based on history; full = everything (default)"),
     },
-    async ({ listener_id, content_type = "full" }) => {
+    async ({ listener_id, email, content_type = "full" }) => {
       const listeners = loadListeners();
-      const listener  = listeners.find(l => l.id === listener_id);
-      if (!listener) return { content: [{ type: "text", text: JSON.stringify({ error: "Listener not found. Call register_listener first." }) }] };
+      const listener  = listener_id
+        ? listeners.find(l => l.id === listener_id)
+        : email
+          ? listeners.find(l => l.email && l.email.toLowerCase() === email.toLowerCase())
+          : null;
+      if (!listener) return { content: [{ type: "text", text: JSON.stringify({ error: "Listener not found. Call get_or_create_listener first with their name and email." }) }] };
 
       const lang   = listener.language || "en";
       const name   = listener.name;
@@ -2596,7 +2673,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "44 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "45 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles (email or ID lookup, zero-friction), weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -2610,7 +2687,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "44 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "45 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles (email or ID lookup, zero-friction), weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
@@ -2632,7 +2709,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   44,
+    tools:   45,
   });
 });
 
