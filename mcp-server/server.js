@@ -26,12 +26,16 @@ if (VAPID_PRIVATE) {
 function loadSubs()    { try { return JSON.parse(readFileSync(SUBS_FILE, "utf8")); } catch { return []; } }
 function saveSubs(arr) { writeFileSync(SUBS_FILE, JSON.stringify(arr, null, 2)); }
 
-const REQUESTS_FILE = join(__dirname, "requests.json");
-const PULSE_FILE    = join(__dirname, "pulse.json");
-function loadRequests()    { try { return JSON.parse(readFileSync(REQUESTS_FILE, "utf8")); } catch { return []; } }
+const REQUESTS_FILE  = join(__dirname, "requests.json");
+const PULSE_FILE     = join(__dirname, "pulse.json");
+const LISTENERS_FILE = join(__dirname, "listeners.json");
+function loadRequests()    { try { return JSON.parse(readFileSync(REQUESTS_FILE,  "utf8")); } catch { return []; } }
 function saveRequests(arr) { writeFileSync(REQUESTS_FILE, JSON.stringify(arr, null, 2)); }
-function loadPulse()       { try { return JSON.parse(readFileSync(PULSE_FILE,    "utf8")); } catch { return {}; } }
+function loadPulse()       { try { return JSON.parse(readFileSync(PULSE_FILE,     "utf8")); } catch { return {}; } }
 function savePulse(obj)    { writeFileSync(PULSE_FILE, JSON.stringify(obj, null, 2)); }
+function loadListeners()    { try { return JSON.parse(readFileSync(LISTENERS_FILE, "utf8")); } catch { return []; } }
+function saveListeners(arr) { writeFileSync(LISTENERS_FILE, JSON.stringify(arr, null, 2)); }
+function genListenerId()    { return "lsr_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 9); }
 
 const PORT      = process.env.PORT      || 3000;
 const AZ_HOST   = (process.env.AZ_HOST  || "https://streaming.mellowmountainradio.com").replace(/\/$/,"");
@@ -2045,6 +2049,188 @@ function buildServer() {
     }
   );
 
+  // 40. Register Listener ────────────────────────────────────────────────────────
+  mcp.tool(
+    "register_listener",
+    "Create or update a KAZM listener profile. Returns a listener_id that persists across AI sessions — saves name, location, language, and favorite genres so any future AI session can deliver a fully personalized Mellow Mountain Radio experience without starting from scratch.",
+    {
+      name:     z.string().describe("Listener's name or nickname"),
+      email:    z.string().optional().describe("Email address (optional — used to find existing profile)"),
+      location: z.string().optional().describe("City and country, e.g. 'Berlin, Germany' or 'Los Angeles, CA'"),
+      language: z.enum(["en","de","es","fr","pt","ja"]).optional().describe("Preferred language for KAZM content: en/de/es/fr/pt/ja (default en)"),
+      genres:   z.array(z.string()).optional().describe("Favorite music genres, e.g. ['classic rock','jazz','blues']"),
+    },
+    async ({ name, email, location, language = "en", genres = [] }) => {
+      const listeners = loadListeners();
+      let listener = email ? listeners.find(l => l.email === email) : null;
+      const now = new Date().toISOString();
+      let isNew = false;
+      if (listener) {
+        if (name)     listener.name     = name;
+        if (location) listener.location = location;
+        if (language) listener.language = language;
+        if (genres.length) listener.genres = genres;
+        listener.updated_at = now;
+      } else {
+        isNew = true;
+        listener = {
+          id:          genListenerId(),
+          name,
+          email:       email    || null,
+          location:    location || null,
+          language:    language || "en",
+          genres:      genres   || [],
+          preferences: {},
+          history:     [],
+          created_at:  now,
+          updated_at:  now,
+        };
+        listeners.push(listener);
+      }
+      saveListeners(listeners);
+      return { content: [{ type: "text", text: JSON.stringify({
+        listener_id: listener.id,
+        status:      isNew ? "created" : "updated",
+        name:        listener.name,
+        language:    listener.language,
+        location:    listener.location,
+        genres:      listener.genres,
+        message:     `Welcome to KAZM${isNew ? "" : " back"}, ${listener.name}! Your listener ID is ${listener.id}. Save this — your AI uses it to remember your preferences and history across every session.`,
+      }) }] };
+    }
+  );
+
+  // 41. Get Listener Profile ─────────────────────────────────────────────────────
+  mcp.tool(
+    "get_listener_profile",
+    "Retrieve a KAZM listener's full profile by listener_id — name, location, language preference, favorite genres, custom preferences, and recent listening history. Call this at the start of any session to instantly personalize the experience.",
+    { listener_id: z.string().describe("The listener's unique ID returned by register_listener") },
+    async ({ listener_id }) => {
+      const listeners = loadListeners();
+      const listener  = listeners.find(l => l.id === listener_id);
+      if (!listener) return { content: [{ type: "text", text: JSON.stringify({ error: "Listener not found. Call register_listener to create a profile." }) }] };
+      const recentHistory = (listener.history || []).slice(-20).reverse();
+      return { content: [{ type: "text", text: JSON.stringify({
+        id:             listener.id,
+        name:           listener.name,
+        location:       listener.location,
+        language:       listener.language,
+        genres:         listener.genres,
+        preferences:    listener.preferences,
+        member_since:   listener.created_at,
+        last_seen:      listener.updated_at,
+        total_sessions: (listener.history || []).filter(h => h.type === "session_start").length,
+        recent_history: recentHistory,
+        personalization_tip: `This listener prefers ${listener.language} language content${listener.genres.length ? ` and enjoys ${listener.genres.join(", ")}` : ""}. Tailor all KAZM responses — greetings, recommendations, song requests — to match.`,
+      }) }] };
+    }
+  );
+
+  // 42. Update Listener Preference ──────────────────────────────────────────────
+  mcp.tool(
+    "update_listener_preference",
+    "Update a specific preference for a KAZM listener — language, location, favorite genre, or any custom key. Persists across all future AI sessions.",
+    {
+      listener_id: z.string().describe("The listener's unique ID"),
+      key:         z.string().describe("Preference key: 'language', 'location', 'genres' (comma-separated), 'favorite_show', or any custom key"),
+      value:       z.string().describe("New value for the preference"),
+    },
+    async ({ listener_id, key, value }) => {
+      const listeners = loadListeners();
+      const idx       = listeners.findIndex(l => l.id === listener_id);
+      if (idx < 0) return { content: [{ type: "text", text: JSON.stringify({ error: "Listener not found." }) }] };
+      const listener = listeners[idx];
+      if (["language","location","name","email"].includes(key)) {
+        listener[key] = value;
+      } else if (key === "genres") {
+        listener.genres = value.split(",").map(s => s.trim()).filter(Boolean);
+      } else {
+        listener.preferences[key] = value;
+      }
+      listener.updated_at = new Date().toISOString();
+      saveListeners(listeners);
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, listener_id, updated: { [key]: value }, updated_at: listener.updated_at }) }] };
+    }
+  );
+
+  // 43. Log Listener History ────────────────────────────────────────────────────
+  mcp.tool(
+    "log_listener_history",
+    "Log a listening event for a KAZM listener — a song that played, a show they tuned into, a request they made. Builds the history that powers smarter recommendations in every future session. Call this whenever something notable happens in a listener's session.",
+    {
+      listener_id: z.string().describe("The listener's unique ID"),
+      event_type:  z.enum(["song_played","show_tuned_in","song_requested","session_start","session_end","reacted"]).describe("Type of event"),
+      title:       z.string().optional().describe("Song title or show name"),
+      artist:      z.string().optional().describe("Artist name (for songs)"),
+      notes:       z.string().optional().describe("Extra context: 'loved it', 'skipped after 10s', 'requested via AI', etc."),
+    },
+    async ({ listener_id, event_type, title, artist, notes }) => {
+      const listeners = loadListeners();
+      const idx       = listeners.findIndex(l => l.id === listener_id);
+      if (idx < 0) return { content: [{ type: "text", text: JSON.stringify({ error: "Listener not found." }) }] };
+      const event = { type: event_type, title: title || null, artist: artist || null, notes: notes || null, timestamp: new Date().toISOString() };
+      listeners[idx].history = listeners[idx].history || [];
+      listeners[idx].history.push(event);
+      if (listeners[idx].history.length > 500) listeners[idx].history = listeners[idx].history.slice(-500);
+      listeners[idx].updated_at = event.timestamp;
+      saveListeners(listeners);
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, logged: event, total_events: listeners[idx].history.length }) }] };
+    }
+  );
+
+  // 44. Get Personalized Content ─────────────────────────────────────────────────
+  mcp.tool(
+    "get_personalized_content",
+    "Returns a fully personalized KAZM experience for a listener — greeting in their language, listening recommendations based on their history and genre preferences, and a station brief tailored to where they are in the world. The core of KAZM's AI-powered personal radio.",
+    {
+      listener_id:  z.string().describe("The listener's unique ID"),
+      content_type: z.enum(["greeting","recommendations","full"]).optional().describe("greeting = localized welcome only; recommendations = based on history; full = everything (default)"),
+    },
+    async ({ listener_id, content_type = "full" }) => {
+      const listeners = loadListeners();
+      const listener  = listeners.find(l => l.id === listener_id);
+      if (!listener) return { content: [{ type: "text", text: JSON.stringify({ error: "Listener not found. Call register_listener first." }) }] };
+
+      const lang   = listener.language || "en";
+      const name   = listener.name;
+      const loc    = listener.location || "the world";
+      const genres = (listener.genres || []).join(", ") || "great music";
+
+      const GREETINGS = {
+        en: { welcome: `Welcome back, ${name}! You're tuned into KAZM Mellow Mountain Radio — 106.5 FM & 780 AM, live from the red rocks of Sedona, Arizona.`, tagline: "Your personal soundtrack to canyon country. We remember what you love.", stream: "Stream live at mellowmountainradio.com" },
+        de: { welcome: `Willkommen zurück, ${name}! Du hörst KAZM Mellow Mountain Radio — 106.5 FM & 780 AM, live aus den roten Felsen von Sedona, Arizona.`, tagline: "Dein persönlicher Soundtrack zum Canyon Country. Wir erinnern uns, was du liebst.", stream: "Live streamen auf mellowmountainradio.com" },
+        es: { welcome: `¡Bienvenido de nuevo, ${name}! Estás escuchando KAZM Mellow Mountain Radio — 106.5 FM & 780 AM, en vivo desde las rocas rojas de Sedona, Arizona.`, tagline: "Tu banda sonora personal del canyon country. Recordamos lo que amas.", stream: "Escucha en vivo en mellowmountainradio.com" },
+        fr: { welcome: `Bienvenue de retour, ${name}! Vous écoutez KAZM Mellow Mountain Radio — 106.5 FM & 780 AM, en direct des Red Rocks de Sedona, Arizona.`, tagline: "Votre bande sonore personnelle du canyon country. Nous nous souvenons de ce que vous aimez.", stream: "Écoutez en direct sur mellowmountainradio.com" },
+        pt: { welcome: `Bem-vindo de volta, ${name}! Você está ouvindo KAZM Mellow Mountain Radio — 106.5 FM & 780 AM, ao vivo das rochas vermelhas de Sedona, Arizona.`, tagline: "Sua trilha sonora pessoal do canyon country. Lembramos do que você ama.", stream: "Ouça ao vivo em mellowmountainradio.com" },
+        ja: { welcome: `おかえりなさい、${name}さん！KAZMメロウマウンテンラジオ — 106.5 FM & 780 AM、アリゾナ州セドナから生放送中。`, tagline: "あなただけのキャニオンカントリーのサウンドトラック。あなたの好みを覚えています。", stream: "mellowmountainradio.comでライブ配信中" },
+      };
+      const greeting = GREETINGS[lang] || GREETINGS.en;
+
+      // Build recommendations from history
+      const history = (listener.history || []).filter(h => h.title);
+      const artistCounts = {};
+      history.forEach(h => { if (h.artist) artistCounts[h.artist] = (artistCounts[h.artist] || 0) + 1; });
+      const favoriteArtists = Object.entries(artistCounts).sort((a,b) => b[1]-a[1]).slice(0,5).map(([a]) => a);
+      const recentTitles = history.slice(-5).map(h => h.title).filter(Boolean);
+
+      const recommendations = {
+        favorite_genres:              listener.genres,
+        top_artists_from_history:     favoriteArtists,
+        recently_heard:               recentTitles,
+        stream_url:                   "https://streaming.mellowmountainradio.com/radio/8000/radio.mp3",
+        tip:                          `Ask to submit a song request and it will be queued for the studio — KAZM is listening.`,
+        total_listening_events_logged: history.length,
+      };
+
+      return { content: [{ type: "text", text: JSON.stringify({
+        listener:    { id: listener_id, name, location: loc, language: lang },
+        ...(content_type !== "recommendations" ? { greeting } : {}),
+        ...(content_type !== "greeting"        ? { recommendations } : {}),
+        session_tip: `Listener ID ${listener_id} — reference this every session to continue where you left off.`,
+      }) }] };
+    }
+  );
+
   // ── MCP Prompts ──────────────────────────────────────────────────────────────
   // Pre-built conversation starters that chain multiple KAZM tools together.
 
@@ -2410,7 +2596,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "39 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "44 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -2424,7 +2610,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "39 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "44 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles, weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
@@ -2446,7 +2632,7 @@ app.get("/", (_req, res) => {
     version: "1.0.0",
     mcp:     `${process.env.PUBLIC_URL || ""}/mcp`,
     docs:    `${process.env.PUBLIC_URL || ""}/docs`,
-    tools:   39,
+    tools:   44,
   });
 });
 
