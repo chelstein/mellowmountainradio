@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KAZM Goes AI-Native | Mellow Mountain Radio MCP Server</title>
-  <meta name="description" content="KAZM is the first radio station with an MCP server — 44 live tools giving AI assistants real data: now playing, personalized listener profiles, fire restrictions, road conditions, chakra guide, tarot card, Red Rock Pass, hiking trails, sports scores, moon phases, stargazing forecast, photography guide, vortex guide, wildfires, and more." />
+  <meta name="description" content="KAZM is the first radio station with an MCP server — 45 live tools giving AI assistants real data: now playing, personalized listener profiles, fire restrictions, road conditions, chakra guide, tarot card, Red Rock Pass, hiking trails, sports scores, moon phases, stargazing forecast, photography guide, vortex guide, wildfires, and more." />
   <link rel="canonical" href="https://mellowmountainradio.com/mcp.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="KAZM Mellow Mountain Radio" />
@@ -308,7 +308,7 @@
 
   <div>
     <span class="mcp-label">What&rsquo;s Exposed</span>
-    <h2 style="font-family:'Alice',Georgia,serif;font-size:1.5rem;font-weight:normal;margin-bottom:.4rem;line-height:1.3;">44 live tools, all real data</h2>
+    <h2 style="font-family:'Alice',Georgia,serif;font-size:1.5rem;font-weight:normal;margin-bottom:.4rem;line-height:1.3;">45 live tools, all real data</h2>
     <p style="margin-bottom:1.75rem;max-width:60ch;color:var(--muted);font-size:.92rem;">Every tool reads from a live source. Nothing is cached longer than the underlying data warrants. Nothing is fabricated.</p>
 
     <div class="mcp-cats">
@@ -455,9 +455,13 @@
         <div class="mcp-cat-head">
           <span class="mcp-cat-ic" aria-hidden="true">🎧</span>
           <span class="mcp-cat-title">Listener Profiles</span>
-          <span class="mcp-cat-count">5 tools <span class="mcp-tool-badge">New</span></span>
+          <span class="mcp-cat-count">6 tools <span class="mcp-tool-badge">New</span></span>
         </div>
         <div>
+          <div class="mcp-tool">
+            <span class="mcp-tool-fn">get_or_create_listener(listener_id?, email?, name?, language?, location?, genres?) <span class="mcp-tool-badge">New</span></span>
+            <span class="mcp-tool-desc">Zero-friction entry point. Pass whatever you know — a saved listener_id, an email, or just a name. Returns the existing profile or silently creates one in a single call. No registration step. No email required. The AI saves the listener_id and the station remembers you forever.</span>
+          </div>
           <div class="mcp-tool">
             <span class="mcp-tool-fn">register_listener(name, language?, location?, genres?) <span class="mcp-tool-badge">New</span></span>
             <span class="mcp-tool-desc">Create a persistent listener profile. Returns a listener_id that any AI can use across every session — name, language, location, and favorite genres remembered forever.</span>
@@ -558,7 +562,7 @@
         <span class="mcp-stat-label">Other radio stations<br>with MCP servers</span>
       </div>
       <div class="mcp-stat">
-        <span class="mcp-stat-num">44</span>
+        <span class="mcp-stat-num">45</span>
         <span class="mcp-stat-label">Live tools<br>and growing</span>
       </div>
       <div class="mcp-stat">
