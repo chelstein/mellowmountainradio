@@ -2507,6 +2507,515 @@ function buildServer() {
     })
   );
 
+  // ── Output schemas (Smithery quality score) ──────────────────────────────────
+  {
+    const OS = mcp._registeredTools;
+
+    OS["get_now_playing"].outputSchema = z.object({
+      title:       z.string().nullable(),
+      artist:      z.string().nullable(),
+      album:       z.string().nullable(),
+      art:         z.string().url().nullable(),
+      started_at:  z.string().nullable(),
+      elapsed_s:   z.number().nullable(),
+      duration_s:  z.number().nullable(),
+      stream_url:  z.string().url().nullable(),
+    });
+
+    OS["get_listener_count"].outputSchema = z.object({
+      total:   z.number(),
+      unique:  z.number(),
+      mounts:  z.array(z.object({
+        name:      z.string(),
+        listeners: z.number(),
+        url:       z.string(),
+      })),
+    });
+
+    OS["search_song_history"].outputSchema = z.object({
+      results: z.array(z.object({
+        title:     z.string(),
+        artist:    z.string(),
+        played_at: z.string(),
+      })),
+    });
+
+    OS["get_fire_restrictions"].outputSchema = z.object({
+      updated:       z.string().nullable(),
+      agency:        z.string().nullable(),
+      source:        z.string().nullable(),
+      stage:         z.string().nullable(),
+      danger:        z.string().nullable(),
+      sedona_alerts: z.array(z.string()),
+      notes:         z.string().nullable(),
+    });
+
+    OS["get_weather"].outputSchema = z.object({
+      latitude:             z.number().optional(),
+      longitude:            z.number().optional(),
+      generationtime_ms:    z.number().optional(),
+      utc_offset_seconds:   z.number().optional(),
+      timezone:             z.string().optional(),
+      timezone_abbreviation:z.string().optional(),
+      elevation:            z.number().optional(),
+      current_units:        z.record(z.string()).optional(),
+      current:              z.record(z.unknown()).optional(),
+      hourly_units:         z.record(z.string()).optional(),
+      hourly:               z.record(z.unknown()).optional(),
+      daily_units:          z.record(z.string()).optional(),
+      daily:                z.record(z.unknown()).optional(),
+    });
+
+    OS["get_road_conditions"].outputSchema = z.object({
+      updated:   z.string().nullable(),
+      sources:   z.array(z.string()),
+      closures:  z.array(z.string()),
+      incidents: z.array(z.string()),
+    });
+
+    OS["get_concerts"].outputSchema = z.object({
+      updated:  z.string().nullable(),
+      count:    z.number(),
+      concerts: z.array(z.object({
+        name:    z.string(),
+        venue:   z.string().optional(),
+        date:    z.string().optional(),
+        time:    z.string().optional(),
+        tickets: z.string().optional(),
+      }).passthrough()),
+    });
+
+    OS["get_events"].outputSchema = z.object({
+      library_events: z.array(z.record(z.unknown())),
+      festivals:      z.array(z.record(z.unknown())),
+    });
+
+    OS["get_stream_url"].outputSchema = z.object({
+      web_player: z.string().url(),
+      streams:    z.array(z.object({
+        name:    z.string(),
+        url:     z.string(),
+        bitrate: z.string().optional(),
+        format:  z.string().optional(),
+      })),
+    });
+
+    OS["get_show_schedule"].outputSchema = z.object({
+      station:  z.string(),
+      timezone: z.string(),
+      schedule: z.record(z.unknown()),
+    });
+
+    OS["get_horoscope"].outputSchema = z.object({
+      updated:    z.string().nullable(),
+      period:     z.string().nullable(),
+      horoscopes: z.record(z.string()),
+    });
+
+    OS["get_schumann_resonance"].outputSchema = z.object({
+      status:         z.string().optional(),
+      frequency_hz:   z.number().optional(),
+      amplitude:      z.number().optional(),
+      last_updated:   z.string().optional(),
+      source:         z.string().optional(),
+    }).passthrough();
+
+    OS["get_sound_session"].outputSchema = z.object({
+      recommended:    z.string(),
+      reason:         z.string(),
+      also_available: z.array(z.string()),
+    });
+
+    OS["get_chakra_guide"].outputSchema = z.object({
+      chakras:         z.array(z.record(z.unknown())),
+      note:            z.string().optional(),
+      chakra_sound_bath:z.string().optional(),
+      sound_healing_page: z.string().optional(),
+    });
+
+    OS["get_chakra_frequencies"].outputSchema = z.object({
+      chakras:         z.array(z.record(z.unknown())),
+      tip:             z.string().optional(),
+      chakra_sound_bath:z.string().optional(),
+    });
+
+    OS["get_solfeggio"].outputSchema = z.object({
+      frequencies:      z.array(z.record(z.unknown())),
+      note:             z.string().optional(),
+      sound_healing_page: z.string().optional(),
+    });
+
+    OS["search_song_request_library"].outputSchema = z.object({
+      query:   z.string(),
+      count:   z.number(),
+      results: z.array(z.object({
+        title:  z.string(),
+        artist: z.string(),
+      })),
+    });
+
+    OS["get_rewind"].outputSchema = z.object({
+      count:  z.number(),
+      blocks: z.array(z.object({
+        date:       z.string(),
+        start_hour: z.number(),
+        url:        z.string(),
+      })),
+    });
+
+    OS["get_jeep_trails"].outputSchema = z.union([
+      z.object({
+        trails:  z.array(z.record(z.unknown())).optional(),
+        map_url: z.string().optional(),
+      }),
+      z.object({
+        trail:       z.string(),
+        coordinates: z.array(z.unknown()),
+      }),
+    ]);
+
+    OS["get_movies"].outputSchema = z.object({
+      updated:  z.string().nullable(),
+      venues:   z.array(z.record(z.unknown())),
+      showings: z.array(z.record(z.unknown())),
+    });
+
+    OS["get_emergency_alerts"].outputSchema = z.object({
+      updated:  z.string().nullable(),
+      counties: z.array(z.string()),
+      count:    z.number(),
+      alerts:   z.array(z.object({
+        id:          z.string().optional(),
+        event:       z.string(),
+        headline:    z.string().optional(),
+        description: z.string().optional(),
+        instruction: z.string().optional(),
+        severity:    z.string().optional(),
+        urgency:     z.string().optional(),
+        certainty:   z.string().optional(),
+        areas:       z.string().optional(),
+        sender:      z.string().optional(),
+        effective:   z.string().optional(),
+        expires:     z.string().optional(),
+        url:         z.string().optional(),
+      })),
+    });
+
+    OS["submit_song_request"].outputSchema = z.object({
+      success:   z.boolean(),
+      submitted: z.boolean().optional(),
+      name:      z.string().optional(),
+      note:      z.string().optional(),
+      message:   z.string().optional(),
+      matches:   z.array(z.record(z.unknown())).optional(),
+    });
+
+    OS["get_local_news_headlines"].outputSchema = z.object({
+      updated: z.string().nullable(),
+      feeds:   z.array(z.object({
+        source: z.string(),
+        count:  z.number(),
+        items:  z.array(z.object({
+          title:     z.string(),
+          link:      z.string().optional(),
+          published: z.string().optional(),
+          summary:   z.string().optional(),
+        })),
+      })),
+      errors: z.array(z.string()).optional(),
+    });
+
+    OS["get_air_quality"].outputSchema = z.object({
+      location:           z.string(),
+      coordinates:        z.object({ lat: z.number(), lon: z.number() }),
+      updated:            z.string().nullable(),
+      us_aqi:             z.number().nullable(),
+      category:           z.string().nullable(),
+      pm2_5_ug_m3:        z.number().nullable(),
+      pm10_ug_m3:         z.number().nullable(),
+      ozone_ug_m3:        z.number().nullable(),
+      uv_index:           z.number().nullable(),
+      dust_ug_m3:         z.number().nullable(),
+      carbon_monoxide:    z.number().nullable(),
+      nitrogen_dioxide:   z.number().nullable(),
+      source:             z.string(),
+    });
+
+    OS["get_sports_scores"].outputSchema = z.object({
+      updated: z.string().nullable(),
+      scores:  z.record(z.unknown()),
+    });
+
+    OS["get_sun_times"].outputSchema = z.object({
+      date:                        z.string(),
+      location:                    z.string(),
+      sunrise:                     z.string(),
+      sunset:                      z.string(),
+      solar_noon:                  z.string(),
+      day_length_seconds:          z.number(),
+      civil_twilight_begin:        z.string(),
+      civil_twilight_end:          z.string(),
+      nautical_twilight_begin:     z.string(),
+      nautical_twilight_end:       z.string(),
+      astronomical_twilight_begin: z.string(),
+      astronomical_twilight_end:   z.string(),
+      next_solstice_or_equinox:    z.record(z.unknown()).optional(),
+      source:                      z.string(),
+    });
+
+    OS["get_moon_phase"].outputSchema = z.object({
+      location:    z.string(),
+      today:       z.object({
+        date:              z.string(),
+        phase:             z.string(),
+        emoji:             z.string(),
+        illumination_pct:  z.number(),
+        moon_age_days:     z.number(),
+      }),
+      next_7_days: z.array(z.record(z.unknown())),
+      source:      z.string(),
+    });
+
+    OS["get_vortex_guide"].outputSchema = z.object({
+      location:     z.string(),
+      note:         z.string().optional(),
+      vortex_sites: z.array(z.record(z.unknown())),
+    });
+
+    OS["get_nws_alerts"].outputSchema = z.object({
+      location:    z.string(),
+      updated:     z.string().nullable(),
+      alert_count: z.number(),
+      alerts:      z.array(z.object({
+        event:       z.string(),
+        severity:    z.string().optional(),
+        urgency:     z.string().optional(),
+        headline:    z.string().optional(),
+        description: z.string().optional(),
+        instruction: z.string().optional(),
+        effective:   z.string().optional(),
+        expires:     z.string().optional(),
+        areas:       z.string().optional(),
+      })),
+      source: z.string(),
+    });
+
+    OS["get_oak_creek_levels"].outputSchema = z.object({
+      station:        z.string(),
+      station_id:     z.string(),
+      updated:        z.string().nullable(),
+      level_label:    z.string(),
+      discharge_cfs:  z.number().optional(),
+      gage_height_ft: z.number().optional(),
+      source:         z.string(),
+    });
+
+    OS["get_artist_info"].outputSchema = z.object({
+      searched_for:    z.string(),
+      name:            z.string().nullable(),
+      disambiguation:  z.string().nullable(),
+      type:            z.string().nullable(),
+      country:         z.string().nullable(),
+      life_span:       z.record(z.unknown()).nullable(),
+      tags:            z.array(z.string()),
+      albums:          z.array(z.object({
+        title: z.string(),
+        year:  z.string().nullable(),
+      })),
+      musicbrainz_id:  z.string().nullable(),
+      source:          z.string(),
+    });
+
+    OS["get_wildfire_perimeters"].outputSchema = z.object({
+      updated:           z.string().nullable(),
+      search_area:       z.string(),
+      active_fire_count: z.number(),
+      fires:             z.array(z.object({
+        name:               z.string(),
+        state:              z.string().optional(),
+        acres:              z.number().optional(),
+        contained_pct:      z.number().optional(),
+        discovered:         z.string().optional(),
+        behavior:           z.string().optional(),
+        lat:                z.number().optional(),
+        lon:                z.number().optional(),
+        dist_mi_from_sedona:z.number().optional(),
+      })),
+      source: z.string(),
+    });
+
+    OS["get_day_in_music_history"].outputSchema = z.object({
+      date:             z.string(),
+      music_events:     z.array(z.object({ year: z.number(), event: z.string() })),
+      music_birthdays:  z.array(z.object({ year: z.number(), person: z.string() })),
+      music_passings:   z.array(z.object({ year: z.number(), person: z.string() })),
+      source:           z.string(),
+    });
+
+    OS["get_visitor_info"].outputSchema = z.object({
+      location:      z.string(),
+      last_verified: z.string().nullable(),
+      info:          z.record(z.unknown()),
+    });
+
+    OS["get_red_rock_pass"].outputSchema = z.object({
+      fees:         z.record(z.unknown()).optional(),
+      passes:       z.record(z.unknown()).optional(),
+      sites:        z.array(z.record(z.unknown())).optional(),
+      shuttles:     z.record(z.unknown()).optional(),
+      where_to_buy: z.array(z.string()).optional(),
+      tips:         z.array(z.string()),
+      kazm_note:    z.string().optional(),
+    });
+
+    OS["get_hiking_trails"].outputSchema = z.object({
+      trails:                z.array(z.object({
+        name:         z.string(),
+        slug:         z.string().optional(),
+        distance_mi:  z.number().optional(),
+      }).passthrough()),
+      total:                 z.number(),
+      red_rock_pass_required:z.boolean().optional(),
+      shuttle_info:          z.string().optional(),
+      oak_creek_tip:         z.string().optional(),
+      source:                z.string().optional(),
+      kazm_note:             z.string().optional(),
+    });
+
+    OS["get_stargazing_conditions"].outputSchema = z.object({
+      date:       z.string(),
+      location:   z.string(),
+      darkness:   z.object({
+        astronomical_twilight_end:   z.string(),
+        astronomical_twilight_begin: z.string(),
+        note:                        z.string(),
+      }),
+      moon:       z.object({
+        phase:              z.string(),
+        emoji:              z.string(),
+        illumination_pct:   z.number(),
+        moon_age_days:      z.number(),
+        interference_rating:z.string(),
+        note:               z.string(),
+      }),
+      milky_way:  z.object({
+        status: z.string(),
+        note:   z.string(),
+      }),
+      top_sites:  z.array(z.object({
+        name: z.string(),
+        why:  z.string(),
+      })),
+      source: z.string(),
+    });
+
+    OS["get_photography_guide"].outputSchema = z.object({
+      location_context:    z.string(),
+      date:                z.string(),
+      current_light_phase: z.string(),
+      current_light_score: z.number().optional(),
+      today_times:         z.record(z.string()),
+      locations:           z.array(z.record(z.unknown())),
+    });
+
+    OS["get_tarot_card"].outputSchema = z.union([
+      z.object({
+        spread:    z.string(),
+        date:      z.string(),
+        note:      z.string().optional(),
+        cards:     z.array(z.object({
+          position:    z.string().optional(),
+          card:        z.string(),
+          glyph:       z.string(),
+          tag:         z.string(),
+          astro:       z.string().optional(),
+          orientation: z.string(),
+          meaning:     z.string(),
+          upright:     z.string(),
+          reversed:    z.string(),
+        })),
+        tarot_page: z.string().optional(),
+      }),
+      z.object({
+        card:      z.string(),
+        glyph:     z.string(),
+        tag:       z.string(),
+        astro:     z.string().optional(),
+        upright:   z.string(),
+        reversed:  z.string(),
+        tarot_page:z.string().optional(),
+      }),
+    ]);
+
+    OS["register_listener"].outputSchema = z.object({
+      listener_id: z.string(),
+      status:      z.string(),
+      name:        z.string(),
+      language:    z.string(),
+      location:    z.string().nullable(),
+      genres:      z.array(z.string()),
+      message:     z.string(),
+    });
+
+    OS["get_or_create_listener"].outputSchema = z.object({
+      listener_id:       z.string(),
+      status:            z.string(),
+      name:              z.string(),
+      language:          z.string(),
+      location:          z.string().nullable(),
+      genres:            z.array(z.string()),
+      preferences:       z.record(z.unknown()),
+      recent_history:    z.array(z.record(z.unknown())),
+      save_hint:         z.string().optional(),
+      personalization_tip:z.string().optional(),
+    });
+
+    OS["get_listener_profile"].outputSchema = z.object({
+      id:                 z.string(),
+      name:               z.string(),
+      location:           z.string().nullable(),
+      language:           z.string(),
+      genres:             z.array(z.string()),
+      preferences:        z.record(z.unknown()),
+      member_since:       z.string().nullable(),
+      last_seen:          z.string().nullable(),
+      total_sessions:     z.number(),
+      recent_history:     z.array(z.record(z.unknown())),
+      personalization_tip:z.string().optional(),
+    });
+
+    OS["update_listener_preference"].outputSchema = z.object({
+      ok:         z.boolean(),
+      listener_id:z.string(),
+      updated:    z.record(z.unknown()),
+      updated_at: z.string(),
+    });
+
+    OS["log_listener_history"].outputSchema = z.object({
+      ok:     z.boolean(),
+      logged: z.object({
+        type:      z.string(),
+        title:     z.string().nullable(),
+        artist:    z.string().nullable(),
+        notes:     z.string().nullable(),
+        timestamp: z.string(),
+      }),
+      total_events: z.number(),
+    });
+
+    OS["get_personalized_content"].outputSchema = z.object({
+      listener:         z.object({
+        id:       z.string(),
+        name:     z.string(),
+        location: z.string().nullable(),
+        language: z.string(),
+      }),
+      greeting:         z.string().optional(),
+      recommendations:  z.array(z.record(z.unknown())).optional(),
+      session_tip:      z.string().optional(),
+    });
+  }
+
   return mcp;
 }
 
