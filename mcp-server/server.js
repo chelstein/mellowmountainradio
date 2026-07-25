@@ -3005,6 +3005,68 @@ function buildServer() {
       recommendations:  z.array(z.record(z.unknown())).optional(),
       session_tip:      z.string().optional(),
     });
+
+    // Human-readable titles for each tool (MCP spec 2025-06-18 `title` field)
+    OS["get_now_playing"].title           = "Now Playing";
+    OS["get_listener_count"].title        = "Listener Count";
+    OS["search_song_history"].title       = "Song History Search";
+    OS["get_fire_restrictions"].title     = "Fire Restrictions";
+    OS["get_weather"].title               = "Weather Conditions";
+    OS["get_road_conditions"].title       = "Road Conditions";
+    OS["get_concerts"].title              = "Concerts";
+    OS["get_events"].title                = "Local Events";
+    OS["get_stream_url"].title            = "Stream URL";
+    OS["get_show_schedule"].title         = "Show Schedule";
+    OS["get_horoscope"].title             = "Daily Horoscope";
+    OS["get_schumann_resonance"].title    = "Schumann Resonance";
+    OS["get_sound_session"].title         = "Sound Session";
+    OS["get_chakra_guide"].title          = "Chakra Guide";
+    OS["get_chakra_frequencies"].title    = "Chakra Frequencies";
+    OS["get_solfeggio"].title             = "Solfeggio Frequencies";
+    OS["search_song_request_library"].title = "Song Request Library";
+    OS["get_rewind"].title                = "Audio Rewind";
+    OS["get_jeep_trails"].title           = "Jeep Trails";
+    OS["get_movies"].title                = "Movie Showtimes";
+    OS["get_emergency_alerts"].title      = "Emergency Alerts";
+    OS["submit_song_request"].title       = "Submit Song Request";
+    OS["get_local_news_headlines"].title  = "Local News Headlines";
+    OS["get_air_quality"].title           = "Air Quality";
+    OS["get_sports_scores"].title         = "Sports Scores";
+    OS["get_sun_times"].title             = "Sunrise & Sunset Times";
+    OS["get_moon_phase"].title            = "Moon Phase";
+    OS["get_vortex_guide"].title          = "Vortex Guide";
+    OS["get_nws_alerts"].title            = "NWS Weather Alerts";
+    OS["get_oak_creek_levels"].title      = "Oak Creek Water Levels";
+    OS["get_artist_info"].title           = "Artist Info";
+    OS["get_wildfire_perimeters"].title   = "Wildfire Perimeters";
+    OS["get_day_in_music_history"].title  = "Day in Music History";
+    OS["get_visitor_info"].title          = "Visitor Information";
+    OS["get_red_rock_pass"].title         = "Red Rock Pass Info";
+    OS["get_hiking_trails"].title         = "Hiking Trails";
+    OS["get_stargazing_conditions"].title = "Stargazing Conditions";
+    OS["get_photography_guide"].title     = "Photography Guide";
+    OS["get_tarot_card"].title            = "Tarot Card";
+    OS["register_listener"].title         = "Register Listener";
+    OS["get_or_create_listener"].title    = "Get or Create Listener";
+    OS["get_listener_profile"].title      = "Listener Profile";
+    OS["update_listener_preference"].title = "Update Listener Preference";
+    OS["log_listener_history"].title      = "Log Listener History";
+    OS["get_personalized_content"].title  = "Personalized Content";
+
+    // Patch ListTools handler to include title in tools/list response
+    const _origListTools = mcp.server._requestHandlers.get("tools/list");
+    if (_origListTools) {
+      mcp.server._requestHandlers.set("tools/list", async (req, extra) => {
+        const result = await _origListTools(req, extra);
+        if (result?.tools) {
+          result.tools = result.tools.map(t => {
+            const reg = OS[t.name];
+            return reg?.title ? { title: reg.title, ...t } : t;
+          });
+        }
+        return result;
+      });
+    }
   }
 
   return mcp;
