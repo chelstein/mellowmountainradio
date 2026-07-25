@@ -3068,6 +3068,30 @@ function buildServer() {
         return result;
       });
     }
+
+    // Prompt titles
+    const PS = mcp._registeredPrompts;
+    PS["plan_sedona_trip"].title      = "Plan Sedona Trip";
+    PS["get_kazm_status"].title       = "KAZM Status";
+    PS["check_outdoor_safety"].title  = "Outdoor Safety Check";
+    PS["get_stargazing_forecast"].title = "Stargazing Forecast";
+    PS["request_a_song"].title        = "Request a Song";
+    PS["check_drive_conditions"].title = "Drive Conditions Check";
+
+    // Patch prompts/list handler to include title in response
+    const _origListPrompts = mcp.server._requestHandlers.get("prompts/list");
+    if (_origListPrompts) {
+      mcp.server._requestHandlers.set("prompts/list", async (req, extra) => {
+        const result = await _origListPrompts(req, extra);
+        if (result?.prompts) {
+          result.prompts = result.prompts.map(p => {
+            const reg = PS[p.name];
+            return reg?.title ? { title: reg.title, ...p } : p;
+          });
+        }
+        return result;
+      });
+    }
   }
 
   return mcp;
