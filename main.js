@@ -9322,6 +9322,9 @@
           statusEl.hidden = false;
           return;
         }
+        // the trunk wears the song's real cover art from the lineage database —
+        // AzuraCast only knows the station logo
+        if (j.matched && j.matched.art) artEl.src = j.matched.art;
         renderCanopy(collect(j.branches, [
           { key: "sampled_by", label: "sampled it" },
           { key: "covered_by", label: "covered it" },
