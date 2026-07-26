@@ -9332,6 +9332,20 @@
         // the trunk wears the song's real cover art from the lineage database —
         // AzuraCast only knows the station logo
         if (j.matched && j.matched.art) artEl.src = j.matched.art;
+        // the arrow of time sorts the tree: nothing younger than the song can
+        // be a root, nothing older can be a branch. Genius occasionally files
+        // relationships backwards; chronology outranks the database. Items
+        // without a year stay where the database put them.
+        var my = j.matched && parseInt(j.matched.year, 10);
+        if (my) {
+          [["samples", "sampled_by"], ["covers", "covered_by"], ["interpolates", "interpolated_by"]].forEach(function (p) {
+            var down = j.roots[p[0]] || [], up = j.branches[p[1]] || [];
+            j.roots[p[0]]    = down.filter(function (s) { return !(s.year && parseInt(s.year, 10) > my); });
+            j.branches[p[1]] = up.filter(function (s) { return !(s.year && parseInt(s.year, 10) < my); });
+            j.branches[p[1]] = j.branches[p[1]].concat(down.filter(function (s) { return s.year && parseInt(s.year, 10) > my; }));
+            j.roots[p[0]]    = j.roots[p[0]].concat(up.filter(function (s) { return s.year && parseInt(s.year, 10) < my; }));
+          });
+        }
         renderCanopy(collect(j.branches, [
           { key: "sampled_by", label: "sampled it" },
           { key: "covered_by", label: "covered it" },
