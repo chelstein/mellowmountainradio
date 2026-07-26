@@ -139,6 +139,17 @@ jobs:
                   pass
               return start_h * 3600 + 60
 
+          def is_music(ti, ar):
+              # Port of serverIsMusicPlay from mcp-server/server.js — the station's
+              # own filter separating music spins from carts, spots, IDs, and talk.
+              if not ti or not ar: return False
+              if re.search(r"^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID/PSA|^AZ Sports|^Sports Update|^AZ State News|^Coast to Coast AM", ti, re.I): return False
+              if re.match(r"^[A-Z0-9][A-Z0-9_\-]{4,}$", ti): return False
+              if re.search(r"\bFINAL\b|\(SPEC\b|\bREV\s*\d+\b|\bAIRCHECK\b", ti, re.I): return False
+              if re.search(r"^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind", ar, re.I): return False
+              if re.search(r"\b(HDM|LLC|Inc\.?|Corp\.?)\b|\bOil\s+(and|&)\s+Lube\b|\bCity\s+of\s+\w|\bAccounting\s+Service|Frontburner\s+Media|~\s*Attention\b", ar, re.I): return False
+              return True
+
           def fetch_history(date, t0, t1):
               # AZ (UTC-7, no DST) window -> UTC ISO
               base = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp() + 7 * 3600
@@ -151,11 +162,14 @@ jobs:
               for p in rows if isinstance(rows, list) else []:
                   song = p.get("song") or {}
                   t = int(p.get("played_at") or 0) - int(base)
+                  ti = song.get("title") or ""
+                  ar = song.get("artist") or ""
                   items.append({
                       "t": t,
                       "dur": int(p.get("duration") or 0),
-                      "title": song.get("title") or "",
-                      "artist": song.get("artist") or ""})
+                      "title": ti,
+                      "artist": ar,
+                      "music": is_music(ti, ar)})
               items.sort(key=lambda i: i["t"])
               return items
 
@@ -215,17 +229,22 @@ jobs:
           audio_end = max((s["e"] for s in segs), default=19800)
           items = fetch_history(date, rec0, rec0 + int(audio_end) + 60)
 
-          # A segment overlapping a programmed history item is music/spot playback;
-          # everything else on the tape is live talk. Both are kept — search can filter.
+          # MegaSeg logs wall-to-wall, so nearly every second overlaps a history item.
+          # The useful split is the station's own music filter: segments over a music
+          # spin are "music" (whisper mishearing lyrics — kept, but filterable), over
+          # any other cart (weather, news, PSAs, spots, syndicated shows) are "talk",
+          # and anything outside the automation entirely is "live".
+          music_iv = [(i["t"], i["t"] + i["dur"]) for i in items if i["dur"] > 0 and i["music"]]
+          other_iv = [(i["t"], i["t"] + i["dur"]) for i in items if i["dur"] > 0 and not i["music"]]
           for s in segs:
               a, b = rec0 + s["s"], rec0 + s["e"]
               s["s"], s["e"] = round(a), round(b)   # seconds from AZ midnight
-              hit = next((i for i in items if i["dur"] > 0
-                          and a < i["t"] + i["dur"] and b > i["t"]), None)
-              s["type"] = "programmed" if hit else "talk"
+              if   any(a < y and b > x for x, y in music_iv): s["type"] = "music"
+              elif any(a < y and b > x for x, y in other_iv): s["type"] = "talk"
+              else: s["type"] = "live"
 
-          talk = sum(1 for s in segs if s["type"] == "talk")
-          print(f"[transcriber] {talk} talk segments / {len(segs)} total, {len(items)} history items")
+          counts = {t: sum(1 for s in segs if s["type"] == t) for t in ("talk", "live", "music")}
+          print(f"[transcriber] {counts} of {len(segs)} segments, {len(items)} history items")
 
           upload(name, date, {
               "block": name, "date": date, "start": start_h, "recStart": rec0,
