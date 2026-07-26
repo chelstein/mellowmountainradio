@@ -3207,7 +3207,7 @@ function setCors(res) {
   res.set({ "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
 }
 
-app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft|transcripts(\/search)?)$/, (_req, res) => {
+app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft|thread|transcripts(\/search)?)$/, (_req, res) => {
   setCors(res); res.sendStatus(204);
 });
 
@@ -3380,6 +3380,74 @@ app.get("/transcripts/search", async (req, res) => {
     }
     res.json({ ok: true, query: q, blocks_searched: searched,
                blocks_total: index.length, matches });
+  } catch (e) { res.status(502).json({ ok: false, error: String(e.message) }); }
+});
+
+// ── The Thread — sample lineage via the Genius API ────────────────────────────
+// GET /thread?title=&artist= — who this song sampled, and everyone who sampled
+// it since. Requires GENIUS_TOKEN in .env (free client access token from
+// genius.com/api-clients). Cached per song in memory.
+const GENIUS_TOKEN = process.env.GENIUS_TOKEN || "";
+const thCache = new Map();
+
+function threadCleanTitle(t) {
+  return String(t || "")
+    .split(" - ")[0]                                   // MegaSeg "Title - Album" convention
+    .replace(/\s*[\(\[][^)\]]*(remaster|remix|version|edit|mono|stereo|single|deluxe|live|feat|anniversary)[^)\]]*[\)\]]/gi, "")
+    .replace(/\s*~.*$/, "")
+    .trim();
+}
+
+async function geniusGet(path) {
+  const res = await fetch(`https://api.genius.com${path}`, {
+    headers: { Authorization: `Bearer ${GENIUS_TOKEN}`, "User-Agent": "KAZM-MCP/1.0" },
+  });
+  if (!res.ok) throw new Error(`Genius ${res.status}`);
+  return res.json();
+}
+
+app.get("/thread", async (req, res) => {
+  setCors(res);
+  if (!GENIUS_TOKEN) return res.status(503).json({ ok: false, error: "genius_token_missing" });
+  const title  = threadCleanTitle(req.query.title);
+  const artist = String(req.query.artist || "").trim();
+  if (!title) return res.status(400).json({ ok: false, error: "title required" });
+  const key = (title + "|" + artist).toLowerCase();
+  if (thCache.has(key)) return res.json(thCache.get(key));
+  try {
+    const search = await geniusGet(`/search?q=${encodeURIComponent(title + " " + artist)}`);
+    const hits = ((search.response || {}).hits || []).filter(h => h.type === "song").map(h => h.result);
+    const an = s => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const hit = hits.find(h => artist && (an(h.artist_names).includes(an(artist)) || an(artist).includes(an(h.primary_artist?.name)))) || hits[0];
+    if (!hit) {
+      const out = { ok: true, found: false, title, artist };
+      thCache.set(key, out);
+      return res.json(out);
+    }
+    const song = ((await geniusGet(`/songs/${hit.id}?text_format=plain`)).response || {}).song || {};
+    const rels = {};
+    for (const r of (song.song_relationships || [])) {
+      const type = r.relationship_type || r.type;
+      const list = (r.songs || []).filter(Boolean).map(s => ({
+        title:  s.title || "",
+        artist: s.artist_names || (s.primary_artist && s.primary_artist.name) || "",
+        year:   (s.release_date_components && s.release_date_components.year) ||
+                (String(s.release_date_for_display || "").match(/\d{4}/) || [null])[0],
+        url:    s.url || null,
+        art:    s.song_art_image_thumbnail_url || null,
+      }));
+      if (list.length) rels[type] = list;
+    }
+    const out = {
+      ok: true, found: true,
+      title, artist,
+      matched: { title: song.title, artist: song.artist_names || "", year: (song.release_date_components || {}).year || null, url: song.url || null, art: song.song_art_image_thumbnail_url || null },
+      roots:    { samples: rels.samples || [], covers: rels.cover_of || [], interpolates: rels.interpolates || [] },
+      branches: { sampled_by: rels.sampled_by || [], covered_by: rels.covered_by || [], interpolated_by: rels.interpolated_by || [], remixed_by: rels.remixed_by || [] },
+    };
+    if (thCache.size > 2000) thCache.clear();
+    thCache.set(key, out);
+    res.json(out);
   } catch (e) { res.status(502).json({ ok: false, error: String(e.message) }); }
 });
 
