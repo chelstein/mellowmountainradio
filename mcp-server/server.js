@@ -3207,7 +3207,7 @@ function setCors(res) {
   res.set({ "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
 }
 
-app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft)$/, (_req, res) => {
+app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft|transcripts(\/search)?)$/, (_req, res) => {
   setCors(res); res.sendStatus(204);
 });
 
@@ -3292,6 +3292,95 @@ app.get("/playlog", async (req, res) => {
   } catch (e) {
     res.status(502).json({ ok: false, error: String(e.message) });
   }
+});
+
+// ── Broadcast transcripts — what was played and what was said ─────────────────
+// Transcript JSONs live as assets on permanent transcripts-YYYY-MM GitHub
+// releases (built by the KAZM Transcriber workflow). GitHub's asset host sends
+// no CORS headers, so the site reads them through these cached proxy routes.
+const TR_REPO  = "chelstein/mellowmountainradio";
+const trCache  = { index: null, indexAt: 0, blocks: new Map() };
+
+async function trIndex() {
+  if (trCache.index && Date.now() - trCache.indexAt < 10 * 60 * 1000) return trCache.index;
+  const res = await fetch(`https://api.github.com/repos/${TR_REPO}/releases?per_page=100`, {
+    headers: { "User-Agent": "KAZM-MCP/1.0", "Accept": "application/vnd.github+json" },
+  });
+  if (!res.ok) throw new Error(`GitHub releases ${res.status}`);
+  const blocks = [];
+  for (const r of await res.json()) {
+    if (!String(r.tag_name || "").startsWith("transcripts-")) continue;
+    for (const a of (r.assets || [])) {
+      const m = String(a.name || "").match(/^(kazm-(\d{4}-\d{2}-\d{2})-(\d{2})00)\.json$/);
+      if (m) blocks.push({ block: m[1], date: m[2], start: parseInt(m[3], 10),
+                           url: a.browser_download_url, updated: a.updated_at });
+    }
+  }
+  blocks.sort((a, b) => {
+    const ka = a.date + String(a.start).padStart(2, "0");
+    const kb = b.date + String(b.start).padStart(2, "0");
+    return ka < kb ? 1 : ka > kb ? -1 : 0;   // newest first
+  });
+  trCache.index = blocks;
+  trCache.indexAt = Date.now();
+  return blocks;
+}
+
+async function trBlock(entry) {
+  const key = entry.block + "@" + entry.updated;   // regeneration changes updated → new key
+  if (trCache.blocks.has(key)) return trCache.blocks.get(key);
+  const res = await fetch(entry.url, { headers: { "User-Agent": "KAZM-MCP/1.0" }, redirect: "follow" });
+  if (!res.ok) throw new Error(`transcript ${entry.block} ${res.status}`);
+  const doc = await res.json();
+  if (trCache.blocks.size > 500) trCache.blocks.clear();   // stale keys from regenerated blocks
+  trCache.blocks.set(key, doc);
+  return doc;
+}
+
+// GET /transcripts — index of available transcript blocks, newest first
+app.get("/transcripts", async (_req, res) => {
+  setCors(res);
+  try {
+    const blocks = await trIndex();
+    res.json({ ok: true, count: blocks.length,
+               blocks: blocks.map(b => ({ block: b.block, date: b.date, start: b.start })) });
+  } catch (e) { res.status(502).json({ ok: false, error: String(e.message) }); }
+});
+
+// GET /transcripts/search?q=&types=talk,show,live&limit=100 — search the spoken word
+app.get("/transcripts/search", async (req, res) => {
+  setCors(res);
+  const q = String(req.query.q || "").trim();
+  if (!q) return res.status(400).json({ ok: false, error: "q required" });
+  const types = new Set(String(req.query.types || "talk,show,live").split(","));
+  const limit = Math.min(200, parseInt(req.query.limit, 10) || 100);
+  const norm  = s => String(s || "").toLowerCase().replace(/['‘’-]/g, "")
+                       .replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
+  const tokens = norm(q).split(" ").filter(Boolean);
+  if (!tokens.length) return res.status(400).json({ ok: false, error: "q required" });
+  try {
+    const index = await trIndex();
+    const matches = [];
+    let searched = 0;
+    for (const entry of index) {
+      if (matches.length >= limit) break;
+      let doc;
+      try { doc = await trBlock(entry); } catch { continue; }
+      searched++;
+      for (const s of (doc.segments || [])) {
+        if (!types.has(s.type)) continue;
+        const hay = norm(s.text);
+        if (!tokens.every(t => hay.includes(t))) continue;
+        const hh = String(Math.floor(s.s / 3600)).padStart(2, "0");
+        const mm = String(Math.floor((s.s % 3600) / 60)).padStart(2, "0");
+        matches.push({ block: doc.block, date: doc.date, t: `${hh}:${mm}`,
+                       type: s.type, text: s.text });
+        if (matches.length >= limit) break;
+      }
+    }
+    res.json({ ok: true, query: q, blocks_searched: searched,
+               blocks_total: index.length, matches });
+  } catch (e) { res.status(502).json({ ok: false, error: String(e.message) }); }
 });
 
 // GET /charts — rolling 7-day top songs, artists, debut slots

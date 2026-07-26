@@ -9189,3 +9189,48 @@
   /* ---------- first paint ---------- */
   initPage();
 })();
+
+/* ── What was said — spoken-word search on the Song Time Machine ──
+   Reads the permanent broadcast transcripts through the station server's
+   /transcripts/search proxy. Self-contained; touches nothing else. */
+(function () {
+  var bar = document.querySelector("[data-said]");
+  if (!bar) return;
+  var input = document.querySelector("[data-said-input]"),
+      btn = document.querySelector("[data-said-btn]"),
+      out = document.querySelector("[data-said-results]");
+  if (!input || !btn || !out) return;
+  var EP = "https://mcp.mellowmountainradio.com/transcripts/search";
+  var KIND = { talk: "station voice", show: "syndicated", live: "live mic" };
+  function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
+  function fmt12(t) { var hm = t.split(":"), h = +hm[0]; return ((h % 12) || 12) + ":" + hm[1] + (h < 12 ? " AM" : " PM"); }
+  function fmtDate(d) { var p = d.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", year: "numeric" }); }
+  var busy = false;
+  function run() {
+    var q = input.value.trim();
+    if (!q || busy) return;
+    busy = true;
+    out.innerHTML = '<p class="tm-sr-meta">Searching everything ever said&hellip;</p>';
+    fetch(EP + "?q=" + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.ok) throw new Error(j.error || "search failed");
+      if (!j.matches.length) {
+        out.innerHTML = '<p class="tm-sr-meta">Nothing matching &ldquo;' + esc(q) + '&rdquo; in the spoken-word log &mdash; ' + j.blocks_searched + ' broadcast blocks searched.</p>';
+        return;
+      }
+      var html = '<p class="tm-sr-meta">' + j.matches.length + " moment" + (j.matches.length !== 1 ? "s" : "") +
+        ' matching &ldquo;' + esc(q) + '&rdquo; across ' + j.blocks_searched + " broadcast blocks</p>";
+      html += '<ol class="tm-sr-list">' + j.matches.map(function (m) {
+        var url = "timemachine.html?d=" + m.date + "&t=" + encodeURIComponent(m.t);
+        return '<li class="tm-sr-item"><span class="tm-sr-song" style="font-weight:400;font-style:italic">&ldquo;' + esc(m.text) + '&rdquo;</span>' +
+          '<span class="tm-sr-ar">' + (KIND[m.type] || m.type) + "</span>" +
+          '<span class="tm-sr-when">' + fmtDate(m.date) + " at " + fmt12(m.t) + "</span>" +
+          '<a class="tm-sr-jump" href="' + url + '">jump &rarr;</a></li>';
+      }).join("") + "</ol>";
+      out.innerHTML = html;
+    }).catch(function (e) {
+      out.innerHTML = '<p class="tm-sr-meta">The transcript shelf isn&rsquo;t answering right now &mdash; try again in a moment.</p>';
+    }).finally(function () { busy = false; });
+  }
+  btn.addEventListener("click", run);
+  input.addEventListener("keydown", function (e) { if (e.key === "Enter") run(); });
+})();
