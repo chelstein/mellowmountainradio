@@ -4,13 +4,14 @@ name: KAZM Transcriber
 # Transcribes each 5h30m broadcast tape (recorded by the KAZM Tape Recorder
 # workflow, stored as GitHub Release assets) with faster-whisper, aligns the
 # transcript against the AzuraCast play history so programmed items (songs,
-# spots, IDs) are tagged with their real metadata, and uploads the finished
-# transcript JSON to AzuraCast media storage under transcripts/.
+# spots, IDs) are tagged with their real metadata, and attaches the finished
+# transcript JSON to a permanent monthly GitHub Release (transcripts-YYYY-MM).
+# The tape pruner only deletes tape-* tags, so transcripts never rotate out:
+# tapes live 14 days, transcripts are forever.
 #
-# Tapes rotate out after 14 days; their transcripts are permanent.
-#
-# Requires repo secret AZURACAST_API_KEY (same key the MCP server uses as
-# AZ_KEY on the VPS). Without it the workflow fails at the align step.
+# Requires repo secret AZURACAST_API_KEY (an AzuraCast API key) for the
+# play-history alignment step only. Without it the workflow fails cleanly
+# before any transcription work is done.
 
 on:
   workflow_run:
@@ -28,7 +29,7 @@ on:
         default: '1'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: kazm-transcriber
@@ -69,22 +70,23 @@ jobs:
                    if r["tagName"].startswith("tape-kazm-")]
           tapes.sort(reverse=True)
 
-          # Transcripts already in AzuraCast media storage
+          # Transcripts already attached to the permanent transcripts-YYYY-MM releases
           done = set()
-          key = os.environ.get("AZ_KEY", "")
-          if key:
-              req = urllib.request.Request(
-                  os.environ["AZ_HOST"] + "/api/station/" + os.environ["AZ_STATION"]
-                  + "/files/list?currentDirectory=transcripts",
-                  headers={"X-API-Key": key})
-              try:
-                  rows = json.load(urllib.request.urlopen(req, timeout=30))
-                  for r in rows:
-                      name = (r.get("name") or r.get("path") or "").split("/")[-1]
-                      if name.endswith(".json"):
-                          done.add("tape-" + name[:-5])
-              except Exception as e:
-                  print(f"[transcriber] transcript listing failed ({e}); assuming none")
+          out = subprocess.run(
+              ["gh", "release", "list", "--repo", "chelstein/mellowmountainradio",
+               "--json", "tagName", "--limit", "200"],
+              capture_output=True, text=True).stdout
+          months = [r["tagName"] for r in json.loads(out or "[]")
+                    if r["tagName"].startswith("transcripts-")]
+          for m in months:
+              view = subprocess.run(
+                  ["gh", "release", "view", m, "--repo", "chelstein/mellowmountainradio",
+                   "--json", "assets"],
+                  capture_output=True, text=True).stdout
+              for a in json.loads(view or "{}").get("assets", []):
+                  n = a.get("name", "")
+                  if n.endswith(".json"):
+                      done.add("tape-" + n[:-5])
 
           if want_tag:
               picks = [want_tag]
@@ -100,7 +102,7 @@ jobs:
         if: steps.pick.outputs.picks != '[]'
         run: |
           cat > /tmp/kazm_transcribe.py <<'PYEOF'
-          import json, os, re, subprocess, sys, urllib.request, urllib.parse, base64
+          import json, os, re, subprocess, sys, urllib.request, urllib.parse
           from datetime import datetime, timezone
 
           AZ_HOST    = os.environ["AZ_HOST"]
@@ -170,12 +172,28 @@ jobs:
               print(f"[transcriber] {len(out)} segments, audio {info.duration:.0f}s")
               return out
 
-          def upload(name, doc):
-              payload = {
-                  "path": f"transcripts/{name}.json",
-                  "file": base64.b64encode(json.dumps(doc, separators=(",", ":")).encode()).decode()}
-              r = az(f"/api/station/{AZ_STATION}/files", payload)
-              print(f"[transcriber] uploaded transcripts/{name}.json -> {r if isinstance(r, dict) else 'ok'}")
+          def upload(name, date, doc):
+              # Permanent monthly release; the tape pruner only touches tape-* tags.
+              tag = "transcripts-" + date[:7]
+              path = f"/tmp/{name}.json"
+              with open(path, "w") as f:
+                  json.dump(doc, f, separators=(",", ":"))
+              exists = subprocess.run(["gh", "release", "view", tag,
+                                       "--repo", "chelstein/mellowmountainradio"],
+                                      capture_output=True).returncode == 0
+              if not exists:
+                  subprocess.run(["gh", "release", "create", tag,
+                                  "--repo", "chelstein/mellowmountainradio",
+                                  "--title", f"KAZM transcripts: {date[:7]}",
+                                  "--notes", "Broadcast transcripts — what was played and what was said. Permanent.",
+                                  "--prerelease"], check=True)
+              subprocess.run(["gh", "release", "upload", tag, path, "--clobber",
+                              "--repo", "chelstein/mellowmountainradio"], check=True)
+              os.remove(path)
+              print(f"[transcriber] uploaded {name}.json to release {tag}")
+
+          if not AZ_KEY:
+              sys.exit("[transcriber] AZURACAST_API_KEY secret is not set — needed for play-history alignment. Aborting before transcription.")
 
           tag = sys.argv[1]
           name, date, start_h = block_identity(tag)
@@ -209,7 +227,7 @@ jobs:
           talk = sum(1 for s in segs if s["type"] == "talk")
           print(f"[transcriber] {talk} talk segments / {len(segs)} total, {len(items)} history items")
 
-          upload(name, {
+          upload(name, date, {
               "block": name, "date": date, "start": start_h, "recStart": rec0,
               "model": "small.en", "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
               "programmed": items,
