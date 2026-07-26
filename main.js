@@ -9245,25 +9245,63 @@
   var EP = "https://mcp.mellowmountainradio.com/thread";
   var artEl = root.querySelector("[data-th-art]"), titleEl = root.querySelector("[data-th-title]"),
       artistEl = root.querySelector("[data-th-artist]"), rootsEl = root.querySelector("[data-th-roots]"),
-      branchesEl = root.querySelector("[data-th-branches]"), statusEl = root.querySelector("[data-th-status]");
+      canopyEl = root.querySelector("[data-th-canopy]"), groundEl = root.querySelector("[data-th-ground]"),
+      statusEl = root.querySelector("[data-th-status]");
   var qEl = document.querySelector("[data-th-q]"), goEl = document.querySelector("[data-th-go]");
   var lastKey = "", pinned = false;
   function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
   function cleanTitle(t) { return String(t || "").split(" - ")[0].replace(/\s*~.*$/, "").trim(); }
-  function item(s, kind) {
+  function node(s) {
     var inner = (s.art ? '<img src="' + esc(s.art) + '" alt="" loading="lazy" />' : '<img alt="" />') +
-      '<span class="th-item-main"><span class="th-item-song">' + esc(s.title) + '</span>' +
-      '<span class="th-item-meta">' + esc(s.artist) + (s.year ? " &middot; " + esc(s.year) : "") + "</span></span>" +
-      '<span class="th-kind">' + kind + "</span>";
-    return '<li class="th-item">' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0">' + inner + "</a>" : inner) + "</li>";
+      '<span class="th-node-main"><span class="th-node-song">' + esc(s.title) + '</span>' +
+      '<span class="th-node-meta">' + esc(s.artist) + (s.year ? " &middot; " + esc(s.year) : "") + "</span></span>";
+    return '<span class="th-node">' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + inner + "</a>" : inner) +
+      '<span class="th-kind">' + s.kind + "</span></span>";
   }
-  function fill(el, groups, emptyMsg) {
-    var html = "";
-    groups.forEach(function (g) { (g.list || []).forEach(function (s) { html += item(s, g.kind); }); });
-    el.innerHTML = html || '<li class="th-empty">' + emptyMsg + "</li>";
+  function gen(label, nodes) {
+    return '<div class="th-gen"><span class="th-gen-label">' + label + '</span><div class="th-gen-row">' +
+      nodes.map(node).join("") + "</div></div>";
+  }
+  function collect(group, kinds) {
+    var out = [];
+    kinds.forEach(function (k) {
+      (group[k.key] || []).forEach(function (s) {
+        out.push({ title: s.title, artist: s.artist, year: s.year ? parseInt(s.year, 10) : null, url: s.url, art: s.art, kind: k.label });
+      });
+    });
+    return out;
+  }
+  function renderCanopy(nodes) {
+    if (!nodes.length) {
+      canopyEl.innerHTML = '<div class="th-gen"><span class="th-empty">No known branches yet &mdash; the canopy starts here.</span></div>';
+      return;
+    }
+    var byDecade = {};
+    nodes.forEach(function (s) {
+      var d = s.year ? (Math.floor(s.year / 10) * 10) + "s" : "undated";
+      (byDecade[d] = byDecade[d] || []).push(s);
+    });
+    var keys = Object.keys(byDecade).filter(function (k) { return k !== "undated"; })
+      .sort(function (a, b) { return parseInt(b, 10) - parseInt(a, 10); });   // newest growth at the crown
+    if (byDecade.undated) keys.unshift("undated");
+    canopyEl.innerHTML = keys.map(function (k) {
+      byDecade[k].sort(function (a, b) { return (b.year || 0) - (a.year || 0); });
+      return gen(k === "undated" ? "somewhere in time" : k, byDecade[k]);
+    }).join("");
+  }
+  function renderRoots(nodes) {
+    groundEl.hidden = false;
+    if (!nodes.length) {
+      rootsEl.innerHTML = '<div class="th-gen"><span class="th-empty">An original &mdash; its roots are its own.</span></div>';
+      return;
+    }
+    nodes.sort(function (a, b) { return (b.year || 0) - (a.year || 0); });
+    rootsEl.innerHTML = gen("grew from", nodes);
   }
   function loadThread(title, artist) {
-    rootsEl.innerHTML = branchesEl.innerHTML = '<li class="th-empty">Pulling the thread&hellip;</li>';
+    canopyEl.innerHTML = '<div class="th-gen"><span class="th-empty">Pulling the thread&hellip;</span></div>';
+    rootsEl.innerHTML = "";
+    groundEl.hidden = true;
     statusEl.hidden = true;
     fetch(EP + "?title=" + encodeURIComponent(title) + "&artist=" + encodeURIComponent(artist))
       .then(function (r) { return r.json(); })
@@ -9272,30 +9310,35 @@
           var msg = j.error === "genius_token_missing"
             ? "The Thread is being wired to the lineage database &mdash; check back soon."
             : "The lineage database isn&rsquo;t answering right now.";
-          rootsEl.innerHTML = branchesEl.innerHTML = "";
+          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
           statusEl.innerHTML = msg; statusEl.hidden = false;
           return;
         }
         if (!j.found) {
-          rootsEl.innerHTML = branchesEl.innerHTML = "";
+          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
           statusEl.innerHTML = "No thread found for this one &mdash; some songs walk alone.";
           statusEl.hidden = false;
           return;
         }
-        fill(rootsEl, [
-          { kind: "sampled", list: j.roots.samples },
-          { kind: "covers", list: j.roots.covers },
-          { kind: "interpolates", list: j.roots.interpolates }
-        ], "An original &mdash; no known borrowings on the way in.");
-        fill(branchesEl, [
-          { kind: "sampled it", list: j.branches.sampled_by },
-          { kind: "covered it", list: j.branches.covered_by },
-          { kind: "interpolated", list: j.branches.interpolated_by },
-          { kind: "remixed it", list: j.branches.remixed_by }
-        ], "No known samples yet &mdash; the thread starts here.");
+        renderCanopy(collect(j.branches, [
+          { key: "sampled_by", label: "sampled it" },
+          { key: "covered_by", label: "covered it" },
+          { key: "interpolated_by", label: "interpolated" },
+          { key: "remixed_by", label: "remixed it" }
+        ]));
+        renderRoots(collect(j.roots, [
+          { key: "samples", label: "sampled" },
+          { key: "covers", label: "covered" },
+          { key: "interpolates", label: "interpolates" }
+        ]));
+        // stand at the trunk and look up into the canopy
+        var trunk = root.querySelector("[data-th-now]");
+        if (trunk && trunk.getBoundingClientRect().top > window.innerHeight * 0.7) {
+          trunk.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
       })
       .catch(function () {
-        rootsEl.innerHTML = branchesEl.innerHTML = "";
+        canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
         statusEl.innerHTML = "The lineage database isn&rsquo;t answering right now."; statusEl.hidden = false;
       });
   }
