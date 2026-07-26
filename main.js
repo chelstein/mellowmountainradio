@@ -9290,17 +9290,24 @@
     }).join("");
   }
   function renderRoots(nodes) {
+    var tree = root.querySelector(".th-tree");
     groundEl.hidden = false;
     rootsEl.hidden = false;
     if (!nodes.length) {
-      rootsEl.innerHTML = '<div class="th-gen"><span class="th-empty">An original &mdash; its roots are its own.</span></div>';
+      // an original: the trunk stands planted on the ground line, its own roots
+      tree.classList.add("th-tree--planted");
+      rootsEl.className = "th-rootzone th-rootzone--own";
+      rootsEl.innerHTML = '<p class="th-own">an original &mdash; rooted in its own soil</p>';
       return;
     }
+    tree.classList.remove("th-tree--planted");
+    rootsEl.className = "th-rootzone";
     nodes.sort(function (a, b) { return (b.year || 0) - (a.year || 0); });
     rootsEl.innerHTML = gen("grew from", nodes);
   }
   function loadThread(title, artist, isRetry) {
     canopyEl.innerHTML = '<div class="th-gen"><span class="th-empty">Pulling the thread&hellip;</span></div>';
+    root.querySelector(".th-tree").classList.remove("th-tree--planted");
     rootsEl.innerHTML = "";
     rootsEl.hidden = true;
     groundEl.hidden = true;
