@@ -96,9 +96,12 @@ jobs:
           if want_tag:
               picks = [want_tag]
           elif force:
+              # force targets the newest blocks — regeneration of recent output
               picks = tapes[:count]
           else:
-              picks = [t for t in tapes if t not in done][:count]
+              # missing blocks drain OLDEST-first: tapes prune at 14 days, and an
+              # untranscribed tape that prunes is speech lost forever
+              picks = sorted(t for t in tapes if t not in done)[:count]
 
           print(f"[transcriber] {len(tapes)} tapes on shelf, {len(done)} transcribed, picking: {picks}")
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
