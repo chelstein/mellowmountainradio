@@ -24,9 +24,13 @@ on:
         required: false
         default: ''
       count:
-        description: 'How many missing blocks to transcribe this run (newest first). Use 3-4 to chew through backlog.'
+        description: 'How many missing blocks to transcribe this run (newest first). Max ~4 per run with medium.en (about 50 min per block).'
         required: false
         default: '1'
+      force:
+        description: 'Set true to re-transcribe the newest <count> blocks even if their transcripts already exist.'
+        required: false
+        default: 'false'
 
 permissions:
   contents: write
@@ -60,6 +64,7 @@ jobs:
 
           want_tag = "${{ github.event.inputs.tag }}".strip()
           count    = int("${{ github.event.inputs.count }}".strip() or "1")
+          force    = "${{ github.event.inputs.force }}".strip().lower() == "true"
 
           # All tape releases still on the shelf (newest first)
           out = subprocess.run(
@@ -90,6 +95,8 @@ jobs:
 
           if want_tag:
               picks = [want_tag]
+          elif force:
+              picks = tapes[:count]
           else:
               picks = [t for t in tapes if t not in done][:count]
 
@@ -150,6 +157,22 @@ jobs:
               if re.search(r"\b(HDM|LLC|Inc\.?|Corp\.?)\b|\bOil\s+(and|&)\s+Lube\b|\bCity\s+of\s+\w|\bAccounting\s+Service|Frontburner\s+Media|~\s*Attention\b", ar, re.I): return False
               return True
 
+          def item_kind(ti, ar):
+              # music: a real spin. show: syndicated programming (affiliate — we may
+              # transcribe it). station: KAZM's own voice — weather, news, IDs, talk
+              # breaks, promos. spot: commercials and PSAs — excluded from the
+              # archive entirely per station policy.
+              if is_music(ti, ar): return "music"
+              both = f"{ti} :: {ar}"
+              if re.search(r"^ADBREAK_|^GO2-|\bFINAL\b|\(SPEC\b|\bREV\s*\d+\b", ti, re.I):
+                  return "spot"
+              if re.search(r"Coast to Coast|^c2c$|^CBS$|CBS News|George Noo[rg]ey|Brad Cesmat|AZ Sports|Sports Update|AZ State News", both, re.I):
+                  return "show"
+              if re.search(r"Mellow Mountain|KAZM|Sounder|Sweeper|Weather|Newscast|Top of Hour|Legal ID|^Talk Break ::", both, re.I) \
+                 or re.match(r"^(Station ID|Live365|Mellow Mountain Radio|Talk Break)$", ar, re.I):
+                  return "station"
+              return "spot"
+
           def fetch_history(date, t0, t1):
               # AZ (UTC-7, no DST) window -> UTC ISO
               base = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp() + 7 * 3600
@@ -164,18 +187,22 @@ jobs:
                   t = int(p.get("played_at") or 0) - int(base)
                   ti = song.get("title") or ""
                   ar = song.get("artist") or ""
+                  kind = item_kind(ti, ar)
                   items.append({
                       "t": t,
                       "dur": int(p.get("duration") or 0),
                       "title": ti,
                       "artist": ar,
-                      "music": is_music(ti, ar)})
+                      "kind": kind,
+                      "music": kind == "music"})
               items.sort(key=lambda i: i["t"])
               return items
 
+          MODEL = "medium.en"
+
           def transcribe(wav):
               from faster_whisper import WhisperModel
-              model = WhisperModel("small.en", device="cpu", compute_type="int8")
+              model = WhisperModel(MODEL, device="cpu", compute_type="int8")
               segments, info = model.transcribe(wav, beam_size=1, vad_filter=True,
                                                 vad_parameters={"min_silence_duration_ms": 700})
               out = []
@@ -230,25 +257,31 @@ jobs:
           items = fetch_history(date, rec0, rec0 + int(audio_end) + 60)
 
           # MegaSeg logs wall-to-wall, so nearly every second overlaps a history item.
-          # The useful split is the station's own music filter: segments over a music
-          # spin are "music" (whisper mishearing lyrics — kept, but filterable), over
-          # any other cart (weather, news, PSAs, spots, syndicated shows) are "talk",
-          # and anything outside the automation entirely is "live".
-          music_iv = [(i["t"], i["t"] + i["dur"]) for i in items if i["dur"] > 0 and i["music"]]
-          other_iv = [(i["t"], i["t"] + i["dur"]) for i in items if i["dur"] > 0 and not i["music"]]
+          # Classify each segment by the kind of item it overlaps: station carts and
+          # syndicated shows keep their text ("talk"/"show"), music spins keep text
+          # tagged "music" (whisper mishearing lyrics — filterable), live mic moments
+          # ("live") keep text, and commercials/PSAs are dropped entirely.
+          iv = {k: [(i["t"], i["t"] + i["dur"]) for i in items if i["dur"] > 0 and i["kind"] == k]
+                for k in ("music", "station", "show", "spot")}
+          kept = []
+          dropped = 0
           for s in segs:
               a, b = rec0 + s["s"], rec0 + s["e"]
               s["s"], s["e"] = round(a), round(b)   # seconds from AZ midnight
-              if   any(a < y and b > x for x, y in music_iv): s["type"] = "music"
-              elif any(a < y and b > x for x, y in other_iv): s["type"] = "talk"
+              if   any(a < y and b > x for x, y in iv["station"]): s["type"] = "talk"
+              elif any(a < y and b > x for x, y in iv["show"]):    s["type"] = "show"
+              elif any(a < y and b > x for x, y in iv["music"]):   s["type"] = "music"
+              elif any(a < y and b > x for x, y in iv["spot"]):    dropped += 1; continue
               else: s["type"] = "live"
+              kept.append(s)
+          segs = kept
 
-          counts = {t: sum(1 for s in segs if s["type"] == t) for t in ("talk", "live", "music")}
-          print(f"[transcriber] {counts} of {len(segs)} segments, {len(items)} history items")
+          counts = {t: sum(1 for s in segs if s["type"] == t) for t in ("talk", "show", "live", "music")}
+          print(f"[transcriber] {counts} kept, {dropped} spot/PSA segments dropped, {len(items)} history items")
 
           upload(name, date, {
               "block": name, "date": date, "start": start_h, "recStart": rec0,
-              "model": "small.en", "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+              "model": MODEL, "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
               "programmed": items,
               "segments": segs})
           PYEOF
