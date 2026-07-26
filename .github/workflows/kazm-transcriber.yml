@@ -9,7 +9,7 @@ name: KAZM Transcriber
 # The tape pruner only deletes tape-* tags, so transcripts never rotate out:
 # tapes live 14 days, transcripts are forever.
 #
-# Requires repo secret AZURACAST_API_KEY (an AzuraCast API key) for the
+# Requires repo secret AZURACAST_API_KEY2 (an AzuraCast API key) for the
 # play-history alignment step only. Without it the workflow fails cleanly
 # before any transcription work is done.
 
@@ -42,7 +42,7 @@ jobs:
     env:
       AZ_HOST: https://streaming.mellowmountainradio.com
       AZ_STATION: mellowmountainradio
-      AZ_KEY: ${{ secrets.AZURACAST_API_KEY }}
+      AZ_KEY: ${{ secrets.AZURACAST_API_KEY2 }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
@@ -193,7 +193,7 @@ jobs:
               print(f"[transcriber] uploaded {name}.json to release {tag}")
 
           if not AZ_KEY:
-              sys.exit("[transcriber] AZURACAST_API_KEY secret is not set — needed for play-history alignment. Aborting before transcription.")
+              sys.exit("[transcriber] AZURACAST_API_KEY2 secret is not set — needed for play-history alignment. Aborting before transcription.")
 
           tag = sys.argv[1]
           name, date, start_h = block_identity(tag)
