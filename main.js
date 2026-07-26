@@ -45,7 +45,7 @@
           '<a role="menuitem" href="sports.html#mlb">MLB &middot; Diamondbacks</a><a role="menuitem" href="sports.html#nba">NBA &middot; Suns</a><a role="menuitem" href="sports.html#nfl">NFL &middot; Cardinals</a><a role="menuitem" href="sports.html#college">College &middot; ASU, U of A, NAU</a><a role="menuitem" href="sports.html#ufc">UFC</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="music"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Music &amp; More</button><div class="mega" role="menu">' +
-          '<a role="menuitem" href="timemachine.html">Song Time Machine</a><a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a><a role="menuitem" href="lyrics.html">Lyrics</a><a role="menuitem" href="merch.html">Merch</a>' +
+          '<a role="menuitem" href="timemachine.html">Song Time Machine</a><a role="menuitem" href="thread.html">The Thread</a><a role="menuitem" href="concerts.html">Concerts</a><a role="menuitem" href="movies.html">Movies</a><a role="menuitem" href="shows.html">Shows</a><a role="menuitem" href="podcasts.html">Podcasts</a><a role="menuitem" href="schedule.html">Program Schedule</a><a role="menuitem" href="contests.html">Contests</a><a role="menuitem" href="music.html">The Sound</a><a role="menuitem" href="lyrics.html">Lyrics</a><a role="menuitem" href="merch.html">Merch</a>' +
         '</div></li>' +
         '<li class="has-menu" data-nav="events"><button class="nav-trigger" aria-expanded="false" aria-haspopup="true">Events</button><div class="mega" role="menu">' +
           '<a role="menuitem" href="jeeptrails.html">Jeep Trails</a><a role="menuitem" href="library.html">Library Events</a><a role="menuitem" href="events.html#hiking">Hiking</a><a role="menuitem" href="events.html#biking">Mountain Biking</a><a role="menuitem" href="events.html#creek">Oak Creek</a><a role="menuitem" href="events.html#slide-rock">Slide Rock</a><a role="menuitem" href="events.html#ski">Ski Report</a><a role="menuitem" href="photography.html">Photography</a><a role="menuitem" href="events.html#geocaching">Geocaching</a><a role="menuitem" href="events.html">All Adventures</a>' +
@@ -75,7 +75,7 @@
           '<a href="https://twitter.com/mellowmountain1" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M18.9 2H22l-7.1 8.1L23.3 22h-6.6l-5.2-6.8L5.6 22H2.5l7.6-8.7L1 2h6.8l4.7 6.2Zm-1.2 18h1.8L7.4 3.8H5.5Z"/></svg></a>' +
         '</div>' +
       '</div>' +
-      '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="timemachine.html">Song Time Machine</a><a href="music.html">Music &amp; More</a><a href="lyrics.html">Lyrics</a><a href="podcasts.html">Podcasts</a></nav>' +
+      '<nav class="footer-col" aria-label="Listen"><h4>Listen</h4><a href="index.html">Home</a><a href="concerts.html">Concerts</a><a href="movies.html">Movies</a><a href="shows.html">Shows</a><a href="schedule.html">Program Schedule</a><a href="timemachine.html">Song Time Machine</a><a href="thread.html">The Thread</a><a href="music.html">Music &amp; More</a><a href="lyrics.html">Lyrics</a><a href="podcasts.html">Podcasts</a></nav>' +
       '<nav class="footer-col" aria-label="Community"><h4>Community</h4><a href="news.html">News</a><a href="sports.html">Sports</a><a href="weather.html">Weather</a><a href="roads.html">Roads &amp; Traffic</a><a href="firstpeoples.html">First Peoples</a><a href="library.html">Library Events</a><a href="events.html">Events</a><a href="photography.html">Photography</a><a href="contests.html">Contests</a></nav>' +
       '<nav class="footer-col" aria-label="The Vibe"><h4>The Vibe</h4><a href="vibe.html">Cosmic Conditions</a><a href="horoscope.html">Astrology</a><a href="chakras.html">Chakras &amp; Tarot</a><a href="soundhealing.html">Sound Healing</a><a href="wildlife.html">Seen around Sedona</a></nav>' +
       '<nav class="footer-col" aria-label="Station"><h4>Station</h4><a href="about.html">About</a><a href="rewind.html">Listeners&rsquo; Lounge</a><a href="archives.html">KAZM Archives</a><a href="ifoughtthelaw.html">I Fought the Law&hellip;</a><a href="advertising.html">Advertising</a><a href="mcp.html">MCP Server</a><a href="staff.html">Staff</a><a href="contact.html">Contact</a><a href="merch.html">Merch</a></nav>' +
@@ -9233,4 +9233,97 @@
   }
   btn.addEventListener("click", run);
   input.addEventListener("keydown", function (e) { if (e.key === "Enter") run(); });
+})();
+
+/* ── The Thread — sample lineage of the song on the air ──
+   Polls AzuraCast now-playing, pulls lineage from the station server's
+   /thread route (Genius-backed). Self-contained; touches nothing else. */
+(function () {
+  var root = document.querySelector("[data-thread]");
+  if (!root) return;
+  var NP = "https://streaming.mellowmountainradio.com/api/nowplaying/mellowmountainradio";
+  var EP = "https://mcp.mellowmountainradio.com/thread";
+  var artEl = root.querySelector("[data-th-art]"), titleEl = root.querySelector("[data-th-title]"),
+      artistEl = root.querySelector("[data-th-artist]"), rootsEl = root.querySelector("[data-th-roots]"),
+      branchesEl = root.querySelector("[data-th-branches]"), statusEl = root.querySelector("[data-th-status]");
+  var qEl = document.querySelector("[data-th-q]"), goEl = document.querySelector("[data-th-go]");
+  var lastKey = "", pinned = false;
+  function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
+  function cleanTitle(t) { return String(t || "").split(" - ")[0].replace(/\s*~.*$/, "").trim(); }
+  function item(s, kind) {
+    var inner = (s.art ? '<img src="' + esc(s.art) + '" alt="" loading="lazy" />' : '<img alt="" />') +
+      '<span class="th-item-main"><span class="th-item-song">' + esc(s.title) + '</span>' +
+      '<span class="th-item-meta">' + esc(s.artist) + (s.year ? " &middot; " + esc(s.year) : "") + "</span></span>" +
+      '<span class="th-kind">' + kind + "</span>";
+    return '<li class="th-item">' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener" style="display:flex;gap:12px;align-items:center;flex:1;min-width:0">' + inner + "</a>" : inner) + "</li>";
+  }
+  function fill(el, groups, emptyMsg) {
+    var html = "";
+    groups.forEach(function (g) { (g.list || []).forEach(function (s) { html += item(s, g.kind); }); });
+    el.innerHTML = html || '<li class="th-empty">' + emptyMsg + "</li>";
+  }
+  function loadThread(title, artist) {
+    rootsEl.innerHTML = branchesEl.innerHTML = '<li class="th-empty">Pulling the thread&hellip;</li>';
+    statusEl.hidden = true;
+    fetch(EP + "?title=" + encodeURIComponent(title) + "&artist=" + encodeURIComponent(artist))
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) {
+          var msg = j.error === "genius_token_missing"
+            ? "The Thread is being wired to the lineage database &mdash; check back soon."
+            : "The lineage database isn&rsquo;t answering right now.";
+          rootsEl.innerHTML = branchesEl.innerHTML = "";
+          statusEl.innerHTML = msg; statusEl.hidden = false;
+          return;
+        }
+        if (!j.found) {
+          rootsEl.innerHTML = branchesEl.innerHTML = "";
+          statusEl.innerHTML = "No thread found for this one &mdash; some songs walk alone.";
+          statusEl.hidden = false;
+          return;
+        }
+        fill(rootsEl, [
+          { kind: "sampled", list: j.roots.samples },
+          { kind: "covers", list: j.roots.covers },
+          { kind: "interpolates", list: j.roots.interpolates }
+        ], "An original &mdash; no known borrowings on the way in.");
+        fill(branchesEl, [
+          { kind: "sampled it", list: j.branches.sampled_by },
+          { kind: "covered it", list: j.branches.covered_by },
+          { kind: "interpolated", list: j.branches.interpolated_by },
+          { kind: "remixed it", list: j.branches.remixed_by }
+        ], "No known samples yet &mdash; the thread starts here.");
+      })
+      .catch(function () {
+        rootsEl.innerHTML = branchesEl.innerHTML = "";
+        statusEl.innerHTML = "The lineage database isn&rsquo;t answering right now."; statusEl.hidden = false;
+      });
+  }
+  function poll() {
+    fetch(NP).then(function (r) { return r.json(); }).then(function (d) {
+      var song = (d.now_playing || {}).song || {};
+      var title = cleanTitle(song.title), artist = song.artist || "";
+      var key = title + "|" + artist;
+      if (!title || key === lastKey) return;
+      lastKey = key;
+      if (song.art) artEl.src = song.art;
+      titleEl.textContent = title;
+      artistEl.textContent = artist;
+      if (!pinned) loadThread(title, artist);
+    }).catch(function () {});
+  }
+  if (goEl && qEl) {
+    var pull = function () {
+      var q = qEl.value.trim();
+      if (!q) { pinned = false; lastKey = ""; poll(); return; }
+      pinned = true;
+      titleEl.textContent = q;
+      artistEl.textContent = "looked up by hand — clear the box to follow the air again";
+      loadThread(q, "");
+    };
+    goEl.addEventListener("click", pull);
+    qEl.addEventListener("keydown", function (e) { if (e.key === "Enter") pull(); });
+  }
+  poll();
+  setInterval(poll, 30000);
 })();
