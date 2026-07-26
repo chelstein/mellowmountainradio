@@ -33,6 +33,8 @@
       --th-dusk:#2b1c3f; --th-plum:#6b4a7a; --th-sunset:#c9622e; --th-gold:#e8a05c;
       --th-cream:#f8ecd4; --th-parchment:#fdf6e3; --th-olive:#5a7247; --th-leaf:#8fa06b;
       --th-soil:#5c4128; --th-bark:#8a6f4d; --th-ink:#2c2116;
+      /* darker fills for text-bearing pills — WCAG AA against #fff8e8 */
+      --th-sunset-ink:#a8451a; --th-gold-ink:#8a6508; --th-bark-ink:#6e5636;
     }
     /* sunset hero */
     .page-hero--thread{background:linear-gradient(180deg,var(--th-dusk) 0%,var(--th-plum) 34%,var(--th-sunset) 74%,var(--th-gold) 100%);position:relative;overflow:hidden}
@@ -52,8 +54,8 @@
     .th-gen{position:relative;padding:16px 0 8px;z-index:1}
     .th-gen-label{display:inline-block;font-family:Righteous,Lato,sans-serif;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:#fff8e8;background:var(--th-olive);border-radius:999px;padding:5px 18px;position:relative;z-index:2;box-shadow:0 2px 0 rgba(56,39,22,.25)}
     .th-gen:nth-of-type(4n+1) .th-gen-label{background:var(--th-plum)}
-    .th-gen:nth-of-type(4n+2) .th-gen-label{background:var(--th-sunset)}
-    .th-gen:nth-of-type(4n+3) .th-gen-label{background:#b8860b}
+    .th-gen:nth-of-type(4n+2) .th-gen-label{background:var(--th-sunset-ink)}
+    .th-gen:nth-of-type(4n+3) .th-gen-label{background:var(--th-gold-ink)}
     .th-gen:nth-of-type(4n+4) .th-gen-label{background:var(--th-olive)}
     .th-gen-label::before,.th-gen-label::after{content:"\2740";font-size:.8em;opacity:.8;margin:0 7px 0 0}
     .th-gen-label::after{margin:0 0 0 7px}
@@ -66,7 +68,7 @@
     .th-node-main{min-width:0}
     .th-node-song{font-weight:700;font-size:.92rem;color:var(--th-ink);display:block;overflow-wrap:anywhere;line-height:1.3}
     .th-node-meta{color:#8a6f4d;font-size:.8rem}
-    .th-node .th-kind{position:absolute;top:-10px;right:10px;font-family:Lato,system-ui,sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff8e8;background:var(--th-sunset);border:0;border-radius:999px;padding:2px 9px;z-index:2;box-shadow:0 1px 0 rgba(56,39,22,.25)}
+    .th-node .th-kind{position:absolute;top:-10px;right:10px;font-family:Lato,system-ui,sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff8e8;background:var(--th-sunset-ink);border:0;border-radius:999px;padding:2px 9px;z-index:2;box-shadow:0 1px 0 rgba(56,39,22,.25)}
     .th-kind--covered-by,.th-kind--covers{background:var(--th-olive)}
     .th-kind--interpolated-by,.th-kind--interpolates{background:var(--th-plum)}
     .th-kind--remixed-by{background:#0e7c7b}
@@ -84,8 +86,8 @@
     .th-rootzone{margin:0 -16px;padding:26px 16px 30px;background:linear-gradient(180deg,var(--th-soil),#3a2917)}
     .th-rootzone .th-node{background:#efe0bd;border-color:#c9ab72}
     .th-rootzone .th-node::before{top:auto;bottom:-13px;background:#c9b898}
-    .th-rootzone .th-node .th-kind{top:auto;bottom:-10px;background:var(--th-bark)}
-    .th-rootzone .th-gen-label{background:var(--th-bark) !important}
+    .th-rootzone .th-node .th-kind{top:auto;bottom:-10px}
+    .th-rootzone .th-gen-label{background:var(--th-bark-ink) !important}
     .th-rootzone .th-gen-label::before,.th-rootzone .th-gen-label::after{content:"\273F"}
     .th-empty{display:inline-block;color:#6b543a;background:var(--th-parchment);border:1.5px dashed #c9ab72;border-radius:14px;padding:12px 18px;position:relative;z-index:1;font-size:.92rem}
     .th-rootzone .th-empty{background:#efe0bd;color:#5c4128}
@@ -116,7 +118,7 @@
       </div>
     </div>
     <div class="th-ground" data-th-ground hidden><span>the soil it grew from</span></div>
-    <div class="th-rootzone" data-th-roots></div>
+    <div class="th-rootzone" data-th-roots hidden></div>
   </div>
   <p class="th-status" data-th-status hidden></p>
 </div></section>

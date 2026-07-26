@@ -9291,6 +9291,7 @@
   }
   function renderRoots(nodes) {
     groundEl.hidden = false;
+    rootsEl.hidden = false;
     if (!nodes.length) {
       rootsEl.innerHTML = '<div class="th-gen"><span class="th-empty">An original &mdash; its roots are its own.</span></div>';
       return;
@@ -9301,6 +9302,7 @@
   function loadThread(title, artist) {
     canopyEl.innerHTML = '<div class="th-gen"><span class="th-empty">Pulling the thread&hellip;</span></div>';
     rootsEl.innerHTML = "";
+    rootsEl.hidden = true;
     groundEl.hidden = true;
     statusEl.hidden = true;
     fetch(EP + "?title=" + encodeURIComponent(title) + "&artist=" + encodeURIComponent(artist))
@@ -9310,12 +9312,12 @@
           var msg = j.error === "genius_token_missing"
             ? "The Thread is being wired to the lineage database &mdash; check back soon."
             : "The lineage database isn&rsquo;t answering right now.";
-          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
+          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = rootsEl.hidden = true;
           statusEl.innerHTML = msg; statusEl.hidden = false;
           return;
         }
         if (!j.found) {
-          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
+          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = rootsEl.hidden = true;
           statusEl.innerHTML = "No thread found for this one &mdash; some songs walk alone.";
           statusEl.hidden = false;
           return;
@@ -9338,7 +9340,7 @@
         }
       })
       .catch(function () {
-        canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
+        canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = rootsEl.hidden = true;
         statusEl.innerHTML = "The lineage database isn&rsquo;t answering right now."; statusEl.hidden = false;
       });
   }
