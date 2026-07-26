@@ -1,22 +1,11 @@
 {
- "updated": "2026-07-25T19:11:07.434Z",
+ "updated": "2026-07-26T03:15:46.169Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Gun Fury",
-   "date": "2026-07-25",
-   "time": "15:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/gun-fury/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Gun-Fury-poster.jpg",
-   "summary": "Starring Rock Hudson and Donna Reed, “Gun Fury” follows Ben Warren (Hudson) who tracks down outlaw gang leader Frank Slayton (Philip Carey) after Slayton shot him and kidnapped his fiancée, Jennifer Ballard (Reed)."
-  },
   {
    "source": "Sedona Film Festival",
    "title": "In the Living Room Music Series: <br> Tommy Acosta and Chicky Brooklyn",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/outdoor-film-10-things-i-hate-about-you/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/10-Things-I-Hate-poster.jpg",
    "summary": "In “10 Things I Hate About You”, new student Cameron (Joseph Gordon-Levitt) wants to date Bianca (Larisa Oleynik), but her strict dad forbids it unless her abrasive, boy-repellent sister Kat (Julia Stiles) dates too."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "The Tree of Life",
+   "date": "2026-08-27",
+   "time": "16:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-tree-of-life/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/The-Tree-of-Life-poster.jpg",
+   "summary": "Written and directed by Terrence Malick, “The Tree of Life” stars Brad Pitt, Sean Penn and Jessica Chastain. This film was nominated for three Academy Awards, including Best Picture. The coming-of-age drama is set in…"
   }
  ]
 }
