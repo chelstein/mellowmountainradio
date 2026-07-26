@@ -26,30 +26,48 @@
   <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=164" />
   <style>
-    /* The Thread — page-local styles only */
-    .th-now{display:flex;gap:22px;align-items:center;background:#fff;border:1px solid #dde4f0;border-radius:14px;padding:22px 26px;box-shadow:0 2px 10px rgba(34,61,110,.07)}
-    .th-now-art{width:96px;height:96px;border-radius:10px;object-fit:cover;flex:none}
-    .th-now-eyebrow{font-family:Lato,system-ui,sans-serif;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:#8b97ad;margin:0 0 4px}
-    .th-now-title{font-family:Alice,serif;font-size:1.5rem;color:#223d6e;margin:0;line-height:1.25}
-    .th-now-artist{margin:4px 0 0;color:#3d4a63;font-size:1.02rem}
-    .th-cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:30px}
-    @media (max-width:720px){.th-cols{grid-template-columns:1fr}.th-now{flex-direction:column;text-align:center}}
-    .th-col h3{font-family:Alice,serif;color:#223d6e;font-size:1.2rem;margin:0 0 4px}
-    .th-col .th-sub{color:#8b97ad;font-size:.88rem;margin:0 0 14px;font-family:Lato,system-ui,sans-serif}
-    .th-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-    .th-item{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #dde4f0;border-radius:10px;padding:10px 14px}
-    .th-item img{width:44px;height:44px;border-radius:6px;object-fit:cover;flex:none;background:#eef2fa}
-    .th-item-main{min-width:0}
-    .th-item-song{font-weight:700;color:#1a1a2e;display:block;overflow-wrap:anywhere}
-    .th-item-meta{color:#68758d;font-size:.88rem}
-    .th-kind{margin-left:auto;flex:none;font-family:Lato,system-ui,sans-serif;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:#8b97ad;border:1px solid #dde4f0;border-radius:999px;padding:3px 9px}
-    .th-item a{color:inherit;text-decoration:none}
-    .th-item a:hover .th-item-song{text-decoration:underline}
-    .th-empty{color:#68758d;background:#fff;border:1px dashed #c5d0e4;border-radius:10px;padding:16px;text-align:center}
+    /* The Thread — the tree of life. Canopy above (who it fed), trunk on the
+       air, roots below the ground line (what it grew from). Page-local only. */
+    .th-tree{position:relative;max-width:940px;margin:0 auto;text-align:center}
+    /* the trunk runs through everything */
+    .th-canopy,.th-rootzone{position:relative;padding:6px 0}
+    .th-canopy::before,.th-rootzone::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;border-radius:2px;background:linear-gradient(#c5d0e4,#8fa06b)}
+    .th-rootzone::before{background:linear-gradient(#8a6f4d,#c9b898)}
+    /* generations in the canopy */
+    .th-gen{position:relative;padding:14px 0 6px;z-index:1}
+    .th-gen-label{display:inline-block;background:#5a7247;color:#f4f0dd;font-family:Lato,system-ui,sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:999px;padding:4px 14px;position:relative;z-index:2}
+    .th-gen-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px}
+    /* nodes = leaves and roots */
+    .th-node{display:flex;gap:10px;align-items:center;text-align:left;background:#fff;border:1px solid #dde4f0;border-radius:10px;padding:8px 12px;max-width:270px;position:relative;z-index:1}
+    .th-node::before{content:"";position:absolute;top:-12px;left:50%;width:2px;height:12px;margin-left:-1px;background:#c5d0e4}
+    .th-node img{width:38px;height:38px;border-radius:6px;object-fit:cover;flex:none;background:#eef2fa}
+    .th-node-main{min-width:0}
+    .th-node-song{font-weight:700;font-size:.92rem;color:#1a1a2e;display:block;overflow-wrap:anywhere;line-height:1.3}
+    .th-node-meta{color:#68758d;font-size:.8rem}
+    .th-node .th-kind{position:absolute;top:-9px;right:10px;background:#fff;font-family:Lato,system-ui,sans-serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#8b97ad;border:1px solid #dde4f0;border-radius:999px;padding:1px 8px;z-index:2}
+    .th-node a{color:inherit;text-decoration:none;display:flex;gap:10px;align-items:center;min-width:0}
+    .th-node a:hover .th-node-song{text-decoration:underline}
+    /* root nodes live in the soil */
+    .th-rootzone .th-node{background:#f6f1e7;border-color:#dfd3bc}
+    .th-rootzone .th-node::before{top:auto;bottom:-12px;background:#c9b898}
+    .th-rootzone .th-node .th-kind{background:#f6f1e7;border-color:#dfd3bc;color:#8a6f4d;top:auto;bottom:-9px}
+    .th-rootzone .th-gen-label{background:#8a6f4d;color:#f6f1e7}
+    /* the trunk — what's on the air */
+    .th-trunk{position:relative;z-index:2;display:inline-flex;gap:18px;align-items:center;text-align:left;background:#fff;border:2px solid #223d6e;border-radius:16px;padding:18px 26px;box-shadow:0 4px 18px rgba(34,61,110,.13);margin:0 auto}
+    .th-now-art{width:84px;height:84px;border-radius:10px;object-fit:cover;flex:none}
+    .th-now-eyebrow{font-family:Lato,system-ui,sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#8b97ad;margin:0 0 3px}
+    .th-now-title{font-family:Alice,serif;font-size:1.4rem;color:#223d6e;margin:0;line-height:1.2}
+    .th-now-artist{margin:3px 0 0;color:#3d4a63;font-size:.98rem}
+    /* the ground line between trunk and roots */
+    .th-ground{position:relative;margin:18px 0 4px;border-top:2px dashed #c9b898;z-index:1}
+    .th-ground span{position:relative;top:-13px;background:#fdfcf8;font-family:Lato,system-ui,sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#8a6f4d;padding:0 14px}
+    .th-empty{display:inline-block;color:#68758d;background:#fff;border:1px dashed #c5d0e4;border-radius:10px;padding:12px 18px;position:relative;z-index:1;font-size:.92rem}
+    .th-rootzone .th-empty{background:#f6f1e7;border-color:#dfd3bc;color:#8a6f4d}
     .th-status{color:#8b97ad;margin:16px 0 0;text-align:center}
     .th-lookup{display:flex;gap:10px;max-width:560px;margin:0 auto}
     .th-lookup input{flex:1;border:1.5px solid #c5d0e4;border-radius:999px;padding:12px 18px;font:inherit}
     .th-lookup input:focus{outline:2px solid #223d6e;outline-offset:1px}
+    @media (max-width:560px){.th-trunk{flex-direction:column;text-align:center}.th-node{max-width:100%}}
   </style>
 </head>
 <body data-page="music">
@@ -58,25 +76,18 @@
   <main id="main">
 <section class="page-hero"><div class="wrap"><p class="eyebrow">The lineage of the song on the air &middot; live, as it spins</p><h1>The Thread</h1><p class="lead">Every song carries DNA. The soft gold KAZM spins all day &mdash; Bobby Caldwell, the Isleys, Steely Dan &mdash; got borrowed by hip-hop, R&amp;B, and beatmakers for fifty years. This page pulls the thread on whatever&rsquo;s playing right now: what it drew from, and everyone who carried it forward.</p></div></section>
 <section class="page-section"><div class="wrap" data-thread>
-  <div class="th-now" data-th-now>
-    <img class="th-now-art" data-th-art src="Color%20logo%20-%20no%20background.svg" alt="" />
-    <div>
-      <p class="th-now-eyebrow">On the air right now</p>
-      <h2 class="th-now-title" data-th-title>Tuning in&hellip;</h2>
-      <p class="th-now-artist" data-th-artist></p>
+  <div class="th-tree">
+    <div class="th-canopy" data-th-canopy></div>
+    <div class="th-trunk" data-th-now>
+      <img class="th-now-art" data-th-art src="Color%20logo%20-%20no%20background.svg" alt="" />
+      <div>
+        <p class="th-now-eyebrow">On the air right now</p>
+        <h2 class="th-now-title" data-th-title>Tuning in&hellip;</h2>
+        <p class="th-now-artist" data-th-artist></p>
+      </div>
     </div>
-  </div>
-  <div class="th-cols">
-    <div class="th-col">
-      <h3>The roots</h3>
-      <p class="th-sub">What this song sampled, covered, or borrowed on its way in.</p>
-      <ul class="th-list" data-th-roots></ul>
-    </div>
-    <div class="th-col">
-      <h3>The branches</h3>
-      <p class="th-sub">Everyone known to have sampled, covered, or interpolated it since.</p>
-      <ul class="th-list" data-th-branches></ul>
-    </div>
+    <div class="th-ground" data-th-ground hidden><span>the soil it grew from</span></div>
+    <div class="th-rootzone" data-th-roots></div>
   </div>
   <p class="th-status" data-th-status hidden></p>
 </div></section>
