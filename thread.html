@@ -23,50 +23,78 @@
   <link rel="icon" type="image/svg+xml" href="Color%20logo%20-%20no%20background.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&family=Righteous&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=164" />
   <style>
-    /* The Thread — the tree of life. Canopy above (who it fed), trunk on the
-       air, roots below the ground line (what it grew from). Page-local only. */
-    .th-tree{position:relative;max-width:940px;margin:0 auto;text-align:center}
-    /* the trunk runs through everything */
+    /* ── The Thread — the tree of life, Sedona summer of '72 edition ──
+       Cosmos at the crown, sunset in the hero, a living rainbow trunk,
+       wavy earth, roots in real soil. Page-local only. */
+    :root{
+      --th-dusk:#2b1c3f; --th-plum:#6b4a7a; --th-sunset:#c9622e; --th-gold:#e8a05c;
+      --th-cream:#f8ecd4; --th-parchment:#fdf6e3; --th-olive:#5a7247; --th-leaf:#8fa06b;
+      --th-soil:#5c4128; --th-bark:#8a6f4d; --th-ink:#2c2116;
+    }
+    /* sunset hero */
+    .page-hero--thread{background:linear-gradient(180deg,var(--th-dusk) 0%,var(--th-plum) 34%,var(--th-sunset) 74%,var(--th-gold) 100%);position:relative;overflow:hidden}
+    .page-hero--thread::before{content:"";position:absolute;left:50%;bottom:-140px;width:340px;height:340px;margin-left:-170px;border-radius:50%;background:radial-gradient(circle,#ffe9b8 0%,#f5c26b 45%,rgba(245,194,107,0) 72%);opacity:.85;pointer-events:none}
+    .page-hero--thread .eyebrow{color:#ffd98a}
+    .page-hero--thread h1{font-family:Righteous,Alice,serif;font-size:clamp(2.6rem,7vw,4.2rem);letter-spacing:.04em;color:#ffefd0;text-shadow:0 2px 0 rgba(84,42,20,.35);text-wrap:balance}
+    .page-hero--thread .lead{color:#f8e7c9}
+    /* the whole tree lives in one scene: dusk sky down to soil */
+    .th-tree{position:relative;max-width:960px;margin:0 auto;text-align:center;border-radius:26px;overflow:hidden;padding:34px 16px 0;background:linear-gradient(180deg,var(--th-dusk) 0%,var(--th-plum) 9%,#b0705f 20%,var(--th-cream) 34%,var(--th-cream) 100%);box-shadow:0 6px 30px rgba(56,39,22,.18)}
+    .th-stars{position:absolute;top:0;left:0;right:0;height:190px;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 12% 30%,#ffe9b8 60%,transparent),radial-gradient(1px 1px at 28% 62%,#fff 60%,transparent),radial-gradient(2px 2px at 41% 22%,#ffd98a 60%,transparent),radial-gradient(1px 1px at 55% 48%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 68% 28%,#ffe9b8 60%,transparent),radial-gradient(1px 1px at 79% 58%,#fff 60%,transparent),radial-gradient(2px 2px at 90% 34%,#ffd98a 60%,transparent),radial-gradient(1px 1px at 6% 70%,#fff 60%,transparent)}
+    @media (prefers-reduced-motion:no-preference){.th-stars{animation:thTwinkle 5s ease-in-out infinite alternate}@keyframes thTwinkle{from{opacity:.55}to{opacity:1}}}
+    /* rainbow trunk through the canopy, taproot through the soil */
     .th-canopy,.th-rootzone{position:relative;padding:6px 0}
-    .th-canopy::before,.th-rootzone::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;border-radius:2px;background:linear-gradient(#c5d0e4,#8fa06b)}
-    .th-rootzone::before{background:linear-gradient(#8a6f4d,#c9b898)}
-    /* generations in the canopy */
-    .th-gen{position:relative;padding:14px 0 6px;z-index:1}
-    .th-gen-label{display:inline-block;background:#5a7247;color:#f4f0dd;font-family:Lato,system-ui,sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:999px;padding:4px 14px;position:relative;z-index:2}
-    .th-gen-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px}
-    /* nodes = leaves and roots */
-    .th-node{display:flex;gap:10px;align-items:center;text-align:left;background:#fff;border:1px solid #dde4f0;border-radius:10px;padding:8px 12px;max-width:270px;position:relative;z-index:1}
-    .th-node::before{content:"";position:absolute;top:-12px;left:50%;width:2px;height:12px;margin-left:-1px;background:#c5d0e4}
-    .th-node img{width:38px;height:38px;border-radius:6px;object-fit:cover;flex:none;background:#eef2fa}
+    .th-canopy::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:4px;margin-left:-2px;border-radius:3px;background:linear-gradient(180deg,var(--th-plum),var(--th-sunset) 35%,var(--th-gold) 65%,var(--th-olive))}
+    .th-rootzone::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:4px;margin-left:-2px;border-radius:3px;background:linear-gradient(180deg,var(--th-bark),#c9b898)}
+    /* decade generations — groovy pills, rotating sunset palette */
+    .th-gen{position:relative;padding:16px 0 8px;z-index:1}
+    .th-gen-label{display:inline-block;font-family:Righteous,Lato,sans-serif;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:#fff8e8;background:var(--th-olive);border-radius:999px;padding:5px 18px;position:relative;z-index:2;box-shadow:0 2px 0 rgba(56,39,22,.25)}
+    .th-gen:nth-of-type(4n+1) .th-gen-label{background:var(--th-plum)}
+    .th-gen:nth-of-type(4n+2) .th-gen-label{background:var(--th-sunset)}
+    .th-gen:nth-of-type(4n+3) .th-gen-label{background:#b8860b}
+    .th-gen:nth-of-type(4n+4) .th-gen-label{background:var(--th-olive)}
+    .th-gen-label::before,.th-gen-label::after{content:"\2740";font-size:.8em;opacity:.8;margin:0 7px 0 0}
+    .th-gen-label::after{margin:0 0 0 7px}
+    .th-gen-row{display:flex;flex-wrap:wrap;justify-content:center;gap:11px;margin-top:13px}
+    /* nodes = leaves */
+    .th-node{display:flex;gap:10px;align-items:center;text-align:left;background:var(--th-parchment);border:1.5px solid #e3cf9f;border-radius:14px;padding:9px 13px;max-width:272px;position:relative;z-index:1;box-shadow:0 2px 6px rgba(84,60,30,.1);transition:transform .18s ease}
+    @media (prefers-reduced-motion:no-preference){.th-node:hover{transform:translateY(-2px) rotate(-.6deg)}}
+    .th-node::before{content:"";position:absolute;top:-13px;left:50%;width:2px;height:13px;margin-left:-1px;background:#d9a862}
+    .th-node img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;background:#efe3c4;border:2px solid #e3cf9f}
     .th-node-main{min-width:0}
-    .th-node-song{font-weight:700;font-size:.92rem;color:#1a1a2e;display:block;overflow-wrap:anywhere;line-height:1.3}
-    .th-node-meta{color:#68758d;font-size:.8rem}
-    .th-node .th-kind{position:absolute;top:-9px;right:10px;background:#fff;font-family:Lato,system-ui,sans-serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#8b97ad;border:1px solid #dde4f0;border-radius:999px;padding:1px 8px;z-index:2}
+    .th-node-song{font-weight:700;font-size:.92rem;color:var(--th-ink);display:block;overflow-wrap:anywhere;line-height:1.3}
+    .th-node-meta{color:#8a6f4d;font-size:.8rem}
+    .th-node .th-kind{position:absolute;top:-10px;right:10px;font-family:Lato,system-ui,sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff8e8;background:var(--th-sunset);border:0;border-radius:999px;padding:2px 9px;z-index:2;box-shadow:0 1px 0 rgba(56,39,22,.25)}
+    .th-kind--covered-by,.th-kind--covers{background:var(--th-olive)}
+    .th-kind--interpolated-by,.th-kind--interpolates{background:var(--th-plum)}
+    .th-kind--remixed-by{background:#0e7c7b}
     .th-node a{color:inherit;text-decoration:none;display:flex;gap:10px;align-items:center;min-width:0}
     .th-node a:hover .th-node-song{text-decoration:underline}
-    /* root nodes live in the soil */
-    .th-rootzone .th-node{background:#f6f1e7;border-color:#dfd3bc}
-    .th-rootzone .th-node::before{top:auto;bottom:-12px;background:#c9b898}
-    .th-rootzone .th-node .th-kind{background:#f6f1e7;border-color:#dfd3bc;color:#8a6f4d;top:auto;bottom:-9px}
-    .th-rootzone .th-gen-label{background:#8a6f4d;color:#f6f1e7}
-    /* the trunk — what's on the air */
-    .th-trunk{position:relative;z-index:2;display:inline-flex;gap:18px;align-items:center;text-align:left;background:#fff;border:2px solid #223d6e;border-radius:16px;padding:18px 26px;box-shadow:0 4px 18px rgba(34,61,110,.13);margin:0 auto}
-    .th-now-art{width:84px;height:84px;border-radius:10px;object-fit:cover;flex:none}
-    .th-now-eyebrow{font-family:Lato,system-ui,sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#8b97ad;margin:0 0 3px}
-    .th-now-title{font-family:Alice,serif;font-size:1.4rem;color:#223d6e;margin:0;line-height:1.2}
-    .th-now-artist{margin:3px 0 0;color:#3d4a63;font-size:.98rem}
-    /* the ground line between trunk and roots */
-    .th-ground{position:relative;margin:18px 0 4px;border-top:2px dashed #c9b898;z-index:1}
-    .th-ground span{position:relative;top:-13px;background:#fdfcf8;font-family:Lato,system-ui,sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#8a6f4d;padding:0 14px}
-    .th-empty{display:inline-block;color:#68758d;background:#fff;border:1px dashed #c5d0e4;border-radius:10px;padding:12px 18px;position:relative;z-index:1;font-size:.92rem}
-    .th-rootzone .th-empty{background:#f6f1e7;border-color:#dfd3bc;color:#8a6f4d}
-    .th-status{color:#8b97ad;margin:16px 0 0;text-align:center}
+    /* the trunk — what's on the air, ringed in sunset */
+    .th-trunk{position:relative;z-index:2;display:inline-flex;gap:18px;align-items:center;text-align:left;background:var(--th-parchment);border:3px solid var(--th-sunset);border-radius:20px;padding:18px 28px;margin:6px auto 0;box-shadow:0 0 0 7px rgba(232,160,92,.35),0 8px 26px rgba(84,60,30,.22)}
+    .th-now-art{width:84px;height:84px;border-radius:50%;object-fit:cover;flex:none;border:3px solid var(--th-gold)}
+    .th-now-eyebrow{font-family:Righteous,Lato,sans-serif;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--th-sunset);margin:0 0 3px}
+    .th-now-title{font-family:Alice,serif;font-size:1.45rem;color:var(--th-ink);margin:0;line-height:1.2}
+    .th-now-artist{margin:3px 0 0;color:#6b543a;font-size:.98rem}
+    /* wavy earth, then soil to the bottom of the scene */
+    .th-ground{position:relative;margin:22px -16px 0;height:24px;z-index:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='24' viewBox='0 0 80 24'%3E%3Cpath d='M0 12 Q 20 0 40 12 T 80 12 V24 H0 Z' fill='%235c4128'/%3E%3C/svg%3E") repeat-x bottom/80px 24px}
+    .th-ground span{position:relative;top:26px;font-family:Righteous,Lato,sans-serif;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:#e8d5ae;padding:0 14px;z-index:2}
+    .th-rootzone{margin:0 -16px;padding:26px 16px 30px;background:linear-gradient(180deg,var(--th-soil),#3a2917)}
+    .th-rootzone .th-node{background:#efe0bd;border-color:#c9ab72}
+    .th-rootzone .th-node::before{top:auto;bottom:-13px;background:#c9b898}
+    .th-rootzone .th-node .th-kind{top:auto;bottom:-10px;background:var(--th-bark)}
+    .th-rootzone .th-gen-label{background:var(--th-bark) !important}
+    .th-rootzone .th-gen-label::before,.th-rootzone .th-gen-label::after{content:"\273F"}
+    .th-empty{display:inline-block;color:#6b543a;background:var(--th-parchment);border:1.5px dashed #c9ab72;border-radius:14px;padding:12px 18px;position:relative;z-index:1;font-size:.92rem}
+    .th-rootzone .th-empty{background:#efe0bd;color:#5c4128}
+    .th-status{color:#8a6f4d;margin:16px 0 0;text-align:center}
+    /* the lookup gets the same warmth */
     .th-lookup{display:flex;gap:10px;max-width:560px;margin:0 auto}
-    .th-lookup input{flex:1;border:1.5px solid #c5d0e4;border-radius:999px;padding:12px 18px;font:inherit}
-    .th-lookup input:focus{outline:2px solid #223d6e;outline-offset:1px}
+    .th-lookup input{flex:1;border:2px solid #d9a862;border-radius:999px;padding:12px 20px;font:inherit;background:var(--th-parchment);color:var(--th-ink)}
+    .th-lookup input:focus{outline:3px solid var(--th-sunset);outline-offset:1px}
+    .th-lookup .btn{background:var(--th-sunset);border-color:var(--th-sunset)}
     @media (max-width:560px){.th-trunk{flex-direction:column;text-align:center}.th-node{max-width:100%}}
   </style>
 </head>
@@ -74,9 +102,10 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <div data-site-header></div>
   <main id="main">
-<section class="page-hero"><div class="wrap"><p class="eyebrow">The lineage of the song on the air &middot; live, as it spins</p><h1>The Thread</h1><p class="lead">Every song carries DNA. The soft gold KAZM spins all day &mdash; Bobby Caldwell, the Isleys, Steely Dan &mdash; got borrowed by hip-hop, R&amp;B, and beatmakers for fifty years. This page pulls the thread on whatever&rsquo;s playing right now: what it drew from, and everyone who carried it forward.</p></div></section>
+<section class="page-hero page-hero--thread"><div class="wrap"><p class="eyebrow">The lineage of the song on the air &middot; live, as it spins &middot; ✿</p><h1>The Thread</h1><p class="lead">Every song is a tree. The soft gold KAZM spins all day &mdash; Bobby Caldwell, the Isleys, Steely Dan &mdash; put down roots and grew branches through fifty years of hip-hop, R&amp;B, and beat tape dreams. Stand at the trunk of whatever&rsquo;s playing and look up into the canopy.</p></div></section>
 <section class="page-section"><div class="wrap" data-thread>
   <div class="th-tree">
+    <div class="th-stars" aria-hidden="true"></div>
     <div class="th-canopy" data-th-canopy></div>
     <div class="th-trunk" data-th-now>
       <img class="th-now-art" data-th-art src="Color%20logo%20-%20no%20background.svg" alt="" />

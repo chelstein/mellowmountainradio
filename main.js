@@ -9256,7 +9256,7 @@
       '<span class="th-node-main"><span class="th-node-song">' + esc(s.title) + '</span>' +
       '<span class="th-node-meta">' + esc(s.artist) + (s.year ? " &middot; " + esc(s.year) : "") + "</span></span>";
     return '<span class="th-node">' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + inner + "</a>" : inner) +
-      '<span class="th-kind">' + s.kind + "</span></span>";
+      '<span class="th-kind th-kind--' + esc(s.kindCls || "") + '">' + s.kind + "</span></span>";
   }
   function gen(label, nodes) {
     return '<div class="th-gen"><span class="th-gen-label">' + label + '</span><div class="th-gen-row">' +
@@ -9266,7 +9266,7 @@
     var out = [];
     kinds.forEach(function (k) {
       (group[k.key] || []).forEach(function (s) {
-        out.push({ title: s.title, artist: s.artist, year: s.year ? parseInt(s.year, 10) : null, url: s.url, art: s.art, kind: k.label });
+        out.push({ title: s.title, artist: s.artist, year: s.year ? parseInt(s.year, 10) : null, url: s.url, art: s.art, kind: k.label, kindCls: k.key.replace(/_/g, "-") });
       });
     });
     return out;
