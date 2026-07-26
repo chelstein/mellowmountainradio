@@ -9371,18 +9371,41 @@
         statusEl.innerHTML = "The lineage database isn&rsquo;t answering right now."; statusEl.hidden = false;
       });
   }
+  var npFails = 0;
+  function gotSong(rawTitle, artist, art) {
+    npFails = 0;
+    var title = cleanTitle(rawTitle);
+    var key = title + "|" + (artist || "");
+    if (!title || key === lastKey) return;
+    lastKey = key;
+    if (art) artEl.src = art;
+    titleEl.textContent = title;
+    artistEl.textContent = artist || "";
+    if (!pinned) loadThread(title, artist || "");
+  }
+  function npFailed() {
+    npFails++;
+    // never sit silently on "Tuning in…" — say what's happening
+    if (npFails >= 3 && !lastKey) artistEl.textContent = "reaching for the stream… still trying";
+  }
+  function pollMcp() {
+    // fallback: the station's own MCP server knows the song too — different
+    // host, so a hiccup (or rate limit) on the stream box doesn't blind us
+    fetch("https://mcp.mellowmountainradio.com/mcp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json, text/event-stream" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "get_now_playing", arguments: {} } })
+    }).then(function (r) { return r.text(); }).then(function (t) {
+      var line = t.split("\n").filter(function (l) { return l.indexOf("data: ") === 0; })[0];
+      var sc = JSON.parse(line ? line.slice(6) : t).result.structuredContent;
+      gotSong(sc.title, sc.artist, sc.art);
+    }).catch(npFailed);
+  }
   function poll() {
     fetch(NP, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       var song = (d.now_playing || {}).song || {};
-      var title = cleanTitle(song.title), artist = song.artist || "";
-      var key = title + "|" + artist;
-      if (!title || key === lastKey) return;
-      lastKey = key;
-      if (song.art) artEl.src = song.art;
-      titleEl.textContent = title;
-      artistEl.textContent = artist;
-      if (!pinned) loadThread(title, artist);
-    }).catch(function () {});
+      gotSong(song.title, song.artist, song.art);
+    }).catch(pollMcp);
   }
   if (goEl && qEl) {
     var pull = function () {
