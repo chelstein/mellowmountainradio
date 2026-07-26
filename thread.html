@@ -80,10 +80,14 @@
     .th-now-eyebrow{font-family:Righteous,Lato,sans-serif;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--th-sunset);margin:0 0 3px}
     .th-now-title{font-family:Alice,serif;font-size:1.45rem;color:var(--th-ink);margin:0;line-height:1.2}
     .th-now-artist{margin:3px 0 0;color:#6b543a;font-size:.98rem}
+    /* purple mountains on the horizon, like the shirt says */
+    .th-horizon{position:relative;height:78px;margin:-40px -16px -30px;z-index:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='78' viewBox='0 0 1200 78'%3E%3Cpath d='M0 78 L0 50 L95 22 L185 54 L265 28 L355 60 L435 18 L525 56 L600 32 L695 58 L785 24 L875 56 L955 30 L1045 60 L1125 26 L1200 52 L1200 78 Z' fill='%237b5484' opacity='.5'/%3E%3Cpath d='M0 78 L0 62 L115 38 L215 64 L325 42 L425 68 L545 36 L645 66 L755 44 L865 68 L985 40 L1095 66 L1200 48 L1200 78 Z' fill='%235e3f68' opacity='.62'/%3E%3C/svg%3E") bottom center/1200px 78px repeat-x}
     /* wavy earth, then soil to the bottom of the scene */
     .th-ground{position:relative;margin:22px -16px 0;height:24px;z-index:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='24' viewBox='0 0 80 24'%3E%3Cpath d='M0 12 Q 20 0 40 12 T 80 12 V24 H0 Z' fill='%235c4128'/%3E%3C/svg%3E") repeat-x bottom/80px 24px}
+    .th-tree--planted .th-horizon{margin-bottom:-56px}
     .th-ground span{position:relative;top:26px;font-family:Righteous,Lato,sans-serif;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:#e8d5ae;padding:0 14px;z-index:2}
-    .th-rootzone{margin:0 -16px;padding:26px 16px 30px;background:linear-gradient(180deg,var(--th-soil),#3a2917)}
+    /* roots spread wide through the soil, Dead-shirt style */
+    .th-rootzone{margin:0 -16px;padding:26px 16px 30px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='820' height='140' viewBox='0 0 820 140'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M410 0 C 395 45 330 60 195 82 C 120 94 70 108 20 128' stroke='%23c9622e' stroke-width='5' opacity='.55'/%3E%3Cpath d='M410 0 C 425 45 495 62 630 84 C 705 96 755 110 800 128' stroke='%23c9622e' stroke-width='5' opacity='.55'/%3E%3Cpath d='M410 4 C 400 55 355 82 255 108 C 205 120 165 128 130 136' stroke='%23a8451a' stroke-width='4' opacity='.5'/%3E%3Cpath d='M410 4 C 422 55 470 84 570 110 C 620 122 660 130 695 138' stroke='%23a8451a' stroke-width='4' opacity='.5'/%3E%3Cpath d='M410 8 C 404 60 380 96 320 128' stroke='%23e8a05c' stroke-width='3' opacity='.45'/%3E%3Cpath d='M410 8 C 418 60 444 98 505 130' stroke='%23e8a05c' stroke-width='3' opacity='.45'/%3E%3Cpath d='M410 10 C 408 62 402 100 396 138' stroke='%23d9a862' stroke-width='3' opacity='.4'/%3E%3C/g%3E%3C/svg%3E") top center/820px 140px no-repeat,linear-gradient(180deg,var(--th-soil),#3a2917)}
     .th-rootzone .th-node{background:#efe0bd;border-color:#c9ab72}
     .th-rootzone .th-node::before{top:auto;bottom:-13px;background:#c9b898}
     .th-rootzone .th-node .th-kind{top:auto;bottom:-10px}
@@ -123,6 +127,7 @@
         <p class="th-now-artist" data-th-artist></p>
       </div>
     </div>
+    <div class="th-horizon" aria-hidden="true"></div>
     <div class="th-ground" data-th-ground hidden><span>the soil it grew from</span></div>
     <div class="th-rootzone" data-th-roots hidden></div>
   </div>
