@@ -3207,7 +3207,7 @@ function setCors(res) {
   res.set({ "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
 }
 
-app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft|thread|transcripts(\/search)?)$/, (_req, res) => {
+app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft|thread|owncast|transcripts(\/search)?)$/, (_req, res) => {
   setCors(res); res.sendStatus(204);
 });
 
@@ -3456,6 +3456,21 @@ app.get("/thread", async (req, res) => {
     if (thCache.size > 2000) thCache.clear();
     thCache.set(key, out);
     res.json(out);
+  } catch (e) { res.status(502).json({ ok: false, error: String(e.message) }); }
+});
+
+// GET /owncast — Owncast status proxy. Owncast's API sends no CORS headers,
+// so browsers can't read the video viewer count directly; this relays it.
+let owncastCache = { at: 0, body: null };
+app.get("/owncast", async (_req, res) => {
+  setCors(res);
+  if (owncastCache.body && Date.now() - owncastCache.at < 20000) return res.json(owncastCache.body);
+  try {
+    const r = await fetch("https://owncast.mellowmountainradio.com/api/status", { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error(`owncast ${r.status}`);
+    const d = await r.json();
+    owncastCache = { at: Date.now(), body: { ok: true, online: !!d.online, viewerCount: d.viewerCount || 0 } };
+    res.json(owncastCache.body);
   } catch (e) { res.status(502).json({ ok: false, error: String(e.message) }); }
 });
 

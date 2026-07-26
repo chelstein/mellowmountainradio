@@ -472,7 +472,8 @@
   fetchNowPlaying();
   setInterval(fetchNowPlaying, 20000);
   function fetchOwncastListeners() {
-    fetch("https://owncast.mellowmountainradio.com/api/status", { cache: "no-store" })
+    // via the station server — Owncast's own API sends no CORS headers
+    fetch("https://mcp.mellowmountainradio.com/owncast", { cache: "no-store" })
       .then(function(r) { return r.ok ? r.json() : null; })
       .catch(function() { return null; })
       .then(function(d) {
