@@ -3418,7 +3418,9 @@ app.get("/thread", async (req, res) => {
     const search = await geniusGet(`/search?q=${encodeURIComponent(title + " " + artist)}`);
     const hits = ((search.response || {}).hits || []).filter(h => h.type === "song").map(h => h.result);
     const an = s => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-    const hit = hits.find(h => artist && (an(h.artist_names).includes(an(artist)) || an(artist).includes(an(h.primary_artist?.name)))) || hits[0];
+    // With an artist in hand, demand a fuzzy artist match — a wrong song's
+    // lineage is worse than none. Without one, take the top hit.
+    const hit = hits.find(h => artist && (an(h.artist_names).includes(an(artist)) || an(artist).includes(an(h.primary_artist?.name)))) || (artist ? null : hits[0]);
     if (!hit) {
       const out = { ok: true, found: false, title, artist };
       thCache.set(key, out);
@@ -3441,9 +3443,15 @@ app.get("/thread", async (req, res) => {
     const out = {
       ok: true, found: true,
       title, artist,
-      matched: { title: song.title, artist: song.artist_names || "", year: (song.release_date_components || {}).year || null, url: song.url || null, art: song.song_art_image_thumbnail_url || null },
+      matched: {
+        title: song.title, artist: song.artist_names || "",
+        year: (song.release_date_components || {}).year ||
+              (String(song.release_date_for_display || "").match(/\d{4}/) || [null])[0],
+        url: song.url || null, art: song.song_art_image_thumbnail_url || null,
+      },
       roots:    { samples: rels.samples || [], covers: rels.cover_of || [], interpolates: rels.interpolates || [] },
-      branches: { sampled_by: rels.sampled_by || [], covered_by: rels.covered_by || [], interpolated_by: rels.interpolated_by || [], remixed_by: rels.remixed_by || [] },
+      // Genius names the "who sampled this" bucket `sampled_in`
+      branches: { sampled_by: rels.sampled_in || [], covered_by: rels.covered_by || [], interpolated_by: rels.interpolated_by || [], remixed_by: rels.remixed_by || [] },
     };
     if (thCache.size > 2000) thCache.clear();
     thCache.set(key, out);
