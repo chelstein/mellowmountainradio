@@ -9256,7 +9256,7 @@
       '<span class="th-node-main"><span class="th-node-song">' + esc(s.title) + '</span>' +
       '<span class="th-node-meta">' + esc(s.artist) + (s.year ? " &middot; " + esc(s.year) : "") + "</span></span>";
     return '<span class="th-node">' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + inner + "</a>" : inner) +
-      '<span class="th-kind">' + s.kind + "</span></span>";
+      '<span class="th-kind th-kind--' + esc(s.kindCls || "") + '">' + s.kind + "</span></span>";
   }
   function gen(label, nodes) {
     return '<div class="th-gen"><span class="th-gen-label">' + label + '</span><div class="th-gen-row">' +
@@ -9266,7 +9266,7 @@
     var out = [];
     kinds.forEach(function (k) {
       (group[k.key] || []).forEach(function (s) {
-        out.push({ title: s.title, artist: s.artist, year: s.year ? parseInt(s.year, 10) : null, url: s.url, art: s.art, kind: k.label });
+        out.push({ title: s.title, artist: s.artist, year: s.year ? parseInt(s.year, 10) : null, url: s.url, art: s.art, kind: k.label, kindCls: k.key.replace(/_/g, "-") });
       });
     });
     return out;
@@ -9291,6 +9291,7 @@
   }
   function renderRoots(nodes) {
     groundEl.hidden = false;
+    rootsEl.hidden = false;
     if (!nodes.length) {
       rootsEl.innerHTML = '<div class="th-gen"><span class="th-empty">An original &mdash; its roots are its own.</span></div>';
       return;
@@ -9301,6 +9302,7 @@
   function loadThread(title, artist) {
     canopyEl.innerHTML = '<div class="th-gen"><span class="th-empty">Pulling the thread&hellip;</span></div>';
     rootsEl.innerHTML = "";
+    rootsEl.hidden = true;
     groundEl.hidden = true;
     statusEl.hidden = true;
     fetch(EP + "?title=" + encodeURIComponent(title) + "&artist=" + encodeURIComponent(artist))
@@ -9310,12 +9312,12 @@
           var msg = j.error === "genius_token_missing"
             ? "The Thread is being wired to the lineage database &mdash; check back soon."
             : "The lineage database isn&rsquo;t answering right now.";
-          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
+          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = rootsEl.hidden = true;
           statusEl.innerHTML = msg; statusEl.hidden = false;
           return;
         }
         if (!j.found) {
-          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
+          canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = rootsEl.hidden = true;
           statusEl.innerHTML = "No thread found for this one &mdash; some songs walk alone.";
           statusEl.hidden = false;
           return;
@@ -9338,7 +9340,7 @@
         }
       })
       .catch(function () {
-        canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = true;
+        canopyEl.innerHTML = rootsEl.innerHTML = ""; groundEl.hidden = rootsEl.hidden = true;
         statusEl.innerHTML = "The lineage database isn&rsquo;t answering right now."; statusEl.hidden = false;
       });
   }
