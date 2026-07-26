@@ -9372,17 +9372,26 @@
         statusEl.innerHTML = "The lineage database isn&rsquo;t answering right now."; statusEl.hidden = false;
       });
   }
-  var npFails = 0;
+  var npFails = 0, songEndTimer = null;
   function gotSong(rawTitle, artist, art) {
     npFails = 0;
     var title = cleanTitle(rawTitle);
     var key = title + "|" + (artist || "");
     if (!title || key === lastKey) return;
     lastKey = key;
+    pinned = false;   // the air moves on, the tree follows — a manual pull only pins until the next song
     if (art) artEl.src = art;
     titleEl.textContent = title;
     artistEl.textContent = artist || "";
-    if (!pinned) loadThread(title, artist || "");
+    loadThread(title, artist || "");
+  }
+  function armSongEnd(np) {
+    // schedule a poll for right after the current song is due to end, so the
+    // tree regrows within seconds of a change instead of waiting on the clock
+    var remaining = np && np.remaining != null ? +np.remaining
+                  : (np && np.duration ? +np.duration - (+np.elapsed || 0) : 0);
+    if (songEndTimer) clearTimeout(songEndTimer);
+    if (remaining > 2 && remaining < 900) songEndTimer = setTimeout(poll, (remaining + 3) * 1000);
   }
   function npFailed() {
     npFails++;
@@ -9404,8 +9413,10 @@
   }
   function poll() {
     fetch(NP, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
-      var song = (d.now_playing || {}).song || {};
+      var np = d.now_playing || {};
+      var song = np.song || {};
       gotSong(song.title, song.artist, song.art);
+      armSongEnd(np);
     }).catch(pollMcp);
   }
   if (goEl && qEl) {
@@ -9428,7 +9439,7 @@
     poll();
   }, 2500);
   setTimeout(function () { clearInterval(boot); }, 30000);
-  setInterval(poll, 30000);
+  setInterval(poll, 15000);
   // coming back to the tab (or out of the back/forward cache) re-tunes at once
   document.addEventListener("visibilitychange", function () { if (!document.hidden) poll(); });
   window.addEventListener("pageshow", function (e) { if (e.persisted) { lastKey = ""; poll(); } });
