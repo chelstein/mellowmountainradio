@@ -1,0 +1,223 @@
+name: KAZM Transcriber
+
+# "What was played & what was said."
+# Transcribes each 5h30m broadcast tape (recorded by the KAZM Tape Recorder
+# workflow, stored as GitHub Release assets) with faster-whisper, aligns the
+# transcript against the AzuraCast play history so programmed items (songs,
+# spots, IDs) are tagged with their real metadata, and uploads the finished
+# transcript JSON to AzuraCast media storage under transcripts/.
+#
+# Tapes rotate out after 14 days; their transcripts are permanent.
+#
+# Requires repo secret AZURACAST_API_KEY (same key the MCP server uses as
+# AZ_KEY on the VPS). Without it the workflow fails at the align step.
+
+on:
+  workflow_run:
+    workflows: ["KAZM Tape Recorder"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Specific tape release tag to transcribe (e.g. tape-kazm-2026-07-25-0600). Blank = newest without a transcript.'
+        required: false
+        default: ''
+      count:
+        description: 'How many missing blocks to transcribe this run (newest first). Use 3-4 to chew through backlog.'
+        required: false
+        default: '1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kazm-transcriber
+  cancel-in-progress: false
+
+jobs:
+  transcribe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      AZ_HOST: https://streaming.mellowmountainradio.com
+      AZ_STATION: mellowmountainradio
+      AZ_KEY: ${{ secrets.AZURACAST_API_KEY }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y ffmpeg
+          pip install --quiet faster-whisper requests
+
+      - name: Pick blocks to transcribe
+        id: pick
+        run: |
+          python3 - <<'PYEOF'
+          import json, os, subprocess, urllib.request
+
+          want_tag = "${{ github.event.inputs.tag }}".strip()
+          count    = int("${{ github.event.inputs.count }}".strip() or "1")
+
+          # All tape releases still on the shelf (newest first)
+          out = subprocess.run(
+              ["gh", "release", "list", "--repo", "chelstein/mellowmountainradio",
+               "--json", "tagName", "--limit", "100"],
+              capture_output=True, text=True).stdout
+          tapes = [r["tagName"] for r in json.loads(out or "[]")
+                   if r["tagName"].startswith("tape-kazm-")]
+          tapes.sort(reverse=True)
+
+          # Transcripts already in AzuraCast media storage
+          done = set()
+          key = os.environ.get("AZ_KEY", "")
+          if key:
+              req = urllib.request.Request(
+                  os.environ["AZ_HOST"] + "/api/station/" + os.environ["AZ_STATION"]
+                  + "/files/list?currentDirectory=transcripts",
+                  headers={"X-API-Key": key})
+              try:
+                  rows = json.load(urllib.request.urlopen(req, timeout=30))
+                  for r in rows:
+                      name = (r.get("name") or r.get("path") or "").split("/")[-1]
+                      if name.endswith(".json"):
+                          done.add("tape-" + name[:-5])
+              except Exception as e:
+                  print(f"[transcriber] transcript listing failed ({e}); assuming none")
+
+          if want_tag:
+              picks = [want_tag]
+          else:
+              picks = [t for t in tapes if t not in done][:count]
+
+          print(f"[transcriber] {len(tapes)} tapes on shelf, {len(done)} transcribed, picking: {picks}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write("picks=" + json.dumps(picks) + "\n")
+          PYEOF
+
+      - name: Transcribe and align
+        if: steps.pick.outputs.picks != '[]'
+        run: |
+          cat > /tmp/kazm_transcribe.py <<'PYEOF'
+          import json, os, re, subprocess, sys, urllib.request, urllib.parse, base64
+          from datetime import datetime, timezone
+
+          AZ_HOST    = os.environ["AZ_HOST"]
+          AZ_STATION = os.environ["AZ_STATION"]
+          AZ_KEY     = os.environ.get("AZ_KEY", "")
+
+          def az(path, payload=None):
+              req = urllib.request.Request(
+                  AZ_HOST + path,
+                  data=json.dumps(payload).encode() if payload is not None else None,
+                  headers={"X-API-Key": AZ_KEY, "Content-Type": "application/json"},
+                  method="POST" if payload is not None else "GET")
+              return json.load(urllib.request.urlopen(req, timeout=120))
+
+          def block_identity(tag):
+              # tape-kazm-YYYY-MM-DD-HH00
+              m = re.match(r"tape-(kazm-(\d{4})-(\d{2})-(\d{2})-(\d{2})00)$", tag)
+              if not m: sys.exit(f"[transcriber] bad tag: {tag}")
+              name = m.group(1)
+              date = f"{m.group(2)}-{m.group(3)}-{m.group(4)}"
+              start_h = int(m.group(5))
+              return name, date, start_h
+
+          def rec_start_secs(date, start_h):
+              # Actual recording start (seconds from AZ midnight) from the rewind
+              # manifest when the block is still inside the 14-day window;
+              # otherwise assume the scheduled :01 start.
+              try:
+                  with open("rewind-manifest.json") as f:
+                      for b in json.load(f).get("blocks", []):
+                          if b.get("date") == date and b.get("start") == start_h and b.get("recStart"):
+                              return int(b["recStart"])
+              except Exception:
+                  pass
+              return start_h * 3600 + 60
+
+          def fetch_history(date, t0, t1):
+              # AZ (UTC-7, no DST) window -> UTC ISO
+              base = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp() + 7 * 3600
+              q = urllib.parse.urlencode({
+                  "start": datetime.fromtimestamp(base + t0, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                  "end":   datetime.fromtimestamp(base + t1, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                  "rows": 2000})
+              rows = az(f"/api/station/{AZ_STATION}/history?{q}")
+              items = []
+              for p in rows if isinstance(rows, list) else []:
+                  song = p.get("song") or {}
+                  t = int(p.get("played_at") or 0) - int(base)
+                  items.append({
+                      "t": t,
+                      "dur": int(p.get("duration") or 0),
+                      "title": song.get("title") or "",
+                      "artist": song.get("artist") or ""})
+              items.sort(key=lambda i: i["t"])
+              return items
+
+          def transcribe(wav):
+              from faster_whisper import WhisperModel
+              model = WhisperModel("small.en", device="cpu", compute_type="int8")
+              segments, info = model.transcribe(wav, beam_size=1, vad_filter=True,
+                                                vad_parameters={"min_silence_duration_ms": 700})
+              out = []
+              for s in segments:
+                  text = s.text.strip()
+                  if text:
+                      out.append({"s": round(s.start, 1), "e": round(s.end, 1), "text": text})
+              print(f"[transcriber] {len(out)} segments, audio {info.duration:.0f}s")
+              return out
+
+          def upload(name, doc):
+              payload = {
+                  "path": f"transcripts/{name}.json",
+                  "file": base64.b64encode(json.dumps(doc, separators=(",", ":")).encode()).decode()}
+              r = az(f"/api/station/{AZ_STATION}/files", payload)
+              print(f"[transcriber] uploaded transcripts/{name}.json -> {r if isinstance(r, dict) else 'ok'}")
+
+          tag = sys.argv[1]
+          name, date, start_h = block_identity(tag)
+          rec0 = rec_start_secs(date, start_h)
+          mp3 = f"/tmp/{name}.mp3"
+          wav = f"/tmp/{name}.wav"
+
+          print(f"[transcriber] downloading {tag}")
+          subprocess.run(["gh", "release", "download", tag,
+                          "--repo", "chelstein/mellowmountainradio",
+                          "--pattern", "*.mp3", "--output", mp3, "--clobber"], check=True)
+          subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error",
+                          "-i", mp3, "-ar", "16000", "-ac", "1", "-y", wav], check=True)
+          os.remove(mp3)
+
+          segs = transcribe(wav)
+          os.remove(wav)
+
+          audio_end = max((s["e"] for s in segs), default=19800)
+          items = fetch_history(date, rec0, rec0 + int(audio_end) + 60)
+
+          # A segment overlapping a programmed history item is music/spot playback;
+          # everything else on the tape is live talk. Both are kept — search can filter.
+          for s in segs:
+              a, b = rec0 + s["s"], rec0 + s["e"]
+              s["s"], s["e"] = round(a), round(b)   # seconds from AZ midnight
+              hit = next((i for i in items if i["dur"] > 0
+                          and a < i["t"] + i["dur"] and b > i["t"]), None)
+              s["type"] = "programmed" if hit else "talk"
+
+          talk = sum(1 for s in segs if s["type"] == "talk")
+          print(f"[transcriber] {talk} talk segments / {len(segs)} total, {len(items)} history items")
+
+          upload(name, {
+              "block": name, "date": date, "start": start_h, "recStart": rec0,
+              "model": "small.en", "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+              "programmed": items,
+              "segments": segs})
+          PYEOF
+
+          for TAG in $(echo '${{ steps.pick.outputs.picks }}' | python3 -c "import sys,json; print(' '.join(json.load(sys.stdin)))"); do
+            echo "::group::$TAG"
+            python3 /tmp/kazm_transcribe.py "$TAG"
+            echo "::endgroup::"
+          done
