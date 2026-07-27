@@ -8336,7 +8336,10 @@
     }
     /* ── CHARTS ───────────────────────────────────────────── */
     function renderCharts(c) {
-      var since = c.since ? fmtDate(c.since) : null;
+      // the third stat is the LOG's memory, not the chart's 7-day window —
+      // the log began October 1, 2023 (D.since arrives from the playlog)
+      var logSince = (D.since && D.since >= "2023-01-01") ? D.since : "2023-10-01";
+      var since = fmtDate(logSince);
       statsEl.innerHTML = '<span class="tm-stat"><b data-n="' + c.spins + '">0</b> music spins this week</span>' +
         '<span class="tm-stat"><b data-n="' + c.uniques + '">0</b> different songs</span>' +
         (since ? '<span class="tm-stat">the log remembers back to <b>' + tmEsc(since) + "</b></span>" : "");

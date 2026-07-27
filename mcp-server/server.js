@@ -40,7 +40,7 @@ function genListenerId()    { return "lsr_" + Date.now().toString(36) + Math.ran
 const PORT      = process.env.PORT      || 3000;
 const AZ_HOST   = (process.env.AZ_HOST  || "https://streaming.mellowmountainradio.com").replace(/\/$/,"");
 const STATION   = process.env.STATION_ID || "kazm";
-const LOG_SINCE = process.env.LOG_SINCE  || "2022-01-01"; // earliest date in the AzuraCast history log
+const LOG_SINCE = process.env.LOG_SINCE  || "2023-10-01"; // first day with plays in the AzuraCast history log (verified 2026-07)
 const AZ_KEY    = process.env.AZ_KEY    || "";
 const GH_RAW    = (process.env.GH_RAW   || "https://raw.githubusercontent.com/chelstein/mellowmountainradio/main").replace(/\/$/,"");
 
