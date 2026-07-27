@@ -9378,6 +9378,11 @@
       });
   }
   var npFails = 0, songEndTimer = null;
+  function withDeadline(promise, ms) {
+    // some extension-wrapped fetches neither resolve nor reject — they hang.
+    // Nothing on this page is allowed to wait forever.
+    return Promise.race([promise, new Promise(function (_, rej) { setTimeout(function () { rej(new Error("deadline")); }, ms); })]);
+  }
   function isMusicItem(ti, ar) {
     // compact port of the station's music filter — spots, IDs, sweepers, and
     // talk carts don't grow trees
@@ -9425,18 +9430,18 @@
   function pollMcp() {
     // fallback: the station's own MCP server knows the song too — different
     // host, so a hiccup (or rate limit) on the stream box doesn't blind us
-    fetch("https://mcp.mellowmountainradio.com/mcp", {
+    withDeadline(fetch("https://mcp.mellowmountainradio.com/mcp", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json, text/event-stream" },
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "get_now_playing", arguments: {} } })
-    }).then(function (r) { return r.text(); }).then(function (t) {
+    }).then(function (r) { return r.text(); }), 6000).then(function (t) {
       var line = t.split("\n").filter(function (l) { return l.indexOf("data: ") === 0; })[0];
       var sc = JSON.parse(line ? line.slice(6) : t).result.structuredContent;
       gotSong(sc.title, sc.artist, sc.art);
     }).catch(npFailed);
   }
   function poll() {
-    fetch(NP, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+    withDeadline(fetch(NP, { cache: "no-store" }).then(function (r) { return r.json(); }), 6000).then(function (d) {
       var np = d.now_playing || {};
       var song = np.song || {};
       gotSong(song.title, song.artist, song.art);
