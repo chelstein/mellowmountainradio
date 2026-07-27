@@ -40,7 +40,7 @@ function genListenerId()    { return "lsr_" + Date.now().toString(36) + Math.ran
 const PORT      = process.env.PORT      || 3000;
 const AZ_HOST   = (process.env.AZ_HOST  || "https://streaming.mellowmountainradio.com").replace(/\/$/,"");
 const STATION   = process.env.STATION_ID || "kazm";
-const LOG_SINCE = process.env.LOG_SINCE  || "2022-01-01"; // earliest date in the AzuraCast history log
+const LOG_SINCE = process.env.LOG_SINCE  || "2023-10-01"; // first day with plays in the AzuraCast history log (verified 2026-07)
 const AZ_KEY    = process.env.AZ_KEY    || "";
 const GH_RAW    = (process.env.GH_RAW   || "https://raw.githubusercontent.com/chelstein/mellowmountainradio/main").replace(/\/$/,"");
 
@@ -3256,10 +3256,14 @@ function serverIsMusicPlay(ti, ar) {
   if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(ti)) return false;
   // Title: ad file naming conventions — FINAL, SPEC, REV n, year-prefixed spots
   if (/\bFINAL\b|\(SPEC\b|\bREV\s*\d+\b|\bAIRCHECK\b/i.test(ti)) return false;
+  // Title: promos, PSAs, campaign carts, phone-number spots
+  if (/\bpromo\b|awareness campaign|^hiring\b|^wfp-|game intro|\bbumper\b|^\d[\d\s().\-]{6,}$/i.test(ti)) return false;
   // Artist: known station identifiers / talk shows / advertisers
   if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(ar)) return false;
   // Artist: business-name indicators that never belong to a music artist
   if (/\b(HDM|LLC|Inc\.?|Corp\.?)\b|\bOil\s+(and|&)\s+Lube\b|\bCity\s+of\s+\w|\bAccounting\s+Service|Frontburner\s+Media|~\s*Attention\b/i.test(ar)) return false;
+  // Artist: PSA sponsors, advertisers, and station-cart identities from the live log
+  if (/smokey the bear|\bACTIC\b|cliff castle|\bcasino\b|SMARTFARES|charlotte reed|trendologist|^KAZM\b|^MHP_|_Eng_/i.test(ar)) return false;
   return true;
 }
 
