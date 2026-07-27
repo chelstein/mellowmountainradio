@@ -9373,13 +9373,32 @@
       });
   }
   var npFails = 0, songEndTimer = null;
+  function isMusicItem(ti, ar) {
+    // compact port of the station's music filter — spots, IDs, sweepers, and
+    // talk carts don't grow trees
+    if (!ti) return false;
+    if (/^ADBREAK_|^GO2-|^Sweeper_|^CLEARWATER|^Station ID|^Mellow Mountain Radio|^ID\/PSA|^AZ Sports|^Sports Update|^AZ State News|^Coast to Coast AM|^~/i.test(ti)) return false;
+    if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(ti)) return false;
+    if (/\bFINAL\b|\(SPEC\b|\bREV\s*\d+\b|\bAIRCHECK\b/i.test(ti)) return false;
+    if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^c2c$|^CBS$|Brought to you|\b(LLC|Inc\.?|Corp\.?)\b/i.test(ar || "")) return false;
+    return true;
+  }
   function gotSong(rawTitle, artist, art) {
     npFails = 0;
-    var title = cleanTitle(rawTitle);
+    var title = cleanTitle(rawTitle) || String(rawTitle || "").trim();
     var key = title + "|" + (artist || "");
     if (!title || key === lastKey) return;
     lastKey = key;
     pinned = false;   // the air moves on, the tree follows — a manual pull only pins until the next song
+    if (!isMusicItem(title, artist)) {
+      // a spot, ID, or talk break is on the air — say so and wait for the music
+      titleEl.textContent = "Station break";
+      artistEl.textContent = "the tree grows again at the next song";
+      canopyEl.innerHTML = '<div class="th-gen"><span class="th-empty">Trees only grow for songs &mdash; back in a moment, when the music returns.</span></div>';
+      rootsEl.innerHTML = ""; rootsEl.hidden = true; groundEl.hidden = true; statusEl.hidden = true;
+      root.querySelector(".th-tree").classList.remove("th-tree--planted");
+      return;
+    }
     if (art) artEl.src = art;
     titleEl.textContent = title;
     artistEl.textContent = artist || "";
