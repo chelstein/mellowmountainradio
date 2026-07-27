@@ -3423,8 +3423,16 @@ app.get("/thread", async (req, res) => {
     const hits = ((search.response || {}).hits || []).filter(h => h.type === "song").map(h => h.result);
     const an = s => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
     // With an artist in hand, demand a fuzzy artist match — a wrong song's
-    // lineage is worse than none. Without one, take the top hit.
-    const hit = hits.find(h => artist && (an(h.artist_names).includes(an(artist)) || an(artist).includes(an(h.primary_artist?.name)))) || (artist ? null : hits[0]);
+    // lineage is worse than none. Among artist matches, an exact title beats a
+    // prefix beats search rank: Genius loves ranking medley pages
+    // ("Spanish Flea / Rise") above the song itself.
+    const artistOk = h => an(h.artist_names).includes(an(artist)) || an(artist).includes(an(h.primary_artist?.name));
+    const pool = artist ? hits.filter(artistOk) : hits;
+    const tnorm = an(title);
+    const hit = pool.find(h => an(h.title) === tnorm)
+             || pool.find(h => an(h.title).startsWith(tnorm) || tnorm.startsWith(an(h.title)))
+             || pool[0]
+             || null;
     if (!hit) {
       const out = { ok: true, found: false, title, artist };
       thCache.set(key, out);
