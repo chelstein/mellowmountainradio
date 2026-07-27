@@ -7792,7 +7792,7 @@
     if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(t)) return false;
     if (/\bFINAL\b|\(SPEC\b|\bREV\s*\d+\b|\bAIRCHECK\b/i.test(t)) return false;
     if (/\bpromo\b|awareness campaign|^hiring\b|^wfp-|game intro|\bbumper\b|^\d[\d\s().\-]{6,}$/i.test(t)) return false;
-    if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(a)) return false;
+    if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(a)) return false;
     if (/\b(HDM|LLC|Inc\.?|Corp\.?)\b|\bOil\s+(and|&)\s+Lube\b|\bCity\s+of\s+\w|\bAccounting\s+Service|Frontburner\s+Media|~\s*Attention\b/i.test(a)) return false;
     if (/smokey the bear|\bACTIC\b|cliff castle|\bcasino\b|SMARTFARES|charlotte reed|trendologist|^KAZM\b|^MHP_|_Eng_/i.test(a)) return false;
     return true;

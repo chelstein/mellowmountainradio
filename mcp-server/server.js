@@ -3259,7 +3259,7 @@ function serverIsMusicPlay(ti, ar) {
   // Title: promos, PSAs, campaign carts, phone-number spots
   if (/\bpromo\b|awareness campaign|^hiring\b|^wfp-|game intro|\bbumper\b|^\d[\d\s().\-]{6,}$/i.test(ti)) return false;
   // Artist: known station identifiers / talk shows / advertisers
-  if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(ar)) return false;
+  if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(ar)) return false;
   // Artist: business-name indicators that never belong to a music artist
   if (/\b(HDM|LLC|Inc\.?|Corp\.?)\b|\bOil\s+(and|&)\s+Lube\b|\bCity\s+of\s+\w|\bAccounting\s+Service|Frontburner\s+Media|~\s*Attention\b/i.test(ar)) return false;
   // Artist: PSA sponsors, advertisers, and station-cart identities from the live log
