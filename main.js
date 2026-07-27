@@ -7792,7 +7792,7 @@
     if (/^[A-Z0-9][A-Z0-9_\-]{4,}$/.test(t)) return false;
     if (/\bFINAL\b|\(SPEC\b|\bREV\s*\d+\b|\bAIRCHECK\b/i.test(t)) return false;
     if (/\bpromo\b|awareness campaign|^hiring\b|^wfp-|game intro|\bbumper\b|^\d[\d\s().\-]{6,}$/i.test(t)) return false;
-    if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(a)) return false;
+    if (/^Live365$|^Mellow Mountain Radio$|^Station ID$|^Talk Break$|^Diamondbacks Bumper$|^Bumper$|^c2c$|^CBS$|^Brad Cesmat$|George Noo[rg]ey|Brought to you|APS.*(Fire|Mitigation)|Versatile Roofing|Sedona Chamber|Franklin Pest|Yavapai Bottle|Toastmasters|Sedona Fire|CBS News|Cutter Grind/i.test(a)) return false;
     if (/\b(HDM|LLC|Inc\.?|Corp\.?)\b|\bOil\s+(and|&)\s+Lube\b|\bCity\s+of\s+\w|\bAccounting\s+Service|Frontburner\s+Media|~\s*Attention\b/i.test(a)) return false;
     if (/smokey the bear|\bACTIC\b|cliff castle|\bcasino\b|SMARTFARES|charlotte reed|trendologist|^KAZM\b|^MHP_|_Eng_/i.test(a)) return false;
     return true;
@@ -9378,6 +9378,11 @@
       });
   }
   var npFails = 0, songEndTimer = null;
+  function withDeadline(promise, ms) {
+    // some extension-wrapped fetches neither resolve nor reject — they hang.
+    // Nothing on this page is allowed to wait forever.
+    return Promise.race([promise, new Promise(function (_, rej) { setTimeout(function () { rej(new Error("deadline")); }, ms); })]);
+  }
   function isMusicItem(ti, ar) {
     // compact port of the station's music filter — spots, IDs, sweepers, and
     // talk carts don't grow trees
@@ -9425,18 +9430,18 @@
   function pollMcp() {
     // fallback: the station's own MCP server knows the song too — different
     // host, so a hiccup (or rate limit) on the stream box doesn't blind us
-    fetch("https://mcp.mellowmountainradio.com/mcp", {
+    withDeadline(fetch("https://mcp.mellowmountainradio.com/mcp", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json, text/event-stream" },
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "get_now_playing", arguments: {} } })
-    }).then(function (r) { return r.text(); }).then(function (t) {
+    }).then(function (r) { return r.text(); }), 6000).then(function (t) {
       var line = t.split("\n").filter(function (l) { return l.indexOf("data: ") === 0; })[0];
       var sc = JSON.parse(line ? line.slice(6) : t).result.structuredContent;
       gotSong(sc.title, sc.artist, sc.art);
     }).catch(npFailed);
   }
   function poll() {
-    fetch(NP, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+    withDeadline(fetch(NP, { cache: "no-store" }).then(function (r) { return r.json(); }), 6000).then(function (d) {
       var np = d.now_playing || {};
       var song = np.song || {};
       gotSong(song.title, song.artist, song.art);
