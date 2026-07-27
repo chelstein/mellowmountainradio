@@ -8590,6 +8590,13 @@
     main.innerHTML = nm.innerHTML;
     var key = dp.body.getAttribute("data-page") || "";
     doc.body.setAttribute("data-page", key);
+    // adopt the incoming page's own head assets (page-local styles, extra fonts)
+    doc.querySelectorAll("[data-swapped-asset]").forEach(function (n) { n.remove(); });
+    dp.head.querySelectorAll("style, link[rel='stylesheet'][href*='fonts.googleapis']").forEach(function (n) {
+      var c = n.cloneNode(true);
+      c.setAttribute("data-swapped-asset", "1");
+      doc.head.appendChild(c);
+    });
     DEFAULT_TITLE = dp.title || DEFAULT_TITLE;
     doc.title = DEFAULT_TITLE;
     updateNavActive(key);
@@ -8597,6 +8604,8 @@
     if (push) history.pushState({}, "", href);
     main.classList.remove("is-leaving");
     initPage();
+    // page modules living outside this closure re-init on this signal
+    try { doc.dispatchEvent(new CustomEvent("kazm:page")); } catch (e) {}
     updateTabTitle();
     var u = new URL(href, location.href);
     if (u.hash) scrollToHash(u.hash); else window.scrollTo(0, 0);
@@ -9198,14 +9207,9 @@
 
 /* ── What was said — spoken-word search on the Song Time Machine ──
    Reads the permanent broadcast transcripts through the station server's
-   /transcripts/search proxy. Self-contained; touches nothing else. */
+   /transcripts/search proxy. Router-aware: re-inits on every soft page swap. */
 (function () {
-  var bar = document.querySelector("[data-said]");
-  if (!bar) return;
-  var input = document.querySelector("[data-said-input]"),
-      btn = document.querySelector("[data-said-btn]"),
-      out = document.querySelector("[data-said-results]");
-  if (!input || !btn || !out) return;
+  var input, btn, out;
   var EP = "https://mcp.mellowmountainradio.com/transcripts/search";
   var KIND = { talk: "station voice", show: "syndicated", live: "live mic" };
   function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
@@ -9237,23 +9241,26 @@
       out.innerHTML = '<p class="tm-sr-meta">The transcript shelf isn&rsquo;t answering right now &mdash; try again in a moment.</p>';
     }).finally(function () { busy = false; });
   }
-  btn.addEventListener("click", run);
-  input.addEventListener("keydown", function (e) { if (e.key === "Enter") run(); });
+  function init() {
+    input = document.querySelector("[data-said-input]");
+    btn = document.querySelector("[data-said-btn]");
+    out = document.querySelector("[data-said-results]");
+    busy = false;
+    if (!input || !btn || !out) return;
+    btn.addEventListener("click", run);
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") run(); });
+  }
+  document.addEventListener("kazm:page", init);
+  init();
 })();
 
 /* ── The Thread — sample lineage of the song on the air ──
    Polls AzuraCast now-playing, pulls lineage from the station server's
    /thread route (Genius-backed). Self-contained; touches nothing else. */
 (function () {
-  var root = document.querySelector("[data-thread]");
-  if (!root) return;
   var NP = "https://streaming.mellowmountainradio.com/api/nowplaying/mellowmountainradio";
   var EP = "https://mcp.mellowmountainradio.com/thread";
-  var artEl = root.querySelector("[data-th-art]"), titleEl = root.querySelector("[data-th-title]"),
-      artistEl = root.querySelector("[data-th-artist]"), rootsEl = root.querySelector("[data-th-roots]"),
-      canopyEl = root.querySelector("[data-th-canopy]"), groundEl = root.querySelector("[data-th-ground]"),
-      statusEl = root.querySelector("[data-th-status]");
-  var qEl = document.querySelector("[data-th-q]"), goEl = document.querySelector("[data-th-go]");
+  var root, artEl, titleEl, artistEl, rootsEl, canopyEl, groundEl, statusEl, qEl, goEl;
   var lastKey = "", pinned = false;
   function esc(x) { return (x == null ? "" : String(x)).replace(/[&<>"]/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]; }); }
   function cleanTitle(t) { return String(t || "").split(" - ")[0].replace(/\s*~.*$/, "").trim(); }
@@ -9448,28 +9455,51 @@
       armSongEnd(np);
     }).catch(pollMcp);
   }
-  if (goEl && qEl) {
-    var pull = function () {
-      var q = qEl.value.trim();
-      if (!q) { pinned = false; lastKey = ""; poll(); return; }
-      pinned = true;
-      titleEl.textContent = q;
-      artistEl.textContent = "looked up by hand — clear the box to follow the air again";
-      loadThread(q, "");
-    };
-    goEl.addEventListener("click", pull);
-    qEl.addEventListener("keydown", function (e) { if (e.key === "Enter") pull(); });
+  function pull() {
+    var q = qEl.value.trim();
+    if (!q) { pinned = false; lastKey = ""; poll(); return; }
+    pinned = true;
+    titleEl.textContent = q;
+    artistEl.textContent = "looked up by hand — clear the box to follow the air again";
+    loadThread(q, "");
   }
-  // boot: hammer politely every 2.5s until the first song lands, then settle
-  // into the 30s rhythm — a single dropped fetch must never leave the page dark
-  poll();
-  var boot = setInterval(function () {
-    if (lastKey) { clearInterval(boot); return; }
+  // router-aware lifecycle: the site swaps pages without reloading (the audio
+  // keeps playing), so this module must wake up on every arrival at the tree
+  // and put its timers down on every departure.
+  var timers = [];
+  function teardown() {
+    timers.forEach(function (t) { clearInterval(t); clearTimeout(t); });
+    timers = [];
+    if (songEndTimer) { clearTimeout(songEndTimer); songEndTimer = null; }
+  }
+  function init() {
+    teardown();
+    root = document.querySelector("[data-thread]");
+    if (!root) return;
+    artEl = root.querySelector("[data-th-art]"); titleEl = root.querySelector("[data-th-title]");
+    artistEl = root.querySelector("[data-th-artist]"); rootsEl = root.querySelector("[data-th-roots]");
+    canopyEl = root.querySelector("[data-th-canopy]"); groundEl = root.querySelector("[data-th-ground]");
+    statusEl = root.querySelector("[data-th-status]");
+    qEl = document.querySelector("[data-th-q]"); goEl = document.querySelector("[data-th-go]");
+    lastKey = ""; pinned = false; npFails = 0;
+    if (goEl && qEl) {
+      goEl.addEventListener("click", pull);
+      qEl.addEventListener("keydown", function (e) { if (e.key === "Enter") pull(); });
+    }
+    // boot: hammer politely every 2.5s until the first song lands, then settle
+    // into the 15s rhythm — a single dropped fetch must never leave the page dark
     poll();
-  }, 2500);
-  setTimeout(function () { clearInterval(boot); }, 30000);
-  setInterval(poll, 15000);
+    var boot = setInterval(function () {
+      if (lastKey) { clearInterval(boot); return; }
+      poll();
+    }, 2500);
+    timers.push(boot);
+    timers.push(setTimeout(function () { clearInterval(boot); }, 30000));
+    timers.push(setInterval(poll, 15000));
+  }
   // coming back to the tab (or out of the back/forward cache) re-tunes at once
-  document.addEventListener("visibilitychange", function () { if (!document.hidden) poll(); });
-  window.addEventListener("pageshow", function (e) { if (e.persisted) { lastKey = ""; poll(); } });
+  document.addEventListener("visibilitychange", function () { if (root && !document.hidden) poll(); });
+  window.addEventListener("pageshow", function (e) { if (root && e.persisted) { lastKey = ""; poll(); } });
+  document.addEventListener("kazm:page", init);
+  init();
 })();
