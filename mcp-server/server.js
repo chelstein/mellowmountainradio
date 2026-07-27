@@ -3478,6 +3478,55 @@ app.get("/owncast", async (_req, res) => {
   } catch (e) { res.status(502).json({ ok: false, error: String(e.message) }); }
 });
 
+// ── first-plays index — real Station Debuts from the full play history ────────
+// Walks the AzuraCast history from LOG_SINCE in month chunks, recording each
+// music key's first-ever play date and spin count. Cached to disk; extended
+// incrementally (complete days only, so re-runs never double-count).
+const FP_FILE = join(__dirname, "first-plays.json");
+let fp = null, fpBuilding = null;
+function fpLoad() {
+  if (!fp) { try { fp = JSON.parse(readFileSync(FP_FILE, "utf8")); } catch { fp = { through: null, songs: {} }; } }
+  return fp;
+}
+function fpSave() { try { writeFileSync(FP_FILE, JSON.stringify(fp)); } catch {} }
+function fpAddDays(day, n) { const t = new Date(day + "T12:00:00Z"); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); }
+
+async function fpIndexChunk(fromDay, toDay) {
+  // [fromDay, toDay) in Phoenix days (UTC-7, no DST)
+  const q = `start=${encodeURIComponent(fromDay + "T07:00:00Z")}&end=${encodeURIComponent(toDay + "T07:00:00Z")}&rows=25000`;
+  const rows = await azGet(`/api/station/${STATION}/history?${q}`);
+  for (const p of (Array.isArray(rows) ? rows : [])) {
+    const ti = p.song?.title || p.title || "";
+    const ar = p.song?.artist || p.artist || "";
+    if (!serverIsMusicPlay(ti, ar)) continue;
+    const key = (ti + "\x00" + ar).toLowerCase();
+    const d = new Date(((p.played_at || 0) - 7 * 3600) * 1000).toISOString().slice(0, 10);
+    const cur = fp.songs[key];
+    if (!cur) fp.songs[key] = { d, ti, ar, n: 1 };
+    else { cur.n++; if (d < cur.d) cur.d = d; }
+  }
+}
+
+async function fpEnsure() {
+  fpLoad();
+  const today = new Date(Date.now() - 7 * 3600 * 1000).toISOString().slice(0, 10);
+  if (fp.through && fp.through >= today) return;
+  if (fpBuilding) return fpBuilding;
+  fpBuilding = (async () => {
+    let from = fp.through || LOG_SINCE;
+    while (from < today) {
+      const to = fpAddDays(from, 31) < today ? fpAddDays(from, 31) : today;
+      await fpIndexChunk(from, to);
+      fp.through = to;
+      fpSave();
+      from = to;
+      console.log(`[first-plays] indexed through ${fp.through} (${Object.keys(fp.songs).length} songs)`);
+    }
+  })().catch(e => console.error("[first-plays]", e.message)).finally(() => { fpBuilding = null; });
+  return fpBuilding;
+}
+fpEnsure();   // build (or extend) at boot — ~a minute on first run, seconds daily
+
 // GET /charts — rolling 7-day top songs, artists, debut slots
 app.get("/charts", async (_req, res) => {
   setCors(res);
@@ -3503,7 +3552,19 @@ app.get("/charts", async (_req, res) => {
                          .map(([k, n]) => { const [ti, ar] = k.split("\x00"); return { ti, ar, n }; });
     const topArtists = Object.entries(artistMap).sort((a, b) => b[1] - a[1]).slice(0, 10)
                          .map(([ar, n]) => ({ ar, n }));
-    res.json({ ok: true, since, spins, uniques, top, topArtists, debuts: [] });
+    // Station Debuts — songs whose first-ever play in the full log landed in
+    // the last 30 days. Empty until the first-plays index has caught up far
+    // enough to make that claim honestly.
+    fpEnsure().catch(() => {});
+    const cutoff = new Date(Date.now() - (30 * 86400 + 7 * 3600) * 1000).toISOString().slice(0, 10);
+    fpLoad();
+    const debuts = (fp.through && fp.through >= cutoff)
+      ? Object.values(fp.songs)
+          .filter(s => s.d >= cutoff)
+          .sort((a, b) => (a.d < b.d ? 1 : a.d > b.d ? -1 : 0)).slice(0, 12)
+          .map(s => ({ ti: s.ti, ar: s.ar, first: s.d, n: s.n }))
+      : [];
+    res.json({ ok: true, since, spins, uniques, top, topArtists, debuts });
   } catch (e) {
     res.status(502).json({ ok: false, error: String(e.message) });
   }
