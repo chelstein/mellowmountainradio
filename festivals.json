@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-27T03:25:45.266Z",
+ "updated": "2026-07-27T09:56:40.058Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -171,6 +171,16 @@
    "genre": "Other",
    "start": "2026-08-22",
    "end": "2026-08-22"
+  },
+  {
+   "name": "Biergarten Blues Festival",
+   "city": "Huntington Beach",
+   "state": "CA",
+   "url": "https://www.universe.com/events/biergarten-blues-festival-tickets-YVZ36T?ref=ticketmaster",
+   "img": "https://s1.ticketm.net/dam/c/7be/4e1e9428-29ec-401f-aa45-f1577614b7be_105421_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Blues",
+   "start": "2026-08-29",
+   "end": "2026-08-29"
   },
   {
    "name": "Ohana Festival",
