@@ -8587,6 +8587,14 @@
     var dp = new DOMParser().parseFromString(html, "text/html");
     var nm = dp.getElementById("main");
     if (!main || !nm) { location.href = href; return; }
+    // a deploy happened since this tab loaded: the incoming page wants a newer
+    // script than the one running here. One real navigation picks it up —
+    // otherwise a long-lived radio tab soft-navigates on stale code forever.
+    var runningSrc = (doc.querySelector('script[src*="main.js"]') || {}).getAttribute
+      ? doc.querySelector('script[src*="main.js"]').getAttribute("src") : "";
+    var incomingEl = dp.querySelector('script[src*="main.js"]');
+    var incomingSrc = incomingEl ? incomingEl.getAttribute("src") : "";
+    if (runningSrc && incomingSrc && runningSrc !== incomingSrc) { location.href = href; return; }
     main.innerHTML = nm.innerHTML;
     var key = dp.body.getAttribute("data-page") || "";
     doc.body.setAttribute("data-page", key);
