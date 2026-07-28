@@ -201,7 +201,7 @@ jobs:
               items.sort(key=lambda i: i["t"])
               return items
 
-          MODEL = "medium.en"
+          MODEL = "large-v3"
 
           def transcribe(wav):
               from faster_whisper import WhisperModel
