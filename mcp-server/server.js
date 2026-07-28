@@ -2363,6 +2363,52 @@ function buildServer() {
     }
   );
 
+  // 47. Search Broadcast Transcripts ─────────────────────────────────────────────
+  mcp.tool(
+    "search_broadcast_transcripts",
+    "Search every word spoken on KAZM's airwaves — weather reports, local news, live talk breaks, and syndicated shows, machine-transcribed from the station's own broadcast tapes. The archive begins July 2026 and grows four blocks a day, forever. Commercials and PSAs are never archived. Times are Arizona (Phoenix, UTC-7). Pairs with search_song_history: that tool answers what was PLAYED, this one answers what was SAID.",
+    {
+      query: z.string().describe("Words to search for in the spoken-word archive, e.g. 'fire restrictions' or 'doctor'"),
+      types: z.string().optional().describe("Comma-separated segment types to search: talk (KAZM's own voice — weather, news, breaks), show (syndicated programming), live (live broadcasts), music (words captured over songs). Default 'talk,show,live'."),
+      date:  z.string().optional().describe("Limit to one broadcast day, YYYY-MM-DD"),
+      limit: z.number().optional().describe("Max matches to return (default 25, max 100)"),
+    },
+    { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
+    async ({ query, types, date, limit }) => {
+      const q = String(query || "").trim();
+      if (!q) return { content: [{ type: "text", text: JSON.stringify({ error: "query required" }) }] };
+      const typeSet = new Set(String(types || "talk,show,live").split(",").map(s => s.trim()).filter(Boolean));
+      const max  = Math.min(100, Math.max(1, parseInt(limit, 10) || 25));
+      const norm = s => String(s || "").toLowerCase().replace(/['‘’-]/g, "")
+                          .replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
+      const tokens = norm(q).split(" ").filter(Boolean);
+      const index = await trIndex();
+      const pool  = date ? index.filter(b => b.date === date) : index;
+      const matches = [];
+      let searched = 0;
+      for (const entry of pool) {
+        if (matches.length >= max) break;
+        let doc;
+        try { doc = await trBlock(entry); } catch { continue; }
+        searched++;
+        for (const s of (doc.segments || [])) {
+          if (!typeSet.has(s.type)) continue;
+          if (!tokens.every(t => norm(s.text).includes(t))) continue;
+          const hh = String(Math.floor(s.s / 3600)).padStart(2, "0");
+          const mm = String(Math.floor((s.s % 3600) / 60)).padStart(2, "0");
+          matches.push({ date: doc.date, time_az: `${hh}:${mm}`, type: s.type, text: s.text,
+                         timemachine_link: `https://mellowmountainradio.com/timemachine.html?d=${doc.date}&t=${hh}%3A${mm}` });
+          if (matches.length >= max) break;
+        }
+      }
+      return { content: [{ type: "text", text: JSON.stringify({
+        query: q, archive_begins: "2026-07", blocks_searched: searched,
+        blocks_total: pool.length, matches,
+        note: "Machine-transcribed; the broadcast tape is the record. Commercials and PSAs are excluded from the archive by station policy.",
+      }) }] };
+    }
+  );
+
   // ── MCP Prompts ──────────────────────────────────────────────────────────────
   // Pre-built conversation starters that chain multiple KAZM tools together.
 
@@ -2506,7 +2552,7 @@ function buildServer() {
   mcp.resource(
     "KAZM MCP Server Documentation",
     "kazm://docs",
-    { description: "Full documentation for the KAZM MCP server — all 45 tools, their parameters, and example queries.", mimeType: "text/uri-list" },
+    { description: "Full documentation for the KAZM MCP server — all 46 tools, their parameters, and example queries.", mimeType: "text/uri-list" },
     async (uri) => ({
       contents: [{
         uri: uri.href,
@@ -3662,7 +3708,7 @@ app.get("/.well-known/mcp-registry-auth", (_req, res) => {
 app.get("/.well-known/mcp.json", (_req, res) => {
   res.json({
     name: "KAZM Mellow Mountain Radio",
-    description: "45 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles (email or ID lookup, zero-friction), weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "46 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles (email or ID lookup, zero-friction), weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     url: "https://mcp.mellowmountainradio.com/mcp",
     documentation: "https://mcp.mellowmountainradio.com/docs",
@@ -3676,7 +3722,7 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
     $schema: "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
     name: "com.mellowmountainradio.mcp/kazm",
     title: "KAZM Mellow Mountain Radio",
-    description: "45 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles (email or ID lookup, zero-friction), weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
+    description: "46 live tools for KAZM 106.5 FM & 780 AM — now playing, song requests, personalized listener profiles (email or ID lookup, zero-friction), weather, fire restrictions, sports scores, moon phases, chakra guide, tarot card, Red Rock Pass guide, hiking trails, stargazing conditions, photography guide, vortex guide, wildfires, and more for Sedona/Verde Valley.",
     version: "1.0.0",
     websiteUrl: "https://mellowmountainradio.com",
     repository: { url: "https://github.com/chelstein/mellowmountainradio", source: "github" },
