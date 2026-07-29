@@ -24,7 +24,7 @@ on:
         required: false
         default: ''
       count:
-        description: 'How many missing blocks to transcribe this run (newest first). Max ~4 per run with medium.en (about 50 min per block).'
+        description: 'How many missing blocks to transcribe this run (newest first). large-v3 runs ~20 min per block, well under the timeout, but stay modest on batch size during any future backlog.'
         required: false
         default: '1'
       force:
@@ -201,7 +201,7 @@ jobs:
               items.sort(key=lambda i: i["t"])
               return items
 
-          MODEL = "medium.en"
+          MODEL = "large-v3"
 
           def transcribe(wav):
               from faster_whisper import WhisperModel
