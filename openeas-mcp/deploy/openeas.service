@@ -1,0 +1,54 @@
+[Unit]
+Description=OpenEAS MCP server — read-only Emergency Alert System observability
+Documentation=https://github.com/chelstein/mellowmountainradio/blob/main/openeas/SPEC.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=openeas
+Group=openeas
+WorkingDirectory=/opt/openeas
+
+# Conformance gate. 47 CFR §11.45(a) reaches recordings and simulations, so an
+# EAS audio artifact must never reach a running deployment. If this fails the
+# service refuses to start — deliberately, rather than starting and warning.
+ExecStartPre=/usr/bin/node /opt/openeas/scripts/no-eas-audio.js
+
+ExecStart=/usr/bin/node /opt/openeas/server.js
+Restart=always
+RestartSec=5
+
+Environment=NODE_ENV=production
+EnvironmentFile=-/etc/openeas/openeas.env
+
+# Hardening. This process reads two public HTTPS feeds and serves JSON. It has
+# no legitimate need for write access, privilege escalation, or device access.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_INET AF_INET6
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources @obsolete
+ReadOnlyPaths=/opt/openeas
+CapabilityBoundingSet=
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openeas
+
+[Install]
+WantedBy=multi-user.target
