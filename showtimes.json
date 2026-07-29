@@ -1,33 +1,11 @@
 {
- "updated": "2026-07-28T19:27:50.645Z",
+ "updated": "2026-07-29T02:50:10.983Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "WHAM! 10 Days in China",
-   "date": "2026-07-28",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/wham-10-days-in-china/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/06/WHAM-poster.jpg",
-   "summary": "In 1985, WHAM! crossed cultural divides as the first Western pop act in China. Previously unseen, beautifully restored archive footage reveals this landmark meeting of pop, politics and history."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: Michael",
-   "date": "2026-07-28",
-   "time": "19:30",
-   "venue": "Tlaquepaque Arts & Shopping Village",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-michael/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Michael-poster.jpg",
-   "summary": "Join us on Tuesday, July 28 as we present “Michael” outdoors in the calle at Tlaquepaque Arts & Shopping Village. “Michael” is the cinematic portrayal of the life and legacy of one of the most influential artists the…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Outdoor Film: The 40-Year-Old Virgin",
@@ -382,6 +360,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Super Improv! Summer Camp",
+   "date": "2026-08-15",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/super-improv-summer-camp/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Super-Improv-CAMP-Aug-2026-poster.jpg",
+   "summary": "Pack your bug spray, grab your marshmallows, and get ready for an evening of S’MORE Comedy, IN-TENTS Laughter, and unforgettable fun! Super Improv! Game Show is back for its fourth hilarious production, bringing its…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Outdoor Film: A Fish Called Wanda",
    "date": "2026-08-17",
    "time": "19:30",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/never-stop-chasing/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Never-Stop-Chasing-poster.jpg",
    "summary": "Storm chaser Reed Timmer and his crew pursue the world’s most powerful tornadoes, confronting danger, friendship, and the personal cost of a life driven by the relentless pursuit of storms in the immersive…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Deaf",
+   "date": "2026-08-28",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/deaf/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Deaf-poster.jpg",
+   "summary": "Ángela, a deaf woman, is expecting a child with her hearing partner, Héctor. Ángela’s deafness raises concerns during her pregnancy regarding connecting with her daughter. Post-delivery, Héctor supports her as she…"
   }
  ]
 }
