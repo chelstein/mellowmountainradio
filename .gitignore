@@ -3,3 +3,5 @@ mcp-server/.env
 mcp-server/push-subs.json
 mcp-server/requests.json
 mcp-server/pulse.json
+__pycache__/
+*.pyc
