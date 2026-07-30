@@ -185,6 +185,33 @@ export function parseCap(xml, extra = {}) {
       languages:    infos.map(i => i.language ?? "en-US"),
     },
 
+    // ── Multilingual ────────────────────────────────────────────────────────
+    // CAP uses repeated <info> for language variants, and the IPAWS Profile
+    // requires every block in one alert describe the same incident with
+    // identical category and eventCode. Rendering only the English block throws
+    // away the rest: a live Utah evacuation carried full English and Spanish
+    // copy with distinct CMAMtext for each.
+    //
+    // §11.31(e) has no per-language event codes, so translation lives entirely
+    // in <info>. The FCC's pending multilingual proposal (89 FR 16504) would add
+    // pre-scripted templates in the 13 most common non-English U.S. languages,
+    // which would arrive as further variants here — so this shape is
+    // forward-compatible with it.
+    languages: infos.map(i => ({
+      language: i.language ?? "en-US",
+      event:       i.event ?? null,
+      headline:    i.headline ?? null,
+      description: i.description ?? null,
+      instruction: i.instruction ?? null,
+      senderName:  i.senderName ?? null,
+      responseType: i.responseType ?? [],
+      // WEA short/long text is per-language too.
+      wea_short: firstParam(i.parameter, "CMAMtext"),
+      wea_long:  firstParam(i.parameter, "CMAMlongtext"),
+      resources: (i.resource ?? []).map(describeResource),
+    })),
+    language_count: infos.length,
+
     same: {
       org: (parameters["EAS-ORG"] ?? [])[0] ?? null,
       event_code: sameEvent,
@@ -224,8 +251,136 @@ export function parseCap(xml, extra = {}) {
     },
 
     signature,
+    disposition: disposition(a, infos, areas, sameEvent, sameGeocodes),
 
     sources: [{ id: SOURCE_IPAWS.id, retrieved_at: new Date().toISOString() }],
+  };
+}
+
+/**
+ * ECIG §6.4–6.6 disposition. Adopted rather than invented, because §11.56(a)(2)
+ * requires CAP-to-EAS conversion "following procedures set forth in the EAS-CAP
+ * Industry Group's (ECIG) Implementation Guide" — making that guide operative
+ * law, not advice.
+ *
+ *   Accepted  — validated and processable
+ *   Ignored   — a required element is MISSING (carries a reason)
+ *   Rejected  — a required element is PRESENT BUT INVALID
+ *
+ * ECIG §6.7 fixes the minimum set: alert, identifier, sender, sent, status,
+ * msgType, scope, info, eventCode, area, geocode.
+ *
+ * This is what answers "why didn't this air?" in the vocabulary the equipment
+ * itself uses. It describes processability only — Accepted does NOT mean aired.
+ */
+function disposition(a, infos, areas, sameEvent, sameGeocodes) {
+  const missing = [];
+  const invalid = [];
+
+  if (!a.identifier) missing.push("identifier");
+  if (!a.sender)     missing.push("sender");
+  if (!a.sent)       missing.push("sent");
+  if (!a.status)     missing.push("status");
+  if (!a.msgType)    missing.push("msgType");
+  if (!a.scope)      missing.push("scope");
+  if (!infos.length) missing.push("info");
+  if (!sameEvent)    missing.push("eventCode[valueName=SAME]");
+  if (!areas.length) missing.push("area");
+  if (!sameGeocodes.length) missing.push("area/geocode[valueName=SAME]");
+
+  const STATUS  = ["Actual", "Exercise", "System", "Test", "Draft"];
+  const MSGTYPE = ["Alert", "Update", "Cancel", "Ack", "Error"];
+  const SCOPE   = ["Public", "Restricted", "Private"];
+
+  if (a.status  && !STATUS.includes(a.status))   invalid.push(`status="${a.status}"`);
+  if (a.msgType && !MSGTYPE.includes(a.msgType)) invalid.push(`msgType="${a.msgType}"`);
+  if (a.scope   && !SCOPE.includes(a.scope))     invalid.push(`scope="${a.scope}"`);
+  if (a.sent && Number.isNaN(Date.parse(a.sent))) invalid.push(`sent="${a.sent}" is not parseable`);
+  if (sameEvent && !/^[A-Z]{3}$/.test(sameEvent)) invalid.push(`SAME eventCode="${sameEvent}"`);
+  for (const g of sameGeocodes) {
+    if (!/^\d{6}$/.test(String(g))) invalid.push(`SAME geocode="${g}" is not six digits`);
+  }
+  // IPAWS Profile requires a <code> of IPAWSv1.0 on profile-conformant messages.
+  const codes = a.code ?? [];
+  const profileOk = codes.some(c => String(c).trim() === "IPAWSv1.0");
+
+  // Per ECIG §3.9 a Test-status message must not be broadcast. That is a
+  // broadcast decision, not a parse failure, so it is surfaced separately.
+  const notForBroadcast = a.status && a.status !== "Actual";
+
+  let state = "Accepted";
+  if (invalid.length) state = "Rejected";
+  else if (missing.length) state = "Ignored";
+
+  return {
+    state,
+    missing,
+    invalid,
+    ipaws_profile_code_present: profileOk,
+    not_for_broadcast: Boolean(notForBroadcast),
+    reason:
+      state === "Rejected"
+        ? `Required element(s) present but invalid: ${invalid.join(", ")}.`
+        : state === "Ignored"
+          ? `Required element(s) missing: ${missing.join(", ")}.`
+          : notForBroadcast
+            ? `Processable, but status="${a.status}" is not "Actual"; ECIG §3.9 provides ` +
+              `that such a message must not be broadcast.`
+            : "All ECIG §6.7 required elements present and valid.",
+    basis: "ECIG Recommendations for a CAP EAS Implementation Guide v1.0 §6.4–6.7, " +
+           "incorporated by reference at 47 CFR §11.56(a)(2).",
+    caveat: "Describes processability only. 'Accepted' does NOT mean the alert aired.",
+  };
+}
+
+/** First value of a named parameter within a single <info> block, or null. */
+function firstParam(params, name) {
+  for (const p of params ?? []) {
+    if (p?.valueName === name) return p.value ?? null;
+  }
+  return null;
+}
+
+// MIME types that carry audio. A CAP <resource> is where pre-recorded alert
+// audio lives, and that audio contains real Attention Signals and SAME bursts.
+const AUDIO_MIME = /^audio\/|^application\/(ogg|x-mpegurl)|\.(wav|mp3|aac|m4a|ogg|opus|flac)$/i;
+
+/**
+ * Describe a CAP <resource> without ever fetching it.
+ *
+ * Metadata only, deliberately. Two reasons, and the second is the serious one:
+ *
+ *  1. derefUri can carry a base64 payload inline, so echoing a resource
+ *     wholesale can balloon a response by megabytes.
+ *  2. Audio resources contain genuine EAS Attention Signals and SAME headers.
+ *     Re-transmitting those outside a real alert is what drew a $1,000,000 civil
+ *     penalty against iHeartCommunications in 2015, when a syndicated programme
+ *     aired tones from a recording and cascaded false activations across 70+
+ *     affiliates. This server therefore surfaces the URI and refuses to proxy,
+ *     inline, or play it. A consumer that wants the audio must fetch it itself
+ *     and own that decision.
+ */
+function describeResource(r) {
+  const mime = r?.mimeType ?? null;
+  const isAudio = mime ? AUDIO_MIME.test(mime) : false;
+  return {
+    description: r?.resourceDesc ?? null,
+    mime_type: mime,
+    size_bytes: r?.size ? Number(r.size) : null,
+    uri: r?.uri ?? null,
+    digest: r?.digest ?? null,
+    has_inline_payload: Boolean(r?.derefUri),
+    is_audio: isAudio,
+    // Never the payload itself.
+    payload_withheld: Boolean(r?.derefUri) || isAudio,
+    withheld_reason: isAudio
+      ? "Audio resource. This server does not proxy, inline, or play EAS alert " +
+        "audio — it contains real Attention Signals and SAME bursts, and " +
+        "re-transmitting those outside an actual alert violates 47 CFR §11.45(a). " +
+        "The URI is provided; fetching it is the consumer's decision."
+      : r?.derefUri
+        ? "Inline derefUri payload withheld to bound response size. Use the URI."
+        : null,
   };
 }
 

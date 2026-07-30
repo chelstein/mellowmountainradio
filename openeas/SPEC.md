@@ -511,6 +511,54 @@ replaced by `_` (e.g. `eas_get_active_alerts`) and **MUST** set
 | 10 | `eas.export_log` | C | Full-size export per §7.3. |
 | 11 | `eas.get_conformance` | A | This profile's version, declared regulatory position (§2), tier availability, and source health. |
 | 12 | `eas.draft_false_alert_report` | C | Draft the §11.45(b) report. Drafts only — see below. |
+| 13 | `eas.get_ipaws_feed` | A | The national IPAWS active window. |
+| 14 | `eas.get_ipaws_alert` | A | One full signed CAP alert by identifier. |
+| 15 | `eas.lookup_location` | A | Resolve SAME location codes to places; search by county or state. |
+| 16 | `eas.find_alerts_for_point` | A | Alerts whose area contains a latitude/longitude. |
+| 17 | `eas.get_alert_geojson` | A | An alert's area as GeoJSON. |
+| 18 | `eas.get_alert_languages` | A | Every language variant of an alert. |
+
+### 5.0 National scope
+
+An Implementation **MUST NOT** hardcode a single service area. Any station
+configuration is a **default**, never a constraint.
+
+Alert-returning tools **MUST** accept at least one of: state (postal code or FIPS),
+SAME location codes, NWS zones, a latitude/longitude point, or nationwide. An
+Implementation **MUST** report which scope was applied, so a caller can never
+mistake a narrow query for an empty country.
+
+Location resolution **SHOULD** use the National Weather Service SAME table
+(`https://www.weather.gov/source/nwr/SameCode.txt`, 3,295 rows, `PSSCCC,County, ST`).
+Note that statewide codes (`CCC=000`) are **absent** from that file and must be
+synthesized, and that the historical `nws.noaa.gov/nwr/data/` path now returns 403
+while `weather.gov/nwr/data/` returns HTML — only `/source/nwr/` returns the table.
+
+### 5.3 Validation mode
+
+Alert-returning tools **SHOULD** accept a `validate` flag, off by default. When
+set, the response **MUST** include a field-by-field audit in which every check
+names the rule or specification clause it derives from.
+
+Each check **MUST** report exactly one of four results, and an Implementation
+**MUST NOT** collapse them to a boolean:
+
+| Result | Meaning |
+|---|---|
+| `pass` | Requirement satisfied. |
+| `fail` | Requirement violated, or two authorities disagree. |
+| `absent` | Optional element not present. **Not** a failure. |
+| `unknown` | Could not be determined. **Not** a pass and **not** a failure. |
+
+An overall verdict **MUST** be `indeterminate` whenever any check is `unknown`.
+Reporting `clean` while a check could not be completed misrepresents the evidence
+— which is the whole failure this profile exists to prevent.
+
+The purpose is evidentiary. A proof of concept offered into a rulemaking record
+must be inspectable: a reviewer at the Commission, at a State Emergency
+Communications Committee, or at a competing vendor should be able to take one
+alert, read every element, see which authority governs it, and check the verdict
+without trusting the implementation.
 
 ### 5.1 Constraints on tool 12
 
