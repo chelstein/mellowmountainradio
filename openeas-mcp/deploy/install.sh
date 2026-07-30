@@ -259,7 +259,20 @@ fi
 
 ln -sf "$NGX" /etc/nginx/sites-enabled/openeas
 rm -f /etc/nginx/sites-enabled/default
-nginx -t || die "nginx config test failed."
+
+if ! nginx -t 2>/tmp/openeas-nginx-test.log; then
+  echo
+  warn "nginx rejected the config:"
+  sed 's/^/    /' /tmp/openeas-nginx-test.log >&2
+  echo
+  warn "nginx version: $(nginx -v 2>&1)"
+  # Leaving a broken symlink in place would break any later `systemctl reload
+  # nginx` for unrelated reasons, so disable ours before bailing out.
+  rm -f /etc/nginx/sites-enabled/openeas
+  warn "Disabled /etc/nginx/sites-enabled/openeas so nginx stays reloadable."
+  warn "The openeas service itself is unaffected and is listening on 127.0.0.1:3100."
+  die "nginx config test failed."
+fi
 systemctl reload nginx
 
 # ── firewall ────────────────────────────────────────────────────────────────
