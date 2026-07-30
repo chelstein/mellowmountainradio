@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 380
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Compute block identity (Arizona time, UTC-7 fixed offset)
         id: block
@@ -47,8 +47,18 @@ jobs:
           echo "start=$BLOCK_HOUR"  >> "$GITHUB_OUTPUT"
           echo "[tape] block: $FILENAME (AZ $DATE_STR $BLOCK_HOUR:00)"
 
-      - name: Install ffmpeg
-        run: sudo apt-get install -y ffmpeg
+      - name: Ensure ffmpeg
+        # The runner image ships ffmpeg. Installing it unconditionally added a
+        # network dependency — and an apt-get without a preceding update is a
+        # coin flip on stale package lists. Only reach for apt if it is actually
+        # missing.
+        run: |
+          if command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null; then
+            echo "[tape] ffmpeg present: $(ffmpeg -version | head -1)"
+          else
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
 
       - name: Prune GitHub releases older than 14 days
         env:
@@ -85,14 +95,47 @@ jobs:
           REC_START_SECS=$(( ($(date -u +%s) - 7*3600) % 86400 ))
           echo "rec_start=$REC_START_SECS" >> "$GITHUB_OUTPUT"
           echo "[tape] recording /tmp/${FILENAME}.mp3 for ${DURATION}s (AZ offset: ${REC_START_SECS}s from midnight)"
+
+          # -reconnect survives a transient drop on the stream. Without it a
+          # single hiccup ends the capture early and ffmpeg still exits 0, which
+          # is how a fragment becomes indistinguishable from a full block.
           ffmpeg -hide_banner -loglevel error \
+            -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 30 \
             -i "https://streaming.mellowmountainradio.com/listen/mellowmountainradio/radio.mp3" \
-            -t "$DURATION" -c copy -y "/tmp/${FILENAME}.mp3"
+            -t "$DURATION" -c copy -y "/tmp/${FILENAME}.mp3" || true
+
           if [ ! -s "/tmp/${FILENAME}.mp3" ]; then
             echo "[tape] recording came out empty" >&2
             exit 1
           fi
-          echo "[tape] done — $(stat -c%s "/tmp/${FILENAME}.mp3") bytes"
+
+          BYTES=$(stat -c%s "/tmp/${FILENAME}.mp3")
+          ACTUAL=$(ffprobe -v error -show_entries format=duration -of csv=p=0 \
+                     "/tmp/${FILENAME}.mp3" 2>/dev/null | cut -d. -f1)
+          case "$ACTUAL" in ''|*[!0-9]*) ACTUAL=0 ;; esac
+          echo "actual=$ACTUAL" >> "$GITHUB_OUTPUT"
+
+          # A short tape is kept, not discarded — a partial recording is still
+          # the only record of that airtime. But it is LABELLED, because the
+          # failure this guards against is a fragment being indexed as a
+          # complete block and later read as evidence that nothing aired in the
+          # missing hours. Absence of audio is not absence of broadcast.
+          MIN=$(( DURATION * 90 / 100 ))
+          if [ "$ACTUAL" -ge "$MIN" ]; then
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+            echo "[tape] done — ${ACTUAL}s / ${DURATION}s, ${BYTES} bytes"
+          else
+            echo "complete=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Tape ${FILENAME} is short: ${ACTUAL}s of ${DURATION}s requested. Keeping it, marking it truncated in the manifest."
+            echo "[tape] TRUNCATED — ${ACTUAL}s / ${DURATION}s, ${BYTES} bytes"
+          fi
+
+          # Below a minute there is nothing worth publishing and something is
+          # genuinely wrong with the stream or the runner. Fail loudly.
+          if [ "$ACTUAL" -lt 60 ]; then
+            echo "[tape] recording unusably short (${ACTUAL}s) — failing" >&2
+            exit 1
+          fi
 
       - name: Upload to GitHub Release
         id: upload
@@ -127,10 +170,20 @@ jobs:
           START_H="${{ steps.block.outputs.start }}"
           REC_START="${{ steps.recording.outputs.rec_start }}"
           FILENAME="${{ steps.block.outputs.filename }}"
+          ACTUAL="${{ steps.recording.outputs.actual }}"
+          COMPLETE="${{ steps.recording.outputs.complete }}"
           for attempt in 1 2 3 4 5; do
             git fetch origin main
-            git checkout origin/main
-            python3 - "$URL" "$DATE_STR" "$START_H" "$REC_START" <<'PYEOF'
+            # -f is load-bearing. Every failure this workflow has had (runs 34,
+            # 36 and 38, 15-16 July) was a plain `git checkout origin/main`
+            # aborting with "local changes would be overwritten" after the
+            # manifest had been touched. The tape was already recorded and
+            # uploaded by then, so the run failed having done all the expensive
+            # work and lost only the index entry. Nothing here needs the working
+            # tree preserved: the manifest is rebuilt from origin/main every
+            # iteration.
+            git checkout -f origin/main
+            python3 - "$URL" "$DATE_STR" "$START_H" "$REC_START" "$ACTUAL" "$COMPLETE" <<'PYEOF'
           import sys, json
           from datetime import datetime, timezone, timedelta
 
@@ -138,8 +191,18 @@ jobs:
           date_str  = sys.argv[2]
           start_h   = int(sys.argv[3])
           rec_start = int(sys.argv[4]) if len(sys.argv) > 4 and sys.argv[4] else start_h * 3600
+          actual    = int(sys.argv[5]) if len(sys.argv) > 5 and sys.argv[5].isdigit() else 0
+          complete  = (len(sys.argv) > 6 and sys.argv[6] == "true")
 
           new_block = {"url": url, "date": date_str, "start": start_h, "recStart": rec_start}
+          # Extra keys only; the player reads url/date/start/recStart and ignores
+          # the rest. A truncated block says so in the index itself, so anyone
+          # mining these tapes later can tell a gap in the recording from a gap
+          # in the broadcast.
+          if actual:
+              new_block["durationSec"] = actual
+          if not complete:
+              new_block["truncated"] = True
 
           with open("rewind-manifest.json") as f:
               manifest = json.load(f)
