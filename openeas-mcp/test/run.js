@@ -299,6 +299,158 @@ async function suiteStore() {
   }
 }
 
+// ── playout as-run log adapters ──────────────────────────────────────────────
+//
+// Synthetic by necessity and legitimately so: the thing under test IS the
+// heterogeneity. No single station has logs from ten automation systems, and a
+// detector proven against one vendor's file is a detector that works at one
+// station. Each shape below is written to a different vendor's conventions —
+// delimiter, header vocabulary, column order, time format — precisely so the
+// detector is tested against formats its author did not design for.
+//
+// Nothing here contains EAS audio. Marker matching operates on log TEXT.
+async function suitePlayout() {
+  suite("Playout as-run log adapters (vendor-neutral)");
+  const { mkdtempSync, writeFileSync, rmSync } = await import("fs");
+  const { tmpdir } = await import("os");
+
+  const dir = mkdtempSync(join(tmpdir(), "openeas-playout-"));
+  const write = (name, body) => { const p = join(dir, name); writeFileSync(p, body); return p; };
+
+  // Shape 1 — tab-delimited with a plain header row (MegaSeg export style).
+  const tsv = write("2026-07-29.txt", [
+    "Time\tTitle\tArtist\tDuration\tCategory",
+    "08:00:00\tHarvest Moon\tNeil Young\t05:03\tMusic",
+    "08:05:10\tStation ID\tKAZM\t00:08\tImaging",
+    "08:05:20\tEAS Required Weekly Test\tENDEC\t00:52\tBreak",
+  ].join("\n"));
+
+  // Shape 2 — comma-delimited, different order, vendor header synonyms.
+  const csv = write("07-29-2026.csv", [
+    "Cart No,Air Time,Description,Actual Length,Result",
+    "10241,08:00:04,Harvest Moon,00:05:03,Played",
+    "90001,08:05:12,EAS TEST RWT — ZCZC-EAS-RWT,00:00:52,Played",
+  ].join("\n"));
+
+  // Shape 3 — headerless, pipe-delimited (proprietary as-run export style).
+  const pipe = write("20260729.dat", [
+    "08:00:04|Harvest Moon|Neil Young|303",
+    "08:05:12|EMERGENCY ALERT SYSTEM TEST|Automation|52",
+  ].join("\n"));
+
+  // Shape 4 — semicolon, 12-hour clock, explicit date column.
+  const semi = write("asrun_2026_07_29.txt", [
+    "Date;Start Time;Item;Performer;Length",
+    "07/29/2026;8:00:04 AM;Harvest Moon;Neil Young;5:03",
+    "07/29/2026;8:05:12 AM;Required Weekly Test;EAS;0:52",
+  ].join("\n"));
+
+  // Shape 5 — free-form, no columns at all (script-driven playout).
+  const freeform = write("liquidsoap.log", [
+    "2026/07/29 08:00:04 [source:3] Prepared \"harvest_moon.mp3\" (RID 12).",
+    "2026/07/29 08:05:12 [source:3] Prepared \"rwt.wav\" (RID 13).",
+  ].join("\n"));
+
+  try {
+    const pl = await import("../lib/playout.js?fresh=" + Date.now());
+    const generic = pl.ADAPTERS.find(a => a.id === "generic");
+    const res = { ok: true, adapter: generic, log_dir: dir };
+
+    ok("adapter registry covers more than one vendor and every entry states its evidence",
+       pl.ADAPTERS.length >= 8 && pl.ADAPTERS.every(a => typeof a.evidence === "string" && a.evidence.length > 40));
+    ok("a generic delimited adapter always exists, so an unknown system is still readable",
+       Boolean(generic));
+
+    // Shape 1
+    const a = pl.readLog(tsv, res);
+    eq("tab-delimited: delimiter detected", a.format.delimiter_name, "tab");
+    eq("tab-delimited: header row recognised", a.format.has_header, true);
+    eq("tab-delimited: rows parsed (header excluded)", a.count, 3);
+    eq("tab-delimited: title column mapped", a.entries[0].title, "Harvest Moon");
+    eq("tab-delimited: date recovered from filename", a.entries[0].at?.length > 0, true);
+
+    // Shape 2 — synonyms must resolve without any per-vendor column table.
+    const b = pl.readLog(csv, res);
+    eq("comma-delimited: delimiter detected", b.format.delimiter_name, "comma");
+    eq("comma-delimited: 'Air Time' resolved to the time column", b.entries[0].time, "08:00:04");
+    eq("comma-delimited: 'Description' resolved to the title column", b.entries[0].title, "Harvest Moon");
+    eq("comma-delimited: 'Cart No' resolved to the id column", b.entries[0].id, "10241");
+
+    // Shape 3 — no header. Must degrade honestly, not silently.
+    const c = pl.readLog(pipe, res);
+    eq("headerless: delimiter detected", c.format.delimiter_name, "pipe");
+    eq("headerless: header correctly reported as absent", c.format.has_header, false);
+    ok("headerless: confidence is reported as low, not hidden",
+       /^low/.test(c.format.confidence), c.format.confidence);
+    ok("headerless: a caveat instructs the operator to verify the mapping",
+       typeof c.format.caveat === "string" && /verify/i.test(c.format.caveat));
+    eq("headerless: time column inferred", c.entries[0].time, "08:00:04");
+
+    // Shape 4 — 12-hour clock plus a date column.
+    const d = pl.readLog(semi, res);
+    eq("semicolon: delimiter detected", d.format.delimiter_name, "semicolon");
+    eq("semicolon: date column preferred over filename", d.entries[0].at_source, "date column");
+    ok("semicolon: 12-hour AM time resolved to a real instant",
+       d.entries[0].at && new Date(d.entries[0].at).getHours() === 8, d.entries[0].at);
+
+    // Shape 5 — must refuse rather than invent columns.
+    const e = pl.readLog(freeform, res);
+    eq("free-form log is refused, not guessed at", e.format.ok, false);
+    eq("free-form refusal is labelled as such", e.format.free_form, true);
+    ok("free-form refusal explains the remedy",
+       /export a delimited/i.test(e.format.error), e.format.error);
+
+    // EAS markers must fire across every shape, matched on the raw line.
+    const shapes = [["tab", a], ["comma", b], ["pipe", c], ["semicolon", d]];
+    for (const [label, log] of shapes) {
+      const hits = pl.findEasEntries(log.entries, generic);
+      ok(`EAS marker found in the ${label} log`, hits.length === 1,
+         `${hits.length} hit(s)`);
+    }
+    eq("a music-only row is not flagged as EAS",
+       pl.findEasEntries([{ raw: "08:00:04|Harvest Moon|Neil Young|303" }], generic).length, 0);
+
+    // Parity — three buckets, matched by time window, never collapsed.
+    const easEntry = a.entries[2];                       // 08:05:20 local
+    const at = Date.parse(easEntry.at);
+    const decisions = [
+      { seq: 1, recorded_at: new Date(at - 3 * 60_000).toISOString(),
+        payload: { alert: { event_code: "RWT", places: ["Yavapai"] },
+                   decision: { action: "would_transmit", rule: "§11.61 RWT" } } },
+      { seq: 2, recorded_at: new Date(at - 9 * 3600_000).toISOString(),
+        payload: { alert: { event_code: "TOR", places: ["Yavapai"] },
+                   decision: { action: "would_transmit", rule: "§11.51(m)" } } },
+      { seq: 3, recorded_at: new Date(at).toISOString(),
+        payload: { alert: { event_code: "SVR" }, decision: { action: "would_not_transmit" } } },
+    ];
+    const p = pl.parity(decisions, a.entries, { windowMinutes: 15, adapter: generic });
+    eq("parity: agreement detected inside the window", p.counts.agreed, 1);
+    eq("parity: decision outside the window is not silently matched",
+       p.counts.decision_without_air_record, 1);
+    eq("parity: a would-not-transmit decision is not counted as a transmission",
+       p.counts.software_would_transmit, 2);
+    eq("parity: each air record is claimed at most once", p.counts.air_record_without_decision, 0);
+    ok("parity: delta between decision and air record is reported in seconds",
+       p.agreed[0].delta_seconds === 180, String(p.agreed[0].delta_seconds));
+    ok("parity: buckets are reported separately, with no collapsed score",
+       "agreed" in p.counts && "decision_without_air_record" in p.counts &&
+       "air_record_without_decision" in p.counts && !("score" in p.counts));
+    ok("parity: result is labelled non-authoritative",
+       /advisory/i.test(p.non_authoritative) && /§11\.51\(m\)/.test(p.non_authoritative));
+    ok("parity: topology caveat states an empty air side may be expected",
+       /downstream/i.test(p.interpretation));
+
+    // Absence must never be reported as a healthy empty result.
+    const st = pl.status();
+    ok("no playout system on this host is reported as unavailable, not as zero logs",
+       st.available === false && typeof st.detail === "string" && st.detail.length > 40);
+    ok("every path probed is disclosed so the operator can see what was checked",
+       Array.isArray(st.paths_probed));
+  } finally {
+    try { rmSync(dir, { recursive: true, force: true }); } catch {}
+  }
+}
+
 // ── conformance guard ────────────────────────────────────────────────────────
 async function suiteGuard() {
   suite("Conformance guard (§11.45(a))");
@@ -317,7 +469,8 @@ async function suiteGuard() {
 // ── run ──────────────────────────────────────────────────────────────────────
 const suites = [
   ["parser", suiteParser], ["codes", suiteCodes], ["cap", suiteCap],
-  ["geo", suiteGeo], ["store", suiteStore], ["guard", suiteGuard],
+  ["geo", suiteGeo], ["store", suiteStore], ["playout", suitePlayout],
+  ["guard", suiteGuard],
 ];
 
 console.log("\x1b[1mOpenEAS test lab\x1b[0m — real federal data, no EAS audio anywhere");

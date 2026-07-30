@@ -92,6 +92,20 @@ Configuration is environment-driven; defaults are KAZM's.
 Sedona straddles the Yavapai/Coconino line, so the service area genuinely needs
 both `004025` and `004005`.
 
+Tier C — the station-side tools — only makes sense on the studio machine, and is
+off unless you turn it on. Off the studio machine these tools report *unavailable*
+rather than returning an empty result, because an empty parity report reads as
+agreement.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `OPENEAS_TIER_C` | unset | `1` enables decision recording |
+| `PLAYOUT_SYSTEM` | `auto` | Adapter id, or `auto`, or `generic` |
+| `PLAYOUT_LOG_DIR` | unset | As-run log directory. Skips path probing. **Any delimited export works** |
+| `PLAYOUT_COLUMNS` | unset | Explicit column map, e.g. `time,title,artist,-,duration` (`-` skips). Overrides detection |
+| `PLAYOUT_API_URL` | unset | Base URL for database-backed systems (AzuraCast, LibreTime) |
+| `PLAYOUT_API_KEY` | unset | Credential for the authenticated history endpoint |
+
 ## Tools
 
 All read-only, all `readOnlyHint: true`. Verbs are constrained to `get_`, `list_`,
@@ -107,10 +121,58 @@ mistaken for a command to EAS equipment.
 | `eas_explain_alert` | Decode SAME header **text** field by field with rule citations |
 | `eas_get_event_codes` | Versioned §11.31 code tables |
 | `eas_get_conformance` | Profile version, regulatory position, tier availability, per-tool status |
+| `eas_get_playout_status` | Which automation this host runs, where its as-run log is, and how that was determined |
+| `eas_get_asrun_log` | What actually aired, read from the automation's as-run log |
+| `eas_get_parity_report` | Decisions vs. air records — three buckets, never a score |
 
-Station-side tools (monitor health, station activity, test status, air
-verification, compliance log, export, false-alert report drafting) are specified
-but not implemented — see [SPEC §5](../openeas/SPEC.md) and the blockers below.
+The remaining station-side tools (monitor health, station activity, test status,
+off-air verification, compliance log, export, false-alert report drafting) are
+specified but not implemented — see [SPEC §5](../openeas/SPEC.md) and the blockers
+below.
+
+## Parity, and why it works on any playout system
+
+The last three tools implement the operating model this was built for, which is
+deliberately **not** an autopilot. The certified ENDEC runs its path. The software
+runs its own, independently. Parity reports where the two agree and where they
+diverge, and a human reviews the divergence. Nothing here touches an air chain.
+
+The air-record half comes from the automation's as-run log, and there is no
+standard for those. Roughly forty playout systems are in serious use worldwide and
+no two agree on delimiter, column order, time format, or file location. So the
+**detector is the engine and vendor knowledge is only a hint**:
+
+- Delimiter, header row, and column roles are detected from the file. Adapters
+  contribute header synonyms and path candidates; they never hard-code columns.
+- Path candidates are *probed*, which is self-verifying — a directory either
+  exists or it does not — and every path probed is disclosed. Each adapter says
+  whether its locations are vendor-documented or merely conventional.
+- Detection confidence ships with the entries. A log with no header row is
+  reported *low confidence, verify this* rather than parsed silently.
+- A log with no recoverable structure is **refused**, not guessed at. A parser
+  that mis-maps a column produces a parity report that looks authoritative and is
+  wrong, and this data sits upstream of evidence.
+
+Adapters exist for MegaSeg, Rivendell, AzuraCast, LibreTime, StationPlaylist,
+RadioDJ, mAirList, SAM Broadcaster and Liquidsoap — but the important one is
+`generic`. Point `PLAYOUT_LOG_DIR` at any delimited as-run export and it works on
+day one, including for automation nobody here has heard of. Zetta, WideOrbit,
+NexGen, Simian, Myriad, ENCO and OpX all export delimited text; that is all the
+detector needs. Vendor adapters only save a station the configuration step.
+
+Parity returns **three buckets and never collapses them into a score**: agreed,
+decided-with-no-air-record, aired-with-no-decision. A score is the artefact most
+likely to be quoted out of context, and "97% agreement" is exactly the number that
+conceals whether the 3% was the software missing a tornado warning or the ENDEC
+simply sitting downstream of the log.
+
+That last case matters more than it sounds. If the certified ENDEC inserts
+downstream of the playout system — the common arrangement — the automation never
+sees the alert and logs nothing, so an **empty air-record side is the expected
+result, not a finding**. Establishing which arrangement a station uses is a
+one-time experiment, and it is the same experiment that resolves the off-air
+blocker below: originate a Required Weekly Test (mandatory anyway under
+§11.61(a)(2)(i)(A)), note the time, and see whether it appears in the log.
 
 ## Things live data taught us
 
