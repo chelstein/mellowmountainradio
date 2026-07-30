@@ -517,6 +517,47 @@ replaced by `_` (e.g. `eas_get_active_alerts`) and **MUST** set
 | 16 | `eas.find_alerts_for_point` | A | Alerts whose area contains a latitude/longitude. |
 | 17 | `eas.get_alert_geojson` | A | An alert's area as GeoJSON. |
 | 18 | `eas.get_alert_languages` | A | Every language variant of an alert. |
+| 19 | `eas.search_archive` | A | Search the permanent archive of everything observed. |
+| 20 | `eas.verify_archive` | A | Verify the hash chain end to end. |
+| 21 | `eas.get_archive_stats` | A | Holdings **and poll coverage**. |
+| 22 | `eas.backfill_history` | A | Ingest history from OpenFEMA. |
+
+### 5.4 Persistence is required for any historical claim
+
+The IPAWS feed holds an alert roughly 30 minutes and has no history endpoint, so
+an alert issued and expired between two polls was never observable and leaves no
+trace anywhere. Poll cadence, not server uptime, therefore bounds what an
+Implementation can honestly assert about the past.
+
+An Implementation that reports historical alert activity **MUST** persist
+observations locally, and **MUST** record every poll — including failed polls —
+so that a coverage gap is distinguishable from a quiet period. Alert counts alone
+cannot make that distinction, and an audit that cannot make it is worthless.
+
+An Implementation **MUST** state, wherever it reports archive contents, that
+absence from the archive is not evidence that an alert did not exist.
+
+Historical backfill **SHOULD** use the OpenFEMA `IpawsArchivedAlerts` dataset,
+whose records carry the complete signed CAP as FEMA received it, so history can
+be parsed through the same code path as live traffic. Backfill **MUST NOT** be
+presented as a substitute for polling: its latency relative to real time is
+undocumented.
+
+### 5.5 The archive must be verifiable by someone who does not trust it
+
+The premise of this profile is that EAS compliance records are self-reports
+nobody can check. An archive that is itself an unverifiable self-report
+reproduces exactly that problem.
+
+An Implementation holding an archive **MUST** chain records by hash such that
+altering a record, removing one, or reordering them is detectable, and **MUST**
+expose verification as a tool. Verification **MUST** be possible from the stored
+files and a hash implementation alone, without the Implementation's own code.
+Storage **SHOULD** therefore use a plain, documented, line-oriented text format.
+
+Verification **MUST** report where the chain broke rather than a bare boolean, and
+**MUST** state that chain integrity proves internal consistency only — never
+completeness, which depends on poll coverage.
 
 ### 5.0 National scope
 
