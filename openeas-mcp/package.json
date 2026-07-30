@@ -1,13 +1,15 @@
 {
   "name": "openeas-mcp",
   "version": "0.1.0",
-  "description": "OpenEAS reference implementation — read-only observability for the U.S. Emergency Alert System over the Model Context Protocol",
+  "description": "OpenEAS reference implementation \u2014 read-only observability for the U.S. Emergency Alert System over the Model Context Protocol",
   "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node scripts/no-eas-audio.js"
+    "check": "node scripts/no-eas-audio.js",
+    "test": "node test/run.js",
+    "test:capture": "node test/capture.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
