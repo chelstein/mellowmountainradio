@@ -217,44 +217,24 @@ log "Service active"
 log "Configuring nginx"
 NGX=/etc/nginx/sites-available/openeas
 cp "$SRC_DIR/openeas-mcp/deploy/nginx-openeas.conf" "$NGX"
+
+# The shipped config is HTTP-only by design — nginx refuses `listen ... ssl`
+# without a certificate, and certbot cannot issue one until nginx is already
+# valid and answering the ACME challenge on port 80. certbot adds the TLS server
+# block itself, so there is nothing to strip for the IP-only case.
 if [[ -n "$DOMAIN" ]]; then
   sed -i "s/SERVER_NAME_HERE/${DOMAIN}/g" "$NGX"
 else
-  warn "No hostname given — serving on port 80 by IP, no TLS."
   sed -i "s/SERVER_NAME_HERE/_/g" "$NGX"
-  # Strip the redirect and the TLS vhost; keep a plain port-80 server.
-  python3 - "$NGX" <<'PYEOF'
-import re, sys
-p = sys.argv[1]
-s = open(p).read()
-s = s.replace('location / { return 301 https://$host$request_uri; }', '')
-s = re.sub(r'\nserver \{\n    listen 443.*?\n\}\n', '\n', s, flags=re.S)
-# Re-home the routes onto the port-80 vhost.
-tls_routes = """
-    client_max_body_size 1m;
-
-    location /mcp {
-        limit_req zone=openeas_rl burst=20 nodelay;
-        proxy_pass http://openeas_backend;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header Connection "";
-        proxy_buffering off;
-        proxy_read_timeout 120s;
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Access-Control-Allow-Headers "Content-Type, Accept, Mcp-Session-Id" always;
-        add_header Access-Control-Allow-Methods "GET, POST, OPTIONS" always;
-        add_header Access-Control-Expose-Headers "Mcp-Session-Id" always;
-        if ($request_method = OPTIONS) { return 204; }
-    }
-
-    location /health { proxy_pass http://openeas_backend; access_log off; }
-"""
-s = s.replace('    location /.well-known/acme-challenge/ { root /var/www/html; }',
-              '    location /.well-known/acme-challenge/ { root /var/www/html; }\n' + tls_routes)
-open(p, 'w').write(s)
-PYEOF
+  # Only site on port 80 (the distro default was removed), so make that explicit
+  # for access by bare IP.
+  sed -i "s|^\(\s*\)listen 80;|\1listen 80 default_server;|" "$NGX"
+  sed -i "s|^\(\s*\)listen \[::\]:80;|\1listen [::]:80 default_server;|" "$NGX"
+  echo
+  warn "No hostname given — serving plain HTTP on port 80 by IP address."
+  warn "Traffic is unencrypted and readable/modifiable in transit. That is"
+  warn "acceptable for bring-up; add a hostname and re-run to obtain TLS before"
+  warn "publishing this endpoint or listing it in a registry."
 fi
 
 ln -sf "$NGX" /etc/nginx/sites-enabled/openeas
