@@ -16,8 +16,14 @@
 set -euo pipefail
 
 DOMAIN="${1:-}"
+# Branch may come from a second positional argument or from the environment.
+# The positional form is the safer one to document: piping into bash means
+#   OPENEAS_BRANCH=x curl ... | bash
+# sets the variable in curl's environment, NOT in the bash that runs this
+# script, so the branch silently falls back to the default. Positional args
+# survive the pipe.
+BRANCH="${2:-${OPENEAS_BRANCH:-main}}"
 REPO="${OPENEAS_REPO:-https://github.com/chelstein/mellowmountainradio.git}"
-BRANCH="${OPENEAS_BRANCH:-main}"
 APP_DIR=/opt/openeas
 SRC_DIR=/opt/openeas-src
 ENV_DIR=/etc/openeas
@@ -59,15 +65,48 @@ if ! id openeas &>/dev/null; then
 fi
 
 # ── source ──────────────────────────────────────────────────────────────────
-log "Fetching source (${BRANCH})"
+log "Fetching source (branch: ${BRANCH})"
 if [[ -d "$SRC_DIR/.git" ]]; then
-  git -C "$SRC_DIR" fetch --depth 1 origin "$BRANCH" -q
-  git -C "$SRC_DIR" reset --hard "origin/${BRANCH}" -q
+  # Explicit refspec. A shallow clone made with --branch X configures its remote
+  # refspec for X only, so `git fetch origin Y` would update FETCH_HEAD without
+  # ever creating refs/remotes/origin/Y — and the reset would then fail or, worse,
+  # silently leave the old branch checked out. Naming both sides fixes it and
+  # makes switching branches on re-run work.
+  git -C "$SRC_DIR" fetch --depth 1 origin \
+      "+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}" -q \
+    || die "Could not fetch branch '${BRANCH}' from ${REPO}. Does it exist?"
+  git -C "$SRC_DIR" reset --hard "refs/remotes/origin/${BRANCH}" -q
+  git -C "$SRC_DIR" clean -fdq
 else
   rm -rf "$SRC_DIR"
-  git clone --depth 1 --branch "$BRANCH" "$REPO" "$SRC_DIR" -q
+  git clone --depth 1 --branch "$BRANCH" "$REPO" "$SRC_DIR" -q \
+    || die "Could not clone branch '${BRANCH}' from ${REPO}. Does it exist?"
 fi
-[[ -f "$SRC_DIR/openeas-mcp/server.js" ]] || die "openeas-mcp/server.js not found in $SRC_DIR"
+
+if [[ ! -f "$SRC_DIR/openeas-mcp/server.js" ]]; then
+  echo
+  warn "Checked out branch: $(git -C "$SRC_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?')"
+  warn "Top-level entries:  $(ls "$SRC_DIR" | tr '\n' ' ' | cut -c1-160)"
+  echo
+  cat >&2 <<'HINTEOF'
+openeas-mcp/ is not present on the branch that was checked out.
+
+Most likely cause: the branch defaulted. If you piped this script into bash,
+note that
+
+    OPENEAS_BRANCH=my-branch curl ... | bash -s -- example.com
+
+sets the variable for CURL, not for the bash that runs the script. Pass the
+branch as the SECOND POSITIONAL ARGUMENT instead:
+
+    curl -fsSL .../install.sh | bash -s -- example.com my-branch
+
+or put the assignment on the bash side of the pipe:
+
+    curl -fsSL .../install.sh | OPENEAS_BRANCH=my-branch bash -s -- example.com
+HINTEOF
+  die "openeas-mcp/server.js not found in ${SRC_DIR}"
+fi
 
 log "Installing to ${APP_DIR}"
 install -d -m 0755 "$APP_DIR"
