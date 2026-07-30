@@ -32,6 +32,9 @@ import { fetchFeedIndex, fetchAlert, SOURCE_IPAWS } from "./lib/ipaws.js";
 import * as loc from "./lib/locations.js";
 import { pointInArea, areaToGeoJson, parsePolygon, boundingBox, sameCoversAny } from "./lib/geo.js";
 import { buildValidation } from "./lib/validate.js";
+import * as store from "./lib/store.js";
+import * as poller from "./lib/poller.js";
+import * as openfema from "./lib/openfema.js";
 
 const PROFILE_VERSION = "0.1.0-draft";
 const PORT = process.env.PORT || 3100;
@@ -822,6 +825,140 @@ function registerTools(mcp) {
     }
   );
 
+  // 19 ── eas_search_archive (Tier A)
+  mcp.tool(
+    "eas_search_archive",
+    "Search the permanent OpenEAS archive — every alert this deployment has ever " +
+    "observed, kept append-only. The live IPAWS feed holds an alert about 30 minutes " +
+    "and then forgets it; this is the record that does not. Search by text, SAME event " +
+    "code, state, county code, or date range.",
+    {
+      query: z.string().optional().describe("Free text across event, headline, description, instruction, and place names."),
+      event_code: z.string().length(3).optional().describe("SAME event code, e.g. EVI, TOR, FFW."),
+      state_fips: z.string().length(2).optional().describe("Two-digit state FIPS, e.g. 04."),
+      same_code: z.string().length(6).optional().describe("Exact SAME location code, e.g. 004025."),
+      start: z.string().optional().describe("ISO 8601 lower bound on the alert's sent time."),
+      end: z.string().optional().describe("ISO 8601 upper bound."),
+      limit: z.number().int().min(1).max(200).optional().describe("Maximum results (default 50)."),
+    },
+    READ_ONLY,
+    async (args) => {
+      const r = store.search(args);
+      const st = store.stats();
+      return text(envelope({
+        query: args,
+        count: r.count,
+        truncated: r.truncated,
+        results: r.results,
+        archive: {
+          alerts_held: st.alerts,
+          earliest: st.earliest_alert_sent,
+          latest: st.latest_alert_sent,
+          months: st.months,
+        },
+        completeness_caveat: st.completeness_caveat,
+      }, [{ source: { id: "openeas-archive", name: "Local append-only archive", tier: "A" },
+            status: r.count ? STATUS.OK : STATUS.NO_DATA,
+            detail: `${st.alerts} alert(s) archived across ${st.months.length} month(s).` }]));
+    }
+  );
+
+  // 20 ── eas_verify_archive (Tier A)
+  mcp.tool(
+    "eas_verify_archive",
+    "Verify the archive's hash chain end to end. Every record's SHA-256 is recomputed " +
+    "and every link checked, so any retroactive edit, deletion, or reordering is " +
+    "detectable — by a third party, using only the files and a SHA-256 implementation, " +
+    "without trusting this software or its operator. Reports the first break rather " +
+    "than a bare pass or fail.",
+    {},
+    READ_ONLY,
+    async () => {
+      const v = store.verify();
+      const st = store.stats();
+      return text(envelope({
+        verified: v.verified,
+        record_count: v.record_count,
+        tip: v.tip,
+        problems: v.problems,
+        method: v.method,
+        caveat: v.caveat,
+        legal_basis:
+          "47 CFR §73.1800(d) forbids altering an automatically kept log after entries " +
+          "are recorded, and §73.1800(e) forbids erasure during the retention period. " +
+          "This module has no update or delete path — corrections are new records that " +
+          "reference what they correct, per §73.1840(b)(3)(ii).",
+        retention: st.retention,
+      }, [{ source: { id: "openeas-archive", name: store.archiveDir(), tier: "A" },
+            status: v.verified ? STATUS.OK : STATUS.UNAVAILABLE,
+            detail: v.verified
+              ? `Chain intact across ${v.record_count} record(s).`
+              : `${v.problems.length} integrity problem(s) found.` }]));
+    }
+  );
+
+  // 21 ── eas_get_archive_stats (Tier A)
+  mcp.tool(
+    "eas_get_archive_stats",
+    "Archive holdings and — importantly — poll coverage. Alert counts alone cannot " +
+    "distinguish a quiet period from a period when the poller was down, so every poll " +
+    "including failures is recorded and reported here. Coverage, not uptime, bounds " +
+    "what this archive can support.",
+    {},
+    READ_ONLY,
+    async () => {
+      const st = store.stats();
+      return text(envelope({
+        archive: st,
+        poller: poller.status(),
+        backfill: openfema.status(),
+        interpretation:
+          "Absence of an alert from this archive is NOT evidence the alert did not " +
+          "exist. It may mean the alert was issued and expired inside a poll gap. " +
+          "Check poll_marks against the period in question before drawing any " +
+          "conclusion from silence.",
+      }, [{ source: { id: "openeas-archive", name: store.archiveDir(), tier: "A" },
+            status: st.alerts ? STATUS.OK : STATUS.NO_DATA,
+            detail: `${st.total_records} record(s); chain tip seq ${st.tip.seq}.` }]));
+    }
+  );
+
+  // 22 ── eas_backfill_history (Tier A)
+  mcp.tool(
+    "eas_backfill_history",
+    "Ingest historical alerts from FEMA's OpenFEMA IpawsArchivedAlerts dataset into the " +
+    "archive. Each record carries the complete signed CAP as FEMA received it, so " +
+    "history is parsed through the same code path as live traffic. Fills the past; it " +
+    "is not a substitute for polling, because the live window is only ~30 minutes wide " +
+    "and OpenFEMA's latency relative to real time is undocumented.",
+    {
+      start: z.string().optional().describe("ISO 8601 lower bound on sent time, e.g. 2026-07-01."),
+      end: z.string().optional().describe("ISO 8601 upper bound."),
+      state_fips: z.string().length(2).optional().describe("Keep only alerts covering this state, e.g. 04."),
+      max: z.number().int().min(1).max(5000).optional().describe("Maximum records to fetch (default 500)."),
+      probe_only: z.boolean().optional().describe("Check reachability and return a sample without ingesting."),
+    },
+    READ_ONLY,
+    async ({ start, end, state_fips, max, probe_only }) => {
+      if (probe_only) {
+        const p = await openfema.probe();
+        return text(envelope({ probe: p }, [{
+          source: { id: "openfema", name: "OpenFEMA IpawsArchivedAlerts", tier: "A" },
+          status: p.reachable ? STATUS.OK : STATUS.UNAVAILABLE,
+          detail: p.reachable ? "Reachable, no credentials required." : p.error,
+        }]));
+      }
+      const r = await openfema.backfill({ start, end, state_fips, max });
+      return text(envelope({
+        backfill: r,
+        archive_after: store.stats(),
+      }, [{ source: { id: "openfema", name: "OpenFEMA IpawsArchivedAlerts", tier: "A" },
+            status: r.added ? STATUS.OK : STATUS.NO_DATA,
+            detail: `fetched ${r.fetched}, parsed ${r.parsed}, added ${r.added}, ` +
+                    `already held ${r.skipped_existing}.` }]));
+    }
+  );
+
   // 11 ── eas_get_conformance (Tier A)
   mcp.tool(
     "eas_get_conformance",
@@ -898,6 +1035,10 @@ function registerTools(mcp) {
         eas_find_alerts_for_point:  { spec_id: 16, tier: "A", status: "implemented" },
         eas_get_alert_geojson:      { spec_id: 17, tier: "A", status: "implemented" },
         eas_get_alert_languages:    { spec_id: 18, tier: "A", status: "implemented" },
+        eas_search_archive:         { spec_id: 19, tier: "A", status: "implemented" },
+        eas_verify_archive:         { spec_id: 20, tier: "A", status: "implemented" },
+        eas_get_archive_stats:      { spec_id: 21, tier: "A", status: "implemented" },
+        eas_backfill_history:       { spec_id: 22, tier: "A", status: "implemented" },
         eas_get_conformance:        { spec_id: 11, tier: "A", status: "implemented" },
         eas_get_monitor_health:     { spec_id: 5,  tier: "C", status: "not_implemented" },
         eas_get_station_activity:   { spec_id: 6,  tier: "C", status: "not_implemented" },
@@ -991,6 +1132,14 @@ app.all("/mcp", async (req, res) => {
 
 app.listen(PORT, () => {
   loc.preload();   // warm the 3,295-row SAME table; failure is non-fatal
+  // Continuous ingest. The IPAWS window is ~30 minutes wide with no history
+  // endpoint, so anything not captured while it is live is gone for good.
+  if (process.env.OPENEAS_POLL !== "0") {
+    const p = poller.start();
+    console.log(`[openeas] poller ${p.started ? "started" : "already running"} @ ${p.interval_ms}ms -> ${store.archiveDir()}`);
+  } else {
+    console.log("[openeas] poller disabled (OPENEAS_POLL=0) — archive will not grow");
+  }
   console.log(`[openeas] ${PROFILE_VERSION} listening on :${PORT}`);
   console.log(`[openeas] station ${STATION.callsign} — zones ${STATION.nws_zones.join(", ")}`);
   console.log(`[openeas] tier A provisioned; tiers B and C not provisioned`);
