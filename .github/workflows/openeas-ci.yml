@@ -1,0 +1,122 @@
+name: OpenEAS CI
+
+# The OpenEAS test lab and the §11.45(a) conformance guard, on every push and
+# pull request that touches them.
+#
+# The guard is the reason this workflow exists. 47 CFR §11.45(a) prohibits
+# transmitting the EAS codes or Attention Signal "or a recording or simulation
+# thereof" outside an actual emergency or authorized test. Because it reaches
+# RECORDINGS and SIMULATIONS, it binds fixtures, samples and CI artifacts, not
+# only production code paths — and the penalty for getting it wrong is not
+# theoretical: iHeartCommunications paid $1,000,000 in 2015 after a syndicated
+# programme aired EAS tones from a recording.
+#
+# A guard that only runs when a human remembers to run it is not a guard. This
+# makes it mechanical.
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "openeas-mcp/**"
+      - "openeas/**"
+      - "endec/**"
+      - ".github/workflows/openeas-ci.yml"
+  pull_request:
+    paths:
+      - "openeas-mcp/**"
+      - "openeas/**"
+      - "endec/**"
+      - ".github/workflows/openeas-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test lab and conformance guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: openeas-mcp/package-lock.json
+
+      - name: Install dependencies
+        working-directory: openeas-mcp
+        run: npm ci
+
+      # No EAS audio artifact, no origination capability, anywhere in the
+      # server distribution. Runs FIRST: if this fails, nothing else matters.
+      - name: Conformance guard (§11.45(a))
+        working-directory: openeas-mcp
+        run: node scripts/no-eas-audio.js
+
+      # Second, broader net. The guard walks openeas-mcp/ only, because the
+      # encoder deliberately lives outside that directory so the installer
+      # cannot copy it to a server. That leaves the rest of the repository
+      # unchecked, and a stray audio fixture anywhere is the single most
+      # expensive mistake this project could make.
+      - name: No audio artifact anywhere in the repository
+        run: |
+          set -euo pipefail
+          hits=$(git ls-files \
+            | grep -iE '\.(wav|mp3|aac|m4a|ogg|opus|flac|aiff|aif|au|snd|wma|ac3|pcm|s16)$' \
+            || true)
+          if [ -n "$hits" ]; then
+            echo "::error::Audio artifact(s) tracked in this repository."
+            echo "47 CFR §11.45(a) reaches recordings and simulations, so the"
+            echo "prohibition binds fixtures as surely as production code."
+            echo "$hits"
+            exit 1
+          fi
+          echo "No tracked audio files. Header TEXT is the interchange format."
+
+      # The test lab is dependency-free by design, so it keeps working when a
+      # framework's major version moves and nobody notices for eight months.
+      - name: Test lab
+        working-directory: openeas-mcp
+        run: node test/run.js
+
+      # Encoder/decoder round trip. Lives outside openeas-mcp/ on purpose;
+      # writes files only, never plays anything.
+      - name: SAME codec round trip (§11.32 ↔ §11.33)
+        run: node endec/roundtrip.js
+
+      - name: Server boots and registers its tools
+        working-directory: openeas-mcp
+        env:
+          PORT: "3178"
+          OPENEAS_ARCHIVE_DIR: ${{ runner.temp }}/openeas-archive
+        run: |
+          set -euo pipefail
+          node server.js & pid=$!
+          trap 'kill $pid 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            curl -sf "http://127.0.0.1:$PORT/health" >/dev/null && break
+            sleep 1
+          done
+          curl -sf "http://127.0.0.1:$PORT/health" >/dev/null \
+            || { echo "::error::server did not become healthy"; exit 1; }
+
+          names=$(curl -s -X POST "http://127.0.0.1:$PORT/mcp" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+            | tr ',' '\n' | grep -o '"name":"eas_[a-z_]*"' | sort -u)
+          count=$(printf '%s\n' "$names" | grep -c . || true)
+          printf '%s\n' "$names"
+          echo "registered $count tool(s)"
+
+          # Every tool the profile claims as implemented must actually be
+          # registered. A conformance table that drifts from the running server
+          # is worse than no table.
+          for t in eas_get_active_alerts eas_get_conformance eas_verify_archive \
+                   eas_get_playout_status eas_get_asrun_log eas_get_parity_report; do
+            printf '%s\n' "$names" | grep -q "\"$t\"" \
+              || { echo "::error::tool $t is claimed in the profile but not registered"; exit 1; }
+          done

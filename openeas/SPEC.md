@@ -521,6 +521,9 @@ replaced by `_` (e.g. `eas_get_active_alerts`) and **MUST** set
 | 20 | `eas.verify_archive` | A | Verify the hash chain end to end. |
 | 21 | `eas.get_archive_stats` | A | Holdings **and poll coverage**. |
 | 22 | `eas.backfill_history` | A | Ingest history from OpenFEMA. |
+| 23 | `eas.get_playout_status` | C | Which automation system the host runs, where its as-run log is, and how that was determined (§8.5). |
+| 24 | `eas.get_asrun_log` | C | Read the automation's as-run log, with detected format and confidence. |
+| 25 | `eas.get_parity_report` | C | Compare decisions against air records (§8.6). Derived and advisory. |
 
 ### 5.4 Persistence is required for any historical claim
 
@@ -835,6 +838,13 @@ Weekly Test anyway under §11.61(a)(2)(i)(A). Note its wall-clock time, then dec
 that minute of the recording. Because an RWT carries no Attention Signal, it tests
 bare header recovery — the harder case — directly.
 
+The same experiment resolves the as-run question in §8.5 at the same time and at
+lower cost: if the RWT appears in the automation's as-run log, the insertion point
+is at or upstream of the automation; if it does not, the ENDEC is downstream and an
+empty air-record side in every parity report is the correct result rather than a
+finding. Establishing this **once** per station converts §8.6's most likely
+misreading into a known constant.
+
 ### 8.4 A liability specific to holding this evidence
 
 An air-observation archive contains genuine Attention Signals and SAME bursts.
@@ -849,6 +859,100 @@ interface (§6.2, **Never** class).
 Air observation is the profile's distinguishing capability. It is stated
 provisionally because a standard that overclaims its evidence is worse than one
 that scopes honestly.
+
+### 8.5 The as-run log — a second, cheaper air record
+
+§8.1–8.4 concern decoding the station's own off-air signal. That is the strongest
+evidence available and also the most expensive: it needs a tap, a codec path, and
+storage of material that §8.4 makes legally awkward to hold.
+
+Every broadcast automation system already keeps a weaker but far cheaper air
+record — the **as-run log**, a per-day account of what the automation actually
+played. It contains no audio, so §8.4 does not reach it, and it exists at every
+station on earth without new hardware.
+
+An Implementation offering tool 24 **MUST** treat the as-run log as evidence of
+what the *automation* played, never as evidence of what the *transmitter* radiated,
+and **MUST NOT** present it as satisfying §73.1820.
+
+#### 8.5.1 Vendor neutrality is normative, not a convenience
+
+There is no standard for as-run logs. Roughly forty playout systems are in serious
+use worldwide and no two agree on delimiter, column order, time format, or file
+location. A profile that specified one vendor's layout would be a profile that
+works at one station, which defeats the purpose of writing a profile.
+
+An Implementation therefore **MUST**:
+
+1. **Detect** delimiter, header presence, and column roles from the file itself.
+   Vendor knowledge **MAY** narrow detection but **MUST NOT** replace it.
+2. Accept an **explicit column mapping** from configuration, which **MUST**
+   override all detection.
+3. Work on **any delimited as-run export** with no vendor adapter present. Every
+   automation system in commercial use can export CSV or TSV; that capability,
+   not a vendor list, is the interoperability floor.
+4. **Report** how the format was determined and with what confidence, in the same
+   response as the parsed entries.
+5. **Refuse** rather than guess. A log with no recoverable column structure
+   **MUST** return an error naming the remedy, and **MUST NOT** return
+   heuristically-assigned columns as though they were read.
+
+Requirement 5 is the load-bearing one. A parser that silently mis-maps a column
+produces a parity report that looks authoritative and is wrong, and this data sits
+upstream of evidence.
+
+#### 8.5.2 Path candidates make no claim
+
+Where an Implementation probes conventional install locations for a vendor, it
+**MUST** disclose every path probed and its result. Probing is self-verifying —
+a directory either exists or it does not — so a wrong candidate costs nothing.
+An Implementation **MUST NOT** report a system as present on the strength of a
+path guess alone, and **MUST** distinguish, per adapter, between a location that
+is documented by the vendor and one that is merely conventional.
+
+#### 8.5.3 Systems with no flat log
+
+Some automation keeps play history in a database rather than a file (AzuraCast,
+LibreTime, RadioDJ, SAM Broadcaster, Rivendell). Where such a system exposes a
+**read** API, an Implementation **MAY** use it and **MUST** label the result with
+the endpoint used, since a public now-playing endpoint typically returns only a
+short recent history and would otherwise read as a complete log.
+
+### 8.6 Parity
+
+**Parity** is the comparison of what a software EAS system *decided* against what
+the station's air record shows *happened*. It is the profile's answer to the
+question a certification body would actually ask: not "does the software work in a
+lab" but "over months of real traffic, did it reach the same conclusions as the
+certified equipment beside it?"
+
+The operating model is explicitly **not** an autopilot. Certified equipment runs
+its path. The software runs its own, independently. Neither controls the other.
+Parity reports where they diverge and a human reviews it.
+
+An Implementation offering tool 25 **MUST**:
+
+1. Return **three buckets — agreed, decided-with-no-air-record, and
+   air-record-with-no-decision — and MUST NOT collapse them into a score.** They
+   mean different things, and a single number hides which one moved.
+2. Match a decision to an air record only within a **stated time window**, and
+   report the observed delta.
+3. Claim each air record **at most once**, so one logged event cannot manufacture
+   agreement with several decisions.
+4. State that an **empty air-record side may be the expected result**. If the
+   certified ENDEC inserts downstream of the playout system — the common
+   arrangement — the automation never sees the alert and logs nothing. Reading
+   that as a failure would be a false finding.
+5. Report **poll coverage** alongside the comparison. An air record with no
+   decision may simply mean the alert was issued and expired inside a poll gap
+   (§5.4), which is a question about coverage, not about the software.
+6. Label the result **derived and advisory**, and state that it does not gate,
+   delay, or influence any forwarding decision under §11.51(m).
+
+Requirement 1 exists because a parity score is the single most likely artefact to
+be quoted out of context, and the number that would be quoted — "97% agreement" —
+is precisely the number that conceals whether the 3% was the software missing a
+tornado warning or the ENDEC being downstream of the log.
 
 ---
 
@@ -906,6 +1010,13 @@ An Implementation conforms to OpenEAS 0.1.0 if it:
 7. contains no EAS audio artifact anywhere in its repository or distribution.
 
 Air observation (§8) is **OPTIONAL** and, in 0.1.0, provisional.
+
+An Implementation additionally offering as-run reading (tool 24) or parity
+(tool 25) conforms only if it satisfies every **MUST** in §8.5.1, §8.5.2 and §8.6.
+Partial compliance is not conformance here: an Implementation that detects format
+but reports a collapsed parity score, or that reports three buckets from
+silently-guessed columns, produces exactly the misleading artefact those sections
+exist to prevent.
 
 ---
 

@@ -330,6 +330,45 @@ export function stats() {
   };
 }
 
+/**
+ * Record a Tier C decision alongside the alert it concerns.
+ *
+ * Same chain as the alerts, deliberately: one ledger and one verifier, so a
+ * reviewer checking the archive is also checking the decisions, and neither can
+ * be edited without breaking the other.
+ */
+export function recordDecision(alert, decision, authorityNote) {
+  const key = alert?.identity?.key;
+  return append({
+    kind: "decision",
+    key: key ? `decision:${key}` : null,
+    legal_hold: true,
+    payload: {
+      alert_key: key ?? null,
+      alert: {
+        event_code: alert?.same?.event_code ?? null,
+        event: alert?.cap?.event ?? null,
+        severity: alert?.cap?.severity ?? null,
+        sender: alert?.cap?.sender ?? null,
+        sent: alert?.cap?.sent ?? null,
+        expires: alert?.cap?.expires ?? null,
+        same_geocodes: alert?.area?.same_geocodes ?? [],
+        places: alert?.area?.place_names ?? [],
+      },
+      decision,
+      authority_note: authorityNote,
+    },
+  });
+}
+
+/** Has a decision already been recorded for this alert? */
+export function hasDecision(alertKey) {
+  return load().byKey.has(`decision:${alertKey}`);
+}
+
+/** All records, for summarisation. */
+export function all() { return load().records; }
+
 /** Record that a poll happened, so coverage gaps are visible rather than invisible. */
 export function recordPoll({ source, observed, new_records, error = null }) {
   return append({

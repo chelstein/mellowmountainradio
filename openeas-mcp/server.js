@@ -35,6 +35,7 @@ import { buildValidation } from "./lib/validate.js";
 import * as store from "./lib/store.js";
 import * as poller from "./lib/poller.js";
 import * as openfema from "./lib/openfema.js";
+import * as playout from "./lib/playout.js";
 
 const PROFILE_VERSION = "0.1.0-draft";
 const PORT = process.env.PORT || 3100;
@@ -959,6 +960,190 @@ function registerTools(mcp) {
     }
   );
 
+  // ── Tier C: air-record parity ───────────────────────────────────────────────
+  //
+  // These three tools implement the operating model this project was asked for,
+  // which is deliberately NOT an autopilot. The certified ENDEC does its job.
+  // The software does its job independently. These report where the two agree
+  // and where they diverge, and a human reviews the divergence.
+  //
+  // Nothing here writes to, gates, delays or influences any air chain. The
+  // as-run log is read; the decision ledger is read; the comparison is derived
+  // and labelled derived. Under §11.51(m)(1) the certified decoder remains
+  // authoritative and under §73.1820 the station log remains the record.
+  //
+  // Tier C requires the server to run on the studio machine, which is also what
+  // proposed §11.2(e) would require of anything in this role — it excludes
+  // cloud. On a cloud instance these tools report unavailable rather than empty.
+
+  // 23 ── eas_get_playout_status (Tier C)
+  mcp.tool(
+    "eas_get_playout_status",
+    "Which broadcast automation system this host runs, where its as-run log lives, and " +
+    "how that was determined. Vendor-neutral: ten systems are probed by convention and " +
+    "any other is readable by pointing PLAYOUT_LOG_DIR at a delimited as-run export. " +
+    "Every path probed is disclosed, and an undetected system reports unavailable " +
+    "rather than an empty log list.",
+    {
+      list_adapters: z.boolean().optional()
+        .describe("Include the full adapter registry with each entry's evidence basis."),
+    },
+    READ_ONLY,
+    async ({ list_adapters }) => {
+      const st = playout.status();
+      return text(envelope({
+        playout: st,
+        adapters: list_adapters ? playout.listAdapters() : undefined,
+        configuration: {
+          PLAYOUT_SYSTEM: "adapter id, or auto (default)",
+          PLAYOUT_LOG_DIR: "explicit as-run log directory; skips probing",
+          PLAYOUT_COLUMNS: "explicit column map, e.g. time,title,artist,-,duration",
+          PLAYOUT_API_URL: "base URL for HTTP-native systems (AzuraCast, LibreTime)",
+          PLAYOUT_API_KEY: "credential for the authenticated history endpoint",
+        },
+        note:
+          "Candidate directories for proprietary systems are conventional install " +
+          "locations, not documented defaults. Probing is self-verifying — a path " +
+          "either exists or it does not — so a wrong candidate makes no claim.",
+      }, [{ source: { id: "playout", name: st.system?.name || "playout automation", tier: "C" },
+            status: st.available ? STATUS.OK : STATUS.UNAVAILABLE,
+            detail: st.available
+              ? `${st.system.name} at ${st.log_dir || st.api_url} (${st.detection_source})`
+              : st.detail }]));
+    }
+  );
+
+  // 24 ── eas_get_asrun_log (Tier C)
+  mcp.tool(
+    "eas_get_asrun_log",
+    "Read what actually went to air, from this station's automation as-run log. " +
+    "Delimiter, header row and column roles are detected per file and the detection " +
+    "confidence is returned alongside the entries — a log with no header row is " +
+    "reported as low confidence rather than parsed silently. Free-form logs are " +
+    "refused instead of guessed at.",
+    {
+      days: z.number().int().min(1).max(31).optional()
+        .describe("How many recent daily logs to read (default 1)."),
+      eas_only: z.boolean().optional()
+        .describe("Return only rows matching EAS markers. Markers are matched against " +
+                  "the raw line, since automation logs break content differently from music."),
+      limit: z.number().int().min(1).max(5000).optional()
+        .describe("Maximum entries to return (default 500)."),
+    },
+    READ_ONLY,
+    async ({ days = 1, eas_only, limit = 500 }) => {
+      const res = playout.resolve();
+      if (!res.ok) {
+        return text(envelope({ playout: playout.status(), entries: [] },
+          [{ source: { id: "playout", name: "playout automation", tier: "C" },
+             status: STATUS.UNAVAILABLE, detail: res.error }]));
+      }
+
+      const r = res.adapter?.kind === "http"
+        ? await playout.fetchHistory({})
+        : playout.readRecent({ days, max_files: days });
+
+      if (!r.ok) {
+        return text(envelope({ playout: playout.status(), entries: [] },
+          [{ source: { id: "playout", name: res.adapter?.name, tier: "C" },
+             status: STATUS.UNAVAILABLE, detail: r.error }]));
+      }
+
+      const all = eas_only ? playout.findEasEntries(r.entries, res.adapter) : r.entries;
+      const entries = all.slice(0, limit);
+
+      return text(envelope({
+        system: r.system,
+        files_read: r.files_read,
+        eas_only: Boolean(eas_only),
+        total_matching: all.length,
+        returned: entries.length,
+        truncated: all.length > entries.length,
+        entries,
+        marker_note: eas_only
+          ? "EAS markers are deliberately broad and matched on the raw line. A false " +
+            "positive costs a glance; a false negative would make a parity report " +
+            "silently claim the station did nothing."
+          : undefined,
+        caveat:
+          "An as-run log is the automation's record, not the station log required by " +
+          "§73.1820, and not a substitute for it.",
+      }, [{ source: { id: "playout", name: r.system?.name || "playout automation", tier: "C" },
+            status: all.length ? STATUS.OK : STATUS.NO_DATA,
+            detail: `${r.count} entr(ies) read; ${all.length} matched.` }]));
+    }
+  );
+
+  // 25 ── eas_get_parity_report (Tier C)
+  mcp.tool(
+    "eas_get_parity_report",
+    "Compare what a software EAS system decided against what actually aired. Returns " +
+    "three buckets that are never collapsed into a score: agreed, decided-but-no-air-" +
+    "record, and aired-but-no-decision. Agreement accumulated over time is the " +
+    "evidentiary argument; either divergence is the finding a human reviews. This is " +
+    "derived and advisory — it does not gate, delay or influence any forwarding " +
+    "decision under §11.51(m).",
+    {
+      days: z.number().int().min(1).max(31).optional()
+        .describe("How many recent daily as-run logs to compare against (default 1)."),
+      window_minutes: z.number().int().min(1).max(240).optional()
+        .describe("How far apart a decision and an air record may be and still be " +
+                  "considered the same event (default 15)."),
+    },
+    READ_ONLY,
+    async ({ days = 1, window_minutes = 15 }) => {
+      const res = playout.resolve();
+      const sources = [];
+
+      if (!res.ok) {
+        return text(envelope({
+          playout: playout.status(),
+          parity: null,
+          detail:
+            "Parity needs both halves. The as-run half is unavailable on this host, so " +
+            "no comparison is reported — an empty comparison would read as agreement.",
+        }, [{ source: { id: "playout", name: "playout automation", tier: "C" },
+              status: STATUS.UNAVAILABLE, detail: res.error }]));
+      }
+
+      const r = res.adapter?.kind === "http"
+        ? await playout.fetchHistory({})
+        : playout.readRecent({ days, max_files: days });
+      if (!r.ok) {
+        return text(envelope({ playout: playout.status(), parity: null },
+          [{ source: { id: "playout", name: res.adapter?.name, tier: "C" },
+             status: STATUS.UNAVAILABLE, detail: r.error }]));
+      }
+      sources.push({ source: { id: "playout", name: r.system?.name, tier: "C" },
+                     status: STATUS.OK, detail: `${r.count} as-run entr(ies).` });
+
+      const decisions = store.all().filter(x => x.kind === "decision");
+      sources.push({ source: { id: "openeas-archive", name: store.archiveDir(), tier: "A" },
+                     status: decisions.length ? STATUS.OK : STATUS.NO_DATA,
+                     detail: `${decisions.length} decision record(s) in the ledger.` });
+
+      const p = playout.parity(decisions, r.entries, {
+        windowMinutes: window_minutes, adapter: res.adapter,
+      });
+
+      return text(envelope({
+        parity: p,
+        decision_ledger: {
+          records: decisions.length,
+          note:
+            "Decisions are only recorded when Tier C is enabled (OPENEAS_TIER_C=1). " +
+            "With Tier C off, the software side is empty by construction and the " +
+            "report says nothing about the station.",
+          tier_c_enabled: poller.status().tier_c,
+        },
+        poll_coverage: poller.status().coverage_note,
+        operating_model:
+          "The certified ENDEC and this software run independently. Neither controls " +
+          "the other. This report exists so a human can review where they diverge.",
+      }, sources));
+    }
+  );
+
   // 11 ── eas_get_conformance (Tier A)
   mcp.tool(
     "eas_get_conformance",
@@ -1040,6 +1225,12 @@ function registerTools(mcp) {
         eas_get_archive_stats:      { spec_id: 21, tier: "A", status: "implemented" },
         eas_backfill_history:       { spec_id: 22, tier: "A", status: "implemented" },
         eas_get_conformance:        { spec_id: 11, tier: "A", status: "implemented" },
+        eas_get_playout_status:     { spec_id: 23, tier: "C", status: "implemented",
+                                      note: "Reports unavailable off the studio machine." },
+        eas_get_asrun_log:          { spec_id: 24, tier: "C", status: "implemented",
+                                      note: "Vendor-neutral; any delimited as-run export." },
+        eas_get_parity_report:      { spec_id: 25, tier: "C", status: "implemented",
+                                      note: "Derived and advisory. Not a control path." },
         eas_get_monitor_health:     { spec_id: 5,  tier: "C", status: "not_implemented" },
         eas_get_station_activity:   { spec_id: 6,  tier: "C", status: "not_implemented" },
         eas_get_test_status:        { spec_id: 7,  tier: "C", status: "not_implemented" },

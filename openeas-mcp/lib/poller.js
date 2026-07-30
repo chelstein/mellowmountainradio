@@ -20,6 +20,15 @@
 
 import { fetchFeedIndex, fetchAlert } from "./ipaws.js";
 import * as store from "./store.js";
+import { decide, AUTHORITY_NOTE } from "./decide.js";
+
+// Tier C is on-premises only. A cloud instance has no station to decide for,
+// and proposed §11.2(e) excludes cloud from EAS Software regardless.
+const TIER_C = process.env.OPENEAS_TIER_C === "1";
+const STATION_CFG = {
+  state_fips: process.env.EAS_STATE_FIPS || "04",
+  county_fips: process.env.EAS_COUNTY_FIPS || "025",
+};
 
 const DEFAULT_INTERVAL_MS = Number(process.env.OPENEAS_POLL_INTERVAL_MS || 30_000);
 
@@ -36,7 +45,7 @@ export async function pollOnce() {
   const started = Date.now();
   try {
     const index = await fetchFeedIndex();
-    let seen = 0, added = 0;
+    let seen = 0, added = 0, decisions = 0;
     const errors = [];
 
     for (const e of index.entries) {
@@ -46,8 +55,21 @@ export async function pollOnce() {
         if (!full.valid) continue;
         // Dedup on the CAP extended identifier, not posted_msg_id: FEMA can
         // repost, and identifier alone is not unique across senders.
-        const rec = store.recordAlert({ ...full, posted_msg_id: e.posted_msg_id });
+        const withId = { ...full, posted_msg_id: e.posted_msg_id };
+        const rec = store.recordAlert(withId);
         if (rec) added++;
+
+        // Tier C: record what a software EAS system would do. Computed for
+        // every alert observed, whether or not it was new to the archive, but
+        // written once per alert.
+        if (TIER_C && withId.identity?.key && !store.hasDecision(withId.identity.key)) {
+          try {
+            store.recordDecision(withId, decide(withId, STATION_CFG), AUTHORITY_NOTE);
+            decisions++;
+          } catch (err) {
+            errors.push({ posted_msg_id: e.posted_msg_id, error: `decision: ${err.message}` });
+          }
+        }
       } catch (err) {
         errors.push({ posted_msg_id: e.posted_msg_id, error: err.message });
       }
@@ -57,6 +79,7 @@ export async function pollOnce() {
       source: "ipaws-open",
       observed: seen,
       new_records: added,
+      decisions,
       error: errors.length ? `${errors.length} alert(s) unreadable` : null,
     });
 
@@ -69,6 +92,7 @@ export async function pollOnce() {
       ok: true,
       observed: seen,
       new_records: added,
+      decisions,
       duration_ms: Date.now() - started,
       errors,
     };
@@ -114,6 +138,7 @@ export function status() {
   const interval = Math.max(10_000, DEFAULT_INTERVAL_MS);
   return {
     enabled: Boolean(handle),
+    tier_c: TIER_C,
     interval_ms: interval,
     in_flight: running,
     last_run: lastRun,

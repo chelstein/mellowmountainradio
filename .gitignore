@@ -5,3 +5,7 @@ mcp-server/requests.json
 mcp-server/pulse.json
 __pycache__/
 *.pyc
+
+# Generated EAS audio must never be committed (47 CFR §11.45(a))
+endec/*.wav
+endec/out/

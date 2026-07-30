@@ -52,7 +52,11 @@ const FORBIDDEN_PATTERNS = [
 // or enforce the prohibition. Everything else is suspect.
 const DOC_ALLOWLIST = new Set([
   "scripts/no-eas-audio.js",
-  "lib/same.js",     // decoder; carries the do-not-add banner citing the specs
+  "lib/same.js",       // header text parser; carries the do-not-add banner
+  "lib/samedecode.js", // demodulator — decoding is not transmitting (§11.45(a))
+  "test/vectors.js",   // in-memory test vectors; see the banner in that file
+  "test/run.js",
+  "test/README.md",
   "README.md",
 ]);
 
