@@ -1,0 +1,19 @@
+# Smithery configuration — https://smithery.ai/docs/build/project-config/smithery.yaml
+#
+# OpenEAS — read-only observability for the U.S. Emergency Alert System.
+# Reference implementation of the OpenEAS profile (../openeas/SPEC.md).
+#
+# No user configuration required. Every data source this server reads is public:
+# FEMA IPAWS-OPEN and the National Weather Service both serve without credentials.
+#
+# This server cannot originate, encode, relay, delay, or transmit an emergency
+# alert, and has no connection to any broadcast air chain. All tools are
+# read-only and advisory; none is authoritative. See SPEC §2.
+
+startCommand:
+  type: http
+
+configSchema:
+  type: object
+  required: []
+  properties: {}

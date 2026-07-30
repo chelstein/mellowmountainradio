@@ -1,0 +1,77 @@
+[Unit]
+Description=OpenEAS MCP server — read-only Emergency Alert System observability
+Documentation=https://github.com/chelstein/mellowmountainradio/blob/main/openeas/SPEC.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=openeas
+Group=openeas
+WorkingDirectory=/opt/openeas
+
+# Conformance gate. 47 CFR §11.45(a) reaches recordings and simulations, so an
+# EAS audio artifact must never reach a running deployment. If this fails the
+# service refuses to start — deliberately, rather than starting and warning.
+ExecStartPre=/usr/bin/node /opt/openeas/scripts/no-eas-audio.js
+
+ExecStart=/usr/bin/node /opt/openeas/server.js
+Restart=always
+RestartSec=5
+
+Environment=NODE_ENV=production
+EnvironmentFile=-/etc/openeas/openeas.env
+
+# Hardening. This process reads two public HTTPS feeds and serves JSON. It has
+# no legitimate need for write access, privilege escalation, or device access.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+ReadOnlyPaths=/opt/openeas
+CapabilityBoundingSet=
+
+# ── Directives deliberately NOT set. Do not add them back without testing
+# ── node under them on this exact box first.
+#
+# Everything above can only cause a clean permission error. Everything below can
+# kill the process with a SIGNAL, which is what we were chasing:
+#
+#   SystemCallFilter=...
+#     When a filtered syscall is invoked, systemd's default action is SIGSYS.
+#     That surfaces as "a fatal signal was delivered causing the control process
+#     to dump core" — indistinguishable, from the outside, from a crash in the
+#     program itself. @system-service is broad but not guaranteed to cover
+#     everything V8 and libuv touch during startup on a given kernel and Node
+#     build. Not worth the ambiguity for a service whose entire job is reading
+#     two public HTTPS feeds.
+#
+#   MemoryDenyWriteExecute=true
+#     Incompatible with any JIT runtime. V8 maps memory writable then executes it
+#     to emit JIT code; this forbids exactly that. Cannot be used with Node.
+#
+#   RestrictAddressFamilies=AF_INET AF_INET6
+#     Too narrow. Node's DNS resolver reads routing state over AF_NETLINK, and
+#     libuv uses AF_UNIX internally, so restricting to IP alone breaks name
+#     resolution — which this service needs, since both upstreams are hostnames.
+#
+# The retained set still denies privilege escalation, all capabilities, write
+# access to the filesystem, device access, and kernel tunables. That is the
+# protection that matters for this workload.
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openeas
+
+[Install]
+WantedBy=multi-user.target

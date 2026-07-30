@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>if(location.hostname==="www.mellowmountainradio.com")location.replace(location.href.replace("www.mellowmountainradio.com","mellowmountainradio.com"));</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenEAS | The First MCP Server for the Emergency Alert System</title>
+  <meta name="description" content="OpenEAS is an open standard and the first Model Context Protocol server for the U.S. Emergency Alert System — reading FEMA IPAWS and the National Weather Service live, with SAME event codes, geometry, and every language variant. Built and operated by KAZM, Sedona." />
+  <link rel="canonical" href="https://mellowmountainradio.com/eas.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="KAZM Mellow Mountain Radio" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://mellowmountainradio.com/eas.html" />
+  <meta property="og:title" content="OpenEAS | The First MCP Server for the Emergency Alert System" />
+  <meta property="og:description" content="An open standard for reading the Emergency Alert System, with a live reference implementation. Built by a licensed broadcaster." />
+  <meta property="og:image" content="https://mellowmountainradio.com/Color%20logo%20with%20background.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="OpenEAS | The First MCP Server for the Emergency Alert System" />
+  <meta name="twitter:description" content="An open standard for reading the Emergency Alert System, with a live reference implementation." />
+  <meta name="twitter:image" content="https://mellowmountainradio.com/Color%20logo%20with%20background.png" />
+  <meta name="theme-color" content="#223d6e" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="Color%20logo%20-%20no%20background.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Alice&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=164" />
+  <style>
+    /* ── OpenEAS page ───────────────────────────────────────────────────────
+       Semantic severity colours are deliberately separate from the brand
+       terracotta. Severity must never be confused with an accent, and an
+       operator has to read it at a glance without reading the label. */
+    :root {
+      --eas-extreme:  #8f2d24;
+      --eas-severe:   #b4551c;
+      --eas-moderate: #8a6d1f;
+      --eas-minor:    #4d6650;
+      --eas-ok:       #3f6b4a;
+      --eas-unknown:  #6c6253;
+      --eas-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --eas-extreme:  #e88b80;
+        --eas-severe:   #e0aa66;
+        --eas-moderate: #d8bd6a;
+        --eas-minor:    #9dbfa3;
+        --eas-ok:       #8fc09b;
+        --eas-unknown:  #9a927f;
+      }
+    }
+    :root[data-theme="dark"] {
+      --eas-extreme:  #e88b80;
+      --eas-severe:   #e0aa66;
+      --eas-moderate: #d8bd6a;
+      --eas-minor:    #9dbfa3;
+      --eas-ok:       #8fc09b;
+      --eas-unknown:  #9a927f;
+    }
+    :root[data-theme="light"] {
+      --eas-extreme:  #8f2d24;
+      --eas-severe:   #b4551c;
+      --eas-moderate: #8a6d1f;
+      --eas-minor:    #4d6650;
+      --eas-ok:       #3f6b4a;
+      --eas-unknown:  #6c6253;
+    }
+
+    .eas-badge {
+      display: inline-flex; align-items: center; gap: .55rem;
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+      border-radius: var(--pill); padding: .35rem .95rem .35rem .65rem;
+      font-family: var(--eas-mono);
+      font-size: .74rem; letter-spacing: .13em; text-transform: uppercase;
+      color: rgba(255,255,255,.9); margin-bottom: 1.4rem;
+    }
+    .eas-badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #7fdba0; box-shadow: 0 0 0 3px rgba(127,219,160,.22);
+    }
+
+    /* Source health strip — the honest bit. "nothing active" and "couldn't
+       reach the source" are different states and must never look alike. */
+    .eas-sources {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      margin: 0 0 1.6rem;
+      padding: 0; list-style: none;
+    }
+    .eas-src {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--eas-mono); font-size: .73rem; letter-spacing: .04em;
+      border: 1px solid var(--line); border-radius: var(--pill);
+      padding: .34rem .8rem; background: var(--surface); color: var(--muted);
+    }
+    .eas-src b { color: var(--ink); font-weight: 700; }
+    .eas-src-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--eas-unknown); flex: none; }
+    .eas-src[data-s="ok"]              .eas-src-dot { background: var(--eas-ok); }
+    .eas-src[data-s="no_data"]         .eas-src-dot { background: var(--eas-unknown); }
+    .eas-src[data-s="unavailable"]     .eas-src-dot { background: var(--eas-extreme); }
+    .eas-src[data-s="not_provisioned"] .eas-src-dot { background: transparent; border: 1px solid var(--eas-unknown); }
+
+    .eas-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+    @media (min-width: 720px) { .eas-grid { grid-template-columns: 1fr 1fr; } }
+
+    .eas-card {
+      border: 1px solid var(--line); border-left: 4px solid var(--eas-unknown);
+      border-radius: var(--r-sm); background: var(--surface);
+      padding: 1.05rem 1.15rem; box-shadow: var(--shadow-sm);
+    }
+    .eas-card[data-sev="Extreme"]  { border-left-color: var(--eas-extreme); }
+    .eas-card[data-sev="Severe"]   { border-left-color: var(--eas-severe); }
+    .eas-card[data-sev="Moderate"] { border-left-color: var(--eas-moderate); }
+    .eas-card[data-sev="Minor"]    { border-left-color: var(--eas-minor); }
+
+    .eas-card-top { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; margin-bottom: .5rem; }
+    .eas-code {
+      font-family: var(--eas-mono); font-size: 1.02rem; font-weight: 700;
+      letter-spacing: .06em; color: var(--heading);
+    }
+    .eas-sev {
+      font-family: var(--eas-mono); font-size: .68rem; letter-spacing: .1em;
+      text-transform: uppercase; padding: .16rem .5rem; border-radius: var(--pill);
+      border: 1px solid currentColor; color: var(--eas-unknown);
+    }
+    .eas-card[data-sev="Extreme"]  .eas-sev { color: var(--eas-extreme); }
+    .eas-card[data-sev="Severe"]   .eas-sev { color: var(--eas-severe); }
+    .eas-card[data-sev="Moderate"] .eas-sev { color: var(--eas-moderate); }
+    .eas-card[data-sev="Minor"]    .eas-sev { color: var(--eas-minor); }
+
+    .eas-name  { font-family: var(--font-display); font-size: 1.06rem; color: var(--ink); margin: 0 0 .3rem; }
+    .eas-where { font-size: .88rem; color: var(--muted); margin: 0 0 .55rem; }
+    .eas-meta  {
+      display: flex; flex-wrap: wrap; gap: .45rem;
+      font-family: var(--eas-mono); font-size: .69rem; color: var(--muted);
+    }
+    .eas-meta span { border: 1px solid var(--line-soft); border-radius: var(--r-sm); padding: .13rem .42rem; }
+    .eas-langs { color: var(--accent-strong); }
+
+    .eas-empty {
+      border: 1px dashed var(--line); border-radius: var(--r-sm);
+      padding: 1.4rem 1.2rem; text-align: center; color: var(--muted);
+      font-size: .93rem; background: transparent;
+    }
+    .eas-empty b { color: var(--ink); display: block; margin-bottom: .3rem; font-size: 1rem; }
+
+    .eas-fail {
+      border: 1px solid var(--eas-extreme); border-radius: var(--r-sm);
+      padding: 1.1rem 1.2rem; background: var(--surface); color: var(--ink);
+      font-size: .92rem;
+    }
+    .eas-fail b { color: var(--eas-extreme); }
+
+    /* Prominent, not decorative. This page must never be mistaken for an
+       official alert channel. */
+    .eas-warn {
+      border: 1px solid var(--accent-soft); border-left: 4px solid var(--accent-strong);
+      border-radius: var(--r-sm); background: var(--surface);
+      padding: .95rem 1.1rem; margin: 0 0 1.7rem;
+      font-size: .89rem; color: var(--ink); line-height: 1.55;
+    }
+    .eas-warn strong { color: var(--accent-strong); }
+
+    .eas-label {
+      display: inline-block; font-family: var(--eas-mono);
+      font-size: .68rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--accent-strong); margin-bottom: .5rem;
+    }
+    .eas-updated { font-family: var(--eas-mono); font-size: .72rem; color: var(--muted); }
+
+    .eas-facts { display: grid; gap: .9rem; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin: 1.6rem 0 0; }
+    .eas-fact { border-top: 2px solid var(--accent); padding-top: .6rem; }
+    .eas-fact dt { font-family: var(--eas-mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .25rem; }
+    .eas-fact dd { margin: 0; font-family: var(--font-display); font-size: 1.5rem; color: var(--heading); font-variant-numeric: tabular-nums; }
+    .eas-fact dd small { display: block; font-family: var(--font-body); font-size: .78rem; color: var(--muted); }
+
+    .eas-tools { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: .45rem; }
+    .eas-tools li { display: flex; gap: .7rem; align-items: baseline; font-size: .92rem; }
+    .eas-tools code { font-family: var(--eas-mono); font-size: .82rem; color: var(--accent-strong); white-space: nowrap; }
+
+    .eas-scroll { overflow-x: auto; }
+  </style>
+</head>
+<body data-page="about">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div data-site-header></div>
+  <main id="main">
+
+<section class="page-hero page-hero--studio"><div class="wrap">
+  <div class="eas-badge" aria-label="Live status">
+    <span class="eas-badge-dot" aria-hidden="true"></span>
+    Live &nbsp;&middot;&nbsp; FEMA IPAWS + NWS
+  </div>
+  <p class="eyebrow">OpenEAS &middot; Open standard &middot; Draft 0.1.0</p>
+  <h1>The first MCP server for<br>the Emergency Alert System.</h1>
+  <p class="lead">As of July 2026 no Model Context Protocol server existed anywhere for IPAWS, CAP, SAME codes, or FCC Part&nbsp;11 &mdash; not from any broadcaster, and not from any EAS equipment vendor. KAZM built one, wrote the standard it implements, and is running it in the open.</p>
+  <div class="page-hero-cta">
+    <a class="btn btn-primary" href="https://github.com/chelstein/mellowmountainradio/blob/main/openeas/SPEC.md" target="_blank" rel="noopener">Read the specification</a>
+    <a class="btn btn-ghost btn-ghost--light" href="#live">See it running</a>
+  </div>
+</div></section>
+
+<section class="page-section" id="live"><div class="wrap">
+
+  <span class="eas-label">Live now</span>
+  <h2 style="margin-top:0;">Active alerts, nationwide</h2>
+
+  <div class="eas-warn">
+    <strong>This page is observational and is not an official alert channel.</strong>
+    It is a public window onto a read-only research tool. Do not use it for
+    life-safety decisions. For official emergency information, follow the
+    originating authority &mdash; your county emergency management office, the
+    National Weather Service, or Wireless Emergency Alerts on your phone.
+  </div>
+
+  <ul class="eas-sources" data-eas-sources aria-label="Data source health"></ul>
+
+  <div data-eas-national aria-live="polite">
+    <div class="eas-empty"><b>Loading&hellip;</b>Reading the federal alert aggregator.</div>
+  </div>
+
+  <p class="eas-updated" data-eas-updated></p>
+
+  <dl class="eas-facts" data-eas-facts></dl>
+
+</div></section>
+
+<section class="page-section page-section--alt"><div class="wrap">
+
+  <span class="eas-label">Sedona</span>
+  <h2 style="margin-top:0;">What&rsquo;s active in our own counties</h2>
+  <p style="max-width:62ch; color:var(--muted);">Yavapai and Coconino. Sedona straddles the county line, so the station watches both &mdash; along with the Arizona statewide code and <code style="font-family:var(--eas-mono);">000000</code>, which is required to receive a national activation.</p>
+
+  <div data-eas-local aria-live="polite">
+    <div class="eas-empty"><b>Loading&hellip;</b></div>
+  </div>
+
+</div></section>
+
+<section class="page-section"><div class="wrap">
+
+  <div class="prose" style="max-width:68ch;">
+    <span class="eas-label">What this is</span>
+    <h2>A standard, and a working implementation of it.</h2>
+
+    <p>Every EAS compliance record in the United States is a self-report. A station&rsquo;s decoder logs what it believes it received and forwarded, and nothing independently corroborates it. Meanwhile the implementation guide the whole industry builds against &mdash; the ECIG CAP-to-EAS guide, which federal rules incorporate by reference &mdash; was published in May 2010, and the body that wrote it has not met since.</p>
+
+    <p>OpenEAS is a read-only profile for observing what the alerting system actually did: which alerts were issued, what a station&rsquo;s equipment did with them, and what its own recordings prove went to air. The server on this page is its reference implementation.</p>
+
+    <p>It reads <strong>FEMA IPAWS-OPEN</strong> directly &mdash; the federal aggregator that carries civil-authority traffic like evacuation orders, AMBER alerts, and civil emergency messages. That is the difference between this and the dozen weather-API wrappers that exist: none of them touch the Emergency Alert System layer, and none of them speak SAME event or FIPS location codes.</p>
+
+    <h3>What it deliberately does not do</h3>
+
+    <p>It cannot originate, encode, relay, delay, or transmit an alert, and it has no connection to any air chain. That is an architectural commitment, not a phase-one limitation. It performs none of the functions in 47&nbsp;CFR &sect;&sect;11.32, 11.33, or 11.56, so it sits outside the &ldquo;EAS Software&rdquo; category the FCC proposed in June 2026 &mdash; and the station&rsquo;s certified decoder remains the authority on every forwarding decision. Anything the server derives is labelled as derived.</p>
+
+    <p>It also contains no tone-generating code of any kind, and no EAS audio anywhere in its repository. A check enforcing that runs when the software is installed and again every time the service starts; if it ever fails, the service refuses to run.</p>
+
+    <h3>The tools</h3>
+    <ul class="eas-tools">
+      <li><code>get_active_alerts</code><span>Any state, county, SAME code, NWS zone, lat/lon point, or the whole country</span></li>
+      <li><code>get_ipaws_feed</code><span>The national IPAWS active window</span></li>
+      <li><code>get_ipaws_alert</code><span>One full signed CAP alert, with an optional field-by-field audit</span></li>
+      <li><code>find_alerts_for_point</code><span>Which alerts contain a latitude and longitude</span></li>
+      <li><code>get_alert_geojson</code><span>An alert&rsquo;s area as GeoJSON, ready to map</span></li>
+      <li><code>get_alert_languages</code><span>Every language variant, in full</span></li>
+      <li><code>lookup_location</code><span>All 3,295 SAME county codes, resolved to places</span></li>
+      <li><code>explain_alert</code><span>Decode a SAME header field by field, with rule citations</span></li>
+      <li><code>get_event_codes</code><span>The &sect;11.31 code tables as versioned data</span></li>
+      <li><code>search_alert_history</code><span>Historical Weather Service alerts</span></li>
+      <li><code>get_conformance</code><span>Version, regulatory position, source health</span></li>
+    </ul>
+
+    <h3>Validation mode</h3>
+    <p>Every alert can be audited element by element, each check naming the rule or specification clause behind it, and reporting one of four results: pass, fail, absent, or <em>unknown</em>. A check that could not be completed is never reported as one that passed &mdash; so an alert whose signature we can see but have not cryptographically verified comes back <em>indeterminate</em>, not clean. That distinction is the point: the tool is meant to be checkable by someone who does not trust it.</p>
+
+    <p style="margin-top:1.6rem;">
+      <a class="btn btn-primary" href="https://github.com/chelstein/mellowmountainradio/blob/main/openeas/SPEC.md" target="_blank" rel="noopener">The specification</a>
+      &nbsp;
+      <a class="btn btn-ghost" href="https://github.com/chelstein/mellowmountainradio/tree/main/openeas-mcp" target="_blank" rel="noopener">Source code</a>
+    </p>
+
+    <p style="font-size:.85rem; color:var(--muted); margin-top:1.4rem;">Specification licensed CC&nbsp;BY&nbsp;4.0; implementation Apache&nbsp;2.0. The regulatory analysis is research applied to software design and is not legal advice.</p>
+  </div>
+
+</div></section>
+
+<script>
+(function () {
+  "use strict";
+
+  var API = "https://mcp.mellowmountainradio.com";
+  var timer = null;
+
+  function el(sel) { return document.querySelector(sel); }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function withDeadline(p, ms) {
+    return Promise.race([
+      p,
+      new Promise(function (_, rej) { setTimeout(function () { rej(new Error("timeout")); }, ms); })
+    ]);
+  }
+
+  function renderSources(list) {
+    var host = el("[data-eas-sources]");
+    if (!host) return;
+    if (!list || !list.length) { host.innerHTML = ""; return; }
+    host.innerHTML = list.map(function (s) {
+      var label = { ok: "live", no_data: "nothing active", unavailable: "unreachable", not_provisioned: "not queried" }[s.status] || s.status;
+      return '<li class="eas-src" data-s="' + esc(s.status) + '" title="' + esc(s.detail || "") + '">' +
+             '<span class="eas-src-dot" aria-hidden="true"></span>' +
+             '<b>' + esc(s.id) + '</b> ' + esc(label) + '</li>';
+    }).join("");
+  }
+
+  function card(a) {
+    var sev  = (a.cap && a.cap.severity) || "Unknown";
+    var code = (a.same && a.same.event_code) || "&mdash;";
+    var meta = (a.same && a.same.event_meta) || {};
+    var name = meta.name || (a.cap && a.cap.event) || "Unclassified";
+    var where = (a.area && a.area.place_names && a.area.place_names.length)
+      ? a.area.place_names.join(" &middot; ")
+      : ((a.area && a.area.descriptions && a.area.descriptions.join(", ")) || "Area not resolved");
+
+    var bits = [];
+    if (a.same && a.same.org) bits.push("ORG " + esc(a.same.org));
+    var lc = a.language_count || (a.languages && a.languages.length) || 0;
+    if (lc > 1) {
+      var tags = (a.languages || []).map(function (l) { return l.language; }).join(", ");
+      bits.push('<span class="eas-langs">' + lc + " languages: " + esc(tags) + "</span>");
+    }
+    if (a.area && a.area.geometry_summary) {
+      bits.push(a.area.geometry_summary.polygon_count ? "mapped" : "county-level");
+    }
+    if (a.disposition && a.disposition.state) bits.push("ECIG " + esc(a.disposition.state));
+    if (a.cap && a.cap.expires) {
+      var d = new Date(a.cap.expires);
+      if (!isNaN(d)) bits.push("expires " + d.toLocaleString("en-US", { timeZone: "America/Phoenix", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " MST");
+    }
+    if (meta.placeholder) bits.push("no SAME code assigned");
+
+    return '<article class="eas-card" data-sev="' + esc(sev) + '">' +
+      '<div class="eas-card-top"><span class="eas-code">' + code + '</span>' +
+      '<span class="eas-sev">' + esc(sev) + '</span></div>' +
+      '<p class="eas-name">' + esc(name) + '</p>' +
+      '<p class="eas-where">' + where + '</p>' +
+      '<div class="eas-meta">' + bits.map(function (b) { return "<span>" + b + "</span>"; }).join("") + '</div>' +
+      '</article>';
+  }
+
+  // "nothing active" and "could not reach the source" must look different and
+  // read differently. Collapsing them is the failure this whole project exists
+  // to avoid.
+  function renderAlerts(host, alerts, sources, quietMsg) {
+    if (!host) return;
+    if (alerts && alerts.length) {
+      host.innerHTML = '<div class="eas-grid">' + alerts.map(card).join("") + "</div>";
+      return;
+    }
+    var unreachable = (sources || []).filter(function (s) { return s.status === "unavailable"; });
+    if (unreachable.length && unreachable.length === (sources || []).length) {
+      host.innerHTML = '<div class="eas-fail"><b>Sources unreachable.</b> ' +
+        'This is <em>not</em> a report that no alerts exist &mdash; the feeds could not be ' +
+        'read. Check official channels.</div>';
+      return;
+    }
+    host.innerHTML = '<div class="eas-empty"><b>Nothing active.</b>' + esc(quietMsg) + '</div>';
+  }
+
+  function renderFacts(national) {
+    var host = el("[data-eas-facts]");
+    if (!host || !national) return;
+    var entries = national.entries || [];
+    var states = {};
+    entries.forEach(function (e) { if (e.state_fips) states[e.state_fips] = 1; });
+    var codes = {};
+    entries.forEach(function (e) { if (e.event_code) codes[e.event_code] = (codes[e.event_code] || 0) + 1; });
+    var top = Object.keys(codes).sort(function (a, b) { return codes[b] - codes[a]; })[0];
+
+    host.innerHTML =
+      '<div class="eas-fact"><dt>Active nationally</dt><dd>' + (national.national_total != null ? national.national_total : "&mdash;") + '<small>in the IPAWS window</small></dd></div>' +
+      '<div class="eas-fact"><dt>States involved</dt><dd>' + Object.keys(states).length + '<small>with active alerts</small></dd></div>' +
+      '<div class="eas-fact"><dt>Most common</dt><dd>' + (top ? esc(top) : "&mdash;") + '<small>' + (top ? esc(top) + " &times; " + codes[top] : "no alerts") + '</small></dd></div>' +
+      '<div class="eas-fact"><dt>Feed window</dt><dd>~30<small>minutes, then it is gone</small></dd></div>';
+  }
+
+  function stamp(msg) {
+    var u = el("[data-eas-updated]");
+    if (u) u.textContent = msg;
+  }
+
+  function load() {
+    // National
+    withDeadline(fetch(API + "/eas/national", { cache: "no-store" }).then(function (r) { return r.json(); }), 20000)
+      .then(function (d) {
+        if (d && d.unavailable) throw new Error(d.error || "unavailable");
+        renderSources(d.sources || []);
+        renderFacts(d);
+        var host = el("[data-eas-national]");
+        var entries = (d.entries || []).map(function (e) {
+          return {
+            cap: { severity: "Unknown", event: (e.event_meta && e.event_meta.name) || null, expires: null },
+            same: { event_code: e.event_code, event_meta: e.event_meta || {}, org: null },
+            area: { place_names: [], descriptions: [(e.state_fips ? "State FIPS " + e.state_fips : "")] },
+            language_count: 0
+          };
+        });
+        renderAlerts(host, entries, d.sources || [],
+          "The federal aggregator responded and holds no active alerts right now. " +
+          "That is a normal, quiet state.");
+        stamp("Updated " + new Date().toLocaleTimeString("en-US", { timeZone: "America/Phoenix" }) +
+              " MST · refreshes every 60s · IPAWS holds an alert about 30 minutes");
+      })
+      .catch(function (err) {
+        renderSources([{ id: "openeas", status: "unavailable", detail: String(err.message) }]);
+        renderAlerts(el("[data-eas-national]"), [], [{ status: "unavailable" }], "");
+        stamp("Could not reach the relay — " + err.message);
+      });
+
+    // Local
+    withDeadline(fetch(API + "/eas", { cache: "no-store" }).then(function (r) { return r.json(); }), 25000)
+      .then(function (d) {
+        if (d && d.unavailable) throw new Error(d.error || "unavailable");
+        renderAlerts(el("[data-eas-local]"), d.alerts || [], d.sources || [],
+          "No active alerts cover Yavapai or Coconino County right now.");
+      })
+      .catch(function (err) {
+        renderAlerts(el("[data-eas-local]"), [], [{ status: "unavailable" }], "");
+      });
+  }
+
+  function init() {
+    if (!el("[data-eas-national]")) return;   // not our page
+    load();
+    if (timer) clearInterval(timer);
+    timer = setInterval(load, 60000);
+  }
+
+  function teardown() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  // Router-aware: main.js soft-navigates and fires kazm:page on arrival, so the
+  // module has to (re)initialise then and clear its timer on departure.
+  init();
+  document.addEventListener("kazm:page", function () { teardown(); init(); });
+  window.addEventListener("beforeunload", teardown);
+})();
+</script>
+
+  </main>
+  <div data-site-footer></div>
+  <script src="main.js?v=193" defer></script>
+</body>
+</html>
