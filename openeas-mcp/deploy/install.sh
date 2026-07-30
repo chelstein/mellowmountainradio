@@ -167,12 +167,50 @@ fi
 # ── systemd ─────────────────────────────────────────────────────────────────
 log "Installing systemd unit"
 cp "$SRC_DIR/openeas-mcp/deploy/openeas.service" /etc/systemd/system/openeas.service
+
+# The unit hardcodes /usr/bin/node. NodeSource installs there, but a nodenv or
+# nvm-managed node would not — fail with a clear message rather than letting
+# systemd report a confusing exec error.
+if [[ ! -x /usr/bin/node ]]; then
+  REAL_NODE="$(command -v node || true)"
+  [[ -n "$REAL_NODE" ]] || die "node not found on PATH."
+  warn "/usr/bin/node missing; pointing the unit at ${REAL_NODE}"
+  sed -i "s|/usr/bin/node|${REAL_NODE}|g" /etc/systemd/system/openeas.service
+fi
+
 systemctl daemon-reload
 systemctl enable openeas -q
-systemctl restart openeas
+
+# Do NOT let `set -e` abort here. A failed start is exactly when the logs are
+# worth printing, and dying on the systemctl exit code skips them entirely.
+systemctl restart openeas || true
 
 sleep 3
-systemctl is-active --quiet openeas || { journalctl -u openeas -n 30 --no-pager; die "Service failed to start."; }
+if ! systemctl is-active --quiet openeas; then
+  echo
+  warn "Service did not start. Unit status:"
+  systemctl status openeas --no-pager -l 2>&1 | sed 's/^/    /' | head -25 || true
+  echo
+  warn "Recent journal:"
+  journalctl -u openeas -n 40 --no-pager 2>&1 | sed 's/^/    /' || true
+  echo
+  warn "Sanity check — running the same command by hand:"
+  ( cd /opt/openeas && /usr/bin/node scripts/no-eas-audio.js 2>&1 | sed 's/^/    /' ) || true
+  ( cd /opt/openeas && timeout 5 /usr/bin/node -e 'console.log("    node executes fine outside systemd")' 2>&1 ) || true
+  echo
+  cat >&2 <<'SDHINTEOF'
+If node runs by hand but not under systemd, the cause is a sandboxing directive
+in /etc/systemd/system/openeas.service. The usual culprit is
+MemoryDenyWriteExecute=true, which is incompatible with V8's JIT and produces
+"a fatal signal was delivered causing the control process to dump core".
+This unit does not set it; if you added it, remove it.
+
+To bisect, comment out the hardening block, then re-add lines one at a time:
+    systemctl edit --full openeas
+    systemctl restart openeas
+SDHINTEOF
+  die "Service failed to start."
+fi
 log "Service active"
 
 # ── nginx ───────────────────────────────────────────────────────────────────
