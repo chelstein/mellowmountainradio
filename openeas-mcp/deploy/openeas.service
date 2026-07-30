@@ -38,26 +38,36 @@ RestrictSUIDSGID=true
 RestrictRealtime=true
 RestrictNamespaces=true
 LockPersonality=true
-RestrictAddressFamilies=AF_INET AF_INET6
-SystemCallArchitectures=native
-SystemCallFilter=@system-service
-SystemCallFilter=~@privileged @obsolete
 ReadOnlyPaths=/opt/openeas
 CapabilityBoundingSet=
 
-# NOT set, deliberately — do not add these back:
+# ── Directives deliberately NOT set. Do not add them back without testing
+# ── node under them on this exact box first.
+#
+# Everything above can only cause a clean permission error. Everything below can
+# kill the process with a SIGNAL, which is what we were chasing:
+#
+#   SystemCallFilter=...
+#     When a filtered syscall is invoked, systemd's default action is SIGSYS.
+#     That surfaces as "a fatal signal was delivered causing the control process
+#     to dump core" — indistinguishable, from the outside, from a crash in the
+#     program itself. @system-service is broad but not guaranteed to cover
+#     everything V8 and libuv touch during startup on a given kernel and Node
+#     build. Not worth the ambiguity for a service whose entire job is reading
+#     two public HTTPS feeds.
 #
 #   MemoryDenyWriteExecute=true
-#     Incompatible with any JIT runtime. V8 must map memory writable and then
-#     execute it to emit JIT code; this flag forbids that, V8 aborts, and
-#     systemd reports "a fatal signal was delivered causing the control process
-#     to dump core". Setting it does not harden this service, it prevents it
-#     from starting at all.
+#     Incompatible with any JIT runtime. V8 maps memory writable then executes it
+#     to emit JIT code; this forbids exactly that. Cannot be used with Node.
 #
-#   SystemCallFilter=~@resources
-#     Blocks setrlimit and the sched_set* family, which Node uses when sizing
-#     its heap and thread pool. @privileged and @obsolete are the meaningful
-#     denials here and are kept.
+#   RestrictAddressFamilies=AF_INET AF_INET6
+#     Too narrow. Node's DNS resolver reads routing state over AF_NETLINK, and
+#     libuv uses AF_UNIX internally, so restricting to IP alone breaks name
+#     resolution — which this service needs, since both upstreams are hostnames.
+#
+# The retained set still denies privilege escalation, all capabilities, write
+# access to the filesystem, device access, and kernel tunables. That is the
+# protection that matters for this workload.
 
 StandardOutput=journal
 StandardError=journal
