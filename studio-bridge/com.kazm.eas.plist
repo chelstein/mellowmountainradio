@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.kazm.eas</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>/Users/Shared/kazm/eas-decision-engine.py</string>
+    <string>--once</string>
+  </array>
+  <!-- 30s. The IPAWS window is ~30 minutes wide, so this is comfortable; the
+       constraint that matters is not missing a window, and every poll is
+       recorded so a gap is auditable rather than invisible. -->
+  <key>StartInterval</key>
+  <integer>30</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/tmp/kazm-eas.out</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/kazm-eas.err</string>
+</dict>
+</plist>
