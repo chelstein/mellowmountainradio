@@ -287,7 +287,22 @@
 (function () {
   "use strict";
 
-  var API = "https://mcp.mellowmountainradio.com";
+  // Two ways to reach OpenEAS, tried in order. Whichever is deployed wins, so
+  // neither has to exist before the other.
+  //
+  //   direct — the OpenEAS droplet itself, once it has TLS. Fewest moving parts.
+  //   relay  — /eas routes on the MCP server, which proxy the droplet. Needed
+  //            only while the droplet is plain HTTP, because an HTTPS page
+  //            cannot fetch HTTP (mixed content) and the browser blocks it
+  //            before any code here runs.
+  //
+  // Note the direct endpoint MUST be https. Listing an http:// URL here would
+  // be silently blocked by every browser rather than failing usefully.
+  var ENDPOINTS = [
+    { name: "direct", base: "https://eas.mellowmountainradio.com", path: { national: "/mcp", local: "/mcp" }, rpc: true },
+    { name: "relay",  base: "https://mcp.mellowmountainradio.com", path: { national: "/eas/national", local: "/eas" }, rpc: false }
+  ];
+  var chosen = null;   // sticks to the first endpoint that answers
   var timer = null;
 
   function el(sel) { return document.querySelector(sel); }
@@ -303,6 +318,60 @@
       p,
       new Promise(function (_, rej) { setTimeout(function () { rej(new Error("timeout")); }, ms); })
     ]);
+  }
+
+  // Speaks either dialect: a plain GET against the relay's REST routes, or
+  // MCP JSON-RPC over streamable HTTP against the droplet directly. The
+  // droplet frames its JSON-RPC replies as SSE, so the body needs unwrapping.
+  function callEndpoint(ep, which, tool, args) {
+    var url = ep.base + ep.path[which];
+    if (!ep.rpc) {
+      return fetch(url, { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }).then(function (d) {
+        if (d && d.unavailable) throw new Error(d.error || "unavailable");
+        return d;
+      });
+    }
+    return fetch(url, {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json", "Accept": "application/json, text/event-stream" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: tool, arguments: args || {} } })
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    }).then(function (raw) {
+      var lines = raw.split("\n");
+      for (var i = 0; i < lines.length; i++) {
+        var s = lines[i].indexOf("data:") === 0 ? lines[i].slice(5).trim() : lines[i].trim();
+        if (!s || s.indexOf("event:") === 0) continue;
+        var d; try { d = JSON.parse(s); } catch (e) { continue; }
+        if (d.error) throw new Error(d.error.message || "rpc error");
+        var t = d.result && d.result.content && d.result.content[0] && d.result.content[0].text;
+        if (t) return JSON.parse(t);
+      }
+      throw new Error("no result in response");
+    });
+  }
+
+  // Try each endpoint until one answers, then remember it.
+  function fetchData(which, tool, args) {
+    var order = chosen ? [chosen].concat(ENDPOINTS.filter(function (e) { return e !== chosen; })) : ENDPOINTS;
+    var errs = [];
+    function attempt(i) {
+      if (i >= order.length) {
+        return Promise.reject(new Error(errs.join("; ") || "no endpoint reachable"));
+      }
+      return withDeadline(callEndpoint(order[i], which, tool, args), 25000)
+        .then(function (d) { chosen = order[i]; return d; })
+        .catch(function (e) {
+          errs.push(order[i].name + ": " + e.message);
+          return attempt(i + 1);
+        });
+    }
+    return attempt(0);
   }
 
   function renderSources(list) {
@@ -395,9 +464,8 @@
 
   function load() {
     // National
-    withDeadline(fetch(API + "/eas/national", { cache: "no-store" }).then(function (r) { return r.json(); }), 20000)
+    fetchData("national", "eas_get_ipaws_feed", {})
       .then(function (d) {
-        if (d && d.unavailable) throw new Error(d.error || "unavailable");
         renderSources(d.sources || []);
         renderFacts(d);
         var host = el("[data-eas-national]");
@@ -413,18 +481,18 @@
           "The federal aggregator responded and holds no active alerts right now. " +
           "That is a normal, quiet state.");
         stamp("Updated " + new Date().toLocaleTimeString("en-US", { timeZone: "America/Phoenix" }) +
-              " MST · refreshes every 60s · IPAWS holds an alert about 30 minutes");
+              " MST via " + (chosen ? chosen.name : "?") +
+              " · refreshes every 60s · IPAWS holds an alert about 30 minutes");
       })
       .catch(function (err) {
         renderSources([{ id: "openeas", status: "unavailable", detail: String(err.message) }]);
         renderAlerts(el("[data-eas-national]"), [], [{ status: "unavailable" }], "");
-        stamp("Could not reach the relay — " + err.message);
+        stamp("No OpenEAS endpoint reachable — " + err.message);
       });
 
     // Local
-    withDeadline(fetch(API + "/eas", { cache: "no-store" }).then(function (r) { return r.json(); }), 25000)
+    fetchData("local", "eas_get_active_alerts", {})
       .then(function (d) {
-        if (d && d.unavailable) throw new Error(d.error || "unavailable");
         renderAlerts(el("[data-eas-local]"), d.alerts || [], d.sources || [],
           "No active alerts cover Yavapai or Coconino County right now.");
       })
