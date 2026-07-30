@@ -44,7 +44,27 @@ async function page({ top = 100, skip = 0, filter = null, orderby = "sent desc" 
       signal: ctl.signal,
       headers: { "User-Agent": UA, Accept: "application/json" },
     });
-    if (!r.ok) throw new Error(`OpenFEMA HTTP ${r.status}`);
+    if (!r.ok) {
+      // Capture a snippet of the body. A bare status code is not diagnosable,
+      // and the common failure here is a WAF block page whose text names the
+      // reason (and often carries a reference number worth quoting in an
+      // appeal). Observed: www.fema.gov returns 403 to some datacenter IP
+      // ranges while apps.fema.gov — the live IPAWS feed — stays reachable
+      // from the same host, so a 403 here does NOT mean FEMA is unreachable.
+      let body = "";
+      try { body = (await r.text()).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 300); } catch { /* ignore */ }
+      const err = new Error(
+        `OpenFEMA HTTP ${r.status}` +
+        (body ? ` — ${body}` : "") +
+        (r.status === 403
+          ? " | A 403 here is typically IP-reputation based, not a credential problem: " +
+            "OpenFEMA needs no authentication. The live IPAWS feed at apps.fema.gov is a " +
+            "separate host and is usually still reachable, so live polling continues to work. " +
+            "Backfill from a different network, or request an allowlist via openfema@fema.dhs.gov."
+          : ""));
+      err.status = r.status;
+      throw err;
+    }
     const d = await r.json();
     return { records: d.IpawsArchivedAlerts ?? [], metadata: d.metadata ?? {} };
   } finally {

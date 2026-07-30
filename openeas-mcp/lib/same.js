@@ -180,9 +180,18 @@ export function derivedMandatoryForward(parsed, stationStateFips, stationCountyF
     };
   }
 
-  const covered = parsed.locations.some(l =>
-    l.valid && l.state_fips === stationStateFips &&
-    (l.county_fips === "000" || l.county_fips === stationCountyFips));
+  const covered = parsed.locations.some(l => {
+    if (!l.valid) return false;
+    // 000000 is all United States territory. It is how an EAN and a nationwide
+    // NPT reach every station in the country, so it MUST match regardless of
+    // the station's own state and county. Omitting this case makes a national
+    // activation report as not-mandatory — wrong in the most dangerous
+    // direction there is.
+    if (l.code === "000000") return true;
+    if (l.state_fips !== stationStateFips) return false;
+    // CCC=000 is the entire state.
+    return l.county_fips === "000" || l.county_fips === stationCountyFips;
+  });
 
   return {
     mandatory: covered,
