@@ -1,0 +1,93 @@
+name: Workflow lint
+
+# Validates the workflow files themselves.
+#
+# Nothing in this repository checked its own automation. A YAML typo or an
+# unbalanced quote in a `run:` block lands on main and stays invisible until the
+# next scheduled fire — for the tape recorder that is up to six hours later, and
+# the symptom is a missing recording rather than an obvious error. The recorder
+# is the archive; a silent gap in it is the expensive kind of failure.
+#
+# Two checks, both cheap, both catching the class of mistake that is easy to make
+# while editing a workflow by hand:
+#
+#   1. every workflow parses as YAML
+#   2. every bash `run:` block parses as bash (`bash -n`, syntax only — nothing
+#      is executed)
+
+on:
+  push:
+    branches: ["**"]
+    paths: [".github/workflows/**"]
+  pull_request:
+    paths: [".github/workflows/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Workflows parse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: YAML and shell syntax
+        run: |
+          python3 - <<'PY'
+          import glob, subprocess, sys, tempfile, os, yaml
+
+          # A step is bash unless it says otherwise. python/pwsh/node steps are
+          # reported as skipped rather than silently ignored, so the output says
+          # what was actually checked.
+          NON_BASH = ("python", "pwsh", "powershell", "node", "cmd")
+
+          failures, checked, skipped = [], 0, 0
+
+          for path in sorted(glob.glob(".github/workflows/*.y*ml")):
+              try:
+                  doc = yaml.safe_load(open(path))
+              except Exception as e:
+                  failures.append((path, "YAML", str(e).splitlines()[0]))
+                  print(f"::error file={path}::YAML parse failed: {e}")
+                  continue
+              print(f"  ok   {path} — YAML parses")
+
+              if not isinstance(doc, dict):
+                  continue
+              for job_name, job in (doc.get("jobs") or {}).items():
+                  if not isinstance(job, dict):
+                      continue
+                  default_shell = ((job.get("defaults") or {}).get("run") or {}).get("shell", "")
+                  for i, step in enumerate(job.get("steps") or []):
+                      if not isinstance(step, dict) or "run" not in step:
+                          continue
+                      shell = (step.get("shell") or default_shell or "bash").lower()
+                      label = step.get("name") or f"step {i}"
+                      if shell.startswith(NON_BASH):
+                          skipped += 1
+                          print(f"  skip {path} [{job_name}] {label} — shell: {shell}")
+                          continue
+
+                      with tempfile.NamedTemporaryFile("w", suffix=".sh", delete=False) as f:
+                          f.write(step["run"])
+                          tmp = f.name
+                      r = subprocess.run(["bash", "-n", tmp], capture_output=True, text=True)
+                      os.unlink(tmp)
+                      checked += 1
+                      if r.returncode:
+                          err = r.stderr.replace(tmp, f"{path}:{job_name}:{label}").strip()
+                          failures.append((path, label, err.splitlines()[0]))
+                          print(f"::error file={path}::bash syntax error in '{label}': {err}")
+                      else:
+                          print(f"  ok   {path} [{job_name}] {label} — bash parses")
+
+          print(f"\n{checked} bash step(s) checked, {skipped} non-bash step(s) skipped")
+          if failures:
+              print(f"\n{len(failures)} problem(s):")
+              for p, w, e in failures:
+                  print(f"  {p} — {w}: {e}")
+              sys.exit(1)
+          print("PASS — every workflow parses, every bash step parses.")
+          PY
