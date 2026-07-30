@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-30T02:35:48.312Z",
+ "updated": "2026-07-30T08:31:16.490Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -998,6 +998,21 @@
    "lineup": []
   },
   {
+   "id": "17AYv0G62liY8l7",
+   "artist": "Earth, Wind & Fire",
+   "date": "2026-10-20",
+   "time": "19:00:00",
+   "venue": "South Point Showroom at South Point Hotel Casino and Spa",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/serpentine-fire-music-of-earth-wind-las-vegas-nevada-10-20-2026/event/170064FAECC10AC4",
+   "img": "https://s1.ticketm.net/dam/e/0ab/b2039d84-9673-48a6-bb47-34a5c26ae0ab_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-08-04T19:00:00Z",
+   "lineup": []
+  },
+  {
    "id": "vvG1iZ_kNUzgaf",
    "artist": "Bonnie Raitt",
    "date": "2026-10-20",
@@ -1013,6 +1028,21 @@
    "lineup": [
     "Jon Cleary & the Absolute Monster Gentlemen"
    ]
+  },
+  {
+   "id": "17AYv0G62liYYlG",
+   "artist": "Earth, Wind & Fire",
+   "date": "2026-10-21",
+   "time": "19:00:00",
+   "venue": "South Point Showroom at South Point Hotel Casino and Spa",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/serpentine-fire-music-of-earth-wind-las-vegas-nevada-10-21-2026/event/170064FAECC30ACC",
+   "img": "https://s1.ticketm.net/dam/e/b58/20ee0afb-28de-4534-8f36-c2fac57f8b58_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-08-04T19:00:00Z",
+   "lineup": []
   },
   {
    "id": "vvG1iZ_kNUygab",
@@ -1032,18 +1062,18 @@
    ]
   },
   {
-   "id": "1A9ZkoPGkdLawfD",
+   "id": "17AYv0G62lis8l_",
    "artist": "Earth, Wind & Fire",
-   "date": "2026-10-21",
-   "time": "20:30:00",
-   "venue": "The Venetian Theatre at The Venetian Resort",
+   "date": "2026-10-22",
+   "time": "19:00:00",
+   "venue": "South Point Showroom at South Point Hotel Casino and Spa",
    "city": "Las Vegas",
    "state": "NV",
-   "url": "https://www.ticketmaster.com/earth-wind-fire-las-vegas-nevada-10-21-2026/event/17006465DF27253B",
-   "img": "https://s1.ticketm.net/dam/a/843/ff2c4ae2-6d19-4a76-9fcd-4693b1a91843_RETINA_PORTRAIT_16_9.jpg",
+   "url": "https://www.ticketmaster.com/serpentine-fire-music-of-earth-wind-las-vegas-nevada-10-22-2026/event/170064FAECC50AD9",
+   "img": "https://s1.ticketm.net/dam/e/8e2/1dc5b7f3-8a7a-4dce-b297-1f9aeb3b98e2_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
-   "saleStart": "2026-03-27T17:00:00Z",
+   "status": "offsale",
+   "saleStart": "2026-08-04T19:00:00Z",
    "lineup": []
   },
   {
