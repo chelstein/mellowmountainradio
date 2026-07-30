@@ -110,8 +110,13 @@ fi
 
 log "Installing to ${APP_DIR}"
 install -d -m 0755 "$APP_DIR"
-rm -rf "$APP_DIR"/{lib,scripts,node_modules}
-cp -r "$SRC_DIR/openeas-mcp"/{lib,scripts,server.js,package.json,README.md} "$APP_DIR"/
+rm -rf "$APP_DIR"/{lib,scripts,test,node_modules}
+# test/ ships deliberately. It is text-only and dependency-free, and it lets an
+# operator — or an auditor — run the suite against the ARTIFACT THAT IS ACTUALLY
+# DEPLOYED rather than against a checkout that may have drifted. For a system
+# whose value rests on being checkable by someone who does not trust it, that
+# distinction is the whole point.
+cp -r "$SRC_DIR/openeas-mcp"/{lib,scripts,test,server.js,package.json,README.md} "$APP_DIR"/
 [[ -f "$SRC_DIR/openeas-mcp/package-lock.json" ]] && cp "$SRC_DIR/openeas-mcp/package-lock.json" "$APP_DIR"/
 
 log "Installing dependencies"
