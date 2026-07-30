@@ -3253,7 +3253,7 @@ function setCors(res) {
   res.set({ "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" });
 }
 
-app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft|thread|owncast|transcripts(\/search)?)$/, (_req, res) => {
+app.options(/^\/(request|requests|pulse|playlog|charts|roads|aircraft|thread|owncast|eas(\/.*)?|transcripts(\/search)?)$/, (_req, res) => {
   setCors(res); res.sendStatus(204);
 });
 
@@ -3530,6 +3530,94 @@ app.get("/owncast", async (_req, res) => {
     owncastCache = { at: Date.now(), body: { ok: true, online: !!d.online, viewerCount: d.viewerCount || 0 } };
     res.json(owncastCache.body);
   } catch (e) { res.status(502).json({ ok: false, error: String(e.message) }); }
+});
+
+// ── GET /eas — OpenEAS relay ──────────────────────────────────────────────────
+// The OpenEAS server (openeas-mcp/) runs on its own droplet and currently serves
+// plain HTTP on a bare IP. The site is HTTPS, so a browser would refuse to fetch
+// it directly as mixed content. This relays it: server-to-server HTTP is fine,
+// and the browser only ever talks HTTPS to this host.
+//
+// Nothing here originates, encodes, or transmits an alert. It forwards read-only
+// observational data and nothing else.
+const OPENEAS_URL = (process.env.OPENEAS_URL || "http://161.35.225.111").replace(/\/$/, "");
+
+// Parses the MCP streamable-HTTP response, which frames JSON-RPC in SSE.
+async function easCall(name, args = {}) {
+  const r = await fetch(`${OPENEAS_URL}/mcp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: args } }),
+    signal: AbortSignal.timeout(25000),
+  });
+  if (!r.ok) throw new Error(`openeas ${r.status}`);
+  const raw = await r.text();
+  for (const line of raw.split("\n")) {
+    const s = line.startsWith("data:") ? line.slice(5).trim() : line.trim();
+    if (!s || s.startsWith("event:")) continue;
+    let d; try { d = JSON.parse(s); } catch { continue; }
+    if (d.error) throw new Error(d.error.message || "openeas rpc error");
+    const t = d?.result?.content?.[0]?.text;
+    if (t) return JSON.parse(t);
+  }
+  throw new Error("no JSON-RPC result in openeas response");
+}
+
+const easCache = new Map();   // key -> { at, body }
+const EAS_TTL = 60_000;       // IPAWS holds an alert ~30 min; a minute is plenty
+
+async function easCached(key, fn) {
+  const hit = easCache.get(key);
+  if (hit && Date.now() - hit.at < EAS_TTL) return hit.body;
+  const body = await fn();
+  easCache.set(key, { at: Date.now(), body });
+  return body;
+}
+
+// Local alerts for the station's own service area.
+app.get("/eas", async (_req, res) => {
+  setCors(res);
+  try {
+    res.json(await easCached("local", () => easCall("eas_get_active_alerts", {})));
+  } catch (e) {
+    // Explicitly NOT an empty alert list — a relay failure must never be
+    // renderable as "no emergency". See openeas/SPEC.md §5.2.
+    res.status(502).json({ ok: false, unavailable: true, error: String(e.message),
+      note: "OpenEAS could not be reached. This is NOT a report that no alerts exist." });
+  }
+});
+
+// The national IPAWS active window.
+app.get("/eas/national", async (_req, res) => {
+  setCors(res);
+  try {
+    res.json(await easCached("national", () => easCall("eas_get_ipaws_feed", {})));
+  } catch (e) {
+    res.status(502).json({ ok: false, unavailable: true, error: String(e.message),
+      note: "OpenEAS could not be reached. This is NOT a report that no alerts exist." });
+  }
+});
+
+// One alert, full CAP, with the deep validation audit attached.
+app.get("/eas/alert/:id", async (req, res) => {
+  setCors(res);
+  const id = String(req.params.id || "").replace(/[^0-9]/g, "");
+  if (!id) return res.status(400).json({ ok: false, error: "numeric POSTEDMSGID required" });
+  try {
+    res.json(await easCached(`alert:${id}`, () =>
+      easCall("eas_get_ipaws_alert", { posted_msg_id: id, validate: true })));
+  } catch (e) {
+    res.status(502).json({ ok: false, unavailable: true, error: String(e.message) });
+  }
+});
+
+app.get("/eas/conformance", async (_req, res) => {
+  setCors(res);
+  try {
+    res.json(await easCached("conf", () => easCall("eas_get_conformance", {})));
+  } catch (e) {
+    res.status(502).json({ ok: false, unavailable: true, error: String(e.message) });
+  }
 });
 
 // ── first-plays index — real Station Debuts from the full play history ────────
