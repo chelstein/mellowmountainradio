@@ -61,81 +61,123 @@
     }
 
     /* ── Tool category grid ────────────────────────────────────────── */
-    .mcp-cats {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-      margin: 2rem 0 1rem;
-    }
-    @media (max-width: 660px) { .mcp-cats { grid-template-columns: 1fr; } }
+    /* ── Tool catalog ──────────────────────────────────────────────────
+       Rebuilt as a flat, uniform grid. The previous version was a
+       two-column grid of five category cards; grid's default
+       align-items:stretch forced every card to its row-mate's height, so
+       a 5-tool card sitting beside a 9-tool card carried 250px of dead
+       white, a 6-tool beside a 13-tool carried 600px, and the odd fifth
+       card left half the page empty. Independent cards with
+       align-items:start cannot do that at any tool count.
 
-    .mcp-cat {
-      background: var(--surface); border: 1px solid var(--line);
-      border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-sm);
-    }
+       Category is carried by a label, not a hue. The old version gave each
+       group its own colour (navy / brown / green / purple), which read as
+       encoding while meaning nothing. One accent, per the site system. */
 
-    .mcp-cat-head {
-      display: flex; align-items: center; gap: 10px;
-      padding: 13px 18px;
-      background: var(--cc, var(--navy-deep));
+    .mcp-controls {
+      display: flex; flex-wrap: wrap; gap: .7rem; align-items: center;
+      margin: 0 0 1.5rem;
     }
-    .mcp-cat-ic  { font-size: 1.1rem; line-height: 1; }
-    .mcp-cat-title {
-      font-size: .72rem; font-weight: 700; letter-spacing: .1em;
-      text-transform: uppercase; color: #fff;
+    .mcp-search { position: relative; flex: 1 1 250px; max-width: 330px; }
+    .mcp-search input {
+      width: 100%; font-family: inherit; font-size: .95rem;
+      padding: .58rem .9rem .58rem 2.3rem;
+      border: 1px solid var(--line); border-radius: var(--pill);
+      background: var(--surface); color: var(--ink);
     }
-    .mcp-cat-count {
-      margin-left: auto; font-size: .67rem;
-      color: rgba(255,255,255,.45); letter-spacing: .04em;
+    .mcp-search input::placeholder { color: var(--muted); opacity: .8; }
+    .mcp-search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .mcp-search svg {
+      position: absolute; left: .85rem; top: 50%; transform: translateY(-50%);
+      opacity: .45; pointer-events: none;
     }
+    .mcp-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .mcp-chip {
+      font-family: inherit; font-size: .8rem; letter-spacing: .01em;
+      padding: .44rem .82rem; border-radius: var(--pill);
+      border: 1px solid var(--line); background: transparent;
+      color: var(--muted); cursor: pointer; transition: none;
+    }
+    .mcp-chip:hover { border-color: var(--accent-soft); color: var(--ink); }
+    .mcp-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .mcp-chip[aria-pressed="true"] {
+      background: var(--accent-strong); border-color: var(--accent-strong); color: #fff;
+    }
+    .mcp-chip b { font-weight: 700; opacity: .7; margin-left: .35rem; font-variant-numeric: tabular-nums; }
 
+    .mcp-grid {
+      display: grid; align-items: start; gap: .7rem;
+      grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+    }
     .mcp-tool {
-      display: block; padding: 11px 18px;
-      border-bottom: 1px solid var(--line-soft);
-      transition: background .12s;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--r-sm); padding: .85rem .95rem .9rem;
     }
-    .mcp-tool:last-child { border-bottom: none; }
-    .mcp-tool:hover { background: var(--bg-2); }
-
+    .mcp-tool[hidden] { display: none; }
+    .mcp-tool-cat {
+      display: block; font-size: .64rem; letter-spacing: .13em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .4rem;
+    }
+    .mcp-tool-cat::before {
+      content: ""; display: inline-block; width: 14px; height: 1px;
+      background: var(--accent); vertical-align: middle; margin-right: .5rem;
+    }
     .mcp-tool-fn {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: .77rem; color: var(--cc-ink, var(--navy));
-      display: block; margin-bottom: .22rem; letter-spacing: .01em;
+      display: block; font-size: .855rem; line-height: 1.35; margin-bottom: .34rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      color: var(--heading); overflow-wrap: anywhere;
     }
-    .mcp-tool-desc {
-      font-size: .79rem; line-height: 1.45; color: var(--muted);
-      display: block;
-    }
+    .mcp-tool-fn .arg { color: var(--muted); }
+    .mcp-tool-desc { display: block; font-size: .845rem; line-height: 1.52; color: var(--muted); }
     .mcp-tool-badge {
-      display: inline-block; font-size: .56rem; font-weight: 700;
-      letter-spacing: .08em; text-transform: uppercase;
+      display: inline-block; vertical-align: middle; margin-left: .45rem;
+      font-family: var(--font-body); font-size: .58rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: .16rem .4rem; border-radius: 4px;
       background: var(--accent-strong); color: #fff;
-      padding: .12em .5em; border-radius: 3px; margin-left: .4rem;
-      vertical-align: middle; position: relative; top: -1px;
     }
+    .mcp-tool-badge--live { background: var(--navy); }
+    .mcp-empty {
+      grid-column: 1 / -1; padding: 2.2rem 0; text-align: center;
+      color: var(--muted); font-size: .92rem;
+    }
+    .mcp-count { font-size: .82rem; color: var(--muted); margin: 0 0 .9rem; font-variant-numeric: tabular-nums; }
 
-    /* category colour tokens: header bg + fn name ink */
-    .mcp-cat--onair   { --cc: #1a3a6e; --cc-ink: #1a3a6e; }
-    .mcp-cat--local   { --cc: #7a3d12; --cc-ink: #7a3d12; }
-    .mcp-cat--sedona  { --cc: #1e5e35; --cc-ink: #1e5e35; }
-    .mcp-cat--vibe    { --cc: #4a2e72; --cc-ink: #4a2e72; }
+    /* Headings on this page computed to margin-bottom:0, so every intro
+       paragraph sat flush against its heading with no separation. */
+    .mcp-h { margin: 0 0 .5rem; font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.05rem); line-height: 1.22; }
+    .mcp-sub { margin: 0 0 1.6rem; max-width: 62ch; color: var(--muted); font-size: .95rem; }
+
+    /* On a phone the card chrome costs more than it earns — 46 bordered
+       cards stacked one-up added about 2,000px of pure padding. Same
+       content, same filtering, rendered as a dense hairline list instead. */
+    @media (max-width: 640px) {
+      .mcp-grid {
+        grid-template-columns: 1fr; gap: 0;
+        border-top: 1px solid var(--line);
+      }
+      .mcp-tool {
+        background: transparent; border: 0; border-radius: 0;
+        border-bottom: 1px solid var(--line);
+        padding: .7rem .15rem .75rem;
+      }
+      .mcp-tool-cat { font-size: .6rem; margin-bottom: .25rem; }
+      .mcp-tool-fn { font-size: .82rem; }
+      .mcp-tool-desc { font-size: .82rem; line-height: 1.45; }
+      .mcp-search { max-width: none; }
+    }
 
     @media (prefers-color-scheme: dark) {
-      .mcp-cat { background: rgba(255,255,255,.04); border-color: var(--line); }
-      .mcp-tool:hover { background: rgba(255,255,255,.05); }
-      .mcp-cat--onair   { --cc: #1f4b8f; --cc-ink: #7ab4f0; }
-      .mcp-cat--local   { --cc: #8f4d1c; --cc-ink: #d4843f; }
-      .mcp-cat--sedona  { --cc: #1f6b38; --cc-ink: #5ab870; }
-      .mcp-cat--vibe    { --cc: #5c3a8f; --cc-ink: #a080d0; }
+      .mcp-tool { background: rgba(255,255,255,.04); }
+      .mcp-search input { background: rgba(255,255,255,.04); }
     }
-    :root[data-theme="dark"] .mcp-cat { background: rgba(255,255,255,.04); border-color: var(--line); }
-    :root[data-theme="dark"] .mcp-tool:hover { background: rgba(255,255,255,.05); }
-    :root[data-theme="dark"] .mcp-cat--onair   { --cc: #1f4b8f; --cc-ink: #7ab4f0; }
-    :root[data-theme="dark"] .mcp-cat--local   { --cc: #8f4d1c; --cc-ink: #d4843f; }
-    :root[data-theme="dark"] .mcp-cat--sedona  { --cc: #1f6b38; --cc-ink: #5ab870; }
-    :root[data-theme="dark"] .mcp-cat--vibe    { --cc: #5c3a8f; --cc-ink: #a080d0; }
-    :root[data-theme="light"] .mcp-cat--onair  { --cc: #1a3a6e; --cc-ink: #1a3a6e; }
-    :root[data-theme="light"] .mcp-cat--local  { --cc: #7a3d12; --cc-ink: #7a3d12; }
-    :root[data-theme="light"] .mcp-cat--sedona { --cc: #1e5e35; --cc-ink: #1e5e35; }
-    :root[data-theme="light"] .mcp-cat--vibe   { --cc: #4a2e72; --cc-ink: #4a2e72; }
+    @media (prefers-color-scheme: dark) and (max-width: 640px) {
+      .mcp-tool { background: transparent; }
+    }
+    :root[data-theme="dark"] .mcp-tool { background: rgba(255,255,255,.04); }
+    :root[data-theme="dark"] .mcp-search input { background: rgba(255,255,255,.04); }
+    :root[data-theme="light"] .mcp-tool { background: var(--surface); }
+    :root[data-theme="light"] .mcp-search input { background: var(--surface); }
 
     /* ── Stats band ────────────────────────────────────────────────── */
     .mcp-stats-band {
@@ -297,6 +339,30 @@
   </div>
 </div></section>
 
+<!-- Stats band -->
+<div class="mcp-stats-band">
+  <div class="wrap">
+    <div class="mcp-stats-inner">
+      <div class="mcp-stat">
+        <span class="mcp-stat-num mcp-stat-num--accent">0</span>
+        <span class="mcp-stat-label">Other radio stations<br>with MCP servers</span>
+      </div>
+      <div class="mcp-stat">
+        <span class="mcp-stat-num">46</span>
+        <span class="mcp-stat-label">Live tools<br>and growing</span>
+      </div>
+      <div class="mcp-stat">
+        <span class="mcp-stat-num">52</span>
+        <span class="mcp-stat-label">Years KAZM has been<br>on the mountain</span>
+      </div>
+      <div class="mcp-stat">
+        <span class="mcp-stat-num">2023</span>
+        <span class="mcp-stat-label">Song log goes back to<br>October of that year</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <section class="page-section"><div class="wrap">
 
   <div class="prose" style="max-width:68ch;">
@@ -321,278 +387,264 @@
 
   <div>
     <span class="mcp-label">What&rsquo;s Exposed</span>
-    <h2 style="font-family:'Alice',Georgia,serif;font-size:1.5rem;font-weight:normal;margin-bottom:.4rem;line-height:1.3;">46 live tools, all real data</h2>
-    <p style="margin-bottom:1.75rem;max-width:60ch;color:var(--muted);font-size:.92rem;">Every tool reads from a live source. Nothing is cached longer than the underlying data warrants. Nothing is fabricated.</p>
+    <h2 class="mcp-h">46 live tools, all real data</h2>
+    <p class="mcp-sub">Every tool reads from a live source. Nothing is cached longer than the underlying data warrants. Nothing is fabricated.</p>
 
-    <div class="mcp-cats">
-
-      <!-- On Air -->
-      <div class="mcp-cat mcp-cat--onair">
-        <div class="mcp-cat-head">
-          <span class="mcp-cat-ic" aria-hidden="true">📻</span>
-          <span class="mcp-cat-title">On Air</span>
-          <span class="mcp-cat-count">9 tools</span>
-        </div>
-        <div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_now_playing()</span>
-            <span class="mcp-tool-desc">Current song, artist, and album from broadcast automation &mdash; the actual air signal, not a guess.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_listener_count()</span>
-            <span class="mcp-tool-desc">How many people are tuned in right now, across all three streams.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">search_song_history(date, time)</span>
-            <span class="mcp-tool-desc">What was playing at any hour since October 2023, from the station&rsquo;s own broadcast logs.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">search_broadcast_transcripts(query)</span>
-            <span class="mcp-tool-desc">Every word said on the air &mdash; weather, news, live breaks &mdash; transcribed from the broadcast tapes. What was played, and what was said.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_stream_url()</span>
-            <span class="mcp-tool-desc">The direct listen-live URL &mdash; so an AI can hand someone a working link, not a homepage.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_show_schedule()</span>
-            <span class="mcp-tool-desc">Current and upcoming on-air show lineup &mdash; who&rsquo;s on, when, and what the show is about.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_rewind(date?)</span>
-            <span class="mcp-tool-desc">14-day broadcast archive, block by block &mdash; what ran on any hour of any recent day.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">search_song_request_library(query)</span>
-            <span class="mcp-tool-desc">Search the station&rsquo;s requestable song library by title or artist name.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">submit_song_request(query)<span class="mcp-tool-badge">Live</span></span>
-            <span class="mcp-tool-desc">AI can actually queue a song for broadcast on KAZM &mdash; live, bidirectional. First-of-its-kind for radio.</span>
-          </div>
-        </div>
+    <div class="mcp-controls">
+      <div class="mcp-search">
+        <svg viewBox="0 0 256 256" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M229.7 218.3 179.6 168.2a92.2 92.2 0 1 0-11.4 11.4l50.1 50.1a8 8 0 0 0 11.4-11.4ZM40 112a72 72 0 1 1 72 72 72.1 72.1 0 0 1-72-72Z"/></svg>
+        <label class="visually-hidden" for="mcp-q">Search the tools</label>
+        <input id="mcp-q" type="search" placeholder="Search 46 tools&hellip;" autocomplete="off" />
       </div>
-
-      <!-- Local Conditions -->
-      <div class="mcp-cat mcp-cat--local">
-        <div class="mcp-cat-head">
-          <span class="mcp-cat-ic" aria-hidden="true">🌵</span>
-          <span class="mcp-cat-title">Local Conditions</span>
-          <span class="mcp-cat-count">5 tools</span>
-        </div>
-        <div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_fire_restrictions()</span>
-            <span class="mcp-tool-desc">Current Coconino National Forest fire level, live from the Forest Service &mdash; not a cached file.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_weather()</span>
-            <span class="mcp-tool-desc">Conditions at the Sedona transmitter site from the National Weather Service &mdash; not a stock forecast.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_road_conditions()</span>
-            <span class="mcp-tool-desc">89A, Oak Creek Canyon, and I-17 from ADOT live camera and incident feeds via AZ511.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_emergency_alerts(severity?)</span>
-            <span class="mcp-tool-desc">Active EAS alerts for Yavapai and Coconino counties &mdash; weather emergencies, evacuations, Amber Alerts &mdash; live from NWS.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_air_quality()</span>
-            <span class="mcp-tool-desc">US AQI, PM2.5, PM10, ozone, UV index for Sedona from Open-Meteo. Tracks wildfire smoke in real time.</span>
-          </div>
-        </div>
+      <div class="mcp-chips" role="group" aria-label="Filter tools by category">
+        <button class="mcp-chip" type="button" data-cat="all" aria-pressed="true">All<b>46</b></button>
+        <button class="mcp-chip" type="button" data-cat="onair" aria-pressed="false">On Air<b>9</b></button>
+        <button class="mcp-chip" type="button" data-cat="local" aria-pressed="false">Local Conditions<b>5</b></button>
+        <button class="mcp-chip" type="button" data-cat="sedona" aria-pressed="false">Sedona Life<b>13</b></button>
+        <button class="mcp-chip" type="button" data-cat="listener" aria-pressed="false">Listener Profiles<b>6</b></button>
+        <button class="mcp-chip" type="button" data-cat="vibe" aria-pressed="false">The Vibe<b>13</b></button>
       </div>
+    </div>
 
-      <!-- Sedona Life -->
-      <div class="mcp-cat mcp-cat--sedona">
-        <div class="mcp-cat-head">
-          <span class="mcp-cat-ic" aria-hidden="true">🏜️</span>
-          <span class="mcp-cat-title">Sedona Life</span>
-          <span class="mcp-cat-count">13 tools</span>
-        </div>
-        <div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_concerts(artist?, location?)</span>
-            <span class="mcp-tool-desc">Verified, deduplicated tour dates for every artist in KAZM&rsquo;s rotation &mdash; Southwest-first.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_events()</span>
-            <span class="mcp-tool-desc">Sedona community and library events, fetched from local sources and updated daily.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_movies()</span>
-            <span class="mcp-tool-desc">What&rsquo;s playing at theaters near Sedona &mdash; current showtimes from local cinema listings.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_jeep_trails()</span>
-            <span class="mcp-tool-desc">Sedona-area 4x4 trails with difficulty ratings and route data &mdash; for the off-road crowd.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_sports_scores(team?)</span>
-            <span class="mcp-tool-desc">Current scores for Cardinals, Suns, D-backs, Mercury, ASU, Arizona Wildcats, NAU, and UFC events.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_sun_times(date?)</span>
-            <span class="mcp-tool-desc">Sunrise, sunset, solar noon, golden hour, and next solstice or equinox for the KAZM transmitter site.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_moon_phase(date?)</span>
-            <span class="mcp-tool-desc">Tonight's moon phase, illumination %, and 7-day lunar calendar for Sedona — perfect for stargazers.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_nws_alerts()</span>
-            <span class="mcp-tool-desc">Active NWS weather watches, warnings, and advisories for Yavapai County. Empty when skies are clear.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_oak_creek_levels()</span>
-            <span class="mcp-tool-desc">Oak Creek stream level and discharge from the USGS Sedona gauge — safe for wading or approaching flood stage.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_wildfire_perimeters()</span>
-            <span class="mcp-tool-desc">Active wildfires within ~150 miles of Sedona from NIFC — name, acreage, containment %, distance from KAZM.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_visitor_info(topic?)</span>
-            <span class="mcp-tool-desc">Practical Sedona visitor guide — Red Rock Pass, park hours and fees, top attractions, best seasons, and local tips.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_red_rock_pass(topic?) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Complete Red Rock Pass guide — all 19 required sites, current fees ($5 day/$15 week/$20 year), accepted passes (America the Beautiful, Senior, Military), where to buy, shuttle schedules, and Soldier Pass permit details.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_hiking_trails(trail?, difficulty?) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">15 Sedona hiking trails with distance, elevation gain, difficulty, trailhead location, shuttle/permit requirements, vortex flags, and pro tips. Filterable by trail name or difficulty (easy/moderate/strenuous).</span>
-          </div>
-        </div>
-      </div>
+    <p class="mcp-count" id="mcp-count" role="status" aria-live="polite">Showing all 46 tools</p>
 
-      <!-- Listener Profiles -->
-      <div class="mcp-cat mcp-cat--listener">
-        <div class="mcp-cat-head">
-          <span class="mcp-cat-ic" aria-hidden="true">🎧</span>
-          <span class="mcp-cat-title">Listener Profiles</span>
-          <span class="mcp-cat-count">6 tools <span class="mcp-tool-badge">New</span></span>
-        </div>
-        <div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_or_create_listener(listener_id?, email?, name?, language?, location?, genres?) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Zero-friction entry point. Pass whatever you know — a saved listener_id, an email, or just a name. Returns the existing profile or silently creates one in a single call. No registration step. No email required. The AI saves the listener_id and the station remembers you forever.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">register_listener(name, language?, location?, genres?) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Create a persistent listener profile. Returns a listener_id that any AI can use across every session — name, language, location, and favorite genres remembered forever.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_listener_profile(listener_id) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Retrieve a full listener profile — preferences, listening history, and a tip for the AI to personalize every response from language to song recommendations.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">update_listener_preference(listener_id, key, value) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Update any preference — language switch for a German listener, a new favorite genre, a favorite show. Persists instantly across all future sessions.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">log_listener_history(listener_id, event_type, ...) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Log what a listener heard, requested, or reacted to. The AI calls this silently in the background to build the history that makes every future session smarter.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_personalized_content(listener_id, content_type?) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Returns a fully localized KAZM experience — greeting in the listener's language (English, German, Spanish, French, Portuguese, Japanese), recommendations from their history, and a personalized station brief.</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- The Vibe -->
-      <div class="mcp-cat mcp-cat--vibe">
-        <div class="mcp-cat-head">
-          <span class="mcp-cat-ic" aria-hidden="true">✨</span>
-          <span class="mcp-cat-title">The Vibe</span>
-          <span class="mcp-cat-count">13 tools</span>
-        </div>
-        <div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_horoscope(sign?)</span>
-            <span class="mcp-tool-desc">Daily horoscope for all 12 signs, served from KAZM&rsquo;s own data.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_schumann_resonance()</span>
-            <span class="mcp-tool-desc">Real-time Schumann resonance readings from global monitoring stations &mdash; the Earth&rsquo;s own frequency.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_local_news_headlines()</span>
-            <span class="mcp-tool-desc">Latest Sedona &amp; Verde Valley news live from the Red Rock News and Verde Independent RSS feeds.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_sound_session(goal?)</span>
-            <span class="mcp-tool-desc">Recommends a binaural or tonal session — Delta Drift, Theta Gate, Alpha Clear, or the KAZM harmonic stack — based on goal or time of day.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_chakra_frequencies(chakra?)</span>
-            <span class="mcp-tool-desc">All seven chakras with their healing frequencies, notes, colors, and affirmations — linked to the KAZM singing bowl experience.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_solfeggio(hz?)</span>
-            <span class="mcp-tool-desc">Nine-tone Solfeggio scale (174–963 Hz) with each frequency&rsquo;s traditional healing properties and use cases.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_vortex_guide(site?)</span>
-            <span class="mcp-tool-desc">Full guide to Sedona's 4 energy vortex sites — Bell Rock, Cathedral Rock, Airport Mesa, Boynton Canyon. Directions, hiking info, and energy type.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_artist_info(artist?)</span>
-            <span class="mcp-tool-desc">Biography, genre tags, and album discography for the current KAZM artist or any named artist from MusicBrainz.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_day_in_music_history(date?)</span>
-            <span class="mcp-tool-desc">Notable music events, birthdays, and milestones that happened on this day in history — great for on-air trivia.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_stargazing_conditions(date?)</span>
-            <span class="mcp-tool-desc">Tonight's darkness window, moon interference rating, Milky Way visibility status, and best astrophotography sites in Sedona.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_chakra_guide(chakra?) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Full guide to all seven chakras — Sanskrit name, Solfeggio Hz, bija mantra, crystals, essential oils, yoga pose, and the Sedona vortex tied to each energy center.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_tarot_card(spread?, card_name?) <span class="mcp-tool-badge">New</span></span>
-            <span class="mcp-tool-desc">Full 78-card Rider-Waite deck. Daily card of the day over Sedona (same for all listeners until midnight MST), single draw, past/present/future spread, or look up any card by name.</span>
-          </div>
-          <div class="mcp-tool">
-            <span class="mcp-tool-fn">get_photography_guide(location?)</span>
-            <span class="mcp-tool-desc">Real-time golden hour / blue hour times, current light score, shooting tips, and camera settings for 6 iconic Sedona locations.</span>
-          </div>
-        </div>
-      </div>
-
+    <div class="mcp-grid" id="mcp-grid">
+        <article class="mcp-tool" data-cat="onair" data-search="get_now_playing() current song, artist, and album from broadcast automation — the actual air signal, not a guess. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">get_now_playing<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Current song, artist, and album from broadcast automation — the actual air signal, not a guess.</span>
+        </article>
+        <article class="mcp-tool" data-cat="onair" data-search="get_listener_count() how many people are tuned in right now, across all three streams. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">get_listener_count<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">How many people are tuned in right now, across all three streams.</span>
+        </article>
+        <article class="mcp-tool" data-cat="onair" data-search="search_song_history(date, time) what was playing at any hour since october 2023, from the station’s own broadcast logs. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">search_song_history<span class="arg">(date, time)</span></span>
+          <span class="mcp-tool-desc">What was playing at any hour since October 2023, from the station’s own broadcast logs.</span>
+        </article>
+        <article class="mcp-tool" data-cat="onair" data-search="search_broadcast_transcripts(query) every word said on the air — weather, news, live breaks — transcribed from the broadcast tapes. what was played, and what was said. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">search_broadcast_transcripts<span class="arg">(query)</span></span>
+          <span class="mcp-tool-desc">Every word said on the air — weather, news, live breaks — transcribed from the broadcast tapes. What was played, and what was said.</span>
+        </article>
+        <article class="mcp-tool" data-cat="onair" data-search="get_stream_url() the direct listen-live url — so an ai can hand someone a working link, not a homepage. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">get_stream_url<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">The direct listen-live URL — so an AI can hand someone a working link, not a homepage.</span>
+        </article>
+        <article class="mcp-tool" data-cat="onair" data-search="get_show_schedule() current and upcoming on-air show lineup — who’s on, when, and what the show is about. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">get_show_schedule<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Current and upcoming on-air show lineup — who’s on, when, and what the show is about.</span>
+        </article>
+        <article class="mcp-tool" data-cat="onair" data-search="get_rewind(date?) 14-day broadcast archive, block by block — what ran on any hour of any recent day. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">get_rewind<span class="arg">(date?)</span></span>
+          <span class="mcp-tool-desc">14-day broadcast archive, block by block — what ran on any hour of any recent day.</span>
+        </article>
+        <article class="mcp-tool" data-cat="onair" data-search="search_song_request_library(query) search the station’s requestable song library by title or artist name. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">search_song_request_library<span class="arg">(query)</span></span>
+          <span class="mcp-tool-desc">Search the station’s requestable song library by title or artist name.</span>
+        </article>
+        <article class="mcp-tool" data-cat="onair" data-search="submit_song_request(query) ai can actually queue a song for broadcast on kazm — live, bidirectional. first-of-its-kind for radio. on air">
+          <span class="mcp-tool-cat">On Air</span>
+          <span class="mcp-tool-fn">submit_song_request<span class="arg">(query)</span><span class="mcp-tool-badge mcp-tool-badge--live">Live</span></span>
+          <span class="mcp-tool-desc">AI can actually queue a song for broadcast on KAZM — live, bidirectional. First-of-its-kind for radio.</span>
+        </article>
+        <article class="mcp-tool" data-cat="local" data-search="get_fire_restrictions() current coconino national forest fire level, live from the forest service — not a cached file. local conditions">
+          <span class="mcp-tool-cat">Local Conditions</span>
+          <span class="mcp-tool-fn">get_fire_restrictions<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Current Coconino National Forest fire level, live from the Forest Service — not a cached file.</span>
+        </article>
+        <article class="mcp-tool" data-cat="local" data-search="get_weather() conditions at the sedona transmitter site from the national weather service — not a stock forecast. local conditions">
+          <span class="mcp-tool-cat">Local Conditions</span>
+          <span class="mcp-tool-fn">get_weather<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Conditions at the Sedona transmitter site from the National Weather Service — not a stock forecast.</span>
+        </article>
+        <article class="mcp-tool" data-cat="local" data-search="get_road_conditions() 89a, oak creek canyon, and i-17 from adot live camera and incident feeds via az511. local conditions">
+          <span class="mcp-tool-cat">Local Conditions</span>
+          <span class="mcp-tool-fn">get_road_conditions<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">89A, Oak Creek Canyon, and I-17 from ADOT live camera and incident feeds via AZ511.</span>
+        </article>
+        <article class="mcp-tool" data-cat="local" data-search="get_emergency_alerts(severity?) active eas alerts for yavapai and coconino counties — weather emergencies, evacuations, amber alerts — live from nws. local conditions">
+          <span class="mcp-tool-cat">Local Conditions</span>
+          <span class="mcp-tool-fn">get_emergency_alerts<span class="arg">(severity?)</span></span>
+          <span class="mcp-tool-desc">Active EAS alerts for Yavapai and Coconino counties — weather emergencies, evacuations, Amber Alerts — live from NWS.</span>
+        </article>
+        <article class="mcp-tool" data-cat="local" data-search="get_air_quality() us aqi, pm2.5, pm10, ozone, uv index for sedona from open-meteo. tracks wildfire smoke in real time. local conditions">
+          <span class="mcp-tool-cat">Local Conditions</span>
+          <span class="mcp-tool-fn">get_air_quality<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">US AQI, PM2.5, PM10, ozone, UV index for Sedona from Open-Meteo. Tracks wildfire smoke in real time.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_concerts(artist?, location?) verified, deduplicated tour dates for every artist in kazm’s rotation — southwest-first. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_concerts<span class="arg">(artist?, location?)</span></span>
+          <span class="mcp-tool-desc">Verified, deduplicated tour dates for every artist in KAZM’s rotation — Southwest-first.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_events() sedona community and library events, fetched from local sources and updated daily. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_events<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Sedona community and library events, fetched from local sources and updated daily.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_movies() what’s playing at theaters near sedona — current showtimes from local cinema listings. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_movies<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">What’s playing at theaters near Sedona — current showtimes from local cinema listings.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_jeep_trails() sedona-area 4x4 trails with difficulty ratings and route data — for the off-road crowd. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_jeep_trails<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Sedona-area 4x4 trails with difficulty ratings and route data — for the off-road crowd.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_sports_scores(team?) current scores for cardinals, suns, d-backs, mercury, asu, arizona wildcats, nau, and ufc events. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_sports_scores<span class="arg">(team?)</span></span>
+          <span class="mcp-tool-desc">Current scores for Cardinals, Suns, D-backs, Mercury, ASU, Arizona Wildcats, NAU, and UFC events.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_sun_times(date?) sunrise, sunset, solar noon, golden hour, and next solstice or equinox for the kazm transmitter site. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_sun_times<span class="arg">(date?)</span></span>
+          <span class="mcp-tool-desc">Sunrise, sunset, solar noon, golden hour, and next solstice or equinox for the KAZM transmitter site.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_moon_phase(date?) tonight&#x27;s moon phase, illumination %, and 7-day lunar calendar for sedona — perfect for stargazers. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_moon_phase<span class="arg">(date?)</span></span>
+          <span class="mcp-tool-desc">Tonight&#x27;s moon phase, illumination %, and 7-day lunar calendar for Sedona — perfect for stargazers.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_nws_alerts() active nws weather watches, warnings, and advisories for yavapai county. empty when skies are clear. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_nws_alerts<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Active NWS weather watches, warnings, and advisories for Yavapai County. Empty when skies are clear.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_oak_creek_levels() oak creek stream level and discharge from the usgs sedona gauge — safe for wading or approaching flood stage. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_oak_creek_levels<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Oak Creek stream level and discharge from the USGS Sedona gauge — safe for wading or approaching flood stage.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_wildfire_perimeters() active wildfires within ~150 miles of sedona from nifc — name, acreage, containment %, distance from kazm. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_wildfire_perimeters<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Active wildfires within ~150 miles of Sedona from NIFC — name, acreage, containment %, distance from KAZM.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_visitor_info(topic?) practical sedona visitor guide — red rock pass, park hours and fees, top attractions, best seasons, and local tips. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_visitor_info<span class="arg">(topic?)</span></span>
+          <span class="mcp-tool-desc">Practical Sedona visitor guide — Red Rock Pass, park hours and fees, top attractions, best seasons, and local tips.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_red_rock_pass(topic?) complete red rock pass guide — all 19 required sites, current fees ($5 day/$15 week/$20 year), accepted passes (america the beautiful, senior, military), where to buy, shuttle schedules, and soldier pass permit details. sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_red_rock_pass<span class="arg">(topic?)</span><span class="mcp-tool-badge">New</span></span>
+          <span class="mcp-tool-desc">Complete Red Rock Pass guide — all 19 required sites, current fees ($5 day/$15 week/$20 year), accepted passes (America the Beautiful, Senior, Military), where to buy, shuttle schedules, and Soldier Pass permit details.</span>
+        </article>
+        <article class="mcp-tool" data-cat="sedona" data-search="get_hiking_trails(trail?, difficulty?) 15 sedona hiking trails with distance, elevation gain, difficulty, trailhead location, shuttle/permit requirements, vortex flags, and pro tips. filterable by trail name or difficulty (easy/moderate/strenuous). sedona life">
+          <span class="mcp-tool-cat">Sedona Life</span>
+          <span class="mcp-tool-fn">get_hiking_trails<span class="arg">(trail?, difficulty?)</span><span class="mcp-tool-badge">New</span></span>
+          <span class="mcp-tool-desc">15 Sedona hiking trails with distance, elevation gain, difficulty, trailhead location, shuttle/permit requirements, vortex flags, and pro tips. Filterable by trail name or difficulty (easy/moderate/strenuous).</span>
+        </article>
+        <article class="mcp-tool" data-cat="listener" data-search="get_or_create_listener(listener_id?, email?, name?, language?, location?, genres?) new zero-friction entry point. pass whatever you know — a saved listener_id, an email, or just a name. returns the existing profile or silently creates one in a single call. no registration step. no email required. the ai saves the listener_id and the station remembers you forever. listener profiles">
+          <span class="mcp-tool-cat">Listener Profiles</span>
+          <span class="mcp-tool-fn">get_or_create_listener(listener_id?, email?, name?, language?, location?, genres?) New</span>
+          <span class="mcp-tool-desc">Zero-friction entry point. Pass whatever you know — a saved listener_id, an email, or just a name. Returns the existing profile or silently creates one in a single call. No registration step. No email required. The AI saves the listener_id and the station remembers you forever.</span>
+        </article>
+        <article class="mcp-tool" data-cat="listener" data-search="register_listener(name, language?, location?, genres?) new create a persistent listener profile. returns a listener_id that any ai can use across every session — name, language, location, and favorite genres remembered forever. listener profiles">
+          <span class="mcp-tool-cat">Listener Profiles</span>
+          <span class="mcp-tool-fn">register_listener(name, language?, location?, genres?) New</span>
+          <span class="mcp-tool-desc">Create a persistent listener profile. Returns a listener_id that any AI can use across every session — name, language, location, and favorite genres remembered forever.</span>
+        </article>
+        <article class="mcp-tool" data-cat="listener" data-search="get_listener_profile(listener_id) new retrieve a full listener profile — preferences, listening history, and a tip for the ai to personalize every response from language to song recommendations. listener profiles">
+          <span class="mcp-tool-cat">Listener Profiles</span>
+          <span class="mcp-tool-fn">get_listener_profile(listener_id) New</span>
+          <span class="mcp-tool-desc">Retrieve a full listener profile — preferences, listening history, and a tip for the AI to personalize every response from language to song recommendations.</span>
+        </article>
+        <article class="mcp-tool" data-cat="listener" data-search="update_listener_preference(listener_id, key, value) new update any preference — language switch for a german listener, a new favorite genre, a favorite show. persists instantly across all future sessions. listener profiles">
+          <span class="mcp-tool-cat">Listener Profiles</span>
+          <span class="mcp-tool-fn">update_listener_preference(listener_id, key, value) New</span>
+          <span class="mcp-tool-desc">Update any preference — language switch for a German listener, a new favorite genre, a favorite show. Persists instantly across all future sessions.</span>
+        </article>
+        <article class="mcp-tool" data-cat="listener" data-search="log_listener_history(listener_id, event_type, ...) new log what a listener heard, requested, or reacted to. the ai calls this silently in the background to build the history that makes every future session smarter. listener profiles">
+          <span class="mcp-tool-cat">Listener Profiles</span>
+          <span class="mcp-tool-fn">log_listener_history(listener_id, event_type, ...) New</span>
+          <span class="mcp-tool-desc">Log what a listener heard, requested, or reacted to. The AI calls this silently in the background to build the history that makes every future session smarter.</span>
+        </article>
+        <article class="mcp-tool" data-cat="listener" data-search="get_personalized_content(listener_id, content_type?) new returns a fully localized kazm experience — greeting in the listener&#x27;s language (english, german, spanish, french, portuguese, japanese), recommendations from their history, and a personalized station brief. listener profiles">
+          <span class="mcp-tool-cat">Listener Profiles</span>
+          <span class="mcp-tool-fn">get_personalized_content(listener_id, content_type?) New</span>
+          <span class="mcp-tool-desc">Returns a fully localized KAZM experience — greeting in the listener&#x27;s language (English, German, Spanish, French, Portuguese, Japanese), recommendations from their history, and a personalized station brief.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_horoscope(sign?) daily horoscope for all 12 signs, served from kazm’s own data. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_horoscope<span class="arg">(sign?)</span></span>
+          <span class="mcp-tool-desc">Daily horoscope for all 12 signs, served from KAZM’s own data.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_schumann_resonance() real-time schumann resonance readings from global monitoring stations — the earth’s own frequency. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_schumann_resonance<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Real-time Schumann resonance readings from global monitoring stations — the Earth’s own frequency.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_local_news_headlines() latest sedona &amp; verde valley news live from the red rock news and verde independent rss feeds. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_local_news_headlines<span class="arg">()</span></span>
+          <span class="mcp-tool-desc">Latest Sedona &amp; Verde Valley news live from the Red Rock News and Verde Independent RSS feeds.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_sound_session(goal?) recommends a binaural or tonal session — delta drift, theta gate, alpha clear, or the kazm harmonic stack — based on goal or time of day. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_sound_session<span class="arg">(goal?)</span></span>
+          <span class="mcp-tool-desc">Recommends a binaural or tonal session — Delta Drift, Theta Gate, Alpha Clear, or the KAZM harmonic stack — based on goal or time of day.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_chakra_frequencies(chakra?) all seven chakras with their healing frequencies, notes, colors, and affirmations — linked to the kazm singing bowl experience. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_chakra_frequencies<span class="arg">(chakra?)</span></span>
+          <span class="mcp-tool-desc">All seven chakras with their healing frequencies, notes, colors, and affirmations — linked to the KAZM singing bowl experience.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_solfeggio(hz?) nine-tone solfeggio scale (174–963 hz) with each frequency’s traditional healing properties and use cases. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_solfeggio<span class="arg">(hz?)</span></span>
+          <span class="mcp-tool-desc">Nine-tone Solfeggio scale (174–963 Hz) with each frequency’s traditional healing properties and use cases.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_vortex_guide(site?) full guide to sedona&#x27;s 4 energy vortex sites — bell rock, cathedral rock, airport mesa, boynton canyon. directions, hiking info, and energy type. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_vortex_guide<span class="arg">(site?)</span></span>
+          <span class="mcp-tool-desc">Full guide to Sedona&#x27;s 4 energy vortex sites — Bell Rock, Cathedral Rock, Airport Mesa, Boynton Canyon. Directions, hiking info, and energy type.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_artist_info(artist?) biography, genre tags, and album discography for the current kazm artist or any named artist from musicbrainz. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_artist_info<span class="arg">(artist?)</span></span>
+          <span class="mcp-tool-desc">Biography, genre tags, and album discography for the current KAZM artist or any named artist from MusicBrainz.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_day_in_music_history(date?) notable music events, birthdays, and milestones that happened on this day in history — great for on-air trivia. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_day_in_music_history<span class="arg">(date?)</span></span>
+          <span class="mcp-tool-desc">Notable music events, birthdays, and milestones that happened on this day in history — great for on-air trivia.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_stargazing_conditions(date?) tonight&#x27;s darkness window, moon interference rating, milky way visibility status, and best astrophotography sites in sedona. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_stargazing_conditions<span class="arg">(date?)</span></span>
+          <span class="mcp-tool-desc">Tonight&#x27;s darkness window, moon interference rating, Milky Way visibility status, and best astrophotography sites in Sedona.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_chakra_guide(chakra?) new full guide to all seven chakras — sanskrit name, solfeggio hz, bija mantra, crystals, essential oils, yoga pose, and the sedona vortex tied to each energy center. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_chakra_guide(chakra?) New</span>
+          <span class="mcp-tool-desc">Full guide to all seven chakras — Sanskrit name, Solfeggio Hz, bija mantra, crystals, essential oils, yoga pose, and the Sedona vortex tied to each energy center.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_tarot_card(spread?, card_name?) new full 78-card rider-waite deck. daily card of the day over sedona (same for all listeners until midnight mst), single draw, past/present/future spread, or look up any card by name. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_tarot_card(spread?, card_name?) New</span>
+          <span class="mcp-tool-desc">Full 78-card Rider-Waite deck. Daily card of the day over Sedona (same for all listeners until midnight MST), single draw, past/present/future spread, or look up any card by name.</span>
+        </article>
+        <article class="mcp-tool" data-cat="vibe" data-search="get_photography_guide(location?) real-time golden hour / blue hour times, current light score, shooting tips, and camera settings for 6 iconic sedona locations. the vibe">
+          <span class="mcp-tool-cat">The Vibe</span>
+          <span class="mcp-tool-fn">get_photography_guide<span class="arg">(location?)</span></span>
+          <span class="mcp-tool-desc">Real-time golden hour / blue hour times, current light score, shooting tips, and camera settings for 6 iconic Sedona locations.</span>
+        </article>
+      <p class="mcp-empty" id="mcp-empty" hidden>No tool matches that. Try a different word &mdash; or clear the filter to see all 46.</p>
     </div>
   </div>
 
 </div></section>
 
-<!-- Stats band -->
-<div class="mcp-stats-band">
-  <div class="wrap">
-    <div class="mcp-stats-inner">
-      <div class="mcp-stat">
-        <span class="mcp-stat-num mcp-stat-num--accent">0</span>
-        <span class="mcp-stat-label">Other radio stations<br>with MCP servers</span>
-      </div>
-      <div class="mcp-stat">
-        <span class="mcp-stat-num">46</span>
-        <span class="mcp-stat-label">Live tools<br>and growing</span>
-      </div>
-      <div class="mcp-stat">
-        <span class="mcp-stat-num">52</span>
-        <span class="mcp-stat-label">Years KAZM has been<br>on the mountain</span>
-      </div>
-      <div class="mcp-stat">
-        <span class="mcp-stat-num">2023</span>
-        <span class="mcp-stat-label">Song log goes back to<br>October of that year</span>
-      </div>
-    </div>
-  </div>
-</div>
 
 <section class="page-section"><div class="wrap">
 
@@ -889,5 +941,53 @@
   </main>
   <div data-site-footer></div>
   <script src="main.js?v=193" defer></script>
+
+<script>
+/* Tool catalog: live search + category filter.
+   Progressive enhancement — every card is in the HTML and visible before
+   this runs, so the catalog still reads with JS off or broken. */
+(function () {
+  var grid  = document.getElementById('mcp-grid');
+  if (!grid) return;
+  var q     = document.getElementById('mcp-q');
+  var count = document.getElementById('mcp-count');
+  var empty = document.getElementById('mcp-empty');
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.mcp-chip'));
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.mcp-tool'));
+  var cat = 'all';
+
+  function label(n) {
+    var chip = chips.filter(function (c) { return c.dataset.cat === cat; })[0];
+    var name = chip && cat !== 'all' ? chip.textContent.replace(/\d+$/, '').trim() : null;
+    var term = q.value.trim();
+    if (n === 0) return 'No tools match';
+    if (!term && cat === 'all') return 'Showing all ' + n + ' tools';
+    return 'Showing ' + n + ' of ' + cards.length + ' tools'
+         + (name ? ' in ' + name : '') + (term ? ' matching \u201c' + term + '\u201d' : '');
+  }
+
+  function apply() {
+    var term = q.value.trim().toLowerCase();
+    var n = 0;
+    cards.forEach(function (card) {
+      var ok = (cat === 'all' || card.dataset.cat === cat) &&
+               (!term || card.dataset.search.indexOf(term) !== -1);
+      card.hidden = !ok;
+      if (ok) n++;
+    });
+    empty.hidden = n !== 0;
+    count.textContent = label(n);
+  }
+
+  q.addEventListener('input', apply);
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      cat = chip.dataset.cat;
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c === chip)); });
+      apply();
+    });
+  });
+})();
+</script>
 </body>
 </html>

@@ -178,6 +178,131 @@
     .eas-tools code { font-family: var(--eas-mono); font-size: .82rem; color: var(--accent-strong); white-space: nowrap; }
 
     .eas-scroll { overflow-x: auto; }
+
+    /* ── Redesign ──────────────────────────────────────────────────────
+       Three problems drove this.
+
+       1. The page was designed for the populated state, but its NORMAL
+          state is quiet: IPAWS holds an alert about 30 minutes, so most
+          of the time there is nothing active, and the old empty and
+          failure states left 200-400px voids that read as a broken page.
+          A quiet instrument should look like an instrument reading zero.
+
+       2. Nationwide and Sedona were stacked full-width sections, each
+          mostly empty, with the right half of the page unused. They are
+          now side by side, which halves the dead space and lets you
+          compare the two readings at a glance -- which is the actual job.
+
+       3. Every heading computed to margin-bottom:0, so copy sat flush
+          against it, and the h1 broke to four lines with "for" orphaned. */
+
+    .page-hero h1 { text-wrap: balance; max-width: 20ch; }
+    #live h2, #live + section h2 { margin: 0 0 .55rem; }
+    .eas-h { margin: 0 0 .5rem; font-size: clamp(1.45rem, 1.1rem + 1.3vw, 1.95rem); line-height: 1.22; }
+    .eas-sub { margin: 0 0 1.35rem; max-width: 66ch; color: var(--muted); font-size: .93rem; }
+
+    /* Status strip: source health and freshness together, where you look
+       first, instead of an isolated pill floating above a warning box. */
+    .eas-status {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .9rem;
+      padding: .6rem .85rem; margin: 0 0 .9rem;
+      border: 1px solid var(--line); border-radius: var(--pill);
+      background: var(--surface); font-size: .82rem;
+    }
+    .eas-status .eas-sources { margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; }
+    .eas-status .eas-updated { margin: 0 0 0 auto; color: var(--muted); font-size: .8rem; }
+
+    /* The disclaimer stays first and stays unmissable, but as a rule-marked
+       strip rather than a boxed slab that outweighed the data below it. */
+    .eas-warn {
+      border: 0; border-left: 3px solid var(--accent); border-radius: 0;
+      background: transparent; padding: .1rem 0 .1rem .9rem;
+      margin: 0 0 1.25rem; font-size: .86rem; line-height: 1.55;
+      color: var(--muted); max-width: 92ch;
+    }
+
+    .eas-panels {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      align-items: start;   /* never stretch a short panel to a tall one */
+    }
+    @media (max-width: 900px) { .eas-panels { grid-template-columns: 1fr; } }
+
+    .eas-panel {
+      border: 1px solid var(--line); border-radius: var(--r);
+      background: var(--surface); padding: .95rem 1.05rem 1.1rem;
+    }
+    .eas-panel-hd {
+      display: flex; align-items: baseline; gap: .6rem;
+      padding-bottom: .6rem; margin-bottom: .85rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .eas-panel-hd h3 {
+      margin: 0; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+      font-family: var(--font-body); font-weight: 700; color: var(--muted);
+    }
+    .eas-panel-scope { margin-left: auto; font-size: .74rem; color: var(--muted); }
+    .eas-panel .eas-grid { grid-template-columns: 1fr; }
+
+    /* Quiet state — reading zero, not failing. No red, no alarm. */
+    .eas-empty {
+      border: 0; background: transparent; padding: 1.4rem .2rem; text-align: center;
+      color: var(--muted); font-size: .86rem; line-height: 1.5;
+    }
+    .eas-empty b { display: block; color: var(--ink); font-size: .95rem; margin-bottom: .3rem; }
+    .eas-empty::before {
+      content: ""; display: block; width: 26px; height: 2px; margin: 0 auto .8rem;
+      background: var(--line); border-radius: 2px;
+    }
+
+    /* Unreachable — clearly not the same thing as quiet, and it says so,
+       but it is one compact strip rather than a repeated red slab. */
+    .eas-fail {
+      border: 0; border-left: 3px solid var(--eas-extreme, var(--accent-strong));
+      border-radius: 0; background: transparent;
+      padding: .2rem 0 .2rem .85rem; margin: .3rem 0;
+      font-size: .86rem; line-height: 1.55; color: var(--muted); text-align: left;
+    }
+    .eas-fail b { color: var(--eas-extreme, var(--accent-strong)); display: block; margin-bottom: .2rem; }
+
+    .eas-facts { margin-top: 1.15rem; }
+    .eas-prose { max-width: none; }
+    .eas-prose > p, .eas-prose > h2, .eas-prose > h3, .eas-prose > .eas-label { max-width: 68ch; }
+    .eas-prose h3 { margin: 1.9rem 0 .45rem; }
+    .eas-prose h2 { margin: 0 0 .55rem; }
+    .eas-panel-note {
+      margin: .9rem 0 0; padding-top: .75rem; border-top: 1px solid var(--line);
+      font-size: .78rem; line-height: 1.5; color: var(--muted);
+    }
+    .eas-panel-note code { font-family: var(--eas-mono); font-size: .95em; }
+
+    .eas-tools {
+      list-style: none; margin: 0; padding: 0;
+      display: grid; align-items: start; gap: .55rem;
+      grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+    }
+    .eas-tools li {
+      display: block;                    /* the original rule was flex, which
+                                            put the signature and its
+                                            description side by side and
+                                            squeezed both into unreadable
+                                            columns once these became cards */
+      margin: 0; padding: .7rem .8rem;
+      border: 1px solid var(--line); border-radius: var(--r-sm);
+      background: var(--surface);
+    }
+    .eas-tools code {
+      display: block; font-family: var(--eas-mono); font-size: .82rem;
+      color: var(--heading); margin-bottom: .28rem;
+      white-space: normal; overflow-wrap: anywhere;   /* was nowrap -> overflow */
+    }
+    .eas-tools span { display: block; font-size: .82rem; line-height: 1.45; color: var(--muted); }
+    @media (prefers-color-scheme: dark) { .eas-tools li { background: rgba(255,255,255,.04); } }
+    :root[data-theme="dark"] .eas-tools li { background: rgba(255,255,255,.04); }
+    :root[data-theme="light"] .eas-tools li { background: var(--surface); }
+    @media (max-width: 640px) {
+      .eas-tools { grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--line); }
+      .eas-tools li { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; padding: .65rem .15rem; }
+    }
   </style>
 </head>
 <body data-page="about">
@@ -191,7 +316,7 @@
     Live &nbsp;&middot;&nbsp; FEMA IPAWS + NWS
   </div>
   <p class="eyebrow">OpenEAS &middot; Open standard &middot; Draft 0.1.0</p>
-  <h1>The first MCP server for<br>the Emergency Alert System.</h1>
+  <h1>The first MCP server for the Emergency Alert System.</h1>
   <p class="lead">As of July 2026 no Model Context Protocol server existed anywhere for IPAWS, CAP, SAME codes, or FCC Part&nbsp;11 &mdash; not from any broadcaster, and not from any EAS equipment vendor. KAZM built one, wrote the standard it implements, and is running it in the open.</p>
   <div class="page-hero-cta">
     <a class="btn btn-primary" href="https://github.com/chelstein/mellowmountainradio/blob/main/openeas/SPEC.md" target="_blank" rel="noopener">Read the specification</a>
@@ -202,7 +327,8 @@
 <section class="page-section" id="live"><div class="wrap">
 
   <span class="eas-label">Live now</span>
-  <h2 style="margin-top:0;">Active alerts, nationwide</h2>
+  <h2 class="eas-h">What the federal alert system is doing right now</h2>
+  <p class="eas-sub">Two readings from the same source: the whole country, and the two counties this station covers. Both are read straight from FEMA IPAWS-OPEN and the National Weather Service.</p>
 
   <div class="eas-warn">
     <strong>This page is observational and is not an official alert channel.</strong>
@@ -212,33 +338,44 @@
     National Weather Service, or Wireless Emergency Alerts on your phone.
   </div>
 
-  <ul class="eas-sources" data-eas-sources aria-label="Data source health"></ul>
-
-  <div data-eas-national aria-live="polite">
-    <div class="eas-empty"><b>Loading&hellip;</b>Reading the federal alert aggregator.</div>
+  <div class="eas-status">
+    <ul class="eas-sources" data-eas-sources aria-label="Data source health"></ul>
+    <p class="eas-updated" data-eas-updated></p>
   </div>
 
-  <p class="eas-updated" data-eas-updated></p>
+  <div class="eas-panels">
+
+    <section class="eas-panel" aria-labelledby="eas-nat-h">
+      <div class="eas-panel-hd">
+        <h3 id="eas-nat-h">Nationwide</h3>
+        <span class="eas-panel-scope">FEMA IPAWS active window</span>
+      </div>
+      <div data-eas-national aria-live="polite">
+        <div class="eas-empty"><b>Reading the feed&hellip;</b>Querying the federal alert aggregator.</div>
+      </div>
+    </section>
+
+    <section class="eas-panel" aria-labelledby="eas-loc-h">
+      <div class="eas-panel-hd">
+        <h3 id="eas-loc-h">Sedona</h3>
+        <span class="eas-panel-scope">Yavapai &amp; Coconino</span>
+      </div>
+      <div data-eas-local aria-live="polite">
+        <div class="eas-empty"><b>Reading the feed&hellip;</b>Querying both county zones.</div>
+      </div>
+      <p class="eas-panel-note">Sedona straddles the county line, so the station watches both counties &mdash; plus the Arizona statewide code and <code>000000</code>, which is what makes a national activation reach every station in the country.</p>
+    </section>
+
+  </div>
 
   <dl class="eas-facts" data-eas-facts></dl>
 
-</div></section>
-
-<section class="page-section page-section--alt"><div class="wrap">
-
-  <span class="eas-label">Sedona</span>
-  <h2 style="margin-top:0;">What&rsquo;s active in our own counties</h2>
-  <p style="max-width:62ch; color:var(--muted);">Yavapai and Coconino. Sedona straddles the county line, so the station watches both &mdash; along with the Arizona statewide code and <code style="font-family:var(--eas-mono);">000000</code>, which is required to receive a national activation.</p>
-
-  <div data-eas-local aria-live="polite">
-    <div class="eas-empty"><b>Loading&hellip;</b></div>
-  </div>
 
 </div></section>
 
 <section class="page-section"><div class="wrap">
 
-  <div class="prose" style="max-width:68ch;">
+  <div class="prose eas-prose">
     <span class="eas-label">What this is</span>
     <h2>A standard, and a working implementation of it.</h2>
 
@@ -255,19 +392,25 @@
     <p>It also contains no tone-generating code of any kind, and no EAS audio anywhere in its repository. A check enforcing that runs when the software is installed and again every time the service starts; if it ever fails, the service refuses to run.</p>
 
     <h3>The tools</h3>
+    <p style="color:var(--muted); font-size:.9rem; margin:.15rem 0 1rem;">Fifteen read-only tools on the public endpoint. Every one is marked <code style="font-family:var(--eas-mono);">readOnlyHint</code>, and the naming is constrained to verbs that cannot be mistaken for a command to EAS equipment.</p>
     <ul class="eas-tools">
-      <li><code>get_active_alerts</code><span>Any state, county, SAME code, NWS zone, lat/lon point, or the whole country</span></li>
-      <li><code>get_ipaws_feed</code><span>The national IPAWS active window</span></li>
-      <li><code>get_ipaws_alert</code><span>One full signed CAP alert, with an optional field-by-field audit</span></li>
-      <li><code>find_alerts_for_point</code><span>Which alerts contain a latitude and longitude</span></li>
-      <li><code>get_alert_geojson</code><span>An alert&rsquo;s area as GeoJSON, ready to map</span></li>
-      <li><code>get_alert_languages</code><span>Every language variant, in full</span></li>
-      <li><code>lookup_location</code><span>All 3,295 SAME county codes, resolved to places</span></li>
-      <li><code>explain_alert</code><span>Decode a SAME header field by field, with rule citations</span></li>
-      <li><code>get_event_codes</code><span>The &sect;11.31 code tables as versioned data</span></li>
-      <li><code>search_alert_history</code><span>Historical Weather Service alerts</span></li>
-      <li><code>get_conformance</code><span>Version, regulatory position, source health</span></li>
+      <li><code>eas_get_active_alerts</code><span>Any state, county, SAME code, NWS zone, lat/lon point, or the whole country</span></li>
+      <li><code>eas_get_ipaws_feed</code><span>The national IPAWS active window</span></li>
+      <li><code>eas_get_ipaws_alert</code><span>One full signed CAP alert, with an optional field-by-field audit</span></li>
+      <li><code>eas_find_alerts_for_point</code><span>Which alerts contain a latitude and longitude</span></li>
+      <li><code>eas_get_alert_geojson</code><span>An alert&rsquo;s area as GeoJSON, ready to map</span></li>
+      <li><code>eas_get_alert_languages</code><span>Every language variant, in full</span></li>
+      <li><code>eas_lookup_location</code><span>All 3,295 SAME county codes, resolved to places</span></li>
+      <li><code>eas_explain_alert</code><span>Decode a SAME header field by field, with rule citations</span></li>
+      <li><code>eas_get_event_codes</code><span>The &sect;11.31 code tables as versioned data</span></li>
+      <li><code>eas_search_alert_history</code><span>Historical Weather Service alerts</span></li>
+      <li><code>eas_search_archive</code><span>Search the permanent archive of everything the server has observed</span></li>
+      <li><code>eas_verify_archive</code><span>Verify the archive&rsquo;s hash chain end to end</span></li>
+      <li><code>eas_get_archive_stats</code><span>Holdings <em>and</em> poll coverage &mdash; a quiet period and a period the poller was down are not the same thing</span></li>
+      <li><code>eas_backfill_history</code><span>Ingest history from FEMA&rsquo;s OpenFEMA archive</span></li>
+      <li><code>eas_get_conformance</code><span>Version, declared regulatory position, source health</span></li>
     </ul>
+    <p style="color:var(--muted); font-size:.85rem; margin:1rem 0 0;">Three further tools &mdash; playout status, as-run log, and the parity report that compares what the software decided against what actually aired &mdash; exist in the profile but run only on the studio machine, never in the cloud. They report <em>unavailable</em> here by design.</p>
 
     <h3>Validation mode</h3>
     <p>Every alert can be audited element by element, each check naming the rule or specification clause behind it, and reporting one of four results: pass, fail, absent, or <em>unknown</em>. A check that could not be completed is never reported as one that passed &mdash; so an alert whose signature we can see but have not cryptographically verified comes back <em>indeterminate</em>, not clean. That distinction is the point: the tool is meant to be checkable by someone who does not trust it.</p>
@@ -432,9 +575,13 @@
     }
     var unreachable = (sources || []).filter(function (s) { return s.status === "unavailable"; });
     if (unreachable.length && unreachable.length === (sources || []).length) {
-      host.innerHTML = '<div class="eas-fail"><b>Sources unreachable.</b> ' +
-        'This is <em>not</em> a report that no alerts exist &mdash; the feeds could not be ' +
-        'read. Check official channels.</div>';
+      // Terse inside the panel. When the whole server is unreachable both
+      // panels hit this branch, and printing the full explanation twice made
+      // one outage read as two failures. The status strip above already
+      // carries the reason and the endpoints tried.
+      host.innerHTML = '<div class="eas-fail"><b>No reading.</b> ' +
+        'The feed could not be read. This is <em>not</em> a report that no ' +
+        'alerts exist.</div>';
       return;
     }
     host.innerHTML = '<div class="eas-empty"><b>Nothing active.</b>' + esc(quietMsg) + '</div>';
