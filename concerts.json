@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-31T14:13:16.341Z",
+ "updated": "2026-07-31T19:38:00.005Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -555,21 +555,6 @@
    "lineup": []
   },
   {
-   "id": "Z7r9jZ1A7PVfa",
-   "artist": "The Beach Boys",
-   "date": "2026-09-03",
-   "time": "19:00:00",
-   "venue": "Southwest Motors Events Center",
-   "city": "Pueblo",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7PVfa",
-   "img": "https://s1.ticketm.net/dam/a/1e6/a7fb22db-7408-44ee-94cc-b6fd363bc1e6_1583871_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "1900-01-01T06:00:00Z",
-   "lineup": []
-  },
-  {
    "id": "1A9ZkuFGkdP8gH1",
    "artist": "Air Supply",
    "date": "2026-09-04",
@@ -903,7 +888,7 @@
    "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-10-14-2026/event/170064F4CBD6D980",
    "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
@@ -918,7 +903,7 @@
    "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-10-16-2026/event/170064F4CBD9D986",
    "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
@@ -963,7 +948,7 @@
    "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-10-17-2026/event/170064F4CBDCD98F",
    "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
@@ -1177,7 +1162,7 @@
    "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-11-11-2026/event/170064F4CBE0D992",
    "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
@@ -1192,7 +1177,7 @@
    "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-11-13-2026/event/170064F4CBE2D997",
    "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
@@ -1222,7 +1207,7 @@
    "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-11-14-2026/event/170064F4CBE5D99B",
    "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
