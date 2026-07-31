@@ -544,34 +544,34 @@
           <span class="mcp-tool-fn">get_hiking_trails<span class="arg">(trail?, difficulty?)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">15 Sedona hiking trails with distance, elevation gain, difficulty, trailhead location, shuttle/permit requirements, vortex flags, and pro tips. Filterable by trail name or difficulty (easy/moderate/strenuous).</span>
         </article>
-        <article class="mcp-tool" data-cat="listener" data-search="get_or_create_listener(listener_id?, email?, name?, language?, location?, genres?) new zero-friction entry point. pass whatever you know — a saved listener_id, an email, or just a name. returns the existing profile or silently creates one in a single call. no registration step. no email required. the ai saves the listener_id and the station remembers you forever. listener profiles">
+        <article class="mcp-tool" data-cat="listener" data-search="get_or_create_listener(listener_id?, email?, name?, language?, location?, genres?) zero-friction entry point. pass whatever you know — a saved listener_id, an email, or just a name. returns the existing profile or silently creates one in a single call. no registration step. no email required. the ai saves the listener_id and the station remembers you forever. listener profiles">
           <span class="mcp-tool-cat">Listener Profiles</span>
-          <span class="mcp-tool-fn">get_or_create_listener(listener_id?, email?, name?, language?, location?, genres?) New</span>
+          <span class="mcp-tool-fn">get_or_create_listener<span class="arg">(listener_id?, email?, name?, language?, location?, genres?)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">Zero-friction entry point. Pass whatever you know — a saved listener_id, an email, or just a name. Returns the existing profile or silently creates one in a single call. No registration step. No email required. The AI saves the listener_id and the station remembers you forever.</span>
         </article>
-        <article class="mcp-tool" data-cat="listener" data-search="register_listener(name, language?, location?, genres?) new create a persistent listener profile. returns a listener_id that any ai can use across every session — name, language, location, and favorite genres remembered forever. listener profiles">
+        <article class="mcp-tool" data-cat="listener" data-search="register_listener(name, language?, location?, genres?) create a persistent listener profile. returns a listener_id that any ai can use across every session — name, language, location, and favorite genres remembered forever. listener profiles">
           <span class="mcp-tool-cat">Listener Profiles</span>
-          <span class="mcp-tool-fn">register_listener(name, language?, location?, genres?) New</span>
+          <span class="mcp-tool-fn">register_listener<span class="arg">(name, language?, location?, genres?)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">Create a persistent listener profile. Returns a listener_id that any AI can use across every session — name, language, location, and favorite genres remembered forever.</span>
         </article>
-        <article class="mcp-tool" data-cat="listener" data-search="get_listener_profile(listener_id) new retrieve a full listener profile — preferences, listening history, and a tip for the ai to personalize every response from language to song recommendations. listener profiles">
+        <article class="mcp-tool" data-cat="listener" data-search="get_listener_profile(listener_id) retrieve a full listener profile — preferences, listening history, and a tip for the ai to personalize every response from language to song recommendations. listener profiles">
           <span class="mcp-tool-cat">Listener Profiles</span>
-          <span class="mcp-tool-fn">get_listener_profile(listener_id) New</span>
+          <span class="mcp-tool-fn">get_listener_profile<span class="arg">(listener_id)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">Retrieve a full listener profile — preferences, listening history, and a tip for the AI to personalize every response from language to song recommendations.</span>
         </article>
-        <article class="mcp-tool" data-cat="listener" data-search="update_listener_preference(listener_id, key, value) new update any preference — language switch for a german listener, a new favorite genre, a favorite show. persists instantly across all future sessions. listener profiles">
+        <article class="mcp-tool" data-cat="listener" data-search="update_listener_preference(listener_id, key, value) update any preference — language switch for a german listener, a new favorite genre, a favorite show. persists instantly across all future sessions. listener profiles">
           <span class="mcp-tool-cat">Listener Profiles</span>
-          <span class="mcp-tool-fn">update_listener_preference(listener_id, key, value) New</span>
+          <span class="mcp-tool-fn">update_listener_preference<span class="arg">(listener_id, key, value)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">Update any preference — language switch for a German listener, a new favorite genre, a favorite show. Persists instantly across all future sessions.</span>
         </article>
-        <article class="mcp-tool" data-cat="listener" data-search="log_listener_history(listener_id, event_type, ...) new log what a listener heard, requested, or reacted to. the ai calls this silently in the background to build the history that makes every future session smarter. listener profiles">
+        <article class="mcp-tool" data-cat="listener" data-search="log_listener_history(listener_id, event_type, ...) log what a listener heard, requested, or reacted to. the ai calls this silently in the background to build the history that makes every future session smarter. listener profiles">
           <span class="mcp-tool-cat">Listener Profiles</span>
-          <span class="mcp-tool-fn">log_listener_history(listener_id, event_type, ...) New</span>
+          <span class="mcp-tool-fn">log_listener_history<span class="arg">(listener_id, event_type, ...)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">Log what a listener heard, requested, or reacted to. The AI calls this silently in the background to build the history that makes every future session smarter.</span>
         </article>
-        <article class="mcp-tool" data-cat="listener" data-search="get_personalized_content(listener_id, content_type?) new returns a fully localized kazm experience — greeting in the listener&#x27;s language (english, german, spanish, french, portuguese, japanese), recommendations from their history, and a personalized station brief. listener profiles">
+        <article class="mcp-tool" data-cat="listener" data-search="get_personalized_content(listener_id, content_type?) returns a fully localized kazm experience — greeting in the listener&#x27;s language (english, german, spanish, french, portuguese, japanese), recommendations from their history, and a personalized station brief. listener profiles">
           <span class="mcp-tool-cat">Listener Profiles</span>
-          <span class="mcp-tool-fn">get_personalized_content(listener_id, content_type?) New</span>
+          <span class="mcp-tool-fn">get_personalized_content<span class="arg">(listener_id, content_type?)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">Returns a fully localized KAZM experience — greeting in the listener&#x27;s language (English, German, Spanish, French, Portuguese, Japanese), recommendations from their history, and a personalized station brief.</span>
         </article>
         <article class="mcp-tool" data-cat="vibe" data-search="get_horoscope(sign?) daily horoscope for all 12 signs, served from kazm’s own data. the vibe">
@@ -624,14 +624,14 @@
           <span class="mcp-tool-fn">get_stargazing_conditions<span class="arg">(date?)</span></span>
           <span class="mcp-tool-desc">Tonight&#x27;s darkness window, moon interference rating, Milky Way visibility status, and best astrophotography sites in Sedona.</span>
         </article>
-        <article class="mcp-tool" data-cat="vibe" data-search="get_chakra_guide(chakra?) new full guide to all seven chakras — sanskrit name, solfeggio hz, bija mantra, crystals, essential oils, yoga pose, and the sedona vortex tied to each energy center. the vibe">
+        <article class="mcp-tool" data-cat="vibe" data-search="get_chakra_guide(chakra?) full guide to all seven chakras — sanskrit name, solfeggio hz, bija mantra, crystals, essential oils, yoga pose, and the sedona vortex tied to each energy center. the vibe">
           <span class="mcp-tool-cat">The Vibe</span>
-          <span class="mcp-tool-fn">get_chakra_guide(chakra?) New</span>
+          <span class="mcp-tool-fn">get_chakra_guide<span class="arg">(chakra?)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">Full guide to all seven chakras — Sanskrit name, Solfeggio Hz, bija mantra, crystals, essential oils, yoga pose, and the Sedona vortex tied to each energy center.</span>
         </article>
-        <article class="mcp-tool" data-cat="vibe" data-search="get_tarot_card(spread?, card_name?) new full 78-card rider-waite deck. daily card of the day over sedona (same for all listeners until midnight mst), single draw, past/present/future spread, or look up any card by name. the vibe">
+        <article class="mcp-tool" data-cat="vibe" data-search="get_tarot_card(spread?, card_name?) full 78-card rider-waite deck. daily card of the day over sedona (same for all listeners until midnight mst), single draw, past/present/future spread, or look up any card by name. the vibe">
           <span class="mcp-tool-cat">The Vibe</span>
-          <span class="mcp-tool-fn">get_tarot_card(spread?, card_name?) New</span>
+          <span class="mcp-tool-fn">get_tarot_card<span class="arg">(spread?, card_name?)</span><span class="mcp-tool-badge">New</span></span>
           <span class="mcp-tool-desc">Full 78-card Rider-Waite deck. Daily card of the day over Sedona (same for all listeners until midnight MST), single draw, past/present/future spread, or look up any card by name.</span>
         </article>
         <article class="mcp-tool" data-cat="vibe" data-search="get_photography_guide(location?) real-time golden hour / blue hour times, current light score, shooting tips, and camera settings for 6 iconic sedona locations. the vibe">
