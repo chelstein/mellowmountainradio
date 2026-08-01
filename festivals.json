@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-01T03:14:32.502Z",
+ "updated": "2026-08-01T08:24:29.656Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -23,6 +23,16 @@
    "end": "2026-08-21"
   },
   {
+   "name": "Celestial Festival @ 191 Toole",
+   "city": "Tucson",
+   "state": "AZ",
+   "url": "https://www.ticketmaster.com/celestial-festival-191-toole-tucson-arizona-09-04-2026/event/190064F0C2DF735B",
+   "img": "https://s1.ticketm.net/dam/e/554/e026860b-f2e4-45b7-a7a5-97dab3660554_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Metal",
+   "start": "2026-09-04",
+   "end": "2026-09-04"
+  },
+  {
    "name": "Goldrush Music Festival",
    "city": "Chandler",
    "state": "AZ",
@@ -41,16 +51,6 @@
    "genre": "Other",
    "start": "2026-09-11",
    "end": "2026-09-12"
-  },
-  {
-   "name": "Summer Noise: An All California Fest ft. A Darker Shade of Black with special guests",
-   "city": "San Diego",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/summer-noise-an-all-california-brick-by-brick-tickets/14244724",
-   "img": "https://s1.ticketm.net/dam/c/e7c/86478562-7218-4e8f-b9d4-8080fe168e7c_105581_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Metal",
-   "start": "2026-07-31",
-   "end": "2026-07-31"
   },
   {
    "name": "HARD Summer Music Festival",
