@@ -1,16 +1,24 @@
 # Catch-up runbook — get the OpenEAS page live
 
+> **Host addresses, account names and paths are deliberately placeholders.**
+> An earlier revision of this file carried the real values, including an
+> `ssh root@…` line, in a public repository. That is a map, not a secret — the
+> addresses are discoverable — but publishing *which account to log in as, where
+> the checkout lives, and what the process is called* hands over the parts that
+> are not discoverable. Substitute your own values locally and do not commit
+> them back.
+
 Three deploys, in this order. Nothing here is reversible-unsafe; the installer
 is idempotent and the relay change is additive.
 
 Every command below is meant to be pasted as-is. Expected output is given for
 each so you can tell success from a silent no-op.
 
-**Current state, verified 31 July 2026:**
+**State when this was written (31 July 2026):**
 
 | Thing | Where | State |
 |---|---|---|
-| OpenEAS server | `161.35.225.111` | healthy, HTTP only, **15 tools** (needs 18) |
+| OpenEAS server | `<OPENEAS_HOST>` | healthy, HTTP only, **15 tools** (needs 18) |
 | `eas.mellowmountainradio.com` | — | **no DNS record at all** |
 | Station MCP server | `mcp.mellowmountainradio.com` | running the **28 July build**, `/eas` 404s |
 | `eas.html` / `mcp.html` | live site | redesigned, deployed, waiting on data |
@@ -25,7 +33,7 @@ Cloudflare dashboard → `mellowmountainradio.com` → **DNS** → **Add record*
 |---|---|
 | Type | `A` |
 | Name | `eas` |
-| IPv4 address | `161.35.225.111` |
+| IPv4 address | `<OPENEAS_HOST>` |
 | Proxy status | **DNS only** (grey cloud — *not* orange) |
 | TTL | Auto |
 
@@ -40,7 +48,7 @@ Verify before moving on:
 dig +short eas.mellowmountainradio.com
 ```
 
-Expect exactly `161.35.225.111`. If it returns nothing, wait and retry — do not
+Expect exactly `<OPENEAS_HOST>`. If it returns nothing, wait and retry — do not
 run Step 2 until it resolves, because certbot will fail and the installer will
 leave the server on plain HTTP.
 
@@ -49,7 +57,7 @@ leave the server on plain HTTP.
 ## Step 2 — Upgrade the OpenEAS droplet and add TLS
 
 ```sh
-ssh root@161.35.225.111
+ssh <admin>@<OPENEAS_HOST>
 ```
 
 ```sh
@@ -94,7 +102,7 @@ This is the one that actually lights up the public page, and it needs no DNS at
 all — the relay reaches the droplet by raw IP.
 
 ```sh
-ssh root@157.230.163.69
+ssh <admin>@<RELAY_HOST>
 ```
 
 **Discover how it runs before changing anything.** I could not determine this
