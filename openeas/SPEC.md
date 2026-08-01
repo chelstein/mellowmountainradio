@@ -995,6 +995,21 @@ An Implementation **MUST** load code tables as versioned data, **MUST** expose t
 table version via `eas.get_event_codes`, and **MUST NOT** reject an unknown code —
 unknown codes **MUST** be passed through with the code preserved verbatim.
 
+The version **MUST** appear at `table.version`, and the authority it was taken
+from **MUST** appear at `table.source`:
+
+```json
+"table": { "version": "2026-07-01", "source": "47 CFR §11.31, eCFR snapshot 2026-07-01" }
+```
+
+Naming the field is not pedantry. The first run of `openeas-conformance` against
+the reference implementation could not verify this requirement, because the
+requirement said *expose the version* without saying where, and the checker
+looked for a different field name than the server used. A normative statement
+whose subject has no fixed name is unverifiable by anyone but its own author,
+which makes it decorative. Where this specification requires a value to be
+exposed, it names the path.
+
 ---
 
 ## 10. Conformance
@@ -1053,6 +1068,121 @@ before this draft is frozen.
    Whether IP-delivered audio is "direct" is unaddressed; the plain reading and the
    Commission's resilience rationale (FCC 26-38 ¶98) both suggest not. Assume
    automatic operation in any remote-console design.
+
+---
+
+## 12. Governance
+
+A specification with no change process is one organisation's document with
+normative-sounding words in it. This is how OpenEAS changes, and how someone who
+is not KAZM can rely on it.
+
+### 12.1 Requirement identifiers
+
+Every normative statement carries a permanent identifier of the form `OE-0042`,
+registered in `openeas/requirements.json` and rendered in
+`openeas/REQUIREMENTS.md`. Cite these rather than section numbers, which move.
+
+Identifiers are matched to the specification by normalised text, not by
+position, so inserting a paragraph in §4 does not renumber §9. A requirement
+removed from the specification is marked **withdrawn** and its number is
+**never reused** — a citation made against an older revision still resolves to
+the sentence it was about. This follows the same discipline the Commission
+applies to rule sections, for the same reason.
+
+`openeas/tools/extract-requirements.js` verifies that the register and the
+specification agree and fails if they drift. Drift means neither can be trusted.
+
+### 12.2 Versioning
+
+Versions are `MAJOR.MINOR.PATCH`.
+
+| Change | Bump |
+|---|---|
+| A new **MUST**, or a **SHOULD** raised to **MUST** | MAJOR |
+| A requirement withdrawn or weakened | MAJOR |
+| A new **SHOULD** or **MAY**, or a new optional tool | MINOR |
+| Clarification that does not alter what conforms | PATCH |
+
+An Implementation **MUST** report the profile version it targets via
+`eas.get_conformance`. A consumer **MUST NOT** assume that an Implementation
+reporting a higher MAJOR version is compatible with a lower one.
+
+### 12.3 Change process
+
+1. A proposed change is raised as an issue against the specification repository,
+   citing the requirement identifiers it affects.
+2. Changes that add or strengthen a **MUST** **MUST** state how the new
+   requirement is to be verified — `wire`, `inspect` or `attest` per §13.2 — or
+   be rejected. A requirement nobody can check is decorative.
+3. Changes remain open for comment for no less than **30 days** before adoption,
+   except errata under §12.4.
+4. Adopted changes are recorded with the version they entered.
+
+### 12.4 Errata
+
+A statement that is factually wrong about a rule, a citation, or an external
+system is an **erratum** and may be corrected without the comment period, because
+leaving a wrong statement of law standing is worse than correcting it quickly.
+Errata **MUST NOT** change what conforms. If a correction would change what
+conforms, it is not an erratum.
+
+---
+
+## 13. Claiming conformance
+
+### 13.1 What may be claimed
+
+An Implementation **MAY** state that it "conforms to OpenEAS 0.1.0" only if it
+satisfies §10 and publishes a conformance statement containing:
+
+* the profile version targeted;
+* the output of `openeas-conformance` run against it, unedited;
+* for every requirement whose verification method is `attest`, an explicit
+  statement that it is met, by a named accountable party.
+
+An Implementation **MUST NOT** describe itself as "certified" or "approved" on
+the strength of this profile. OpenEAS is not a certification body and
+conformance to it is not equipment authorisation under 47 CFR §11.34.
+
+### 13.2 The three verification methods, and the honest ratio
+
+| Method | Meaning | Count at 0.1.0 |
+|---|---|---|
+| `wire` | Checkable against a running implementation by `openeas-conformance` | **20** |
+| `inspect` | Checkable by reading the implementation's distribution | **1** |
+| `attest` | Not checkable by either; the implementer states it and is accountable | **119** |
+
+**Most of this specification rests on attestation.** That is stated here rather
+than buried because a reader deciding how much weight to place on a conformance
+claim needs to know it. Roughly one requirement in 7 can be checked by a
+stranger with a URL; the rest are promises.
+
+The ratio is a target for improvement, not a permanent condition. §12.3 requires
+every new **MUST** to declare its verification method precisely so this number
+moves in the right direction rather than drifting.
+
+### 13.3 The checker
+
+`openeas-conformance/check.js` takes an MCP endpoint URL and reports
+`PASS`, `FAIL` or `INCONCLUSIVE` per requirement.
+
+**`INCONCLUSIVE` is never rounded to `PASS`.** This is the same rule §5.3
+(`OE-0074`, `OE-0076`) imposes on Implementations reporting alert validation, and
+it applies to the checker for the same reason: a check that could not be
+completed must never be reported as one that passed. A conformance suite that
+exempted itself from its own specification's evidentiary standard would not be
+worth running.
+
+The checker has no dependency on, and no knowledge of, the reference
+implementation. It speaks the wire protocol and reads the responses. This matters
+because the author of the specification, the author of the reference
+implementation, and the author of the checker are currently the same party — the
+only thing keeping that from being circular is that the checker can be pointed at
+someone else's server and produce a result its author did not choose.
+
+A third party **MAY** run the checker against any Implementation, including this
+one, and publish the result. Doing so requires no permission.
 
 ---
 

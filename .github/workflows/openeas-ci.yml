@@ -20,12 +20,14 @@ on:
     paths:
       - "openeas-mcp/**"
       - "openeas/**"
+      - "openeas-conformance/**"
       - "endec/**"
       - ".github/workflows/openeas-ci.yml"
   pull_request:
     paths:
       - "openeas-mcp/**"
       - "openeas/**"
+      - "openeas-conformance/**"
       - "endec/**"
       - ".github/workflows/openeas-ci.yml"
   workflow_dispatch:
@@ -76,6 +78,12 @@ jobs:
           fi
           echo "No tracked audio files. Header TEXT is the interchange format."
 
+      # The register is the specification's index. If it drifts, every
+      # OE-#### citation anyone has made becomes unreliable, so this fails the
+      # build rather than quietly renumbering.
+      - name: Requirement register matches the specification
+        run: node openeas/tools/extract-requirements.js
+
       # The test lab is dependency-free by design, so it keeps working when a
       # framework's major version moves and nobody notices for eight months.
       - name: Test lab
@@ -120,3 +128,9 @@ jobs:
             printf '%s\n' "$names" | grep -q "\"$t\"" \
               || { echo "::error::tool $t is claimed in the profile but not registered"; exit 1; }
           done
+
+          # Conformance suite against the server we just started. This is the
+          # same checker a stranger would point at us, run against ourselves so
+          # a regression in a normative behaviour fails the build rather than
+          # waiting to be found by someone else.
+          node ../openeas-conformance/check.js "http://127.0.0.1:$PORT/mcp"

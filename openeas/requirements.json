@@ -1,0 +1,1407 @@
+{
+ "version": "0.1.0-draft",
+ "requirements": [
+  {
+   "id": "OE-0001",
+   "level": "MUST NOT",
+   "section": "1. Terminology",
+   "line": 73,
+   "text": "Key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**,",
+   "norm": "key words must, must not, required, shall, shall not,",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0002",
+   "level": "SHOULD NOT",
+   "section": "1. Terminology",
+   "line": 74,
+   "text": "**SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **MAY**, and **OPTIONAL** are to be",
+   "norm": "should, should not, recommended, may, and optional are to be",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0003",
+   "level": "MUST NOT",
+   "section": "2.1 Not EAS Software",
+   "line": 106,
+   "text": "An Implementation **MUST NOT** perform or manage any requirement of §11.32",
+   "norm": "an implementation must not perform or manage any requirement of §11.32",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0004",
+   "level": "MUST",
+   "section": "2.1 Not EAS Software",
+   "line": 108,
+   "text": "**MUST** declare this in its documentation and **SHOULD** surface the declaration",
+   "norm": "must declare this in its documentation and should surface the declaration",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0005",
+   "level": "MUST NOT",
+   "section": "2.2 Not an Intermediary Device",
+   "line": 118,
+   "text": "An Implementation **MUST NOT** hold itself out as, or function as, an Intermediary",
+   "norm": "an implementation must not hold itself out as, or function as, an intermediary",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0006",
+   "level": "MUST NOT",
+   "section": "2.3 No origination capability",
+   "line": 123,
+   "text": "An Implementation **MUST NOT** contain code capable of generating:",
+   "norm": "an implementation must not contain code capable of generating:",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0007",
+   "level": "MUST NOT",
+   "section": "2.3 No origination capability",
+   "line": 136,
+   "text": "An Implementation's repository and distributed artifacts **MUST NOT** contain EAS",
+   "norm": "an implementation's repository and distributed artifacts must not contain eas",
+   "verify": "inspect",
+   "status": "active"
+  },
+  {
+   "id": "OE-0008",
+   "level": "MUST",
+   "section": "2.4 The mandatory-forward path must not traverse an Implementation",
+   "line": 153,
+   "text": "An Implementation **MUST** be architecturally incapable of adding latency to, of",
+   "norm": "an implementation must be architecturally incapable of adding latency to, of",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0009",
+   "level": "MUST",
+   "section": "2.4 The mandatory-forward path must not traverse an Implementation",
+   "line": 154,
+   "text": "gating, or of holding any alert. Conforming documentation **MUST** include a signal",
+   "norm": "gating, or of holding any alert. conforming documentation must include a signal",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0010",
+   "level": "MUST",
+   "section": "2.5 The decoder decides",
+   "line": 163,
+   "text": "An Implementation **MUST** treat the certified decoder's preselected-header",
+   "norm": "an implementation must treat the certified decoder's preselected-header",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0011",
+   "level": "MUST NOT",
+   "section": "2.5 The decoder decides",
+   "line": 164,
+   "text": "configuration as the authoritative policy engine. An Implementation **MUST NOT**",
+   "norm": "configuration as the authoritative policy engine. an implementation must not",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0012",
+   "level": "MUST NOT",
+   "section": "2.5 The decoder decides",
+   "line": 165,
+   "text": "maintain a parallel or competing forwarding policy, and **MUST NOT** represent its",
+   "norm": "maintain a parallel or competing forwarding policy, and must not represent its",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0013",
+   "level": "MAY",
+   "section": "2.6 The permitted scope of assistance",
+   "line": 176,
+   "text": "Within that discretion, an Implementation **MAY** inform, filter, rank, explain,",
+   "norm": "within that discretion, an implementation may inform, filter, rank, explain,",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0014",
+   "level": "MUST NOT",
+   "section": "2.6 The permitted scope of assistance",
+   "line": 177,
+   "text": "summarize, and pre-stage. An Implementation **MUST NOT** be the decision-maker of",
+   "norm": "summarize, and pre-stage. an implementation must not be the decision-maker of",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0015",
+   "level": "MUST",
+   "section": "2.6 The permitted scope of assistance",
+   "line": 178,
+   "text": "record. Every advisory output **MUST** be represented as a proposal requiring human",
+   "norm": "record. every advisory output must be represented as a proposal requiring human",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0016",
+   "level": "MUST",
+   "section": "2.6 The permitted scope of assistance",
+   "line": 179,
+   "text": "confirmation, and **MUST** carry the identity of the human who accepted or rejected",
+   "norm": "confirmation, and must carry the identity of the human who accepted or rejected",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0017",
+   "level": "MUST NOT",
+   "section": "2.6 The permitted scope of assistance",
+   "line": 184,
+   "text": "Implementation **MAY** inform such an override. It **MUST NOT** execute one.",
+   "norm": "implementation may inform such an override. it must not execute one.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0018",
+   "level": "MUST",
+   "section": "2.7 Read-only enforcement",
+   "line": 195,
+   "text": "An Implementation that reads from station equipment **MUST** be read-only at the",
+   "norm": "an implementation that reads from station equipment must be read-only at the",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0019",
+   "level": "MUST",
+   "section": "2.7 Read-only enforcement",
+   "line": 202,
+   "text": "device, application, or service of the Participant. An Implementation **MUST**",
+   "norm": "device, application, or service of the participant. an implementation must",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0020",
+   "level": "SHOULD",
+   "section": "2.7 Read-only enforcement",
+   "line": 203,
+   "text": "document a dedicated per-integration credential and **SHOULD** use a read-only",
+   "norm": "document a dedicated per-integration credential and should use a read-only",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0021",
+   "level": "SHOULD",
+   "section": "2.7 Read-only enforcement",
+   "line": 206,
+   "text": "An Implementation **SHOULD** prefer an outbound-initiated topology, in which",
+   "norm": "an implementation should prefer an outbound-initiated topology, in which",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0022",
+   "level": "SHOULD",
+   "section": "3. Architecture",
+   "line": 254,
+   "text": "> **SHOULD** hold an MOA.",
+   "norm": "> should hold an moa.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0023",
+   "level": "MUST",
+   "section": "3. Architecture",
+   "line": 259,
+   "text": "Implementation that reports historical IPAWS activity **MUST** persist alerts",
+   "norm": "implementation that reports historical ipaws activity must persist alerts",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0024",
+   "level": "MUST NOT",
+   "section": "3. Architecture",
+   "line": 260,
+   "text": "locally as it observes them, and **MUST NOT** present the live feed as a complete",
+   "norm": "locally as it observes them, and must not present the live feed as a complete",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0025",
+   "level": "MUST",
+   "section": "3. Architecture",
+   "line": 265,
+   "text": "A conforming Implementation **MUST** function in Tier A alone. Tiers B and C",
+   "norm": "a conforming implementation must function in tier a alone. tiers b and c",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0026",
+   "level": "MUST",
+   "section": "3. Architecture",
+   "line": 266,
+   "text": "**MUST** degrade to explicit absence rather than to silence: a tool whose data",
+   "norm": "must degrade to explicit absence rather than to silence: a tool whose data",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0027",
+   "level": "MUST NOT",
+   "section": "3. Architecture",
+   "line": 267,
+   "text": "source is unavailable **MUST** report the source as unavailable and **MUST NOT**",
+   "norm": "source is unavailable must report the source as unavailable and must not",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0028",
+   "level": "MUST",
+   "section": "4. Data model",
+   "line": 274,
+   "text": "All timestamps are RFC 3339 with explicit offset. Implementations **MUST** store",
+   "norm": "all timestamps are rfc 3339 with explicit offset. implementations must store",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0029",
+   "level": "MUST",
+   "section": "4. Data model",
+   "line": 275,
+   "text": "UTC and **MUST** additionally render station-local time with its zone designation,",
+   "norm": "utc and must additionally render station-local time with its zone designation,",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0030",
+   "level": "MUST NOT",
+   "section": "4.1 `Alert`",
+   "line": 286,
+   "text": "| `identity` † | object | `{sender, identifier, sent, key}` — the CAP **extended identifier**, which is what `<references>` uses. `identifier` alone is **NOT** unique across senders; observed forms range from `2637867444630562` to `AS-UT-c4e502b5-…` to `urn:oid:2.49.0.1.840…`. Implementations **MUST** key identity on the triple and **MUST NOT** deduplicate on `identifier` alone. |",
+   "norm": "| identity † | object | {sender, identifier, sent, key} - the cap extended identifier, which is what <references> uses. identifier alone is not unique across senders; observed forms range from 2637867444630562 to as-ut-c4e502b5-… to urn:oid:2.49.0.1.840…. implementations must key identity on the triple and must not deduplicate on identifier alone. |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0031",
+   "level": "MUST NOT",
+   "section": "4.1 `Alert`",
+   "line": 287,
+   "text": "| `parameters` † | object | Name → **list** of values. CAP permits repeated `valueName`s and ECIG §3.3.1 requires each occurrence be processed independently. Implementations **MUST NOT** model this as a flat dictionary. A live IPAWS evacuation carried `EAS-ORG` and `CMAMtext` twice each across English and Spanish `<info>` blocks; a flat map silently discards half. |",
+   "norm": "| parameters † | object | name → list of values. cap permits repeated valuenames and ecig §3.3.1 requires each occurrence be processed independently. implementations must not model this as a flat dictionary. a live ipaws evacuation carried eas-org and cmamtext twice each across english and spanish <info> blocks; a flat map silently discards half. |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0032",
+   "level": "MUST NOT",
+   "section": "4.1 `Alert`",
+   "line": 288,
+   "text": "| `blocked_channels` | array | Distinct set from repeated `BLOCKCHANNEL` parameters (`EAS`, `CMAS`, `NWEM`, `CAPEXCH`). An alert carrying `BLOCKCHANNEL=EAS` is suppressed from EAS and **MUST NOT** be presented as EAS-eligible. |",
+   "norm": "| blocked_channels | array | distinct set from repeated blockchannel parameters (eas, cmas, nwem, capexch). an alert carrying blockchannel=eas is suppressed from eas and must not be presented as eas-eligible. |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0033",
+   "level": "MUST",
+   "section": "4.1 `Alert`",
+   "line": 297,
+   "text": "| `mandatory_forward` † | bool | True only for EAN, nationwide NPT, and RMT whose location codes include the Participant's state or state/county (§11.51(m)). Derived, and **MUST** be labeled derived. |",
+   "norm": "| mandatory_forward † | bool | true only for ean, nationwide npt, and rmt whose location codes include the participant's state or state/county (§11.51(m)). derived, and must be labeled derived. |",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0034",
+   "level": "MUST NOT",
+   "section": "4.1 `Alert`",
+   "line": 302,
+   "text": "An Implementation **MUST NOT** hardcode originator, event, or location code tables.",
+   "norm": "an implementation must not hardcode originator, event, or location code tables.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0035",
+   "level": "MUST",
+   "section": "4.1 `Alert`",
+   "line": 303,
+   "text": "Codes **MUST** be versioned data (§9.4).",
+   "norm": "codes must be versioned data (§9.4).",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0036",
+   "level": "MUST NOT",
+   "section": "4.1 `Alert`",
+   "line": 306,
+   "text": "`-06:00`). Implementations **MUST** preserve it verbatim and **MUST NOT** normalize",
+   "norm": "-06:00). implementations must preserve it verbatim and must not normalize",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0037",
+   "level": "MUST",
+   "section": "4.1 `Alert`",
+   "line": 317,
+   "text": "An Implementation **MUST** prefer the SAME value, **MUST** surface the conflict",
+   "norm": "an implementation must prefer the same value, must surface the conflict",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0038",
+   "level": "MUST NOT",
+   "section": "4.1 `Alert`",
+   "line": 318,
+   "text": "rather than silently resolving it, and **MUST NOT** infer a SAME code from the",
+   "norm": "rather than silently resolving it, and must not infer a same code from the",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0039",
+   "level": "MUST NOT",
+   "section": "4.1 `Alert`",
+   "line": 324,
+   "text": "code is assigned to this product.\" An Implementation **MUST NOT** treat either as",
+   "norm": "code is assigned to this product.\" an implementation must not treat either as",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0040",
+   "level": "MUST",
+   "section": "4.2 `format_resolution`",
+   "line": 341,
+   "text": "An Implementation that models alert state **MUST** represent the legacy/CAP pairing",
+   "norm": "an implementation that models alert state must represent the legacy/cap pairing",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0041",
+   "level": "MUST NOT",
+   "section": "4.4 `AirObservation`",
+   "line": 382,
+   "text": "An Implementation **MUST NOT** present a `stream` observation as evidence of",
+   "norm": "an implementation must not present a stream observation as evidence of",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0042",
+   "level": "MUST NOT",
+   "section": "4.5 `Reconciliation`",
+   "line": 396,
+   "text": "`unavailable` and `absent` are distinct and **MUST NOT** be conflated. A source",
+   "norm": "unavailable and absent are distinct and must not be conflated. a source",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0043",
+   "level": "MUST",
+   "section": "4.5 `Reconciliation`",
+   "line": 397,
+   "text": "that was not consulted has not produced a negative finding. `verdict` **MUST** be",
+   "norm": "that was not consulted has not produced a negative finding. verdict must be",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0044",
+   "level": "MUST NOT",
+   "section": "4.5 `Reconciliation`",
+   "line": 400,
+   "text": "An Implementation **MUST NOT** render a `discrepancy` verdict as a compliance",
+   "norm": "an implementation must not render a discrepancy verdict as a compliance",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0045",
+   "level": "MUST NOT",
+   "section": "4.6 `Operator`",
+   "line": 415,
+   "text": "An Implementation **MUST NOT** synthesize an operator attestation, and **MUST NOT**",
+   "norm": "an implementation must not synthesize an operator attestation, and must not",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0046",
+   "level": "MUST",
+   "section": "4.6 `Operator`",
+   "line": 418,
+   "text": "entries without attestation **MUST** classify itself as an automatic device under",
+   "norm": "entries without attestation must classify itself as an automatic device under",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0047",
+   "level": "MUST",
+   "section": "4.6 `Operator`",
+   "line": 419,
+   "text": "§73.1820(b) and **MUST** implement the §73.1820(b)(4) manual-fallback requirement:",
+   "norm": "§73.1820(b) and must implement the §73.1820(b)(4) manual-fallback requirement:",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0048",
+   "level": "MUST",
+   "section": "4.6 `Operator`",
+   "line": 421,
+   "text": "entries manually. An Implementation **MUST** alarm on its own failure.",
+   "norm": "entries manually. an implementation must alarm on its own failure.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0049",
+   "level": "MUST",
+   "section": "4.7 `MonitorSource`",
+   "line": 429,
+   "text": "| `assigned_by` † | string | **MUST** be the current approved State EAS Plan. |",
+   "norm": "| assigned_by † | string | must be the current approved state eas plan. |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0050",
+   "level": "MUST",
+   "section": "4.7 `MonitorSource`",
+   "line": 434,
+   "text": "EAS Plan (§11.21(b)(4)). Assignments **MUST** be configuration, never compiled in.",
+   "norm": "eas plan (§11.21(b)(4)). assignments must be configuration, never compiled in.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0051",
+   "level": "SHOULD",
+   "section": "4.9 `Disposition` — ECIG vocabulary, adopted not invented",
+   "line": 457,
+   "text": "An Implementation **SHOULD** expose this tri-state per alert, because it is",
+   "norm": "an implementation should expose this tri-state per alert, because it is",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0052",
+   "level": "SHOULD",
+   "section": "4.9 `Disposition` — ECIG vocabulary, adopted not invented",
+   "line": 463,
+   "text": "activity **SHOULD** use that form, giving the profile a standards-blessed way to",
+   "norm": "activity should use that form, giving the profile a standards-blessed way to",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0053",
+   "level": "MUST NOT",
+   "section": "4.9 `Disposition` — ECIG vocabulary, adopted not invented",
+   "line": 467,
+   "text": "does **not** mean the message aired, and an Implementation **MUST NOT** conflate",
+   "norm": "does not mean the message aired, and an implementation must not conflate",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0054",
+   "level": "MUST NOT",
+   "section": "5. Tool surface",
+   "line": 491,
+   "text": "Tools are named to be unmistakably non-actuating. An Implementation **MUST NOT**",
+   "norm": "tools are named to be unmistakably non-actuating. an implementation must not",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0055",
+   "level": "MUST",
+   "section": "5. Tool surface",
+   "line": 496,
+   "text": "Names below are protocol-neutral. An MCP binding **MUST** expose them with `.`",
+   "norm": "names below are protocol-neutral. an mcp binding must expose them with .",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0056",
+   "level": "MUST",
+   "section": "5. Tool surface",
+   "line": 497,
+   "text": "replaced by `_` (e.g. `eas_get_active_alerts`) and **MUST** set",
+   "norm": "replaced by _ (e.g. eas_get_active_alerts) and must set",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0057",
+   "level": "MUST",
+   "section": "5.4 Persistence is required for any historical claim",
+   "line": 535,
+   "text": "An Implementation that reports historical alert activity **MUST** persist",
+   "norm": "an implementation that reports historical alert activity must persist",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0058",
+   "level": "MUST",
+   "section": "5.4 Persistence is required for any historical claim",
+   "line": 536,
+   "text": "observations locally, and **MUST** record every poll — including failed polls —",
+   "norm": "observations locally, and must record every poll - including failed polls -",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0059",
+   "level": "MUST",
+   "section": "5.4 Persistence is required for any historical claim",
+   "line": 540,
+   "text": "An Implementation **MUST** state, wherever it reports archive contents, that",
+   "norm": "an implementation must state, wherever it reports archive contents, that",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0060",
+   "level": "SHOULD",
+   "section": "5.4 Persistence is required for any historical claim",
+   "line": 543,
+   "text": "Historical backfill **SHOULD** use the OpenFEMA `IpawsArchivedAlerts` dataset,",
+   "norm": "historical backfill should use the openfema ipawsarchivedalerts dataset,",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0061",
+   "level": "MUST NOT",
+   "section": "5.4 Persistence is required for any historical claim",
+   "line": 545,
+   "text": "be parsed through the same code path as live traffic. Backfill **MUST NOT** be",
+   "norm": "be parsed through the same code path as live traffic. backfill must not be",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0062",
+   "level": "MUST",
+   "section": "5.5 The archive must be verifiable by someone who does not trust it",
+   "line": 555,
+   "text": "An Implementation holding an archive **MUST** chain records by hash such that",
+   "norm": "an implementation holding an archive must chain records by hash such that",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0063",
+   "level": "MUST",
+   "section": "5.5 The archive must be verifiable by someone who does not trust it",
+   "line": 556,
+   "text": "altering a record, removing one, or reordering them is detectable, and **MUST**",
+   "norm": "altering a record, removing one, or reordering them is detectable, and must",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0064",
+   "level": "MUST",
+   "section": "5.5 The archive must be verifiable by someone who does not trust it",
+   "line": 557,
+   "text": "expose verification as a tool. Verification **MUST** be possible from the stored",
+   "norm": "expose verification as a tool. verification must be possible from the stored",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0065",
+   "level": "SHOULD",
+   "section": "5.5 The archive must be verifiable by someone who does not trust it",
+   "line": 559,
+   "text": "Storage **SHOULD** therefore use a plain, documented, line-oriented text format.",
+   "norm": "storage should therefore use a plain, documented, line-oriented text format.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0066",
+   "level": "MUST",
+   "section": "5.5 The archive must be verifiable by someone who does not trust it",
+   "line": 561,
+   "text": "Verification **MUST** report where the chain broke rather than a bare boolean, and",
+   "norm": "verification must report where the chain broke rather than a bare boolean, and",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0067",
+   "level": "MUST",
+   "section": "5.5 The archive must be verifiable by someone who does not trust it",
+   "line": 562,
+   "text": "**MUST** state that chain integrity proves internal consistency only — never",
+   "norm": "must state that chain integrity proves internal consistency only - never",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0068",
+   "level": "MUST NOT",
+   "section": "5.0 National scope",
+   "line": 567,
+   "text": "An Implementation **MUST NOT** hardcode a single service area. Any station",
+   "norm": "an implementation must not hardcode a single service area. any station",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0069",
+   "level": "MUST",
+   "section": "5.0 National scope",
+   "line": 570,
+   "text": "Alert-returning tools **MUST** accept at least one of: state (postal code or FIPS),",
+   "norm": "alert-returning tools must accept at least one of: state (postal code or fips),",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0070",
+   "level": "MUST",
+   "section": "5.0 National scope",
+   "line": 572,
+   "text": "Implementation **MUST** report which scope was applied, so a caller can never",
+   "norm": "implementation must report which scope was applied, so a caller can never",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0071",
+   "level": "SHOULD",
+   "section": "5.0 National scope",
+   "line": 575,
+   "text": "Location resolution **SHOULD** use the National Weather Service SAME table",
+   "norm": "location resolution should use the national weather service same table",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0072",
+   "level": "SHOULD",
+   "section": "5.3 Validation mode",
+   "line": 583,
+   "text": "Alert-returning tools **SHOULD** accept a `validate` flag, off by default. When",
+   "norm": "alert-returning tools should accept a validate flag, off by default. when",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0073",
+   "level": "MUST",
+   "section": "5.3 Validation mode",
+   "line": 584,
+   "text": "set, the response **MUST** include a field-by-field audit in which every check",
+   "norm": "set, the response must include a field-by-field audit in which every check",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0074",
+   "level": "MUST",
+   "section": "5.3 Validation mode",
+   "line": 587,
+   "text": "Each check **MUST** report exactly one of four results, and an Implementation",
+   "norm": "each check must report exactly one of four results, and an implementation",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0075",
+   "level": "MUST NOT",
+   "section": "5.3 Validation mode",
+   "line": 588,
+   "text": "**MUST NOT** collapse them to a boolean:",
+   "norm": "must not collapse them to a boolean:",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0076",
+   "level": "MUST",
+   "section": "5.3 Validation mode",
+   "line": 597,
+   "text": "An overall verdict **MUST** be `indeterminate` whenever any check is `unknown`.",
+   "norm": "an overall verdict must be indeterminate whenever any check is unknown.",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0077",
+   "level": "MUST NOT",
+   "section": "5.1 Constraints on tool 12",
+   "line": 614,
+   "text": "`eas.draft_false_alert_report` **MUST** produce a draft only. It **MUST NOT** send",
+   "norm": "eas.draft_false_alert_report must produce a draft only. it must not send",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0078",
+   "level": "MUST NOT",
+   "section": "5.1 Constraints on tool 12",
+   "line": 615,
+   "text": "mail, and **MUST NOT** represent a draft as a filed report. It **SHOULD** surface",
+   "norm": "mail, and must not represent a draft as a filed report. it should surface",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0079",
+   "level": "MUST",
+   "section": "5.2 Absence semantics",
+   "line": 620,
+   "text": "Every tool **MUST** distinguish, in its response, between:",
+   "norm": "every tool must distinguish, in its response, between:",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0080",
+   "level": "MAY",
+   "section": "6.2 Publication classes",
+   "line": 649,
+   "text": "| **Public** | Normalized alerts; SAME/CAP decodes as text; the Participant's own `StationEvent` records; own test history; own `Reconciliation` verdicts; aggregate statistics. | **MAY** be published openly. |",
+   "norm": "| public | normalized alerts; same/cap decodes as text; the participant's own stationevent records; own test history; own reconciliation verdicts; aggregate statistics. | may be published openly. |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0081",
+   "level": "SHOULD",
+   "section": "6.2 Publication classes",
+   "line": 650,
+   "text": "| **Attested** | Log entries bearing operator identity; chief-operator reviews. | **SHOULD** be published with identity reduced to role unless the individual consents. |",
+   "norm": "| attested | log entries bearing operator identity; chief-operator reviews. | should be published with identity reduced to role unless the individual consents. |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0082",
+   "level": "MUST NOT",
+   "section": "6.2 Publication classes",
+   "line": 651,
+   "text": "| **Never** | EAS Attention Signal or SAME burst audio, in any encoding, at any bitrate, including excerpts. Anything replayable into an air chain that would decode as a valid alert. Credentials, equipment addresses, network topology, or configuration of EAS or studio-transmitter-link equipment. | **MUST NOT** be published. |",
+   "norm": "| never | eas attention signal or same burst audio, in any encoding, at any bitrate, including excerpts. anything replayable into an air chain that would decode as a valid alert. credentials, equipment addresses, network topology, or configuration of eas or studio-transmitter-link equipment. | must not be published. |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0083",
+   "level": "MUST",
+   "section": "6.3 Third-party findings",
+   "line": 662,
+   "text": "An Implementation **MUST** express such findings as observations about the",
+   "norm": "an implementation must express such findings as observations about the",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0084",
+   "level": "MUST",
+   "section": "6.4 Consumer obligations",
+   "line": 675,
+   "text": "Published data **MUST** be accompanied by a machine-readable statement that it is",
+   "norm": "published data must be accompanied by a machine-readable statement that it is",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0085",
+   "level": "MUST NOT",
+   "section": "6.4 Consumer obligations",
+   "line": 676,
+   "text": "observational, not authoritative, and **MUST NOT** be relied upon for life-safety",
+   "norm": "observational, not authoritative, and must not be relied upon for life-safety",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0086",
+   "level": "MUST",
+   "section": "6.4 Consumer obligations",
+   "line": 677,
+   "text": "decisions. Life-safety consumers **MUST** be directed to the alert originator.",
+   "norm": "decisions. life-safety consumers must be directed to the alert originator.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0087",
+   "level": "SHOULD",
+   "section": "7.1 The Implementation is not the system of record",
+   "line": 689,
+   "text": "An Implementation **SHOULD** position itself as a read-only mirror and search index",
+   "norm": "an implementation should position itself as a read-only mirror and search index",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0088",
+   "level": "MUST",
+   "section": "7.1 The Implementation is not the system of record",
+   "line": 691,
+   "text": "those sections, §7.2–7.4 are **REQUIRED**.",
+   "norm": "those sections, §7.2-7.4 are required.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0089",
+   "level": "MUST",
+   "section": "7.2 Immutability",
+   "line": 699,
+   "text": "An Implementation **MUST**:",
+   "norm": "an implementation must:",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0090",
+   "level": "MUST NOT",
+   "section": "7.3 Retention and export",
+   "line": 721,
+   "text": "An Implementation **MUST NOT** implement automatic deletion at two years. It",
+   "norm": "an implementation must not implement automatic deletion at two years. it",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0091",
+   "level": "MUST",
+   "section": "7.3 Retention and export",
+   "line": 722,
+   "text": "**MUST** implement a `legal_hold` mechanism. Because EAS activation records are by",
+   "norm": "must implement a legal_hold mechanism. because eas activation records are by",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0092",
+   "level": "SHOULD",
+   "section": "7.3 Retention and export",
+   "line": 723,
+   "text": "their nature incident to disasters, indefinite retention **SHOULD** be the default",
+   "norm": "their nature incident to disasters, indefinite retention should be the default",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0093",
+   "level": "MUST",
+   "section": "7.3 Retention and export",
+   "line": 732,
+   "text": "An Implementation **MUST** provide an export producing full-size human-readable",
+   "norm": "an implementation must provide an export producing full-size human-readable",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0094",
+   "level": "SHOULD",
+   "section": "7.3 Retention and export",
+   "line": 733,
+   "text": "copies within that window, and **SHOULD** provide an inspection mode. §73.1226(a)",
+   "norm": "copies within that window, and should provide an inspection mode. §73.1226(a)",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0095",
+   "level": "SHOULD",
+   "section": "7.3 Retention and export",
+   "line": 735,
+   "text": "exports **SHOULD** therefore be self-contained and independently readable.",
+   "norm": "exports should therefore be self-contained and independently readable.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0096",
+   "level": "SHOULD",
+   "section": "7.4 Weekly review",
+   "line": 744,
+   "text": "An Implementation **SHOULD** provide a weekly review queue, an attestation step",
+   "norm": "an implementation should provide a weekly review queue, an attestation step",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0097",
+   "level": "MUST NOT",
+   "section": "8. Air observation — provisional",
+   "line": 753,
+   "text": "other is a per-deployment facts question. An Implementation **MUST NOT** claim",
+   "norm": "other is a per-deployment facts question. an implementation must not claim",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0098",
+   "level": "MUST",
+   "section": "8.2 The real failure mode is a dropout, so findings MUST be graded",
+   "line": 793,
+   "text": "identity while leaving evidence that *something* aired. An Implementation **MUST**",
+   "norm": "identity while leaving evidence that *something* aired. an implementation must",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0099",
+   "level": "MUST NOT",
+   "section": "8.2 The real failure mode is a dropout, so findings MUST be graded",
+   "line": 794,
+   "text": "report a graded finding and **MUST NOT** collapse these to a boolean:",
+   "norm": "report a graded finding and must not collapse these to a boolean:",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0100",
+   "level": "MUST NOT",
+   "section": "8.2 The real failure mode is a dropout, so findings MUST be graded",
+   "line": 803,
+   "text": "An Implementation **MUST NOT** synthesize `decoded` fields from a tone detection.",
+   "norm": "an implementation must not synthesize decoded fields from a tone detection.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0101",
+   "level": "MUST",
+   "section": "8.3 Q1 — Signal path: OPEN, and decisive",
+   "line": 832,
+   "text": "An Implementation **MUST** record which of these it observed in `signal_path`",
+   "norm": "an implementation must record which of these it observed in signal_path",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0102",
+   "level": "MUST NOT",
+   "section": "8.3 Q1 — Signal path: OPEN, and decisive",
+   "line": 833,
+   "text": "(§4.4) rather than assume, and **MUST NOT** present a `stream` observation as",
+   "norm": "(§4.4) rather than assume, and must not present a stream observation as",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0103",
+   "level": "MUST NOT",
+   "section": "8.4 A liability specific to holding this evidence",
+   "line": 855,
+   "text": "An Implementation holding such recordings **MUST NOT** re-broadcast, auto-play, or",
+   "norm": "an implementation holding such recordings must not re-broadcast, auto-play, or",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0104",
+   "level": "MUST NOT",
+   "section": "8.4 A liability specific to holding this evidence",
+   "line": 856,
+   "text": "export them in playable form, and **MUST NOT** serve them over any public",
+   "norm": "export them in playable form, and must not serve them over any public",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0105",
+   "level": "MUST",
+   "section": "8.5 The as-run log — a second, cheaper air record",
+   "line": 874,
+   "text": "An Implementation offering tool 24 **MUST** treat the as-run log as evidence of",
+   "norm": "an implementation offering tool 24 must treat the as-run log as evidence of",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0106",
+   "level": "MUST NOT",
+   "section": "8.5 The as-run log — a second, cheaper air record",
+   "line": 876,
+   "text": "and **MUST NOT** present it as satisfying §73.1820.",
+   "norm": "and must not present it as satisfying §73.1820.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0107",
+   "level": "MUST",
+   "section": "8.5.1 Vendor neutrality is normative, not a convenience",
+   "line": 885,
+   "text": "An Implementation therefore **MUST**:",
+   "norm": "an implementation therefore must:",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0108",
+   "level": "MUST NOT",
+   "section": "8.5.1 Vendor neutrality is normative, not a convenience",
+   "line": 888,
+   "text": "Vendor knowledge **MAY** narrow detection but **MUST NOT** replace it.",
+   "norm": "vendor knowledge may narrow detection but must not replace it.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0109",
+   "level": "MUST",
+   "section": "8.5.1 Vendor neutrality is normative, not a convenience",
+   "line": 889,
+   "text": "Accept an **explicit column mapping** from configuration, which **MUST**",
+   "norm": "accept an explicit column mapping from configuration, which must",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0110",
+   "level": "MUST NOT",
+   "section": "8.5.1 Vendor neutrality is normative, not a convenience",
+   "line": 897,
+   "text": "**MUST** return an error naming the remedy, and **MUST NOT** return",
+   "norm": "must return an error naming the remedy, and must not return",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0111",
+   "level": "MUST",
+   "section": "8.5.2 Path candidates make no claim",
+   "line": 907,
+   "text": "**MUST** disclose every path probed and its result. Probing is self-verifying —",
+   "norm": "must disclose every path probed and its result. probing is self-verifying -",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0112",
+   "level": "MUST NOT",
+   "section": "8.5.2 Path candidates make no claim",
+   "line": 909,
+   "text": "An Implementation **MUST NOT** report a system as present on the strength of a",
+   "norm": "an implementation must not report a system as present on the strength of a",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0113",
+   "level": "MUST",
+   "section": "8.5.2 Path candidates make no claim",
+   "line": 910,
+   "text": "path guess alone, and **MUST** distinguish, per adapter, between a location that",
+   "norm": "path guess alone, and must distinguish, per adapter, between a location that",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0114",
+   "level": "MUST",
+   "section": "8.5.3 Systems with no flat log",
+   "line": 917,
+   "text": "**read** API, an Implementation **MAY** use it and **MUST** label the result with",
+   "norm": "read api, an implementation may use it and must label the result with",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0115",
+   "level": "MUST",
+   "section": "8.6 Parity",
+   "line": 933,
+   "text": "An Implementation offering tool 25 **MUST**:",
+   "norm": "an implementation offering tool 25 must:",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0116",
+   "level": "SHOULD",
+   "section": "9. Forward compatibility",
+   "line": 962,
+   "text": "Implementation **SHOULD** accommodate them now; each is cheap in advance and",
+   "norm": "implementation should accommodate them now; each is cheap in advance and",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0117",
+   "level": "MUST",
+   "section": "9.1 Signature validation polarity",
+   "line": 969,
+   "text": "signature.\" The `signature` object (§4.1) is **REQUIRED** for this reason:",
+   "norm": "signature.\" the signature object (§4.1) is required for this reason:",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0118",
+   "level": "MUST",
+   "section": "9.2 Universal alert identifier",
+   "line": 977,
+   "text": "`universal_id` field (§4.1) is reserved for it and **MUST** be `null` until adopted.",
+   "norm": "universal_id field (§4.1) is reserved for it and must be null until adopted.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0119",
+   "level": "MUST",
+   "section": "9.3 Geometry",
+   "line": 984,
+   "text": "of header codes. The `area` object (§4.1) **MUST** be capable of polygons and",
+   "norm": "of header codes. the area object (§4.1) must be capable of polygons and",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0120",
+   "level": "MUST",
+   "section": "9.4 Versioned code tables",
+   "line": 994,
+   "text": "An Implementation **MUST** load code tables as versioned data, **MUST** expose the",
+   "norm": "an implementation must load code tables as versioned data, must expose the",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0121",
+   "level": "MUST NOT",
+   "section": "9.4 Versioned code tables",
+   "line": 995,
+   "text": "table version via `eas.get_event_codes`, and **MUST NOT** reject an unknown code —",
+   "norm": "table version via eas.get_event_codes, and must not reject an unknown code -",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0122",
+   "level": "MUST",
+   "section": "9.4 Versioned code tables",
+   "line": 996,
+   "text": "unknown codes **MUST** be passed through with the code preserved verbatim.",
+   "norm": "unknown codes must be passed through with the code preserved verbatim.",
+   "verify": "wire",
+   "status": "active"
+  },
+  {
+   "id": "OE-0123",
+   "level": "MUST",
+   "section": "10. Conformance",
+   "line": 1019,
+   "text": "satisfies every **MUST** in §2 (regulatory position);",
+   "norm": "satisfies every must in §2 (regulatory position);",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0124",
+   "level": "MAY",
+   "section": "10. Conformance",
+   "line": 1027,
+   "text": "Air observation (§8) is **OPTIONAL** and, in 0.1.0, provisional.",
+   "norm": "air observation (§8) is optional and, in 0.1.0, provisional.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0125",
+   "level": "MUST",
+   "section": "10. Conformance",
+   "line": 1030,
+   "text": "(tool 25) conforms only if it satisfies every **MUST** in §8.5.1, §8.5.2 and §8.6.",
+   "norm": "(tool 25) conforms only if it satisfies every must in §8.5.1, §8.5.2 and §8.6.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0126",
+   "level": "MAY",
+   "section": "11. Open questions",
+   "line": 1046,
+   "text": "electronic-only was located. An Implementation **MAY** serve and version the",
+   "norm": "electronic-only was located. an implementation may serve and version the",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0127",
+   "level": "MUST NOT",
+   "section": "11. Open questions",
+   "line": 1047,
+   "text": "Handbook; it **MUST NOT** represent itself as satisfying §11.15.",
+   "norm": "handbook; it must not represent itself as satisfying §11.15.",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0128",
+   "level": "MUST",
+   "section": "11. Open questions",
+   "line": 1057,
+   "text": "Implementation reports **MUST** be labeled as the Implementation's own, not a",
+   "norm": "implementation reports must be labeled as the implementation's own, not a",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0129",
+   "level": "MUST",
+   "section": "9.4 Versioned code tables",
+   "line": 998,
+   "text": "The version **MUST** appear at `table.version`, and the authority it was taken",
+   "norm": "the version must appear at table.version, and the authority it was taken",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0130",
+   "level": "MUST",
+   "section": "9.4 Versioned code tables",
+   "line": 999,
+   "text": "from **MUST** appear at `table.source`:",
+   "norm": "from must appear at table.source:",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0131",
+   "level": "MUST",
+   "section": "12.2 Versioning",
+   "line": 1102,
+   "text": "| A new **MUST**, or a **SHOULD** raised to **MUST** | MAJOR |",
+   "norm": "| a new must, or a should raised to must | major |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0132",
+   "level": "SHOULD",
+   "section": "12.2 Versioning",
+   "line": 1104,
+   "text": "| A new **SHOULD** or **MAY**, or a new optional tool | MINOR |",
+   "norm": "| a new should or may, or a new optional tool | minor |",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0133",
+   "level": "MUST",
+   "section": "12.2 Versioning",
+   "line": 1107,
+   "text": "An Implementation **MUST** report the profile version it targets via",
+   "norm": "an implementation must report the profile version it targets via",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0134",
+   "level": "MUST NOT",
+   "section": "12.2 Versioning",
+   "line": 1108,
+   "text": "`eas.get_conformance`. A consumer **MUST NOT** assume that an Implementation",
+   "norm": "eas.get_conformance. a consumer must not assume that an implementation",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0135",
+   "level": "MUST",
+   "section": "12.3 Change process",
+   "line": 1115,
+   "text": "Changes that add or strengthen a **MUST** **MUST** state how the new",
+   "norm": "changes that add or strengthen a must must state how the new",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0136",
+   "level": "MUST NOT",
+   "section": "12.4 Errata",
+   "line": 1127,
+   "text": "Errata **MUST NOT** change what conforms. If a correction would change what",
+   "norm": "errata must not change what conforms. if a correction would change what",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0137",
+   "level": "MAY",
+   "section": "13.1 What may be claimed",
+   "line": 1136,
+   "text": "An Implementation **MAY** state that it \"conforms to OpenEAS 0.1.0\" only if it",
+   "norm": "an implementation may state that it \"conforms to openeas 0.1.0\" only if it",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0138",
+   "level": "MUST NOT",
+   "section": "13.1 What may be claimed",
+   "line": 1144,
+   "text": "An Implementation **MUST NOT** describe itself as \"certified\" or \"approved\" on",
+   "norm": "an implementation must not describe itself as \"certified\" or \"approved\" on",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0139",
+   "level": "MUST",
+   "section": "13.2 The three verification methods, and the honest ratio",
+   "line": 1162,
+   "text": "every new **MUST** to declare its verification method precisely so this number",
+   "norm": "every new must to declare its verification method precisely so this number",
+   "verify": "attest",
+   "status": "active"
+  },
+  {
+   "id": "OE-0140",
+   "level": "MAY",
+   "section": "13.3 The checker",
+   "line": 1184,
+   "text": "A third party **MAY** run the checker against any Implementation, including this",
+   "norm": "a third party may run the checker against any implementation, including this",
+   "verify": "attest",
+   "status": "active"
+  }
+ ],
+ "spec": "openeas/SPEC.md",
+ "generated_note": "IDs are permanent. A withdrawn requirement keeps its number forever and the number is never reused, so a citation made against an older revision still resolves to the sentence it was about."
+}
