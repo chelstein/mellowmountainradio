@@ -1422,15 +1422,36 @@
      FIRE RESTRICTIONS — current Coconino NF stage (CI relay -> fire.json)
      ========================================================= */
   function fireClass(stage) { return stage === 0 ? "s0" : stage === 1 ? "s1" : stage === 2 ? "s2" : stage >= 3 ? "s3" : "unk"; }
-  function fireLabel(d) { return d.stage === 0 ? "No fire restrictions" : (d.level || "Fire restrictions") + " fire restrictions"; }
+  function fireLabel(d) {
+    if (d.stage === 0) return "No fire restrictions";
+    if (d.stage != null) return "Stage " + d.stage + " fire restrictions";
+    // No seasonal Stage posted. That is NOT "no restrictions" — the Coconino
+    // carries year-round camping and campfire orders, two of them covering
+    // Sedona and Oak Creek Canyon. Saying "none" here would be wrong in the
+    // direction that starts fires.
+    var n = (d.sedona_restrictions || []).length;
+    if (n) return n + " campfire restriction" + (n === 1 ? "" : "s") + " in the Sedona area";
+    if ((d.restrictions || []).length) return d.restrictions.length + " fire restrictions in effect";
+    return "Fire restrictions";
+  }
   function initFire() {
     var card = doc.querySelector("[data-fire]"), mini = doc.querySelector("[data-fire-mini]");
     if (!card && !mini) return;
     fetch("fire.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (!d || d.stage == null) { if (card) card.style.display = "none"; if (mini) mini.style.display = "none"; return; }
+      // Show whenever there is anything to say. The old condition hid the card
+      // whenever stage was null, which is the normal state outside a seasonal
+      // Stage order — so the year-round Sedona campfire restrictions were never
+      // shown to anyone.
+      var anything = d && (d.stage != null || (d.restrictions || []).length);
+      if (!anything) { if (card) card.style.display = "none"; if (mini) mini.style.display = "none"; return; }
       var cls = fireClass(d.stage), emoji = d.stage === 0 ? "🌲" : "🔥", label = fireLabel(d);
       if (card && card.isConnected) {
-        var sub = [d.agency, d.effective ? "in effect since " + d.effective : "", d.order ? "Order " + d.order : ""].filter(Boolean).join(" · ");
+        var top = (d.sedona_restrictions || [])[0] || (d.restrictions || [])[0] || null;
+        var sub = [
+          d.agency,
+          top ? top.title : "",
+          top && top.order ? "Order " + top.order : (d.order ? "Order " + d.order : ""),
+        ].filter(Boolean).join(" · ");
         card.innerHTML = '<a class="fire-card fire-card--' + cls + '" href="' + esc(d.source || "#") + '" target="_blank" rel="noopener">' +
           '<span class="fire-ic" aria-hidden="true">' + emoji + '</span>' +
           '<span class="fire-body"><span class="fire-level">' + esc(label) + '</span>' +
@@ -4540,6 +4561,24 @@
      SCHUMANN RESONANCE — Earth's frequency (Zero Trust Radio -> schumann.json)
      ========================================================= */
   function schCls(a) { return ({ "Very calm": "vc", "Calm": "c", "Moderate": "m", "Elevated": "e", "High": "h" })[a] || "c"; }
+  // Staleness is judged on observed_at — when the reading was TAKEN — never on
+  // `updated`, which is only when we last fetched. Those diverged for a week in
+  // July 2026: the fetch ran four times a day and succeeded every time while
+  // the upstream returned the same 26 July observation, so the page showed a
+  // week-old number as live. Computed here rather than trusted from the file so
+  // it still works against a schumann.json written before this existed.
+  function srAge(d) {
+    if (!d || !d.observed_at) return { stale: true, label: "age unknown" };
+    var h = (Date.now() - new Date(d.observed_at).getTime()) / 36e5;
+    if (!isFinite(h)) return { stale: true, label: "age unknown" };
+    return {
+      hours: h,
+      stale: h > 6,
+      label: h < 1 ? Math.round(h * 60) + " min old"
+           : h < 48 ? Math.round(h) + " h old"
+           : Math.round(h / 24) + " days old",
+    };
+  }
   function srStat(k, v) { return '<div class="sr-stat"><span class="sr-stat-k">' + esc(k) + '</span><span class="sr-stat-v">' + esc(v) + '</span></div>'; }
   function srWavePath(w, amp, base, period) {
     var d = "M0 " + base.toFixed(1);
@@ -4548,6 +4587,8 @@
   }
   function renderSchumann(box, d) {
     var cls = schCls(d.activity);
+    var age = srAge(d);
+    var noSignal = d.signal_usable === false || d.stability === "no_signal";
     var when = d.observed_at ? new Date(d.observed_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "";
     var e = d.energy_score != null ? Math.max(0, Math.min(100, d.energy_score)) : 20;
     var amp = 10 + e / 100 * 26; // calmer wave when calm, livelier when energetic
@@ -4556,6 +4597,16 @@
     var specSrc = d.spectrogram ? esc(d.spectrogram) + (d.spectrogram.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now() : "";
     box.innerHTML =
       '<div class="sr-grid">' +
+        (age.stale || noSignal
+          ? '<div class="sr-stale" role="status">' +
+              '<b>' + (noSignal ? 'The source reports no usable signal.' : 'This reading is not current.') + '</b> ' +
+              (d.observed_at
+                ? 'Last observation ' + esc(new Date(d.observed_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })) + ' &mdash; ' + esc(age.label) + '. '
+                : '') +
+              'The upstream observatory feed has stopped producing new readings. ' +
+              'The numbers below are the last values it returned, not a measurement of right now.' +
+            '</div>'
+          : '') +
         '<div class="sr-hero sr-hero--' + cls + '">' +
           '<svg class="sr-wave" viewBox="0 0 1200 130" preserveAspectRatio="none" aria-hidden="true">' +
             '<g class="sr-wave-g1"><path class="sr-fill" d="' + wFill + '"/></g>' +
@@ -4567,7 +4618,8 @@
         '</div>' +
         '<div class="sr-body">' +
           '<div class="sr-viz-panel">' +
-            '<div class="sr-viz-head"><span class="sr-viz-k"><span class="sr-viz-dot" aria-hidden="true"></span>Live resonance spectrum</span>' +
+            '<div class="sr-viz-head"><span class="sr-viz-k"><span class="sr-viz-dot" aria-hidden="true"></span>' +
+              (age.stale ? 'Last resonance spectrum' : 'Live resonance spectrum') + '</span>' +
               '<span class="sr-viz-hz">' + (d.detected_hz != null ? d.detected_hz + ' Hz peak' : '7.83 Hz fundamental') + '</span></div>' +
             '<canvas class="sr-viz" data-sr-viz aria-label="Live Schumann resonance spectrum"></canvas>' +
           '</div>' +
@@ -4663,7 +4715,10 @@
   }
   function renderSchumannMini(el, d) {
     el.className = "sr-chip sr-chip--" + schCls(d.activity) + " is-ready";
-    el.innerHTML = '<span class="sr-chip-dot" aria-hidden="true"></span><span>Schumann ' + (d.energy_score != null ? d.energy_score : "—") + ' &middot; ' + esc(d.activity) + '</span>';
+    var a = srAge(d);
+    if (a.stale) el.className += " is-stale";
+    el.innerHTML = '<span class="sr-chip-dot" aria-hidden="true"></span><span>Schumann ' + (d.energy_score != null ? d.energy_score : "—") + ' &middot; ' + esc(d.activity) +
+      (a.stale ? ' &middot; <em>' + esc(a.label) + '</em>' : '') + '</span>';
   }
   var _srSpecTimer = null;
   function initSchumann() {
@@ -6696,7 +6751,13 @@
       }).catch(function () {});
     fetch("schumann.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       var e1 = el.querySelector("[data-hp-schu]"), e2 = el.querySelector("[data-hp-schusub]");
-      if (d && d.available !== false && e1) { e1.innerHTML = (d.detected_hz || d.nominal_hz) + " Hz"; if (e2) e2.textContent = (d.activity || "") + " · energy " + (d.energy_score != null ? d.energy_score : "—"); }
+      if (d && d.available !== false && e1) {
+        var a = srAge(d);
+        e1.innerHTML = (d.detected_hz || d.nominal_hz) + " Hz";
+        if (e2) e2.textContent = a.stale
+          ? "last reading " + a.label
+          : (d.activity || "") + " · energy " + (d.energy_score != null ? d.energy_score : "—");
+      }
     }).catch(function () {});
     fetch(UFC_API, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       var evs = (d && d.events) || [], ev = null;

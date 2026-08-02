@@ -1,10 +1,65 @@
 {
- "updated": "2026-08-02T19:14:43.090Z",
+ "updated": "2026-08-02T21:05:21.179Z",
  "agency": "Coconino National Forest",
  "source": "https://www.fs.usda.gov/r03/coconino/alerts",
+ "available": true,
  "stage": null,
- "level": "See official source",
- "headline": "",
- "effective": "July 31, 2026",
- "order": "03-04-06-26-003"
+ "level": "No stage restriction; year-round restrictions apply",
+ "headline": "4 fire restrictions in effect, 2 covering the Sedona area",
+ "restrictions": [
+  {
+   "title": "Flagstaff-area camping and campfire restrictions in effect year-round",
+   "url": "https://www.fs.usda.gov/r03/coconino/alerts/flagstaff-area-camping-and-campfire-restrictions-effect-year-round",
+   "summary": "Year-round camping and campfire restrictions are in effect for National Forest lands surrounding Flagstaff.",
+   "start_date": "May 1, 2025",
+   "order": "#03-04-08-25-01",
+   "sedona_area": false
+  },
+  {
+   "title": "Kachina Village and Pumphouse Wash Camping and Campfire Restrictions",
+   "url": "https://www.fs.usda.gov/r03/coconino/alerts/kachina-village-and-pumphouse-wash-camping-and-campfire-restrictions",
+   "summary": "Year-round camping and campfire restrictions are in effect for the Kachina Village and Pumphouse Wash area south of Flagstaff, between State Route 89A and Interstate 17, except within designated camping areas on Forest Road 237.",
+   "start_date": "May 1, 2025",
+   "order": "#03-04-08-25-02",
+   "sedona_area": false
+  },
+  {
+   "title": "West Sedona Camping and Campfire Restrictions",
+   "url": "https://www.fs.usda.gov/r03/coconino/alerts/west-sedona-camping-and-campfire-restrictions",
+   "summary": "Year-round camping and campfire restrictions are in effect for the area west of Sedona except within designated camping areas.",
+   "start_date": "August 31, 2024",
+   "order": "#03-04-06-23-25",
+   "sedona_area": true
+  },
+  {
+   "title": "Sedona/ Oak Creek Canyon Camping and Campfire Restrictions",
+   "url": "https://www.fs.usda.gov/r03/coconino/alerts/sedona-oak-creek-canyon-camping-and-campfire-restrictions",
+   "summary": "Year-round camping and campfire restrictions are in place for the Sedona and Oak Creek Canyon areas.",
+   "start_date": "January 24, 2023",
+   "order": "#03-04-06-23-03",
+   "sedona_area": true
+  }
+ ],
+ "sedona_restrictions": [
+  {
+   "title": "West Sedona Camping and Campfire Restrictions",
+   "url": "https://www.fs.usda.gov/r03/coconino/alerts/west-sedona-camping-and-campfire-restrictions",
+   "summary": "Year-round camping and campfire restrictions are in effect for the area west of Sedona except within designated camping areas.",
+   "start_date": "August 31, 2024",
+   "order": "#03-04-06-23-25",
+   "sedona_area": true
+  },
+  {
+   "title": "Sedona/ Oak Creek Canyon Camping and Campfire Restrictions",
+   "url": "https://www.fs.usda.gov/r03/coconino/alerts/sedona-oak-creek-canyon-camping-and-campfire-restrictions",
+   "summary": "Year-round camping and campfire restrictions are in place for the Sedona and Oak Creek Canyon areas.",
+   "start_date": "January 24, 2023",
+   "order": "#03-04-06-23-03",
+   "sedona_area": true
+  }
+ ],
+ "count": 4,
+ "interpretation": "No seasonal Stage restriction is posted, but year-round camping and campfire orders are in force. This is NOT 'no restrictions' — check the orders below, particularly the Sedona and Oak Creek Canyon ones, before lighting anything.",
+ "effective": "August 31, 2024",
+ "order": "#03-04-06-23-25"
 }
