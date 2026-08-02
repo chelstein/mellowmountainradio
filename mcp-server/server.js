@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import webpush from "web-push";
+import * as ratelimit from "./lib/ratelimit.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -3284,7 +3285,64 @@ function buildServer() {
 // ── Express app ───────────────────────────────────────────────────────────────
 
 const app = express();
+
+// Caddy proxies to this server on loopback. Without this, req.ip is the proxy
+// for every request on earth and the rate limiter below would put the entire
+// internet in one bucket. "loopback" trusts only 127.0.0.1/::1 — a blanket
+// `true` would let any caller spoof X-Forwarded-For and evade limiting
+// entirely, which is worse than not limiting at all.
+// Override with TRUST_PROXY if the proxy does not connect from loopback — for
+// example a Caddy or nginx container reaching this one over a Docker bridge,
+// where "loopback" would not cover it. Accepts anything Express accepts:
+// "loopback", a hop count like "1", or a CIDR.
+// A numeric hop count MUST be a Number. Express reads the string "1" as a
+// subnet specification, silently fails to match, and leaves req.ip as the
+// proxy — so the limiter would identify nobody and quietly limit nothing.
+// Caught end-to-end: TRUST_PROXY=1 gave 13 consecutive 200s where 10 were
+// expected, with /ratelimit-status reporting 15 unattributable and 0 identified.
+app.set("trust proxy", ratelimit.trustProxySetting(process.env.TRUST_PROXY));
+
 app.use(express.json());
+
+// Tools that append to real data files. Kept in sync with EXPECTED_WRITE_TOOLS
+// in test/run.js, which fails CI if the server's write surface changes.
+const WRITE_TOOLS = new Set([
+  "get_or_create_listener",
+  "log_listener_history",
+  "register_listener",
+  "submit_song_request",
+  "update_listener_preference",
+]);
+
+// Rate limiting. Reads are generous because one question can legitimately fan
+// out to several tools; writes are strict because they are anonymous and
+// persistent. Health checks are never limited — an operator must always be able
+// to ask whether the server is alive.
+app.use((req, res, next) => {
+  if (req.method === "GET" && (req.path === "/health" || req.path === "/")) return next();
+
+  const name = req.body?.method === "tools/call" ? req.body?.params?.name : null;
+  const kind = name && WRITE_TOOLS.has(name) ? "write" : "read";
+
+  const verdict = ratelimit.check(ratelimit.clientKey(req), kind);
+  if (verdict.allowed) return next();
+
+  res.set("Retry-After", String(verdict.retry_after_s));
+  return res.status(429).json({
+    jsonrpc: "2.0",
+    id: req.body?.id ?? null,
+    error: {
+      code: -32029,
+      message: `Rate limit exceeded: ${verdict.reason}. Retry in ${verdict.retry_after_s}s.`,
+      data: { limit: verdict.limit, window_ms: verdict.window_ms, retry_after_s: verdict.retry_after_s },
+    },
+  });
+});
+
+// Operational visibility. If requests_identified stays at zero while
+// requests_unidentifiable climbs, trust proxy is misconfigured and nothing is
+// being limited — a failure that would otherwise be completely silent.
+app.get("/ratelimit-status", (_req, res) => { setCors(res); res.json(ratelimit.status()); });
 
 // ── Push notification hub ─────────────────────────────────────────────────────
 

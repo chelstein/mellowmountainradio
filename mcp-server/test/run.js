@@ -216,6 +216,88 @@ async function suitePrivacy() {
   ok("a listener profile response does not include the email address", !/\bemail\b/.test(out));
 }
 
+
+// Pure-function tests. No server needed, no clock dependence — check() takes an
+// injectable `now`, so window behaviour is tested deterministically instead of
+// by sleeping.
+async function suiteRateLimit() {
+  suite("Rate limiting");
+  const rl = await import("../lib/ratelimit.js");
+  const fakeReq = ip => ({ ip, socket: {} });
+
+  // The failure that would have taken the site down: Caddy proxies from a
+  // private address, so if Express reports the proxy every visitor collapses
+  // onto one key and the whole internet shares one bucket.
+  const proxyish = ["127.0.0.1", "::1", "::ffff:127.0.0.1", "10.0.0.5",
+                    "192.168.1.20", "172.17.0.1", "169.254.1.1", "fd00::1"];
+  const leaked = proxyish.filter(ip => rl.clientKey(fakeReq(ip)) !== null);
+  ok("a proxy or private address is never used as a client key", leaked.length === 0,
+     `${leaked.join(", ")} — these would collapse every visitor into one bucket`);
+
+  ok("a real public address is used as a client key",
+     rl.clientKey(fakeReq("203.0.113.9")) === "203.0.113.9");
+
+  rl._reset();
+  ok("an unidentifiable client is allowed through, not blocked",
+     rl.check(null, "write", 1_000).allowed === true);
+  ok("...and that condition is reported rather than hidden",
+     rl.status().warning !== undefined && rl.status().healthy === false);
+
+  // Reads: generous ceiling, and the 121st is refused.
+  rl._reset();
+  const t0 = 1_000_000;
+  let allowed = 0;
+  for (let i = 0; i < rl.LIMITS.read.max; i++) if (rl.check("203.0.113.1", "read", t0 + i).allowed) allowed++;
+  eq(`reads allow exactly ${rl.LIMITS.read.max} in the window`, allowed, rl.LIMITS.read.max);
+  const over = rl.check("203.0.113.1", "read", t0 + 500);
+  ok("the next read is refused", over.allowed === false, JSON.stringify(over));
+  ok("refusal carries a usable Retry-After", over.retry_after_s > 0 && over.retry_after_s <= 60,
+     String(over.retry_after_s));
+
+  // The window actually slides.
+  ok("the same client is allowed again once the window passes",
+     rl.check("203.0.113.1", "read", t0 + rl.LIMITS.read.windowMs + 1).allowed === true);
+
+  // Writes are stricter than reads, and independently bucketed.
+  rl._reset();
+  let w = 0;
+  for (let i = 0; i < 50; i++) if (rl.check("203.0.113.2", "write", t0 + i).allowed) w++;
+  eq(`writes allow only ${rl.LIMITS.write.max} per minute`, w, rl.LIMITS.write.max);
+  ok("write limit is stricter than read limit", rl.LIMITS.write.max < rl.LIMITS.read.max);
+
+  // Pacing under the per-minute limit must still hit the hourly ceiling.
+  // 30s spacing is 2/minute — comfortably under the 10/minute rule — but 120
+  // attempts per hour, so the 60/hour rule is the one that must bite. Spacing
+  // must be tighter than 60/hour or the hourly rule is never reached and the
+  // test proves nothing; the first version of this test used 65s and passed
+  // 200 of 200 for exactly that reason.
+  rl._reset();
+  let hourly = 0, attempts = 150;
+  for (let i = 0; i < attempts; i++) {
+    if (rl.check("203.0.113.3", "write", t0 + i * 30_000).allowed) hourly++;
+  }
+  const perHour = rl.LIMITS.writeHourly.max;
+  ok(`a caller pacing under the per-minute limit still hits the ${perHour}/hour ceiling`,
+     hourly < attempts, `${hourly} of ${attempts} spaced writes allowed — the hourly rule never bit`);
+
+  // One client's budget must not affect another's.
+  rl._reset();
+  for (let i = 0; i < rl.LIMITS.write.max; i++) rl.check("203.0.113.4", "write", t0 + i);
+  ok("exhausting one client does not block a different client",
+     rl.check("203.0.113.5", "write", t0).allowed === true);
+
+  // The trust-proxy coercion. Getting this wrong disables the limiter silently,
+  // which is exactly what happened the first time: TRUST_PROXY=1 as a string is
+  // read by Express as a subnet spec, never matches, and req.ip stays the proxy.
+  eq("a numeric hop count is coerced to a Number", rl.trustProxySetting("1"), 1);
+  eq("a numeric hop count already a Number is preserved", rl.trustProxySetting(2), 2);
+  eq("a named preset is passed through unchanged", rl.trustProxySetting("loopback"), "loopback");
+  eq("unset defaults to loopback", rl.trustProxySetting(undefined), "loopback");
+  ok("a CIDR is passed through unchanged", rl.trustProxySetting("172.17.0.0/16") === "172.17.0.0/16");
+
+  rl._reset();
+}
+
 // ── Run ─────────────────────────────────────────────────────────────────────
 
 const only = process.argv[2];
@@ -223,6 +305,7 @@ const want = s => !only || only === s;
 const suites = [
   ["boot", suiteBoot], ["surface", suiteSurface],
   ["writes", suiteWrites], ["privacy", suitePrivacy],
+  ["ratelimit", suiteRateLimit],
 ];
 
 console.log("\x1b[1mKAZM MCP server test lab\x1b[0m — no deps, no network assertions, no write calls");
