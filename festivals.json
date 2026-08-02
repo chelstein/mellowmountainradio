@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-02T03:14:48.907Z",
+ "updated": "2026-08-02T08:27:37.110Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -59,7 +59,7 @@
    "url": "https://on.fgtix.com/trk/5oHm",
    "img": "https://s1.ticketm.net/dam/a/e8a/22e4aa6b-8781-4b8a-ad41-2b63de06fe8a_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
-   "start": "2026-08-01",
+   "start": "2026-08-02",
    "end": "2026-08-02"
   },
   {
@@ -171,6 +171,16 @@
    "genre": "Blues",
    "start": "2026-08-29",
    "end": "2026-08-29"
+  },
+  {
+   "name": "Band Wars Music Festival",
+   "city": "Reno",
+   "state": "NV",
+   "url": "https://www.ticketweb.com/event/band-wars-music-festival-2026-bartley-ranch-hawkins-tickets/14763573?REFERRAL_ID=tmfeed",
+   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Rock",
+   "start": "2026-09-05",
+   "end": "2026-09-05"
   },
   {
    "name": "Ohana Festival",
