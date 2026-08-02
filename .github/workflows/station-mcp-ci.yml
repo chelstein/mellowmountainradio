@@ -1,0 +1,62 @@
+name: Station MCP CI
+
+# The 46-tool station server had no tests and no CI at all, while the OpenEAS
+# work beside it had 114 assertions and a conformance suite. That asymmetry was
+# backwards: this is the server the public actually reaches, it is
+# unauthenticated, and it carries every write-capable tool in the project.
+#
+# The suite deliberately does NOT call write tools. The server's data files are
+# hardcoded beside the code, so a test that called register_listener would
+# append junk to real production data.
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "mcp-server/**"
+      - ".github/workflows/station-mcp-ci.yml"
+  pull_request:
+    paths:
+      - "mcp-server/**"
+      - ".github/workflows/station-mcp-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tool surface and privacy invariants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        working-directory: mcp-server
+        run: npm install --omit=dev --no-audit --no-fund
+
+      # Boots the server with no environment at all and asserts the surface:
+      # no duplicate names, every tool annotated, readOnlyHint stated
+      # explicitly rather than left absent, and — the one that matters — the
+      # set of write-capable tools matches an allowlist, so a new anonymous
+      # write cannot appear without somebody deciding to add it.
+      - name: Test lab
+        working-directory: mcp-server
+        run: node test/run.js
+
+      # The production data files must never be tracked. listeners.json holds
+      # names, locations and listening history.
+      - name: No listener or subscriber data committed
+        run: |
+          set -euo pipefail
+          hits=$(git ls-files | grep -E 'mcp-server/(listeners|push-subs|requests|pulse)\.json$' || true)
+          if [ -n "$hits" ]; then
+            echo "::error::Production data file(s) tracked in git:"
+            echo "$hits"
+            exit 1
+          fi
+          echo "No listener or subscriber data tracked."
