@@ -297,26 +297,30 @@ function buildServer() {
           if (text) sedonaAlerts.push({ text, url: `https://www.fs.usda.gov${m[1]}` });
         }
 
-        return {
-          content: [{
-            type: "text",
-            text: JSON.stringify({
-              updated:       new Date().toISOString(),
-              agency:        "Coconino National Forest",
-              source:        "https://www.fs.usda.gov/r03/coconino/alerts",
-              stage:         stage,
-              danger:        danger || "Unknown",
-              sedona_alerts: sedonaAlerts,
-              notes:         stage
-                ? `Stage ${stage} fire restrictions are in effect for the Coconino National Forest.`
-                : "No Stage 1 or Stage 2 fire restrictions currently in effect. Year-round campfire and camping restrictions apply to the Sedona and Oak Creek Canyon areas.",
-            }),
-          }],
-        };
-      } catch (_) {
-        // Fall back to the cached fire.json if live fetch fails
+        // fire.json is the single source of truth. scripts/fetch-fire.mjs asks
+        // the Forest Service for its OWN "Fire Restriction" filter rather than
+        // scraping the whole page and guessing, and it distinguishes "no Stage
+        // restriction posted" from "no restrictions" — a distinction this tool
+        // used to blur. The live scrape above is kept only to surface a Stage
+        // the moment one appears, ahead of the next scheduled fetch.
         const data = await ghGet("fire.json");
-        return { content: [{ type: "text", text: JSON.stringify({ ...data, cached: true }) }] };
+        const merged = {
+          ...data,
+          // A Stage seen live beats a Stage not yet in the file. Never the reverse.
+          stage: stage != null ? stage : data?.stage ?? null,
+          danger: danger || undefined,
+          live_sedona_alerts: sedonaAlerts?.length ? sedonaAlerts : undefined,
+        };
+        if (stage != null && data?.stage == null) {
+          merged.headline = `Stage ${stage} fire restrictions in effect`;
+          merged.interpretation =
+            `Stage ${stage} restrictions were detected live on the Forest Service page and are ` +
+            `newer than the last scheduled fetch. Read the order before any fire, stove or smoking use.`;
+        }
+        return { content: [{ type: "text", text: JSON.stringify(merged) }] };
+      } catch (_) {
+        const data = await ghGet("fire.json");
+        return { content: [{ type: "text", text: JSON.stringify({ ...data, live_check_failed: true }) }] };
       }
     }
   );

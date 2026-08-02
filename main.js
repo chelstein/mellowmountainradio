@@ -1422,15 +1422,36 @@
      FIRE RESTRICTIONS — current Coconino NF stage (CI relay -> fire.json)
      ========================================================= */
   function fireClass(stage) { return stage === 0 ? "s0" : stage === 1 ? "s1" : stage === 2 ? "s2" : stage >= 3 ? "s3" : "unk"; }
-  function fireLabel(d) { return d.stage === 0 ? "No fire restrictions" : (d.level || "Fire restrictions") + " fire restrictions"; }
+  function fireLabel(d) {
+    if (d.stage === 0) return "No fire restrictions";
+    if (d.stage != null) return "Stage " + d.stage + " fire restrictions";
+    // No seasonal Stage posted. That is NOT "no restrictions" — the Coconino
+    // carries year-round camping and campfire orders, two of them covering
+    // Sedona and Oak Creek Canyon. Saying "none" here would be wrong in the
+    // direction that starts fires.
+    var n = (d.sedona_restrictions || []).length;
+    if (n) return n + " campfire restriction" + (n === 1 ? "" : "s") + " in the Sedona area";
+    if ((d.restrictions || []).length) return d.restrictions.length + " fire restrictions in effect";
+    return "Fire restrictions";
+  }
   function initFire() {
     var card = doc.querySelector("[data-fire]"), mini = doc.querySelector("[data-fire-mini]");
     if (!card && !mini) return;
     fetch("fire.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (!d || d.stage == null) { if (card) card.style.display = "none"; if (mini) mini.style.display = "none"; return; }
+      // Show whenever there is anything to say. The old condition hid the card
+      // whenever stage was null, which is the normal state outside a seasonal
+      // Stage order — so the year-round Sedona campfire restrictions were never
+      // shown to anyone.
+      var anything = d && (d.stage != null || (d.restrictions || []).length);
+      if (!anything) { if (card) card.style.display = "none"; if (mini) mini.style.display = "none"; return; }
       var cls = fireClass(d.stage), emoji = d.stage === 0 ? "🌲" : "🔥", label = fireLabel(d);
       if (card && card.isConnected) {
-        var sub = [d.agency, d.effective ? "in effect since " + d.effective : "", d.order ? "Order " + d.order : ""].filter(Boolean).join(" · ");
+        var top = (d.sedona_restrictions || [])[0] || (d.restrictions || [])[0] || null;
+        var sub = [
+          d.agency,
+          top ? top.title : "",
+          top && top.order ? "Order " + top.order : (d.order ? "Order " + d.order : ""),
+        ].filter(Boolean).join(" · ");
         card.innerHTML = '<a class="fire-card fire-card--' + cls + '" href="' + esc(d.source || "#") + '" target="_blank" rel="noopener">' +
           '<span class="fire-ic" aria-hidden="true">' + emoji + '</span>' +
           '<span class="fire-body"><span class="fire-level">' + esc(label) + '</span>' +
