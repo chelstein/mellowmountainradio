@@ -561,7 +561,35 @@ function buildServer() {
     { readOnlyHint: true,  destructiveHint: false, idempotentHint: true,  openWorldHint: true },
     async () => {
       const data = await ghGet("schumann.json");
-      return { content: [{ type: "text", text: JSON.stringify(data) }] };
+
+      // Staleness is judged on observed_at — when the reading was TAKEN — not
+      // on `updated`, which is only when the fetcher last ran. Those diverged
+      // for a week in July 2026: the fetch succeeded four times a day while the
+      // upstream returned the same 26 July observation. An assistant handed
+      // that JSON would state a week-old number as the current reading, which
+      // is exactly the failure this project spends its time preventing
+      // everywhere else.
+      const observed = data?.observed_at ? Date.parse(data.observed_at) : NaN;
+      const ageHours = Number.isFinite(observed)
+        ? Math.round((Date.now() - observed) / 36e5 * 10) / 10 : null;
+      const stale = ageHours === null || ageHours > 6;
+      const noSignal = data?.signal_usable === false || data?.stability === "no_signal";
+
+      return { content: [{ type: "text", text: JSON.stringify({
+        ...data,
+        observed_age_hours: ageHours,
+        stale,
+        signal_usable: !noSignal,
+        interpretation: stale || noSignal
+          ? "DO NOT report these values as the current reading. " +
+            (noSignal ? "The observatory feed reports no usable signal. " : "") +
+            (ageHours === null
+              ? "The observation carries no timestamp, so its age is unknown. "
+              : `The last observation is ${ageHours < 48 ? ageHours + " hours" : Math.round(ageHours / 24) + " days"} old. `) +
+            "These are the last values the upstream returned, not a measurement of now. " +
+            "Say when it was observed, or say the feed is not currently reporting."
+          : "Current reading.",
+      }) }] };
     }
   );
 

@@ -3876,3 +3876,21 @@ body.podplaying .player.show { transform: translateY(180%); }
 .streak-unit{font-size:.62rem;color:var(--txt-muted,#888);text-transform:uppercase;letter-spacing:.07em;margin-top:.15rem}
 .streak-meta{font-size:.75rem;color:var(--txt-muted,#888);margin-top:1.6rem;border-top:1px solid var(--line-soft,rgba(0,0,0,.08));padding-top:1rem}
 #streaks{scroll-margin-top:84px}
+
+
+/* Schumann: the reading is not current. Deliberately plain and unmissable —
+   this sits above numbers that would otherwise be read as a live measurement. */
+.sr-stale {
+  grid-column: 1 / -1;
+  margin: 0 0 .85rem;
+  padding: .7rem .9rem;
+  border-left: 3px solid var(--accent);
+  background: var(--surface-2);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-size: .86rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.sr-stale b { color: var(--accent-strong); display: block; margin-bottom: .2rem; }
+.sr-chip.is-stale { opacity: .72; }
+.sr-chip.is-stale em { font-style: normal; opacity: .85; }
