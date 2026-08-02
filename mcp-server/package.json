@@ -1,12 +1,13 @@
 {
   "name": "kazm-mcp-server",
   "version": "1.0.0",
-  "description": "KAZM Mellow Mountain Radio MCP server — live radio data for AI assistants",
+  "description": "KAZM Mellow Mountain Radio MCP server \u2014 live radio data for AI assistants",
   "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "test": "node test/run.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

@@ -161,6 +161,108 @@ function buildServer() {
     }
   );
 
+  // 3b. School closures ─────────────────────────────────────────────────────────
+  //
+  // There is no structured school-closure feed for the Sedona area. Verified
+  // July 2026: the district site is WordPress with a general news RSS feed (not
+  // a closure feed), its iCal endpoint returns nothing, the charter and private
+  // schools publish no feed at all, and the county and state emergency sites
+  // return 403 to automated clients.
+  //
+  // So this tool is BEST EFFORT, and the single most important thing it does is
+  // refuse to say schools are open. It reports one of three things per source:
+  // an announcement was found, no announcement was found, or the source could
+  // not be read. "No announcement found" is not "schools are open" — the
+  // district may have announced by phone tree, text alert, or a homepage banner
+  // this cannot see, and a parent deciding whether to drive a child over Oak
+  // Creek in ice must not be handed a false negative dressed as an answer.
+  //
+  // Every response carries the district's own link. That link is the answer;
+  // this tool is a pointer to it.
+
+  const SCHOOL_SOURCES = [
+    { id: "socusd", name: "Sedona-Oak Creek Unified School District",
+      feed: "https://www.sedonak12.org/feed", site: "https://www.sedonak12.org/",
+      serves: "West Sedona School, Big Park Community School, Sedona Red Rock Middle/High" },
+    { id: "sedona-charter", name: "Sedona Charter School",
+      feed: null, site: "https://www.sedonacharterschool.com/", serves: "K-8 charter" },
+    { id: "verde-valley", name: "Verde Valley School",
+      feed: null, site: "https://www.verdevalleyschool.org/", serves: "private, boarding" },
+  ];
+
+  // Deliberately broad. A false positive costs someone reading one headline; a
+  // false negative costs a child sent to a closed school in bad weather.
+  const CLOSURE_RE = /\b(closed|closure|closing|cancell?ed|no school|snow day|delayed? start|two[- ]hour delay|2[- ]hour delay|late start|remote learning|e[- ]learning|early release|early dismissal|inclement weather)\b/i;
+
+  mcp.tool(
+    "get_school_closures",
+    "Checks Sedona-area schools for published closure, delay or early-dismissal announcements. IMPORTANT: this reports whether an ANNOUNCEMENT WAS FOUND, not whether schools are open. There is no structured closure feed for this area, so a clean result means nothing was found in the sources checked — never that school is in session. Always defer to the district link returned.",
+    {},
+    { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+    async () => {
+      const checked_at = new Date().toISOString();
+      const results = await Promise.all(SCHOOL_SOURCES.map(async (s) => {
+        const base = { id: s.id, district: s.name, serves: s.serves, url: s.site };
+        if (!s.feed) {
+          return { ...base, status: "no_machine_readable_source",
+                   detail: "This school publishes no feed. Check its site directly." };
+        }
+        try {
+          const r = await fetch(s.feed, {
+            headers: { "User-Agent": "KAZM-MCP/1.0 (mellowmountainradio.com)" },
+            signal: AbortSignal.timeout(9000),
+          });
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          const xml = await r.text();
+          const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0, 15).map(m => {
+            const g = (re) => (m[1].match(re) || [])[1] || "";
+            return {
+              title: g(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/).trim(),
+              link:  g(/<link>([\s\S]*?)<\/link>/).trim(),
+              date:  g(/<pubDate>([\s\S]*?)<\/pubDate>/).trim(),
+            };
+          });
+          // Only recent items can bear on today. An old "snow day" post is noise.
+          const recent = items.filter(i => {
+            const t = Date.parse(i.date);
+            return Number.isFinite(t) && (Date.now() - t) < 5 * 864e5;
+          });
+          const hits = recent.filter(i => CLOSURE_RE.test(i.title));
+          return {
+            ...base,
+            status: hits.length ? "announcement_found" : "no_announcement_found",
+            announcements: hits,
+            items_examined: items.length,
+            recent_items_examined: recent.length,
+          };
+        } catch (e) {
+          return { ...base, status: "source_unreachable", error: String(e.message) };
+        }
+      }));
+
+      const found = results.filter(r => r.status === "announcement_found");
+      const unreadable = results.filter(r => r.status === "source_unreachable" ||
+                                             r.status === "no_machine_readable_source");
+
+      return { content: [{ type: "text", text: JSON.stringify({
+        checked_at,
+        area: "Sedona, Arizona — Yavapai and Coconino counties",
+        announcements_found: found.length,
+        sources: results,
+
+        // The load-bearing part of this response.
+        interpretation: found.length
+          ? "One or more closure-related announcements were found. Read them at the district link before acting — wording matters, and a delay is not a closure."
+          : "No closure announcement was found in the sources that could be read. THIS IS NOT A REPORT THAT SCHOOLS ARE OPEN.",
+        limits:
+          "There is no structured school-closure feed for the Sedona area. This checks a district news feed, which is where closures are usually but not always posted. Districts also announce by text alert, phone tree, social media and homepage banners that this cannot see" +
+          (unreadable.length ? `. ${unreadable.length} of ${results.length} source(s) could not be read at all this time` : "") +
+          ". The district is the only authority.",
+        authoritative_sources: SCHOOL_SOURCES.map(s => ({ name: s.name, url: s.site })),
+      }) }] };
+    }
+  );
+
   // 4. Fire Restrictions ────────────────────────────────────────────────────────
   mcp.tool(
     "get_fire_restrictions",

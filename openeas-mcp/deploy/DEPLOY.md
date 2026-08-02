@@ -1,6 +1,6 @@
 # Deploying OpenEAS
 
-Target: the `eas-mcp-server` droplet — Ubuntu 24.04 LTS, SFO3, `161.35.225.111`.
+Target: the an Ubuntu 24.04 LTS host, referred to below as `<OPENEAS_HOST>`.
 
 ## One command
 
@@ -11,7 +11,7 @@ curl -fsSL https://raw.githubusercontent.com/chelstein/mellowmountainradio/main/
   | bash -s -- eas.mellowmountainradio.com
 ```
 
-Point the DNS A record at `161.35.225.111` **first**, or certbot will fail and you'll
+Point the DNS A record at `<OPENEAS_HOST>` **first**, or certbot will fail and you'll
 have to re-run `certbot --nginx -d eas.mellowmountainradio.com` afterwards.
 
 To install without TLS and serve by IP on port 80, pass no hostname:
