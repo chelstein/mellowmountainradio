@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-03T14:44:57.365Z",
+ "updated": "2026-08-03T19:41:09.626Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -1252,6 +1252,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-07-30T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "vvG1iZ_2X-i0Zf",
+   "artist": "Jackson Browne",
+   "date": "2026-11-23",
+   "time": "20:00:00",
+   "venue": "Hollywood Pantages Theatre",
+   "city": "Los Angeles",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/jackson-browne-los-angeles-california-11-23-2026/event/0B0064FFA1B24014",
+   "img": "https://s1.ticketm.net/dam/a/156/1e0aba24-179d-426f-be6f-b1957c74e156_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-08-07T17:00:00Z",
    "lineup": []
   },
   {
