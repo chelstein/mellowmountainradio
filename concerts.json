@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-04T14:21:47.312Z",
+ "updated": "2026-08-04T19:40:56.619Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -861,6 +861,21 @@
    "lineup": []
   },
   {
+   "id": "vvG10Z_2TKvuzl",
+   "artist": "Air Supply",
+   "date": "2026-10-10",
+   "time": "20:00:00",
+   "venue": "Greek Theatre",
+   "city": "Los Angeles",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/air-supply-los-angeles-california-10-10-2026/event/090064FFD304DE2B",
+   "img": "https://s1.ticketm.net/dam/a/dee/91a4e597-9d27-409c-be30-e28ebcaf8dee_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-08-07T17:00:00Z",
+   "lineup": []
+  },
+  {
    "id": "17AYv0G62K5gcJZ",
    "artist": "Lionel Richie",
    "date": "2026-10-14",
@@ -976,7 +991,7 @@
    "url": "https://www.ticketmaster.com/serpentine-fire-music-of-earth-wind-las-vegas-nevada-10-20-2026/event/170064FAECC10AC4",
    "img": "https://s1.ticketm.net/dam/e/0ab/b2039d84-9673-48a6-bb47-34a5c26ae0ab_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-08-04T19:00:00Z",
    "lineup": []
   },
@@ -1008,7 +1023,7 @@
    "url": "https://www.ticketmaster.com/serpentine-fire-music-of-earth-wind-las-vegas-nevada-10-21-2026/event/170064FAECC30ACC",
    "img": "https://s1.ticketm.net/dam/e/b58/20ee0afb-28de-4534-8f36-c2fac57f8b58_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-08-04T19:00:00Z",
    "lineup": []
   },
@@ -1040,7 +1055,7 @@
    "url": "https://www.ticketmaster.com/serpentine-fire-music-of-earth-wind-las-vegas-nevada-10-22-2026/event/170064FAECC50AD9",
    "img": "https://s1.ticketm.net/dam/e/8e2/1dc5b7f3-8a7a-4dce-b297-1f9aeb3b98e2_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-08-04T19:00:00Z",
    "lineup": []
   },
@@ -1313,6 +1328,24 @@
    "status": "onsale",
    "saleStart": "2026-07-11T17:00:00Z",
    "lineup": []
+  },
+  {
+   "id": "vvG1iZ_2UPAdqY",
+   "artist": "Firefall",
+   "date": "2027-01-30",
+   "time": "19:30:00",
+   "venue": "Cerritos Center for the Performing Arts",
+   "city": "Cerritos",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/jefferson-starship-runaway-again-tour-2026-cerritos-california-01-30-2027/event/0B0064FDA5143770",
+   "img": "https://s1.ticketm.net/dam/e/73c/c3aaf6f0-8efa-4495-8033-45965b2e873c_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-08-07T17:00:00Z",
+   "lineup": [
+    "Jefferson Starship",
+    "Atlanta Rhythm Section"
+   ]
   }
  ]
 }
