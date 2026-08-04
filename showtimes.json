@@ -1,22 +1,11 @@
 {
- "updated": "2026-08-03T19:40:27.992Z",
+ "updated": "2026-08-04T02:45:25.896Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: The Blues Brothers",
-   "date": "2026-08-03",
-   "time": "19:30",
-   "venue": "Village of Oak Creek Association Park",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-the-blues-brothers/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/The-Blues-Brothers-poster.jpg",
-   "summary": "“The Blues Brothers” (1980): After his release from prison, Jake (John Belushi) reunites with his brother, Elwood (Dan Aykroyd) — collectively known as the “Blues Brothers”. Jake’s first task is to save the orphanage…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Wild Inside",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/the-marching-band/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/The-Marching-Band-poster.jpg",
    "summary": "A world-famous orchestra conductor discovers the brother he never knew he had — a school cafeteria worker who plays trombone in a local marching band. Despite their differences, they develop a bond through their…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Vultures Are Vital",
+   "date": "2026-09-05",
+   "time": "13:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/vultures-are-vital/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Vultures-Are-Vital-poster.jpg",
+   "summary": "Join Raptor Ecologist and Master Falconer Dr. Michele Losee, Founder and Executive Director of the International Raptor & Falconry Center, for a presentation celebrating International Vulture Awareness Day and…"
   }
  ]
 }
