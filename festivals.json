@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-04T08:41:06.923Z",
+ "updated": "2026-08-04T14:21:26.870Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -21,6 +21,16 @@
    "genre": "Other",
    "start": "2026-08-21",
    "end": "2026-08-21"
+  },
+  {
+   "name": "Celestial Festival @ 191 Toole",
+   "city": "Tucson",
+   "state": "AZ",
+   "url": "https://www.ticketmaster.com/celestial-festival-191-toole-tucson-arizona-09-04-2026/event/190064F0C2DF735B",
+   "img": "https://s1.ticketm.net/dam/e/554/e026860b-f2e4-45b7-a7a5-97dab3660554_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Metal",
+   "start": "2026-09-04",
+   "end": "2026-09-04"
   },
   {
    "name": "Goldrush Music Festival",
@@ -143,6 +153,36 @@
    "end": "2026-08-22"
   },
   {
+   "name": "Biergarten Blues Festival",
+   "city": "Huntington Beach",
+   "state": "CA",
+   "url": "https://www.universe.com/events/biergarten-blues-festival-tickets-YVZ36T?ref=ticketmaster",
+   "img": "https://s1.ticketm.net/dam/c/7be/4e1e9428-29ec-401f-aa45-f1577614b7be_105421_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Blues",
+   "start": "2026-08-29",
+   "end": "2026-08-29"
+  },
+  {
+   "name": "Band Wars Music Festival",
+   "city": "Reno",
+   "state": "NV",
+   "url": "https://www.ticketweb.com/event/band-wars-music-festival-2026-bartley-ranch-hawkins-tickets/14763573?REFERRAL_ID=tmfeed",
+   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Rock",
+   "start": "2026-09-05",
+   "end": "2026-09-05"
+  },
+  {
+   "name": "Hypnotique",
+   "city": "Los Angeles",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/hypnotique-presents-sway-festival-day-1-los-angeles-california-09-05-2026/event/090064C8A1E372A0",
+   "img": "https://s1.ticketm.net/dam/e/f17/4bb3126f-a20f-488a-a2bd-b2b29bd7ef17_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Pop",
+   "start": "2026-09-05",
+   "end": "2026-09-05"
+  },
+  {
    "name": "Ohana Festival",
    "city": "Dana Point",
    "state": "CA",
@@ -158,7 +198,7 @@
    "state": "CA",
    "when": "Two weekends each April",
    "url": "https://www.coachella.com",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Coachella18W1-18_%2842058161311%29.jpg/3840px-Coachella18W1-18_%2842058161311%29.jpg",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Coachella18W1-18_%2842058161311%29.jpg/3840px-Coachella18W1-18_%2842058161311%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   },
   {
