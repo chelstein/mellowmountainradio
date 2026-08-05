@@ -1,22 +1,11 @@
 {
- "updated": "2026-08-04T19:40:19.963Z",
+ "updated": "2026-08-05T02:43:17.908Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Wild Inside",
-   "date": "2026-08-04",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/wild-inside/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Wild-Inside-poster.jpg",
-   "summary": "What would happen if a captive-born owl with no survival skills tried to make it on his own in New York City? In “Wild Inside”, we discover the answer is more incredible, and more consequential, than we could have…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Outdoor Film: Clueless",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/vultures-are-vital/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Vultures-Are-Vital-poster.jpg",
    "summary": "Join Raptor Ecologist and Master Falconer Dr. Michele Losee, Founder and Executive Director of the International Raptor & Falconry Center, for a presentation celebrating International Vulture Awareness Day and…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Victoria Cardona in Concert",
+   "date": "2026-09-05",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/victoria-cardona-in-concert/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Victoria-Cardona-poster.jpg",
+   "summary": "Based out of South Florida, Victoria Cardona is a Cuban American singer/songwriter, guitarist, and multi-instrumentalist. Her live looping performances are a sonic and visual experience that take the audience on a…"
   }
  ]
 }
