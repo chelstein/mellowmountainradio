@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-07T00:04:33.453Z",
+ "updated": "2026-08-07T07:19:39.660Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -51,16 +51,6 @@
    "genre": "Other",
    "start": "2026-09-11",
    "end": "2026-09-12"
-  },
-  {
-   "name": "Girlactic Music Fest",
-   "city": "West Hollywood",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/girlactic-music-fest-whisky-a-go-go-tickets/14848013",
-   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Rock",
-   "start": "2026-08-06",
-   "end": "2026-08-06"
   },
   {
    "name": "Telluride Jazz Festival",
@@ -261,7 +251,7 @@
    "state": "RI",
    "when": "Late July",
    "url": "https://www.newportfolk.org",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/My_Morning_Jacket%2C_2015.jpg/3840px-My_Morning_Jacket%2C_2015.jpg",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/My_Morning_Jacket%2C_2015.jpg/3840px-My_Morning_Jacket%2C_2015.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   },
   {
