@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-08T01:48:34.112Z",
+ "updated": "2026-08-08T06:57:22.987Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -59,17 +59,7 @@
    "url": "https://on.fgtix.com/trk/yNhL",
    "img": "https://s1.ticketm.net/dam/a/39e/558aec03-b280-47f7-ae66-f5d7f013c39e_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
-   "start": "2026-08-07",
-   "end": "2026-08-08"
-  },
-  {
-   "name": "Up in the Sky Music Festival",
-   "city": "Aspen",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-8x6",
-   "img": "https://s1.ticketm.net/dam/a/c1e/be96988a-ac41-4b67-a5e1-dfc3921f8c1e_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Undefined",
-   "start": "2026-08-07",
+   "start": "2026-08-08",
    "end": "2026-08-08"
   },
   {
@@ -79,6 +69,16 @@
    "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7xZGx",
    "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Other",
+   "start": "2026-08-08",
+   "end": "2026-08-08"
+  },
+  {
+   "name": "Up in the Sky Music Festival",
+   "city": "Aspen",
+   "state": "CO",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-8xa",
+   "img": "https://s1.ticketm.net/dam/a/c1e/be96988a-ac41-4b67-a5e1-dfc3921f8c1e_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Undefined",
    "start": "2026-08-08",
    "end": "2026-08-08"
   },
@@ -170,7 +170,17 @@
    "img": "https://s1.ticketm.net/dam/e/f17/4bb3126f-a20f-488a-a2bd-b2b29bd7ef17_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Pop",
    "start": "2026-09-05",
-   "end": "2026-09-05"
+   "end": "2026-09-06"
+  },
+  {
+   "name": "Labor Day Jazz Fest",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/labor-day-jazz-fest-san-diego-california-09-06-2026/event/0A0064F8B0498D81",
+   "img": "https://s1.ticketm.net/dam/c/48b/2352e3b5-8496-496b-97a3-e605177e848b_105851_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "R&B",
+   "start": "2026-09-06",
+   "end": "2026-09-06"
   },
   {
    "name": "Ohana Festival",
@@ -206,7 +216,7 @@
    "state": "NV",
    "when": "Late August",
    "url": "https://burningman.org",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Temple_du_Burning_Man_2016.jpg",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Temple_du_Burning_Man_2016.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
    "marquee": true
   },
   {
@@ -224,7 +234,7 @@
    "state": "LA",
    "when": "Late April – early May",
    "url": "https://www.nojazzfest.com",
-   "img": "https://upload.wikimedia.org/wikipedia/en/a/af/NOJazzFestLogo.png",
+   "img": "https://upload.wikimedia.org/wikipedia/en/a/af/NOJazzFestLogo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
    "marquee": true
   },
   {
@@ -305,7 +315,7 @@
    "state": "Spain",
    "when": "Late May – early June",
    "url": "https://www.primaverasound.com",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Primavera_Sound_main_stages_area_2.jpg/3840px-Primavera_Sound_main_stages_area_2.jpg",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Primavera_Sound_main_stages_area_2.jpg/3840px-Primavera_Sound_main_stages_area_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   },
   {
