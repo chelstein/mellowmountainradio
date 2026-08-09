@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-08T18:40:31.488Z",
+ "updated": "2026-08-09T01:54:37.888Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -50,7 +50,7 @@
    "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Other",
    "start": "2026-09-11",
-   "end": "2026-09-12"
+   "end": "2026-09-11"
   },
   {
    "name": "Telluride Jazz Festival",
@@ -63,32 +63,12 @@
    "end": "2026-08-08"
   },
   {
-   "name": "Tacos and Tequila Festival (21 and Over)",
-   "city": "Colorado Springs",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7xZGx",
-   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Other",
-   "start": "2026-08-08",
-   "end": "2026-08-08"
-  },
-  {
    "name": "Up in the Sky Music Festival",
    "city": "Aspen",
    "state": "CO",
    "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-8xa",
    "img": "https://s1.ticketm.net/dam/a/c1e/be96988a-ac41-4b67-a5e1-dfc3921f8c1e_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
-   "start": "2026-08-08",
-   "end": "2026-08-08"
-  },
-  {
-   "name": "29th Santa Barbara Mariachi Festival",
-   "city": "Santa Barbara",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A70oxa",
-   "img": "https://s1.ticketm.net/dam/c/548/5fefbd1c-973b-4b0e-9b2e-d78e4ce37548_106111_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Other",
    "start": "2026-08-08",
    "end": "2026-08-08"
   },
@@ -288,7 +268,7 @@
    "state": "Denmark",
    "when": "Late June – early July",
    "url": "https://www.roskilde-festival.dk",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg/3840px-Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg/3840px-Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   },
   {
