@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-09T01:54:37.888Z",
+ "updated": "2026-08-09T07:00:01.260Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -50,27 +50,7 @@
    "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Other",
    "start": "2026-09-11",
-   "end": "2026-09-11"
-  },
-  {
-   "name": "Telluride Jazz Festival",
-   "city": "Telluride",
-   "state": "CO",
-   "url": "https://on.fgtix.com/trk/yNhL",
-   "img": "https://s1.ticketm.net/dam/a/39e/558aec03-b280-47f7-ae66-f5d7f013c39e_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Undefined",
-   "start": "2026-08-08",
-   "end": "2026-08-08"
-  },
-  {
-   "name": "Up in the Sky Music Festival",
-   "city": "Aspen",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-8xa",
-   "img": "https://s1.ticketm.net/dam/a/c1e/be96988a-ac41-4b67-a5e1-dfc3921f8c1e_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Undefined",
-   "start": "2026-08-08",
-   "end": "2026-08-08"
+   "end": "2026-09-12"
   },
   {
    "name": "80s New Wave Festival",
@@ -304,7 +284,7 @@
    "state": "CA",
    "when": "Late April",
    "url": "https://www.stagecoachfestival.com",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Stagecoach_2011_entrance.jpg",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Stagecoach_2011_entrance.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
    "marquee": true
   },
   {

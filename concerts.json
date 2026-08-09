@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-09T01:54:57.173Z",
+ "updated": "2026-08-09T07:00:22.112Z",
  "concerts": [
   {
    "id": "1Fk8vN-oe8Z72uke",
@@ -181,23 +181,6 @@
    ]
   },
   {
-   "id": "vvG1IZ_dKK3F2K",
-   "artist": "Earth, Wind & Fire",
-   "date": "2026-08-08",
-   "time": "19:30:00",
-   "venue": "Acrisure Arena at Greater Palm Springs",
-   "city": "Palm Desert",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/lionel-richie-and-earth-wind-fire-palm-desert-california-08-08-2026/event/0A006434D34883D3",
-   "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-01-30T18:00:00Z",
-   "lineup": [
-    "Lionel Richie"
-   ]
-  },
-  {
    "id": "vvG1iZ_6NBzgOD",
    "artist": "Little River Band",
    "date": "2026-08-08",
@@ -208,7 +191,7 @@
    "url": "https://www.ticketmaster.com/little-river-band-cerritos-california-08-08-2026/event/0B006478FAE3583B",
    "img": "https://s1.ticketm.net/dam/e/54f/66374c02-f925-45dd-b035-5a633ba8a54f_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-04-10T17:00:00Z",
    "lineup": []
   },
