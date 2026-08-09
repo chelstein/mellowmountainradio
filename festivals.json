@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-09T07:00:01.260Z",
+ "updated": "2026-08-09T12:55:52.982Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -51,16 +51,6 @@
    "genre": "Other",
    "start": "2026-09-11",
    "end": "2026-09-12"
-  },
-  {
-   "name": "80s New Wave Festival",
-   "city": "Huntington Beach",
-   "state": "CA",
-   "url": "https://www.universe.com/events/80s-new-wave-festival-tickets-MJWXCF?ref=ticketmaster",
-   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Rock",
-   "start": "2026-08-08",
-   "end": "2026-08-08"
   },
   {
    "name": "Django Festival All-Stars",
@@ -143,6 +133,16 @@
    "end": "2026-09-06"
   },
   {
+   "name": "Island Fest",
+   "city": "Rancho Mirage",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/island-fest-rancho-mirage-california-09-12-2026/event/090064B3408D0F38",
+   "img": "https://s1.ticketm.net/dam/e/881/fca1fd5f-4ec0-4ae3-bd04-56d162aed881_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Reggae",
+   "start": "2026-09-12",
+   "end": "2026-09-12"
+  },
+  {
    "name": "Ohana Festival",
    "city": "Dana Point",
    "state": "CA",
@@ -185,7 +185,7 @@
    "state": "Belgium",
    "when": "Two weekends each July",
    "url": "https://www.tomorrowland.com",
-   "img": "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/Tomorrowland_festival_logo.svg/250px-Tomorrowland_festival_logo.svg.png",
+   "img": "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/Tomorrowland_festival_logo.svg/250px-Tomorrowland_festival_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   },
   {
