@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-10T07:45:57.479Z",
+ "updated": "2026-08-10T13:13:58.084Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -153,6 +153,26 @@
    "end": "2026-09-19"
   },
   {
+   "name": "Fuego Fest",
+   "city": "Los Angeles",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/fuego-fest-feat-blood-club-nikko-los-angeles-california-09-19-2026/event/090064E7CE1693CA",
+   "img": "https://s1.ticketm.net/dam/a/9c5/1636db5a-6969-41a3-87c8-8a52f32279c5_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Latin",
+   "start": "2026-09-19",
+   "end": "2026-09-19"
+  },
+  {
+   "name": "6th Annual Lake Elsinore Mariachi Fest",
+   "city": "Lake Elsinore",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/6th-annual-lake-elsinore-mariachi-fest-lake-elsinore-california-09-19-2026/event/090064F0954D6982",
+   "img": "https://s1.ticketm.net/dam/e/828/e02f55d9-adaf-47af-a70a-f904157b3828_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Latin",
+   "start": "2026-09-19",
+   "end": "2026-09-19"
+  },
+  {
    "name": "Ohana Festival",
    "city": "Dana Point",
    "state": "CA",
@@ -276,7 +296,7 @@
    "state": "Switzerland",
    "when": "Early July",
    "url": "https://www.montreuxjazzfestival.com",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Montreux_Jazz_2M2C_juillet_2023.jpg",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Montreux_Jazz_2M2C_juillet_2023.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
    "marquee": true
   },
   {
@@ -303,7 +323,7 @@
    "state": "TX",
    "when": "Mid-March",
    "url": "https://www.sxsw.com",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SXSW_Center_%2854987238776%29.jpg/3840px-SXSW_Center_%2854987238776%29.jpg",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SXSW_Center_%2854987238776%29.jpg/3840px-SXSW_Center_%2854987238776%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   }
  ]
