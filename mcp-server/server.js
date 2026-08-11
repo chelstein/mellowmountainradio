@@ -3767,6 +3767,85 @@ async function easCached(key, fn) {
 }
 
 // Local alerts for the station's own service area.
+// ── RSS feed relay ───────────────────────────────────────────────────────────
+//
+// The news pages fetch feeds from the browser, which means CORS decides whether
+// they render at all. Verified August 2026: no publisher we would want serves an
+// Access-Control-Allow-Origin header — Sedona Red Rock News, BBC World and the
+// Arizona Daily Sun all omit it, and NPR scopes its to apps.npr.org. The site
+// previously routed around that through rss.app, whose subscription lapsed and
+// which now answers every feed with "402 Subscription inactive"; the n8n
+// feed-proxy workflow that was the next fallback is not registered; and both
+// public CORS proxies were down when this was written (allorigins 500,
+// codetabs 522). Every browser-side leg was dead at once, which is why the news
+// page showed nothing.
+//
+// So the fetch happens here instead, server side, where CORS does not apply.
+// Same shape as the /eas relay above. Read-only, no credentials, and the key
+// map means this cannot be turned into an open proxy for arbitrary URLs.
+
+const FEEDS = {
+  // Local first — Sedona's own paper, then the northern-Arizona daily.
+  "news-local":      "https://www.redrocknews.com/feed/",
+  "news-regional":   "https://azdailysun.com/search/?f=rss&t=article&c=news&l=25",
+  "news-national":   "https://feeds.npr.org/1001/rss.xml",
+  "news-world":      "https://feeds.bbci.co.uk/news/world/rss.xml",
+  "sports-az":       "https://news.google.com/rss/search?q=%28Arizona%20Diamondbacks%29%20OR%20%28Arizona%20Cardinals%29%20OR%20%28Phoenix%20Suns%29%20OR%20%28Arizona%20Wildcats%29%20OR%20%28Arizona%20State%20Sun%20Devils%29%20when%3A7d&hl=en-US&gl=US&ceid=US:en",
+  "sports-national": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en",
+  "native-ict":      "https://ictnews.org/feed",
+  "native-nations":  "https://news.google.com/rss/search?q=%22Navajo%20Nation%22%20OR%20%22Hopi%20Tribe%22%20OR%20%22Yavapai-Apache%22%20when%3A14d&hl=en-US&gl=US&ceid=US:en",
+};
+
+const feedCache = new Map();      // key -> { at, body }
+const FEED_TTL = 5 * 60_000;      // publishers post far slower than this
+
+app.get("/feed", async (req, res) => {
+  setCors(res);
+  const key = String(req.query.src || "");
+  const url = FEEDS[key];
+  if (!url) {
+    return res.status(400).type("application/json").send(JSON.stringify({
+      ok: false, error: "unknown feed key",
+      known: Object.keys(FEEDS),
+      note: "This relay serves a fixed set of feeds only. It is not a general proxy.",
+    }));
+  }
+
+  const hit = feedCache.get(key);
+  if (hit && Date.now() - hit.at < FEED_TTL) {
+    res.set("X-Feed-Cache", "hit");
+    return res.type("application/xml").send(hit.body);
+  }
+
+  try {
+    const r = await fetch(url, {
+      headers: { "User-Agent": "MellowMountainRadio/1.0 feeds (chuck@mellowmountainradio.com)" },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!r.ok) throw new Error(`upstream ${r.status}`);
+    const body = await r.text();
+    // A 200 carrying no items is a miss, not a win — rss.app answered 402 with
+    // a 200-shaped body for a while, and caching that would have looked healthy.
+    if (!/<item[\s>]|<entry[\s>]/i.test(body)) throw new Error("no items in feed");
+    feedCache.set(key, { at: Date.now(), body });
+    res.set("X-Feed-Cache", "miss");
+    res.type("application/xml").send(body);
+  } catch (e) {
+    // Serve stale rather than nothing, but say so. A newsroom page with old
+    // headlines beats a blank one; a blank one with no explanation is the worst
+    // of the three.
+    if (hit) {
+      res.set("X-Feed-Cache", "stale");
+      res.set("X-Feed-Error", String(e.message).slice(0, 120));
+      return res.type("application/xml").send(hit.body);
+    }
+    res.status(502).type("application/json").send(JSON.stringify({
+      ok: false, unavailable: true, src: key, error: String(e.message),
+      note: "The feed could not be read. This is not a report that there is no news.",
+    }));
+  }
+});
+
 app.get("/eas", async (_req, res) => {
   setCors(res);
   try {

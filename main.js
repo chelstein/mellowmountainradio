@@ -748,11 +748,22 @@
   // source can be re-pointed server-side with no site deploy. Until then,
   // fetchFeed transparently falls back to direct fetch + allorigins, so the
   // site works the same before and after the workflow goes live.
-  var FEED_PROXY = "https://n8n.mellowmountainradio.com/webhook/feed"; // ?src=<key>
+  // Server-side relay on the station MCP box. Feeds are fetched there, where
+  // CORS does not apply, because no publisher worth carrying sends an
+  // Access-Control-Allow-Origin header: Red Rock News, BBC World and the
+  // Arizona Daily Sun all omit it and NPR scopes its to apps.npr.org. The old
+  // n8n webhook is kept as a second leg but is not currently registered.
+  var FEED_PROXY = "https://mcp.mellowmountainradio.com/feed";       // ?src=<key>
+  var FEED_PROXY_2 = "https://n8n.mellowmountainradio.com/webhook/feed";
   var FEEDS = {
-    "news-local":      "https://rss.app/feeds/waKD0IO27DoomK78.xml",
-    "news-national":   "https://rss.app/feeds/qAIOV2Ax8y6Qx7VS.xml",
-    "news-world":      "https://rss.app/feeds/ULxiZm9ozY2weGgi.xml",
+    // Direct publisher feeds. The previous rss.app URLs went dead when that
+    // subscription lapsed — all three answered "402 Subscription inactive",
+    // and because every fallback leg proxies the same dead origin, the whole
+    // chain failed and the news pages rendered empty.
+    "news-local":      "https://www.redrocknews.com/feed/",
+    "news-regional":   "https://azdailysun.com/search/?f=rss&t=article&c=news&l=25",
+    "news-national":   "https://feeds.npr.org/1001/rss.xml",
+    "news-world":      "https://feeds.bbci.co.uk/news/world/rss.xml",
     "sports-az":       "https://news.google.com/rss/search?q=%28Arizona%20Diamondbacks%29%20OR%20%28Arizona%20Cardinals%29%20OR%20%28Phoenix%20Suns%29%20OR%20%28Arizona%20Wildcats%29%20OR%20%28Arizona%20State%20Sun%20Devils%29%20when%3A7d&hl=en-US&gl=US&ceid=US:en",
     "sports-national": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en",
     "native-ict":      "https://ictnews.org/feed",
@@ -1151,6 +1162,7 @@
   function fetchFeed(url, key) {
     var legs = [];
     if (key && FEED_PROXY) legs.push(FEED_PROXY + "?src=" + encodeURIComponent(key));
+    if (key && FEED_PROXY_2) legs.push(FEED_PROXY_2 + "?src=" + encodeURIComponent(key));
     if (url) {
       legs.push(url);   // rss.app feeds are CORS-open, so this direct hit works in-browser
       // CORS proxies for feeds that aren't (e.g. Google News) — several, so one
