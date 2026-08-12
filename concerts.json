@@ -1,41 +1,6 @@
 {
- "updated": "2026-08-12T07:28:36.971Z",
+ "updated": "2026-08-12T13:15:18.892Z",
  "concerts": [
-  {
-   "id": "1Fk8vN-oe8Z72uke",
-   "artist": "Toto",
-   "date": "2026-08-11",
-   "time": "18:45:00",
-   "venue": "Arizona Financial Theatre",
-   "city": "Phoenix",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/toto-christopher-cross-the-romantics-phoenix-arizona-08-11-2026/event/190063851090EC51",
-   "img": "https://s1.ticketm.net/dam/a/794/fe04dc13-2cbf-463b-93eb-b93e370e9794_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2025-12-12T17:00:00Z",
-   "lineup": [
-    "Christopher Cross",
-    "The Romantics"
-   ]
-  },
-  {
-   "id": "1A_Zk8UGkd1x9Qd",
-   "artist": "Earth, Wind & Fire",
-   "date": "2026-08-11",
-   "time": "19:30:00",
-   "venue": "Mortgage Matchup Center",
-   "city": "Phoenix",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/lionel-richie-and-earth-wind-fire-phoenix-arizona-08-11-2026/event/19006436CA897683",
-   "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-01-30T17:00:00Z",
-   "lineup": [
-    "Lionel Richie"
-   ]
-  },
   {
    "id": "1Av0Z_7GkUmtb8I",
    "artist": "The Doobie Brothers",
@@ -178,23 +143,6 @@
    "lineup": [
     "The Hondo Rodeo Fest",
     "Parker McCollum"
-   ]
-  },
-  {
-   "id": "vvG1IZ_7mToIpH",
-   "artist": "The Doobie Brothers",
-   "date": "2026-08-11",
-   "time": "19:00:00",
-   "venue": "North Island Credit Union Amphitheatre",
-   "city": "Chula Vista",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/santana-the-doobie-brothers-oneness-tour-chula-vista-california-08-11-2026/event/0A00644BBF4685BC",
-   "img": "https://s1.ticketm.net/dam/a/84d/48d8005a-2613-4db9-8701-f70231c3384d_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-02-20T18:00:00Z",
-   "lineup": [
-    "Santana"
    ]
   },
   {
