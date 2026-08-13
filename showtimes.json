@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-13T02:09:31.976Z",
+ "updated": "2026-08-13T07:37:56.991Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -448,6 +448,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Sting and Sade in Surround Sound",
+   "date": "2026-09-08",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/sting-and-sade-in-surround-sound/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Surround-Sound-Sting-and-Sade-SEPT-2026-poster.jpg",
+   "summary": "This is a special surround sound audio/visual experience featuring the music of two of the most influential songwriter/performers of 1994! Both Sting’s “10 Summoners Tales” and “Sade Live” were released in 1994. In…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Rita Lim: Make It With You … Yesterday Once More",
    "date": "2026-09-10",
    "time": "19:00",
@@ -544,17 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/the-green-realm/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/The-Green-Realm-poster.jpg",
    "summary": "“The Green Realm” is a magical yet real story about Timothy Smith’s spiritual awakening and his connection to the Green Realm (The Fairies). Timothy’s awakening led him up to the stars (Venus) where he was greeted by…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "An American in Paris",
-   "date": "2026-09-17",
-   "time": "15:00",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/an-american-in-paris/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/An-American-in-Paris-1951-poster.jpg",
-   "summary": "Gene Kelly dancing to the music of the Gershwins. Vincente Minnelli’s dazzling direction. The screen debut of Leslie Caron. Paris transformed into a dream of music, color, dance, and romance. “An American in Paris”…"
   }
  ]
 }
