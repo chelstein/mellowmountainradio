@@ -1,22 +1,11 @@
 {
- "updated": "2026-08-12T19:04:19.910Z",
+ "updated": "2026-08-13T02:09:31.976Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: When Harry Met Sally",
-   "date": "2026-08-12",
-   "time": "19:30",
-   "venue": "The Wilde Resort and Spa",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-when-harry-met-sally/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/When-Harry-Met-Sally-Poster.jpg",
-   "summary": "In 1977, college graduates Harry Burns (Billy Crystal) and Sally Albright (Meg Ryan) share a contentious car ride from Chicago to New York, during which they argue about whether men and women can ever truly be…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Living",
@@ -514,6 +503,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Virginia Woolf’s Night & Day",
+   "date": "2026-09-11",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/virginia-woolfs-night-day/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Virginia-Woolfs-Night-and-Day-poster.jpg",
+   "summary": "Passionate astronomer Katharine Hilbery does everything she can to avoid romantic love and marriage. Fun and contemporary in tone, this refreshing film showcases an ensemble of humorous performances against the…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "In the Living Room Music Series: Gina Machovina",
    "date": "2026-09-14",
    "time": "19:00",
@@ -547,14 +547,14 @@
   },
   {
    "source": "Sedona Film Festival",
-   "title": "Outdoor Film: Chef",
+   "title": "An American in Paris",
    "date": "2026-09-17",
-   "time": "19:30",
-   "venue": "Basecamp Sedona Beer Company",
+   "time": "15:00",
+   "venue": "Alice Gill-Sheldon Theatre",
    "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-chef/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Chef-poster.jpg",
-   "summary": "“Chef” (2014) is a critically acclaimed comedy-drama and audience sensation. After a controlling owner (Dustin Hoffman) pushes him too far, chef Carl Casper (Jon Favreau) quits his position at a prestigious Los…"
+   "url": "https://sedonafilmfestival.com/event/an-american-in-paris/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/An-American-in-Paris-1951-poster.jpg",
+   "summary": "Gene Kelly dancing to the music of the Gershwins. Vincente Minnelli’s dazzling direction. The screen debut of Leslie Caron. Paris transformed into a dream of music, color, dance, and romance. “An American in Paris”…"
   }
  ]
 }
