@@ -1,33 +1,11 @@
 {
- "updated": "2026-08-13T19:05:23.482Z",
+ "updated": "2026-08-14T02:07:25.517Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Living",
-   "date": "2026-08-13",
-   "time": "16:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/living/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Living-poster.jpg",
-   "summary": "“Living” is the story of an ordinary man, reduced by years of oppressive office routine to a shadow existence, who at the eleventh hour makes a supreme effort to turn his dull life into something wonderful."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: Star Wars: The Empire Strikes Back",
-   "date": "2026-08-13",
-   "time": "19:30",
-   "venue": "Basecamp Sedona Beer Company",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-star-wars-the-empire-strikes-back/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Empire-Strikes-Back-poster.jpg",
-   "summary": "The adventure continues in this “Star Wars” sequel. Luke Skywalker (Mark Hamill), Han Solo (Harrison Ford), Princess Leia (Carrie Fisher) and Chewbacca (Peter Mayhew) face attack by the Imperial forces and its AT-AT…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Olmo",
@@ -555,6 +533,28 @@
    "url": "https://sedonafilmfestival.com/event/the-green-realm/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/The-Green-Realm-poster.jpg",
    "summary": "“The Green Realm” is a magical yet real story about Timothy Smith’s spiritual awakening and his connection to the Green Realm (The Fairies). Timothy’s awakening led him up to the stars (Venus) where he was greeted by…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "An American in Paris",
+   "date": "2026-09-17",
+   "time": "15:00",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/an-american-in-paris/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/An-American-in-Paris-1951-poster.jpg",
+   "summary": "Gene Kelly dancing to the music of the Gershwins. Vincente Minnelli’s dazzling direction. The screen debut of Leslie Caron. Paris transformed into a dream of music, color, dance, and romance. “An American in Paris”…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Chef",
+   "date": "2026-09-17",
+   "time": "19:30",
+   "venue": "Basecamp Sedona Beer Company",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-chef/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Chef-poster.jpg",
+   "summary": "“Chef” (2014) is a critically acclaimed comedy-drama and audience sensation. After a controlling owner (Dustin Hoffman) pushes him too far, chef Carl Casper (Jon Favreau) quits his position at a prestigious Los…"
   }
  ]
 }
