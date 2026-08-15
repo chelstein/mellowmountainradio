@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-15T01:22:05.544Z",
+ "updated": "2026-08-15T06:41:38.245Z",
  "concerts": [
   {
    "id": "1Av0Z_7GkUmtb8I",
@@ -12,7 +12,7 @@
    "url": "https://www.ticketmaster.com/santana-the-doobie-brothers-oneness-tour-phoenix-arizona-08-14-2026/event/1900644DAEA58428",
    "img": "https://s1.ticketm.net/dam/a/84d/48d8005a-2613-4db9-8701-f70231c3384d_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-02-20T17:00:00Z",
    "lineup": [
     "Santana"
@@ -156,28 +156,11 @@
    "url": "https://www.ticketmaster.com/toto-christopher-cross-the-romantics-long-beach-california-08-14-2026/event/0B006385C43A5001",
    "img": "https://s1.ticketm.net/dam/a/794/fe04dc13-2cbf-463b-93eb-b93e370e9794_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2025-12-12T18:00:00Z",
    "lineup": [
     "Christopher Cross",
     "The Romantics"
-   ]
-  },
-  {
-   "id": "G5vzZ_AEVSlbo",
-   "artist": "The Guess Who",
-   "date": "2026-08-14",
-   "time": "19:30:00",
-   "venue": "Canyon View Credit Union Stage at Maverik Center",
-   "city": "West Valley City",
-   "state": "UT",
-   "url": "https://www.ticketmaster.com/the-guess-who-takin-it-back-west-valley-city-utah-08-14-2026/event/1E006459F4CEB611",
-   "img": "https://s1.ticketm.net/dam/a/cd1/786a8e7f-5b99-4fc6-b756-d6d9297d3cd1_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-03-06T17:00:00Z",
-   "lineup": [
-    "Don Felder"
    ]
   },
   {
