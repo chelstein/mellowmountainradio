@@ -1,44 +1,11 @@
 {
- "updated": "2026-08-15T18:32:21.910Z",
+ "updated": "2026-08-16T01:26:37.644Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Battle of Oslo",
-   "date": "2026-08-15",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/battle-of-oslo/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Battle-of-Oslo-poster.jpg",
-   "summary": "“Battle of Oslo” tells the true story of Colonel Eriksen, who, on April 9, 1940, sank a German warship approaching Oslo. His decision delayed the Nazi invasion and saved the king and government — yet he was later…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Aida: Met Opera Encore",
-   "date": "2026-08-15",
-   "time": "13:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/aida-met-opera-encore/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Aida-poster-2026.jpg",
-   "summary": "In this powerful 2025 Met performance, soprano Angel Blue sings the title role of Verdi’s Egyptian drama, with tenor Piotr Beczała as the warrior Radamès and mezzo-soprano Judit Kutasi as Amneris in Michael Mayer’s…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Super Improv! Summer Camp",
-   "date": "2026-08-15",
-   "time": "19:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/super-improv-summer-camp/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Super-Improv-CAMP-Aug-2026-poster.jpg",
-   "summary": "Pack your bug spray, grab your marshmallows, and get ready for an evening of S’MORE Comedy, IN-TENTS Laughter, and unforgettable fun! Super Improv! Game Show is back for its fourth hilarious production, bringing its…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Outdoor Film: A Fish Called Wanda",
@@ -371,6 +338,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Chris Murphy: Live in Concert",
+   "date": "2026-09-07",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/chris-murphy-live-in-concert/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Chris-Murphy-poster.jpg",
+   "summary": "Chris Murphy is an international touring violinist, singer-songwriter, and multi-instrumentalist whose powerful live performances blend Americana, Folk, Jazz, Celtic, World music, and improvisation into what he calls…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Outdoor Film: Little Miss Sunshine",
    "date": "2026-09-07",
    "time": "19:30",
@@ -555,6 +533,28 @@
    "url": "https://sedonafilmfestival.com/event/heaven-in-stone-and-glass/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Heaven-in-Stone-and-Glass-poster.jpg",
    "summary": "In “Heaven in Stone and Glass” experience the spirituality of the gothic cathedrals with Bishop Barron. Journey across France to explore sacred mysteries built into the crown jewels of Gothic architecture: Chartres,…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Ghost",
+   "date": "2026-09-21",
+   "time": "19:00",
+   "venue": "Village of Oak Creek Association Park",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-ghost/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Ghost-poster.jpg",
+   "summary": "“Ghost” (1990) is a romantic fantasy thriller about a murdered banker whose spirit tries to save his girlfriend with help from a reluctant psychic. The film was nominated for five Academy Awards (including Best…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Get Your Butt Kicked on Route 66 Party!",
+   "date": "2026-09-22",
+   "time": "16:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/get-your-butt-kicked-on-route-66-party/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Route-66-PARTY-poster.jpg",
+   "summary": "Experience the good, the bad and the ugly of Route 66 at a very special “Get Your Butt Kicked on Route 66 Party!” presented by Koz Mraz on Tuesday, Sept. 22 at 4 p.m. at the Mary D. Fisher Theatre, presented by the…"
   }
  ]
 }
