@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-16T06:42:52.988Z",
+ "updated": "2026-08-16T12:43:27.714Z",
  "concerts": [
   {
    "id": "1A_ZkoxGkeIWEx9",
@@ -126,23 +126,6 @@
    "lineup": [
     "The Hondo Rodeo Fest",
     "Parker McCollum"
-   ]
-  },
-  {
-   "id": "1A9Zko3GkdGEQex",
-   "artist": "The Guess Who",
-   "date": "2026-08-15",
-   "time": "19:30:00",
-   "venue": "Fontainebleau Las Vegas",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/the-guess-who-takin-it-back-las-vegas-nevada-08-15-2026/event/17006452CC9DA0A2",
-   "img": "https://s1.ticketm.net/dam/a/cd1/786a8e7f-5b99-4fc6-b756-d6d9297d3cd1_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-03-06T18:00:00Z",
-   "lineup": [
-    "Don Felder"
    ]
   },
   {
@@ -452,6 +435,21 @@
    "lineup": [
     "38 Special"
    ]
+  },
+  {
+   "id": "Z7r9jZ1A7-t4N",
+   "artist": "America",
+   "date": "2026-09-18",
+   "time": "20:00:00",
+   "venue": "The Theatre at Resorts World Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-t4N",
+   "img": "https://s1.ticketm.net/dam/a/a71/2d744828-8f76-4d6d-96e4-f8f780b20a71_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "1900-01-01T06:00:00Z",
+   "lineup": []
   },
   {
    "id": "17AYv0G65p_a4Yw",
@@ -1117,6 +1115,21 @@
    "price": 47,
    "status": "onsale",
    "saleStart": "2026-07-11T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "17AYv0G6249E-S-",
+   "artist": "Eagles",
+   "date": "2026-12-05",
+   "time": "20:30:00",
+   "venue": "Sphere",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.gofevo.com/event/EaglesSphere120526",
+   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-07-19T15:00:00Z",
    "lineup": []
   },
   {
