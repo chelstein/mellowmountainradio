@@ -1,22 +1,11 @@
 {
- "updated": "2026-08-17T18:42:07.587Z",
+ "updated": "2026-08-18T01:20:14.992Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: A Fish Called Wanda",
-   "date": "2026-08-17",
-   "time": "19:30",
-   "venue": "Village of Oak Creek Association Park",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-a-fish-called-wanda/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/A-Fish-Called-Wanda-poster.jpg",
-   "summary": "British gangster George Thomason (Tom Georgeson) and his hapless aide, Ken Pile (Michael Palin), draft a pair of arrogant Americans, grifter Wanda Gerschwitz (Jamie Lee Curtis) and weapons expert Otto West (Kevin…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Flagstaff Premiere: Old Man Lightning",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/get-your-butt-kicked-on-route-66-party/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Route-66-PARTY-poster.jpg",
    "summary": "Experience the good, the bad and the ugly of Route 66 at a very special “Get Your Butt Kicked on Route 66 Party!” presented by Koz Mraz on Tuesday, Sept. 22 at 4 p.m. at the Mary D. Fisher Theatre, presented by the…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Lenora in the Morning Light",
+   "date": "2026-09-23",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/lenora-in-the-morning-light/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Lenora-poster.jpg",
+   "summary": "In the early 1930s, painter Leonora Carrington, a rebel against social expectations, joins the surrealist movement and its iconic figures like André Breton and Salvador Dalí in Paris. A whirlwind love affair with…"
   }
  ]
 }

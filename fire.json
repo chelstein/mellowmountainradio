@@ -1,12 +1,20 @@
 {
- "updated": "2026-08-17T18:42:39.152Z",
+ "updated": "2026-08-18T01:20:48.473Z",
  "agency": "Coconino National Forest",
  "source": "https://www.fs.usda.gov/r03/coconino/alerts",
  "available": true,
  "stage": null,
  "level": "No stage restriction; year-round restrictions apply",
- "headline": "4 fire restrictions in effect, 2 covering the Sedona area",
+ "headline": "5 fire restrictions in effect, 3 covering the Sedona area",
  "restrictions": [
+  {
+   "title": "West Sedona Camping and Campfire Restrictions",
+   "url": "https://www.fs.usda.gov/r03/coconino/alerts/west-sedona-camping-and-campfire-restrictions-0",
+   "summary": "Year-round camping and campfire restrictions are in effect for the area west of Sedona except within designated camping areas.",
+   "start_date": "August 31, 2026",
+   "order": "#03-04-06-26-04",
+   "sedona_area": true
+  },
   {
    "title": "Flagstaff-area camping and campfire restrictions in effect year-round",
    "url": "https://www.fs.usda.gov/r03/coconino/alerts/flagstaff-area-camping-and-campfire-restrictions-effect-year-round",
@@ -43,6 +51,14 @@
  "sedona_restrictions": [
   {
    "title": "West Sedona Camping and Campfire Restrictions",
+   "url": "https://www.fs.usda.gov/r03/coconino/alerts/west-sedona-camping-and-campfire-restrictions-0",
+   "summary": "Year-round camping and campfire restrictions are in effect for the area west of Sedona except within designated camping areas.",
+   "start_date": "August 31, 2026",
+   "order": "#03-04-06-26-04",
+   "sedona_area": true
+  },
+  {
+   "title": "West Sedona Camping and Campfire Restrictions",
    "url": "https://www.fs.usda.gov/r03/coconino/alerts/west-sedona-camping-and-campfire-restrictions",
    "summary": "Year-round camping and campfire restrictions are in effect for the area west of Sedona except within designated camping areas.",
    "start_date": "August 31, 2024",
@@ -58,8 +74,8 @@
    "sedona_area": true
   }
  ],
- "count": 4,
+ "count": 5,
  "interpretation": "No seasonal Stage restriction is posted, but year-round camping and campfire orders are in force. This is NOT 'no restrictions' — check the orders below, particularly the Sedona and Oak Creek Canyon ones, before lighting anything.",
- "effective": "August 31, 2024",
- "order": "#03-04-06-23-25"
+ "effective": "August 31, 2026",
+ "order": "#03-04-06-26-04"
 }
