@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-19T01:22:31.860Z",
+ "updated": "2026-08-19T06:48:29.147Z",
  "concerts": [
   {
    "id": "1kk8vNr_GAuxfWe",
@@ -465,6 +465,21 @@
    "lineup": [
     "38 Special"
    ]
+  },
+  {
+   "id": "rZ7HnEZ1Afa3aV",
+   "artist": "America",
+   "date": "2026-09-19",
+   "time": "20:00:00",
+   "venue": "SOMA - Mainstage",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketweb.com/event/slaughter-to-prevail-north-america-soma-mainstage-tickets/14252274",
+   "img": "https://s1.ticketm.net/dam/c/e7c/86478562-7218-4e8f-b9d4-8080fe168e7c_105581_RETINA_PORTRAIT_16_9.jpg",
+   "price": 0,
+   "status": "onsale",
+   "saleStart": "2026-07-15T17:00:00Z",
+   "lineup": []
   },
   {
    "id": "vvG1IZ_A7e5CIp",
