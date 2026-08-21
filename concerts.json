@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-21T06:51:41.683Z",
+ "updated": "2026-08-21T12:52:52.766Z",
  "concerts": [
   {
    "id": "1kk8vNr_GAuxfWe",
@@ -1147,6 +1147,24 @@
    "lineup": [
     "Jefferson Starship",
     "Atlanta Rhythm Section"
+   ]
+  },
+  {
+   "id": "vvG1IZ_uUa90fl",
+   "artist": "Stephen Bishop",
+   "date": "2027-08-21",
+   "time": "19:30:00",
+   "venue": "Balboa Theatre",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/stephen-bishop-farewell-tour-50th-anniversary-san-diego-california-08-21-2027/event/0A0064DD895E452B",
+   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-02T17:00:00Z",
+   "lineup": [
+    "David Wilcox",
+    "Jack Tempchin"
    ]
   }
  ]
