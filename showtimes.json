@@ -1,55 +1,11 @@
 {
- "updated": "2026-08-21T18:39:05.253Z",
+ "updated": "2026-08-22T01:20:56.463Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "The Art of Adventure",
-   "date": "2026-08-21",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/the-art-of-adventure/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/The-Art-of-Adventure-poster.jpg",
-   "summary": "In 1957, world renowned wildlife artist Robert Bateman and spirited biologist Bristol Foster embarked on a global expedition in a Land Rover they called “The Grizzly Torque” — a journey that ignited a deep love of…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "The Librarians",
-   "date": "2026-08-21",
-   "time": "",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/the-librarians/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/The-LIbrarians-poster.jpg",
-   "summary": "America’s war on books is more than a war on words. As an unprecedented wave of book banning is sparked in Texas, Florida, and beyond, librarians under siege join forces as unlikely defenders fighting for…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Franz",
-   "date": "2026-08-21",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/franz/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Franz-poster.jpg",
-   "summary": "Award-winning director Agnieszka Holland is embarking on her most ambitious project to date, a biopic of the iconic 20th-century Czech writer Franz Kafka. Conceived as a kaleidoscopic mosaic, the film follows the…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Diamonds",
-   "date": "2026-08-21",
-   "time": "",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/diamonds/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Diamonds-poster.jpg",
-   "summary": "A film director calls all his favorite actresses to film a movie set in Rome in the 70s that tells the vicissitudes revolving around a prestigious tailoring. He wants to make a film about women but he doesn’t reveal…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "In the Living Room Music Series: Ryan Biter",
@@ -555,6 +511,50 @@
    "url": "https://sedonafilmfestival.com/event/kelli-baker-live-in-concert/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Kelli-Baker-2026-poster.jpg",
    "summary": "The Sedona International Film Festival is proud to present Kelli Baker: Live in Concert on Friday, Sept. 25 at 7:00 p.m. at the Mary D. Fisher Theatre. Recently signed to Gulf Coast Records by blues legend Mike Zito,…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "A Night of The Mentalist",
+   "date": "2026-09-27",
+   "time": "16:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/a-night-of-the-mentalist/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/A-Night-of-the-Mentalist-SEPT-2026-poster-1.jpg",
+   "summary": "This is Sedona’s #1 magic experience! Mentalist Brett Barry presents his mind-boggling Sedona-themed magic show, exploring the incredible power of the mind and the unseen connections we have to one another. Red Rocks…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "My Underground Mother",
+   "date": "2026-09-28",
+   "time": "15:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/my-underground-mother/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/My-Underground-Mother-poster.jpg",
+   "summary": "Freedom fighter, double agent, femme fatale — Tamar said she was all three. Decades after her death, a page she wrote in a diary from a Nazi-run women’s camp reveals a hidden identity, leading her daughter on a…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Outdoor Film: Young Frankenstein",
+   "date": "2026-09-28",
+   "time": "19:00",
+   "venue": "Village of Oak Creek Association Park",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/outdoor-film-young-frankenstein/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Young-Frankenstein-poster.jpg",
+   "summary": "Mel Brooks’ hit film boasts a sensational, award-winning all-star cast, including Gene Wilder, Peter Boyle, Marty Feldman, Madeline Kahn, Cloris Leachman and Teri Garr. “Young Frankenstein” was nominated for two…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "In the Living Room Music Series: Lee Zimmer",
+   "date": "2026-09-28",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/in-the-living-room-music-series-lee-zimmer/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/In-the-Living-Room-LEE-ZIMMER-poster.jpg",
+   "summary": "The popular In the Living Room Music Series continues its sensational run at the Mary Fisher Theatre on Monday, Sept. 28 at 7:00 p.m., welcoming the extraordinary talents of master classical guitarist Lee Zimmer for…"
   }
  ]
 }
