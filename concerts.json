@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-25T12:51:55.156Z",
+ "updated": "2026-08-25T18:42:20.873Z",
  "concerts": [
   {
    "id": "1kk8vNr_GAuxfWe",
@@ -1093,6 +1093,36 @@
    "lineup": []
   },
   {
+   "id": "vvG1iZ_8S4Yb61",
+   "artist": "Bachman-Turner Overdrive",
+   "date": "2027-01-21",
+   "time": "19:30:00",
+   "venue": "Fred Kavli Theatre- B of A Performing Arts Center,Thousand Oaks",
+   "city": "Thousand Oaks",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/bachmanturner-overdrive-no-speed-limit-tour-thousand-oaks-california-01-21-2027/event/0B00650CD5C181CA",
+   "img": "https://s1.ticketm.net/dam/a/e60/06eb41bf-21ab-42c6-9d26-efed26e2de60_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-08-28T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "vvG1iZ_o58ugl3",
+   "artist": "Bachman-Turner Overdrive",
+   "date": "2027-01-24",
+   "time": "20:00:00",
+   "venue": "Cerritos Center for the Performing Arts",
+   "city": "Cerritos",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/bachmanturner-overdrive-cerritos-california-01-24-2027/event/0B006512D0375AD2",
+   "img": "https://s1.ticketm.net/dam/e/726/f77aaae3-2409-4e57-a970-33798c0ae726_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-08-28T17:00:00Z",
+   "lineup": []
+  },
+  {
    "id": "vv1F0Z_8OVoYZd8aA",
    "artist": "Firefall",
    "date": "2027-01-29",
@@ -1127,6 +1157,21 @@
     "Jefferson Starship",
     "Atlanta Rhythm Section"
    ]
+  },
+  {
+   "id": "vv1AaZkffGkd9Xjwx",
+   "artist": "Air Supply",
+   "date": "2027-02-13",
+   "time": "20:00:00",
+   "venue": "The Show at Agua Caliente Casino Rancho Mirage",
+   "city": "Rancho Mirage",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/air-supply-a-matter-of-time-rancho-mirage-california-02-13-2027/event/09006514D7F9CCA2",
+   "img": "https://s1.ticketm.net/dam/a/dee/91a4e597-9d27-409c-be30-e28ebcaf8dee_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-08-28T17:00:00Z",
+   "lineup": []
   },
   {
    "id": "vvG1IZ_uUa90fl",
