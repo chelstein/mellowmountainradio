@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-25T01:22:57.088Z",
+ "updated": "2026-08-25T06:52:38.459Z",
  "concerts": [
   {
    "id": "1kk8vNr_GAuxfWe",
@@ -1071,6 +1071,21 @@
    "city": "Las Vegas",
    "state": "NV",
    "url": "https://www.gofevo.com/event/EaglesSphere120526",
+   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-07-19T15:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "17AYv0G6249IvS0",
+   "artist": "Eagles",
+   "date": "2026-12-11",
+   "time": "20:30:00",
+   "venue": "Sphere",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.gofevo.com/event/EaglesSphere121126",
    "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
