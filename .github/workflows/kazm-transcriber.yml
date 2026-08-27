@@ -108,6 +108,58 @@ jobs:
               f.write("picks=" + json.dumps(picks) + "\n")
           PYEOF
 
+      # The model is ~3GB and was being re-pulled from Hugging Face on every run.
+      # Actions runners share outbound IPs, so anonymous HF pulls eventually draw
+      # a 429 and the job dies before decoding a second of audio. Cached, the
+      # model is fetched from HF exactly once per cache lifetime; after that HF
+      # is only consulted to confirm the revision, and a failed confirmation
+      # falls through to the local copy rather than aborting.
+      - name: Restore the Whisper model
+        if: steps.pick.outputs.picks != '[]'
+        uses: actions/cache@v4
+        with:
+          # faster-whisper defaults to the huggingface_hub cache; no env needed.
+          path: ~/.cache/huggingface/hub
+          key: faster-whisper-large-v3-v1
+
+      - name: Fetch the Whisper model
+        if: steps.pick.outputs.picks != '[]'
+        run: |
+          python3 - <<'PYEOF'
+          import os, sys, time
+          from huggingface_hub import snapshot_download
+
+          REPO   = "Systran/faster-whisper-large-v3"
+          DELAYS = [15, 30, 60, 120, 240]   # ~7.5 min of patience, then fail loudly
+
+          def have_it(path):
+              # Every later HF call in this job can now be answered from disk, so
+              # take the network out of the transcription step entirely rather
+              # than relying on the hub's fall-back-to-local behaviour.
+              print("[transcriber] model ready at", path)
+              with open(os.environ["GITHUB_ENV"], "a") as f:
+                  f.write("HF_HUB_OFFLINE=1\n")
+
+          try:
+              have_it(snapshot_download(REPO, local_files_only=True))   # cache hit: no network
+              sys.exit(0)
+          except SystemExit:
+              raise
+          except Exception:
+              print("[transcriber] model not in cache — fetching from Hugging Face")
+
+          for attempt in range(len(DELAYS) + 1):
+              try:
+                  have_it(snapshot_download(REPO))
+                  break
+              except Exception as e:
+                  if attempt == len(DELAYS):
+                      sys.exit(f"[transcriber] could not fetch {REPO} after {attempt + 1} attempts: {e}")
+                  d = DELAYS[attempt]
+                  print(f"[transcriber] fetch failed ({e.__class__.__name__}), retrying in {d}s", flush=True)
+                  time.sleep(d)
+          PYEOF
+
       - name: Transcribe and align
         if: steps.pick.outputs.picks != '[]'
         run: |
