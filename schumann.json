@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-27T21:58:16.624Z",
+ "updated": "2026-08-28T10:15:54.958Z",
  "source": "Zero Trust Radio · Tomsk observatory",
  "available": true,
  "station": "tomsk",
@@ -17,7 +17,8 @@
  "stability": "no_signal",
  "state_label": "active",
  "spectrogram": "https://sosrff.tsu.ru/new/shm.jpg",
- "observed_age_hours": 1.4,
- "stale": false,
+ "observed_age_hours": 13.7,
+ "stale": true,
+ "staleness_note": "Last observation is 13.7 hours old. This is the last reading the upstream returned, not a current one — the source has stopped producing new observations.",
  "signal_usable": false
 }
