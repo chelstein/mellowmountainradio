@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-30T04:23:34.213Z",
+ "updated": "2026-08-30T11:30:14.012Z",
  "festivals": [
   {
    "name": "Portland Yacht Rock Festival",
@@ -41,16 +41,6 @@
    "genre": "Other",
    "start": "2026-09-11",
    "end": "2026-09-12"
-  },
-  {
-   "name": "Biergarten Blues Festival",
-   "city": "Huntington Beach",
-   "state": "CA",
-   "url": "https://www.universe.com/events/biergarten-blues-festival-tickets-YVZ36T?ref=ticketmaster",
-   "img": "https://s1.ticketm.net/dam/c/7be/4e1e9428-29ec-401f-aa45-f1577614b7be_105421_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Blues",
-   "start": "2026-08-29",
-   "end": "2026-08-29"
   },
   {
    "name": "Band Wars Music Festival",
@@ -141,6 +131,16 @@
    "genre": "Undefined",
    "start": "2026-09-26",
    "end": "2026-09-26"
+  },
+  {
+   "name": "Neverender Festival - Single Day 10/3",
+   "city": "Santa Ana",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/neverender-festival-single-day-103-santa-ana-california-10-03-2026/event/090064C8E75FDE5A",
+   "img": "https://s1.ticketm.net/dam/a/a59/7402034d-479c-447a-8d0a-9ac40942da59_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Rock",
+   "start": "2026-10-03",
+   "end": "2026-10-04"
   },
   {
    "name": "Coachella",
