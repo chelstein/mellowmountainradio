@@ -1,23 +1,6 @@
 {
- "updated": "2026-09-02T03:34:24.738Z",
+ "updated": "2026-09-02T10:53:21.870Z",
  "concerts": [
-  {
-   "id": "1kk8vNr_GAuxfWe",
-   "artist": "Chicago",
-   "date": "2026-09-01",
-   "time": "19:00:00",
-   "venue": "Mortgage Matchup Center",
-   "city": "Phoenix",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/chicago-styx-the-windy-cities-tour-phoenix-arizona-09-01-2026/event/190063799D894F42",
-   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2025-12-05T17:00:00Z",
-   "lineup": [
-    "Styx"
-   ]
-  },
   {
    "id": "Z7r9jZ1A70_qf",
    "artist": "Boz Scaggs",
