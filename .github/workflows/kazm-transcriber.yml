@@ -51,9 +51,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # apt-get install without a preceding update works only until the runner
+      # image's pre-baked package index goes stale. On 2026-09-01 Ubuntu published
+      # a new libssh-gcrypt-4 and dropped the old .deb from the mirror; the cached
+      # index still pointed at it, so every run 404'd in this step. Refresh the
+      # index first — and skip apt entirely when the image already carries ffmpeg,
+      # which is the common case and takes a minute of mirror traffic off each run.
       - name: Install dependencies
         run: |
-          sudo apt-get install -y ffmpeg
+          if command -v ffmpeg >/dev/null 2>&1; then
+            echo "[transcriber] ffmpeg already present: $(ffmpeg -version | head -1)"
+          else
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
           pip install --quiet faster-whisper requests
 
       - name: Pick blocks to transcribe
