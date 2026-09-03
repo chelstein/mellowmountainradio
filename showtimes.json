@@ -1,33 +1,11 @@
 {
- "updated": "2026-09-02T20:43:00.136Z",
+ "updated": "2026-09-03T03:33:40.770Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Flagstaff Premiere: In the Company of Wolves",
-   "date": "2026-09-02",
-   "time": "19:00",
-   "venue": "Theatrikos Theatre Company",
-   "city": "Flagstaff",
-   "url": "https://sedonafilmfestival.com/event/flagstaff-premiere-in-the-company-of-wolves/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/In-the-Company-of-Wolves-poster.jpg",
-   "summary": "Academy Award-winner Jeff Bridges narrates this stunning journey, following wolves and other animals as co-travelers through American history — from the shores of England to the birth of the New Republic, and…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Third Ear Musical Improv",
-   "date": "2026-09-02",
-   "time": "19:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/third-ear-musical-improv/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Third-Ear-poster.jpg",
-   "summary": "After nearly two years of honing their craft, The Third Ear Musical Improv Troupe takes the stage for their first full-length performance on Wednesday, September 2 at 7:00 p.m. at the Mary D. Fisher Theatre in Sedona."
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Dance of the Wild",
@@ -349,6 +327,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "A Tribute to Sakina Blue Star",
+   "date": "2026-09-21",
+   "time": "13:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/a-tribute-to-sakina-blue-star/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Sakina-Sounds-of-Freedom-poster.jpg",
+   "summary": "At 97 years young, Sakina Blue Star is A Warrior Woman, A Voice for Freedom, A Heart for Humanity. On the International Day of Peace, we honor a woman who answered history’s call. She stands as a living testament to…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Outdoor Film: Ghost",
    "date": "2026-09-21",
    "time": "19:00",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/fallen-angels-by-noel-coward/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Fallen-Angels-poster.jpg",
    "summary": "Starring Golden Globe-winner Rose Byrne and Tony Award winner Kelli O’Hara, with Tracee Chimo, Mark Consuelos (making his Broadway debut), Christopher Fitzgerald and Aasif Mandvi, this new Roundabout Theatre and Tony…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Coming Home: The Music of James Taylor",
+   "date": "2026-10-22",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/coming-home-the-music-of-james-taylor/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Coming-Home-James-Taylor-poster.jpg",
+   "summary": "James Gedeon is a singer-songwriter and solo acoustic performer whose intimate tribute show — “Coming Home: The Music of James Taylor” — has been connecting with audiences in listening rooms, theaters, and concert…"
   }
  ]
 }

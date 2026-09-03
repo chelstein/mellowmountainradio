@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-02T20:43:35.335Z",
+ "updated": "2026-09-03T03:34:13.158Z",
  "concerts": [
   {
    "id": "Z7r9jZ1A70_qf",
@@ -105,7 +105,7 @@
    "url": "https://www.ticketmaster.com/chicago-styx-the-windy-cities-tour-palm-desert-california-09-02-2026/event/0A006378DDF992FB",
    "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2025-12-05T18:00:00Z",
    "lineup": [
     "Styx"
@@ -122,23 +122,8 @@
    "url": "https://www.ticketmaster.com/air-supply-a-matter-of-time-sandy-utah-09-02-2026/event/1E006490AA05A285",
    "img": "https://s1.ticketm.net/dam/a/dee/91a4e597-9d27-409c-be30-e28ebcaf8dee_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-05-01T16:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "Z7r9jZ1A70384",
-   "artist": "The Beach Boys",
-   "date": "2026-09-02",
-   "time": "19:30:00",
-   "venue": "Rendezvous Event Center",
-   "city": "Winter Park",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A70384",
-   "img": "https://s1.ticketm.net/dam/a/1e6/a7fb22db-7408-44ee-94cc-b6fd363bc1e6_1583871_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "1900-01-01T06:00:00Z",
    "lineup": []
   },
   {
@@ -146,7 +131,7 @@
    "artist": "Air Supply",
    "date": "2026-09-04",
    "time": "19:00:00",
-   "venue": "Westgate Las Vegas Resort & Casino",
+   "venue": "Westgate Las Vegas Cabaret Theater",
    "city": "Las Vegas",
    "state": "NV",
    "url": "https://www.ticketmaster.com/air-supply-las-vegas-nevada-09-04-2026/event/17006348E5435F0A",
@@ -161,7 +146,7 @@
    "artist": "Air Supply",
    "date": "2026-09-05",
    "time": "19:00:00",
-   "venue": "Westgate Las Vegas Resort & Casino",
+   "venue": "Westgate Las Vegas Cabaret Theater",
    "city": "Las Vegas",
    "state": "NV",
    "url": "https://www.ticketmaster.com/air-supply-las-vegas-nevada-09-05-2026/event/17006348E5465F10",
@@ -758,7 +743,7 @@
    "artist": "Three Dog Night",
    "date": "2026-10-31",
    "time": "19:00:00",
-   "venue": "Westgate Las Vegas Resort & Casino",
+   "venue": "Westgate Las Vegas Cabaret Theater",
    "city": "Las Vegas",
    "state": "NV",
    "url": "https://www.ticketmaster.com/three-dog-night-las-vegas-nevada-10-31-2026/event/17006464FC48ABE2",
