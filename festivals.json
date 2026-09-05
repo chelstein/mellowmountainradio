@@ -1,26 +1,16 @@
 {
- "updated": "2026-09-05T03:34:28.282Z",
+ "updated": "2026-09-05T10:10:49.670Z",
  "festivals": [
   {
-   "name": "Portland Yacht Rock Festival",
+   "name": "Portland Yacht Rock Festival (Night 2)",
    "city": "Portland",
    "state": "ME",
-   "url": "https://www.ticketmaster.com/portland-yacht-rock-festival-2026-portland-maine-09-04-2026/event/01006488A956D630",
-   "img": "https://s1.ticketm.net/dam/e/0f6/4bcf8b82-2255-49bd-83cc-15eb900320f6_RETINA_PORTRAIT_16_9.jpg",
+   "url": "https://www.ticketmaster.com/portland-yacht-rock-festival-2026-night-portland-maine-09-05-2026/event/010064FBE1E129B0",
+   "img": "https://s1.ticketm.net/dam/e/0fd/a576554c-d5a6-4304-abd4-6af356a2a0fd_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Yacht Rock",
-   "start": "2026-09-04",
-   "end": "2026-09-04",
+   "start": "2026-09-05",
+   "end": "2026-09-05",
    "yacht": true
-  },
-  {
-   "name": "Celestial Festival @ 191 Toole",
-   "city": "Tucson",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/celestial-festival-191-toole-tucson-arizona-09-04-2026/event/190064F0C2DF735B",
-   "img": "https://s1.ticketm.net/dam/e/554/e026860b-f2e4-45b7-a7a5-97dab3660554_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Metal",
-   "start": "2026-09-04",
-   "end": "2026-09-04"
   },
   {
    "name": "Goldrush Music Festival",
@@ -41,6 +31,16 @@
    "genre": "Other",
    "start": "2026-09-11",
    "end": "2026-09-12"
+  },
+  {
+   "name": "FORM Arcosanti Festival",
+   "city": "Mayer",
+   "state": "AZ",
+   "url": "https://www.ticketmaster.com/form-arcosanti-festival-mayer-arizona-10-09-2026/event/1900636AA4566008",
+   "img": "https://s1.ticketm.net/dam/e/331/ef692eee-7145-4794-bf32-caeb8c910331_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Rock",
+   "start": "2026-10-09",
+   "end": "2026-10-09"
   },
   {
    "name": "Band Wars Music Festival",
@@ -141,6 +141,16 @@
    "genre": "Rock",
    "start": "2026-10-03",
    "end": "2026-10-04"
+  },
+  {
+   "name": "Niteharts Festival",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://on.fgtix.com/trk/4iDbc",
+   "img": "https://s1.ticketm.net/dam/a/035/252aca5d-0a29-4652-9ce0-11e8515b8035_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Undefined",
+   "start": "2026-10-09",
+   "end": "2026-10-09"
   },
   {
    "name": "Coachella",
