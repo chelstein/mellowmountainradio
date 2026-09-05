@@ -1,33 +1,11 @@
 {
- "updated": "2026-09-04T20:27:59.301Z",
+ "updated": "2026-09-05T03:34:12.060Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "The Salt Path",
-   "date": "2026-09-04",
-   "time": "",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/the-salt-path/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/The-Salt-Path-poster.jpg",
-   "summary": "Gillian Anderson and Jason Isaacs star in “The Salt Path” — the profound story of husband and wife Raynor and Moth Winn, who embark on a 630-mile trek after being forcibly removed from their home."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "The Marching Band",
-   "date": "2026-09-04",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/the-marching-band/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/The-Marching-Band-poster.jpg",
-   "summary": "A world-famous orchestra conductor discovers the brother he never knew he had — a school cafeteria worker who plays trombone in a local marching band. Despite their differences, they develop a bond through their…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Vultures Are Vital",
@@ -555,6 +533,28 @@
    "url": "https://sedonafilmfestival.com/event/fallen-angels-by-noel-coward/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Fallen-Angels-poster.jpg",
    "summary": "Starring Golden Globe-winner Rose Byrne and Tony Award winner Kelli O’Hara, with Tracee Chimo, Mark Consuelos (making his Broadway debut), Christopher Fitzgerald and Aasif Mandvi, this new Roundabout Theatre and Tony…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Coming Home: The Music of James Taylor",
+   "date": "2026-10-22",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/coming-home-the-music-of-james-taylor/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Coming-Home-James-Taylor-poster.jpg",
+   "summary": "James Gedeon is a singer-songwriter and solo acoustic performer whose intimate tribute show — “Coming Home: The Music of James Taylor” — has been connecting with audiences in listening rooms, theaters, and concert…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Pierre Bensusan Concert",
+   "date": "2026-10-25",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/pierre-bensusan-concert/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Pierre-Bensusan-2026-poster-1.jpg",
+   "summary": "French-Algerian acoustic guitar virtuoso, vocalist and composer Pierre Bensusan has taken his unique sound to all corners of the globe. And now, he is returning to Sedona on his “The Infinite Guitar” world tour…"
   }
  ]
 }
