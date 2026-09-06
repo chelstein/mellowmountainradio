@@ -1,17 +1,6 @@
 {
- "updated": "2026-09-06T03:35:32.263Z",
+ "updated": "2026-09-06T10:32:00.687Z",
  "festivals": [
-  {
-   "name": "Portland Yacht Rock Festival (Night 2)",
-   "city": "Portland",
-   "state": "ME",
-   "url": "https://www.ticketmaster.com/portland-yacht-rock-festival-2026-night-portland-maine-09-05-2026/event/010064FBE1E129B0",
-   "img": "https://s1.ticketm.net/dam/e/0fd/a576554c-d5a6-4304-abd4-6af356a2a0fd_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Yacht Rock",
-   "start": "2026-09-05",
-   "end": "2026-09-05",
-   "yacht": true
-  },
   {
    "name": "Goldrush Music Festival",
    "city": "Chandler",
@@ -43,21 +32,11 @@
    "end": "2026-10-09"
   },
   {
-   "name": "Band Wars Music Festival",
-   "city": "Reno",
-   "state": "NV",
-   "url": "https://www.ticketweb.com/event/band-wars-music-festival-2026-bartley-ranch-hawkins-tickets/14763573?REFERRAL_ID=tmfeed",
-   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Rock",
-   "start": "2026-09-05",
-   "end": "2026-09-05"
-  },
-  {
    "name": "Hypnotique",
    "city": "Los Angeles",
    "state": "CA",
-   "url": "https://www.ticketmaster.com/hypnotique-presents-sway-festival-day-1-los-angeles-california-09-05-2026/event/090064C8A1E372A0",
-   "img": "https://s1.ticketm.net/dam/e/f17/4bb3126f-a20f-488a-a2bd-b2b29bd7ef17_RETINA_PORTRAIT_16_9.jpg",
+   "url": "https://www.ticketmaster.com/hypnotique-presents-sway-festival-2-day-los-angeles-california-09-05-2026/event/090064C8A9B080AE",
+   "img": "https://s1.ticketm.net/dam/e/4c7/f6c041ca-67da-4926-87f0-72bff6f8f4c7_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Pop",
    "start": "2026-09-05",
    "end": "2026-09-06"
@@ -150,7 +129,7 @@
    "img": "https://s1.ticketm.net/dam/a/035/252aca5d-0a29-4652-9ce0-11e8515b8035_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
    "start": "2026-10-09",
-   "end": "2026-10-09"
+   "end": "2026-10-10"
   },
   {
    "name": "Coachella",
