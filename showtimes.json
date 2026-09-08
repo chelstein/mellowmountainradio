@@ -1,33 +1,11 @@
 {
- "updated": "2026-09-07T21:15:45.976Z",
+ "updated": "2026-09-08T03:40:05.503Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Chris Murphy: Live in Concert",
-   "date": "2026-09-07",
-   "time": "19:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/chris-murphy-live-in-concert/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Chris-Murphy-poster.jpg",
-   "summary": "Chris Murphy is an international touring violinist, singer-songwriter, and multi-instrumentalist whose powerful live performances blend Americana, Folk, Jazz, Celtic, World music, and improvisation into what he calls…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: Little Miss Sunshine",
-   "date": "2026-09-07",
-   "time": "19:30",
-   "venue": "Village of Oak Creek Association Park",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-little-miss-sunshine/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Little-Miss-Sunshine-poster.jpg",
-   "summary": "The Hoover family — a man (Greg Kinnear), his wife (Toni Collette), an uncle (Steve Carell), a brother (Paul Dano) and a grandfather (Alan Arkin) — puts the fun back in dysfunctional by piling into a VW bus and…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Sting and Sade in Surround Sound",
@@ -555,6 +533,28 @@
    "url": "https://sedonafilmfestival.com/event/flagstaff-premiere-old-man-lightning/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Old-Man-Lightning-FLAGSTAFF-poster-2.jpg",
    "summary": "Cranky, yet witty bouldering legend John “Verm” Sherman has lost his mojo and is jonesing to regain it. What better way than to climb the world’s most famous boulder problem, Yosemite’s iconic Midnight Lightning?"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Giant — The Play",
+   "date": "2026-11-19",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/giant-the-play/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Giant-poster.jpg",
+   "summary": "“Giant” — the 5-star critically acclaimed play starring John Lithgow as Roald Dahl — comes to the big screen. Winner of 3 Olivier Awards including Best Play and a Tony Award for Best Actor in a Play (John Lithgow),…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "The Storytellers Concert",
+   "date": "2027-01-09",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
+   "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
   }
  ]
 }
