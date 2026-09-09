@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-09T16:09:45.996Z",
+ "updated": "2026-09-09T20:39:32.083Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -393,6 +393,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Liverpool Acoustic: Beatles Unplugged",
+   "date": "2026-10-03",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/liverpool-acoustic-beatles-unplugged/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Tributaries-Beatles-FINAL-poster.jpg",
+   "summary": "Experience exclusive acoustic arrangements and harmonies and behind-the-scenes stories that you won’t hear anywhere else. We’ve gathered all of The Beatles’ greatest acoustic hits into one energetic performance.…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Dead Quilters The Musical",
    "date": "2026-10-09",
    "time": "",
@@ -544,17 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
    "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Psychic Standup Comedy Night with Karen Rontowski",
-   "date": "2027-01-23",
-   "time": "18:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
-   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
