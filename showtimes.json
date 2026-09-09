@@ -1,22 +1,11 @@
 {
- "updated": "2026-09-08T20:52:13.095Z",
+ "updated": "2026-09-09T03:45:16.018Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Sting and Sade in Surround Sound",
-   "date": "2026-09-08",
-   "time": "19:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/sting-and-sade-in-surround-sound/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Surround-Sound-Sting-and-Sade-SEPT-2026-poster.jpg",
-   "summary": "This is a special surround sound audio/visual experience featuring the music of two of the most influential songwriter/performers of 1994! Both Sting’s “10 Summoners Tales” and “Sade Live” were released in 1994. In…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Rita Lim: Make It With You … Yesterday Once More",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
    "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Psychic Standup Comedy Night with Karen Rontowski",
+   "date": "2027-01-23",
+   "time": "18:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
+   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
