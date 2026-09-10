@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-10T03:43:03.101Z",
+ "updated": "2026-09-10T10:53:20.699Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -393,6 +393,39 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Late Fame",
+   "date": "2026-10-02",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/late-fame/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Late-Fame-poster.jpg",
+   "summary": "The great Willem Dafoe lends his delicate gravitas to the role of Ed Saxberger, a forgotten New York poet who works in the post office. After an eager and flattering young admirer (Edmund Donovan) appears on his…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Tony",
+   "date": "2026-10-02",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/tony/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Tony-poster.jpg",
+   "summary": "In this origin story of a voice that defined a generation, a 19-year-old Anthony Bourdain travels to Provincetown and stumbles into the chaotic world of a restaurant kitchen, setting off a summer that will shape the…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "The Musical",
+   "date": "2026-10-02",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-musical/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/The-Musical-poster.jpg",
+   "summary": "Convinced he’s destined for bigger things, frustrated playwright Doug (Will Brill) is stuck teaching middle-school theater while dreaming of moving to New York. But when he finds out his ex-girlfriend (Gillian…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Liverpool Acoustic: Beatles Unplugged",
    "date": "2026-10-03",
    "time": "",
@@ -522,39 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/in-the-living-room-music-series-shaeri-richards/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/In-the-Living-Room-SHAERI-RICHARDS-poster.jpg",
    "summary": "The In the Living Room Music Series presents a very special evening at the Mary Fisher Theatre on Monday, Oct. 26 at 7:00 p.m., welcoming Sedona favorite Shaeri Richards for an intimate night of eclectic jazz, pop,…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Sirsy Concert",
-   "date": "2026-10-28",
-   "time": "19:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/sirsy-concert/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/sirsy-sedona-poster-2026.jpg",
-   "summary": "Back by popular demand: The Sedona International Film Festival announces award-winning recording duo Sirsy will be performing live in concert Wednesday, Oct. 28 at the Mary D. Fisher Theatre in Sedona at 7 p.m. It’s…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Flagstaff Premiere: Old Man Lightning",
-   "date": "2026-11-11",
-   "time": "19:00",
-   "venue": "Theatrikos Theatre Company",
-   "city": "Flagstaff",
-   "url": "https://sedonafilmfestival.com/event/flagstaff-premiere-old-man-lightning/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Old-Man-Lightning-FLAGSTAFF-poster-2.jpg",
-   "summary": "Cranky, yet witty bouldering legend John “Verm” Sherman has lost his mojo and is jonesing to regain it. What better way than to climb the world’s most famous boulder problem, Yosemite’s iconic Midnight Lightning?"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Giant — The Play",
-   "date": "2026-11-19",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/giant-the-play/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Giant-poster.jpg",
-   "summary": "“Giant” — the 5-star critically acclaimed play starring John Lithgow as Roald Dahl — comes to the big screen. Winner of 3 Olivier Awards including Best Play and a Tony Award for Best Actor in a Play (John Lithgow),…"
   }
  ]
 }
