@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-09T20:40:06.441Z",
+ "updated": "2026-09-10T03:43:35.110Z",
  "concerts": [
   {
    "id": "Z7r9jZ1A70_qf",
@@ -95,23 +95,6 @@
    ]
   },
   {
-   "id": "Z7r9jZ1A707Ov",
-   "artist": "Bonnie Raitt",
-   "date": "2026-09-09",
-   "time": "19:30:00",
-   "venue": "Red Butte Garden",
-   "city": "Salt Lake City",
-   "state": "UT",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A707Ov",
-   "img": "https://s1.ticketm.net/dam/a/391/75137288-978d-45fa-a9c6-b98e5deac391_90071_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-05-01T16:00:00Z",
-   "lineup": [
-    "Jon Cleary"
-   ]
-  },
-  {
    "id": "rZ7HnEZ1Afrp7S",
    "artist": "Atlanta Rhythm Section",
    "date": "2026-09-09",
@@ -122,7 +105,7 @@
    "url": "https://www.ticketweb.com/event/atlanta-rhythm-section-belly-up-tickets/14796133",
    "img": "https://s1.ticketm.net/dam/a/2ed/85864437-cc5b-4a5d-84fe-58aa50a802ed_1798661_RETINA_PORTRAIT_16_9.jpg",
    "price": 56,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-04-03T17:00:00Z",
    "lineup": []
   },
@@ -136,7 +119,7 @@
    "state": "CA",
    "url": "https://www.ticketweb.com/event/atlanta-rhythm-section-ivanz-house-at-mozambique-tickets/14791313",
    "img": "https://s1.ticketm.net/dam/a/2ed/85864437-cc5b-4a5d-84fe-58aa50a802ed_1798661_RETINA_PORTRAIT_16_9.jpg",
-   "price": 37,
+   "price": 0,
    "status": "onsale",
    "saleStart": "2026-03-25T19:00:00Z",
    "lineup": []

@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-09T20:39:32.083Z",
+ "updated": "2026-09-10T03:43:03.101Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -404,6 +404,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "An Artist Reflects with Clarinet",
+   "date": "2026-10-05",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/an-artist-reflects-with-clarinet/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/An-Artist-Reflects-with-Clarinet-poster.jpg",
+   "summary": "This is the Sedona premiere presentation of “An Artist Reflects with Clarinet” — a documentary that explores the significance of painting as an art-form in our modern world. In 67 minutes, Paul Davids unveils his…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Dead Quilters The Musical",
    "date": "2026-10-09",
    "time": "",
@@ -544,17 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/giant-the-play/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Giant-poster.jpg",
    "summary": "“Giant” — the 5-star critically acclaimed play starring John Lithgow as Roald Dahl — comes to the big screen. Winner of 3 Olivier Awards including Best Play and a Tony Award for Best Actor in a Play (John Lithgow),…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "The Storytellers Concert",
-   "date": "2027-01-09",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
-   "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
   }
  ]
 }
