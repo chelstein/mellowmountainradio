@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-11T20:39:44.710Z",
+ "updated": "2026-09-12T03:44:56.487Z",
  "festivals": [
   {
    "name": "Goldrush Music Festival",
@@ -12,13 +12,13 @@
    "end": "2026-09-11"
   },
   {
-   "name": "Goldrush Music Festival - Friday ()",
+   "name": "Goldrush Music Festival - Saturday ()",
    "city": "Chandler",
    "state": "AZ",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7J_jU",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7J_jM",
    "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Other",
-   "start": "2026-09-11",
+   "start": "2026-09-12",
    "end": "2026-09-12"
   },
   {
@@ -252,7 +252,7 @@
    "state": "TX",
    "when": "Mid-March",
    "url": "https://www.sxsw.com",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SXSW_Center_%2854987238776%29.jpg/3840px-SXSW_Center_%2854987238776%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/SXSW_Center_%2854987238776%29.jpg/3840px-SXSW_Center_%2854987238776%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   }
  ]
