@@ -1,16 +1,6 @@
 {
- "updated": "2026-09-12T03:44:56.487Z",
+ "updated": "2026-09-12T10:19:17.857Z",
  "festivals": [
-  {
-   "name": "Goldrush Music Festival",
-   "city": "Chandler",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7qdA0",
-   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Other",
-   "start": "2026-09-11",
-   "end": "2026-09-11"
-  },
   {
    "name": "Goldrush Music Festival - Saturday ()",
    "city": "Chandler",
@@ -30,6 +20,16 @@
    "genre": "Rock",
    "start": "2026-10-09",
    "end": "2026-10-09"
+  },
+  {
+   "name": "FORM Arcosanti Festival Car Registration",
+   "city": "Mayer",
+   "state": "AZ",
+   "url": "https://www.ticketmaster.com/form-arcosanti-festival-car-registration-mayer-arizona-10-11-2026/event/190065297F0731F0",
+   "img": "https://s1.ticketm.net/dam/a/876/0fd30d40-6281-4714-a8d7-053a320ed876_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Undefined",
+   "start": "2026-10-11",
+   "end": "2026-10-11"
   },
   {
    "name": "Island Fest",
@@ -109,7 +109,7 @@
    "img": "https://s1.ticketm.net/dam/a/035/252aca5d-0a29-4652-9ce0-11e8515b8035_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
    "start": "2026-10-09",
-   "end": "2026-10-10"
+   "end": "2026-10-11"
   },
   {
    "name": "Coachella",
@@ -144,7 +144,7 @@
    "state": "Belgium",
    "when": "Two weekends each July",
    "url": "https://www.tomorrowland.com",
-   "img": "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/Tomorrowland_festival_logo.svg/250px-Tomorrowland_festival_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "img": "https://thumb.wikimedia.org/wikipedia/en/thumb/9/90/Tomorrowland_festival_logo.svg/250px-Tomorrowland_festival_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   },
   {
@@ -207,7 +207,7 @@
    "state": "Denmark",
    "when": "Late June – early July",
    "url": "https://www.roskilde-festival.dk",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg/3840px-Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg/3840px-Roskilde_Festival_-_Orange_Stage_-_Bruce_Springsteen.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   },
   {
