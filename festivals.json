@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-13T03:53:04.284Z",
+ "updated": "2026-09-13T11:19:08.777Z",
  "festivals": [
   {
    "name": "FORM Arcosanti Festival",
@@ -20,16 +20,6 @@
    "genre": "Undefined",
    "start": "2026-10-11",
    "end": "2026-10-11"
-  },
-  {
-   "name": "Island Fest",
-   "city": "Rancho Mirage",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/island-fest-rancho-mirage-california-09-12-2026/event/090064B3408D0F38",
-   "img": "https://s1.ticketm.net/dam/e/881/fca1fd5f-4ec0-4ae3-bd04-56d162aed881_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Reggae",
-   "start": "2026-09-12",
-   "end": "2026-09-12"
   },
   {
    "name": "Telluride Blues & Brews Festival",
@@ -112,6 +102,16 @@
    "end": "2026-10-16"
   },
   {
+   "name": "Faultline Festival 2-Day Pass",
+   "city": "Rancho Cucamonga",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/faultline-festival-2day-pass-rancho-cucamonga-california-10-16-2026/event/09006521BC3C9F9C",
+   "img": "https://s1.ticketm.net/dam/a/71f/8d6e5779-004e-4919-a9c6-1804a8e7871f_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Country",
+   "start": "2026-10-16",
+   "end": "2026-10-16"
+  },
+  {
    "name": "Coachella",
    "city": "Indio",
    "state": "CA",
@@ -180,7 +180,7 @@
    "state": "RI",
    "when": "Late July",
    "url": "https://www.newportfolk.org",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/My_Morning_Jacket%2C_2015.jpg/3840px-My_Morning_Jacket%2C_2015.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/My_Morning_Jacket%2C_2015.jpg/3840px-My_Morning_Jacket%2C_2015.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "marquee": true
   },
   {
