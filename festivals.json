@@ -1,16 +1,6 @@
 {
- "updated": "2026-09-12T20:19:33.394Z",
+ "updated": "2026-09-13T03:53:04.284Z",
  "festivals": [
-  {
-   "name": "Goldrush Music Festival - Saturday ()",
-   "city": "Chandler",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7J_jM",
-   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Other",
-   "start": "2026-09-12",
-   "end": "2026-09-12"
-  },
   {
    "name": "FORM Arcosanti Festival",
    "city": "Mayer",
@@ -110,6 +100,16 @@
    "genre": "Undefined",
    "start": "2026-10-09",
    "end": "2026-10-11"
+  },
+  {
+   "name": "Faultline Festival with Bush",
+   "city": "Rancho Cucamonga",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/faultline-festival-with-bush-rancho-cucamonga-california-10-16-2026/event/09006521BBC99F0C",
+   "img": "https://s1.ticketm.net/dam/a/13b/2cf87fa2-9bc0-44b5-81ce-1cd72234b13b_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Rock",
+   "start": "2026-10-16",
+   "end": "2026-10-16"
   },
   {
    "name": "Coachella",
