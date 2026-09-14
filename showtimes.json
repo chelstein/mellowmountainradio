@@ -1,22 +1,11 @@
 {
- "updated": "2026-09-13T20:29:27.793Z",
+ "updated": "2026-09-14T03:59:42.856Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Groove Oasis Concert",
-   "date": "2026-09-13",
-   "time": "16:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/groove-oasis-concert/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Groove-Oasis-2026-poster.jpg",
-   "summary": "Step into the world of Groove Oasis for an afternoon of original music where rhythm, melody and spirit come together. Driven by the earthly pulse of the African Drum woven with guitar, harmonica and soulful melodies,…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "In the Living Room Music Series: Gina Machovina",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
    "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Psychic Standup Comedy Night with Karen Rontowski",
+   "date": "2027-01-23",
+   "time": "18:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
+   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
