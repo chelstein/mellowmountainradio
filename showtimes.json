@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-16T03:56:43.309Z",
+ "updated": "2026-09-16T11:04:25.192Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -327,6 +327,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Love & Laughter Comedy Night",
+   "date": "2026-10-04",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/love-laughter-comedy-night/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Love-and-Laughter-SEDONA-poster-2026.jpg",
+   "summary": "Have you ever been in love? Do you like to laugh? Then the Love & Laughter show is the right choice for you! This 90-minute show is for anyone who has ever been in a relationship from those who are on a first date to…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "An Artist Reflects with Clarinet",
    "date": "2026-10-05",
    "time": "19:00",
@@ -379,6 +390,17 @@
    "url": "https://sedonafilmfestival.com/event/last-shot/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Last-Shot-poster.jpg",
    "summary": "“Last Shot” is an uplifting coming-of-age sports drama about resilience, second chances, and the power of believing in yourself. A basketball prodigy loses his father, gains a mother he barely knows, and has to learn…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "In the Living Room Music Series: Tyler Carson",
+   "date": "2026-10-12",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/in-the-living-room-music-series-tyler-carson/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/In-the-Living-Room-TYLER-Carson-poster.jpg",
+   "summary": "A former child star and 2-time CBS Mornings feature, Tyler Carson brings an unforgettable musical journey to the stage. After doctors once told him he would never speak again, Tyler trusted in faith and his violin,…"
   },
   {
    "source": "Sedona Film Festival",
@@ -503,6 +525,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Younmee Shin: Sweet Memories Concert",
+   "date": "2026-11-14",
+   "time": "16:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/younmee-shin-sweet-memories-concert/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Younmee-Shin-poster.jpg",
+   "summary": "Enjoy a celebration of the songs and stories that have traveled through generations when international musician and singer Younmee Shin performs her Sweet Memories Concert on Saturday, Nov. 14 at 4 p.m. at the Mary…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Giant — The Play",
    "date": "2026-11-19",
    "time": "",
@@ -522,17 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
    "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Psychic Standup Comedy Night with Karen Rontowski",
-   "date": "2027-01-23",
-   "time": "18:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
-   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
