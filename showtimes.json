@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-17T16:31:04.983Z",
+ "updated": "2026-09-17T21:04:05.986Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -536,6 +536,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "A Winter’s Eve with David Arkenstone & Friends",
+   "date": "2026-12-10",
+   "time": "19:00",
+   "venue": "Sedona Performing Arts Center",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/a-winters-eve-with-david-arkenstone-friends/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/David-Arkenstone-poster-2026.jpg",
+   "summary": "Returning to Sedona by popular demand, “A Winter’s Eve with David Arkenstone & Friends” is a fun and lively holiday concert featuring world-class musicians, heartwarming seasonal favorites, and David’s signature…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "The Storytellers Concert",
    "date": "2027-01-09",
    "time": "",
@@ -544,17 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
    "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Psychic Standup Comedy Night with Karen Rontowski",
-   "date": "2027-01-23",
-   "time": "18:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
-   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
