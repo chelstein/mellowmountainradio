@@ -1,33 +1,11 @@
 {
- "updated": "2026-09-17T21:04:05.986Z",
+ "updated": "2026-09-18T03:49:01.868Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "An American in Paris",
-   "date": "2026-09-17",
-   "time": "15:00",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/an-american-in-paris/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/An-American-in-Paris-1951-poster.jpg",
-   "summary": "Gene Kelly dancing to the music of the Gershwins. Vincente Minnelli’s dazzling direction. The screen debut of Leslie Caron. Paris transformed into a dream of music, color, dance, and romance. “An American in Paris”…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: Chef",
-   "date": "2026-09-17",
-   "time": "19:30",
-   "venue": "Basecamp Sedona Beer Company",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-chef/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Chef-poster.jpg",
-   "summary": "“Chef” (2014) is a critically acclaimed comedy-drama and audience sensation. After a controlling owner (Dustin Hoffman) pushes him too far, chef Carl Casper (Jon Favreau) quits his position at a prestigious Los…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Mary Oliver: Saved by the Beauty of the World",
@@ -555,6 +533,17 @@
    "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
    "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Psychic Standup Comedy Night with Karen Rontowski",
+   "date": "2027-01-23",
+   "time": "18:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
+   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
