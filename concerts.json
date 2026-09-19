@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-19T03:46:33.124Z",
+ "updated": "2026-09-19T10:31:45.476Z",
  "concerts": [
   {
    "id": "Z7r9jZ1A70_qf",
@@ -93,21 +93,6 @@
     "The Hondo Rodeo Fest",
     "Parker McCollum"
    ]
-  },
-  {
-   "id": "17AYv0G65p_a4Yw",
-   "artist": "Eagles",
-   "date": "2026-09-18",
-   "time": "20:30:00",
-   "venue": "Sphere",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.gofevo.com/event/EaglesSphere091826",
-   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-05-20T17:00:00Z",
-   "lineup": []
   },
   {
    "id": "Z7r9jZ1A709uE",
@@ -799,6 +784,21 @@
    "city": "Las Vegas",
    "state": "NV",
    "url": "https://www.gofevo.com/event/EaglesSphere121126",
+   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-07-19T15:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "17AYv0G6249IoSJ",
+   "artist": "Eagles",
+   "date": "2026-12-12",
+   "time": "20:30:00",
+   "venue": "Sphere",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.gofevo.com/event/EaglesSphere121226",
    "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
    "status": "onsale",
