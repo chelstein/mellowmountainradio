@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-20T04:02:28.322Z",
+ "updated": "2026-09-20T10:54:11.970Z",
  "concerts": [
   {
    "id": "Z7r9jZ1A70_qf",
@@ -93,51 +93,6 @@
     "The Hondo Rodeo Fest",
     "Parker McCollum"
    ]
-  },
-  {
-   "id": "rZ7HnEZ1Afa3aV",
-   "artist": "America",
-   "date": "2026-09-19",
-   "time": "20:00:00",
-   "venue": "SOMA - Mainstage",
-   "city": "San Diego",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/slaughter-to-prevail-north-america-soma-mainstage-tickets/14252274",
-   "img": "https://s1.ticketm.net/dam/c/e7c/86478562-7218-4e8f-b9d4-8080fe168e7c_105581_RETINA_PORTRAIT_16_9.jpg",
-   "price": 0,
-   "status": "onsale",
-   "saleStart": "2026-07-15T17:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "vvG1IZ_A7e5CIp",
-   "artist": "Earth, Wind & Fire",
-   "date": "2026-09-19",
-   "time": "20:00:00",
-   "venue": "San Diego Civic Theatre",
-   "city": "San Diego",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/earth-wind-fire-san-diego-california-09-19-2026/event/0A006451022CEA16",
-   "img": "https://s1.ticketm.net/dam/a/843/ff2c4ae2-6d19-4a76-9fcd-4693b1a91843_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-02-27T18:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "17AYv0G65p_agsv",
-   "artist": "Eagles",
-   "date": "2026-09-19",
-   "time": "20:30:00",
-   "venue": "Sphere",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.gofevo.com/event/EaglesSphere091926",
-   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-05-20T17:00:00Z",
-   "lineup": []
   },
   {
    "id": "rZ7HnEZ1Afa74f",
@@ -786,6 +741,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-07-19T15:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk3dGkdpXRs0",
+   "artist": "Eagles",
+   "date": "2027-01-15",
+   "time": "20:30:00",
+   "venue": "Sphere",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/eagles-live-at-sphere-las-vegas-nevada-01-15-2027/event/17006483D6FAFC64",
+   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-08-14T17:00:00Z",
    "lineup": []
   },
   {
