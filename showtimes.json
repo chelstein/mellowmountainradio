@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-19T20:14:14.314Z",
+ "updated": "2026-09-20T04:01:54.125Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -261,6 +261,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Met Live Opera: Così fan tutte",
+   "date": "2026-10-03",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/met-live-opera-cosi-fan-tutte/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Cosi-Fan-Tutte-2026-poster.jpg",
+   "summary": "Phelim McDermott’s “colorful, inventive” (The New York Times) staging, inspired by Coney Island in the 1950s, sets the uproarious story at a boardwalk amusement park, where the two pairs of lovers at the heart of the…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Love & Laughter Comedy Night",
    "date": "2026-10-04",
    "time": "19:00",
@@ -426,6 +437,28 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "The History of Concrete",
+   "date": "2026-10-16",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-history-of-concrete/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/The-History-of-Concrete-poster.jpg",
+   "summary": "Following the finale of his TV series, filmmaker John Wilson looks to the bedrock of his beloved New York City for inspiration and structure. Concrete, the world’s most widely used building material, appears as an…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Bernstein’s Wall",
+   "date": "2026-10-16",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/bernsteins-wall/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Bernsteins-Wall-Poster.jpg",
+   "summary": "Guided by Bernstein’s voice, “Bernstein’s Wall” draws on archival footage, photographs, personal letters, family audio, and highlights from his career to create a portrait of one of the 20th century’s most prominent…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "BOSAYA: Live in Concert",
    "date": "2026-10-16",
    "time": "19:00",
@@ -522,39 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/giant-the-play/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Giant-poster.jpg",
    "summary": "“Giant” — the 5-star critically acclaimed play starring John Lithgow as Roald Dahl — comes to the big screen. Winner of 3 Olivier Awards including Best Play and a Tony Award for Best Actor in a Play (John Lithgow),…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "A Winter’s Eve with David Arkenstone & Friends",
-   "date": "2026-12-10",
-   "time": "19:00",
-   "venue": "Sedona Performing Arts Center",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/a-winters-eve-with-david-arkenstone-friends/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/David-Arkenstone-poster-2026.jpg",
-   "summary": "Returning to Sedona by popular demand, “A Winter’s Eve with David Arkenstone & Friends” is a fun and lively holiday concert featuring world-class musicians, heartwarming seasonal favorites, and David’s signature…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "The Storytellers Concert",
-   "date": "2027-01-09",
-   "time": "",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
-   "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Psychic Standup Comedy Night with Karen Rontowski",
-   "date": "2027-01-23",
-   "time": "18:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
-   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }

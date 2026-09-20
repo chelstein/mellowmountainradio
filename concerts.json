@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-19T20:14:46.470Z",
+ "updated": "2026-09-20T04:02:28.322Z",
  "concerts": [
   {
    "id": "Z7r9jZ1A70_qf",
@@ -95,23 +95,6 @@
    ]
   },
   {
-   "id": "Z7r9jZ1A709uE",
-   "artist": "Lynyrd Skynyrd",
-   "date": "2026-09-19",
-   "time": "19:30:00",
-   "venue": "Ford Amphitheater",
-   "city": "Colorado Springs",
-   "state": "CO",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A709uE",
-   "img": "https://s1.ticketm.net/dam/a/df6/c98af635-cf92-4bf8-a46f-ee30555addf6_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "1900-01-01T06:00:00Z",
-   "lineup": [
-    "38 Special"
-   ]
-  },
-  {
    "id": "rZ7HnEZ1Afa3aV",
    "artist": "America",
    "date": "2026-09-19",
@@ -137,7 +120,7 @@
    "url": "https://www.ticketmaster.com/earth-wind-fire-san-diego-california-09-19-2026/event/0A006451022CEA16",
    "img": "https://s1.ticketm.net/dam/a/843/ff2c4ae2-6d19-4a76-9fcd-4693b1a91843_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-02-27T18:00:00Z",
    "lineup": []
   },
@@ -152,7 +135,7 @@
    "url": "https://www.gofevo.com/event/EaglesSphere091926",
    "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-05-20T17:00:00Z",
    "lineup": []
   },
