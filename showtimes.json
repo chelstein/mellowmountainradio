@@ -1,22 +1,11 @@
 {
- "updated": "2026-09-20T20:30:07.345Z",
+ "updated": "2026-09-21T03:59:23.140Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Heaven in Stone and Glass",
-   "date": "2026-09-20",
-   "time": "",
-   "venue": "Alice Gill-Sheldon Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/heaven-in-stone-and-glass/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Heaven-in-Stone-and-Glass-poster.jpg",
-   "summary": "In “Heaven in Stone and Glass” experience the spirituality of the gothic cathedrals with Bishop Barron. Journey across France to explore sacred mysteries built into the crown jewels of Gothic architecture: Chartres,…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "A Tribute to Sakina Blue Star",
@@ -481,6 +470,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Met Live Opera: Macbeth",
+   "date": "2026-10-17",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/met-live-opera-macbeth/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Macbeth-met-opera-poster-2026.jpg",
+   "summary": "Two of opera’s most extraordinary artists return to The Met: Live in HD for Verdi’s thrilling take on the immortal Shakespearean tale of the scheming couple determined to seize power at any cost. Baritone Quinn…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Fallen Angels by Noël Coward",
    "date": "2026-10-22",
    "time": "",
@@ -525,6 +525,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Séance",
+   "date": "2026-10-27",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/seance/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Seance-movie-poster.jpg",
+   "summary": "In 1892 California, a woman contemplating adultery is forced to take refuge from a storm at the home of her first husband and his unstable wife, who claims to be haunted by their dead child."
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Sirsy Concert",
    "date": "2026-10-28",
    "time": "19:00",
@@ -544,17 +555,6 @@
    "url": "https://sedonafilmfestival.com/event/flagstaff-premiere-old-man-lightning/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Old-Man-Lightning-FLAGSTAFF-poster-2.jpg",
    "summary": "Cranky, yet witty bouldering legend John “Verm” Sherman has lost his mojo and is jonesing to regain it. What better way than to climb the world’s most famous boulder problem, Yosemite’s iconic Midnight Lightning?"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Younmee Shin: Sweet Memories Concert",
-   "date": "2026-11-14",
-   "time": "16:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/younmee-shin-sweet-memories-concert/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Younmee-Shin-poster.jpg",
-   "summary": "Enjoy a celebration of the songs and stories that have traveled through generations when international musician and singer Younmee Shin performs her Sweet Memories Concert on Saturday, Nov. 14 at 4 p.m. at the Mary…"
   }
  ]
 }
