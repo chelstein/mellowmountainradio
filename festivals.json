@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T03:59:39.207Z",
+ "updated": "2026-09-21T12:19:04.039Z",
  "festivals": [
   {
    "name": "FORM Arcosanti Festival",
@@ -20,16 +20,6 @@
    "genre": "Undefined",
    "start": "2026-10-11",
    "end": "2026-10-11"
-  },
-  {
-   "name": "Telluride Blues & Brews Festival",
-   "city": "Telluride",
-   "state": "CO",
-   "url": "https://on.fgtix.com/trk/ef0J",
-   "img": "https://s1.ticketm.net/dam/a/951/992c7684-cd1e-4385-b776-7ba0b2e95951_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Undefined",
-   "start": "2026-09-20",
-   "end": "2026-09-20"
   },
   {
    "name": "Ohana Festival",
@@ -110,6 +100,16 @@
    "genre": "R&B",
    "start": "2026-10-17",
    "end": "2026-10-17"
+  },
+  {
+   "name": "Strong Music Festival",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/strong-music-festival-2026-las-vegas-nevada-10-30-2026/event/170064FF70A65A93",
+   "img": "https://s1.ticketm.net/dam/a/866/0e415bdd-ed9d-45e6-99b2-c72d8e4f3866_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Hip-Hop/Rap",
+   "start": "2026-10-30",
+   "end": "2026-10-30"
   },
   {
    "name": "Coachella",
