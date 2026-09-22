@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-22T16:33:27.656Z",
+ "updated": "2026-09-22T21:01:44.630Z",
  "concerts": [
   {
    "id": "Z7r9jZ1A70_qf",
@@ -771,6 +771,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-08-28T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "vv1ke8vPGoGA5AK01",
+   "artist": "Three Dog Night",
+   "date": "2027-01-22",
+   "time": "20:00:00",
+   "venue": "The Show at Agua Caliente Casino Rancho Mirage",
+   "city": "Rancho Mirage",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/three-dog-night-rancho-mirage-california-01-22-2027/event/090065311B15390A",
+   "img": "https://s1.ticketm.net/dam/a/0bc/4679fff2-ad49-4758-b6ba-c683f6e090bc_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-09-25T17:00:00Z",
    "lineup": []
   },
   {
