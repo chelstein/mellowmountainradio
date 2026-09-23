@@ -1,22 +1,11 @@
 {
- "updated": "2026-09-22T21:01:04.160Z",
+ "updated": "2026-09-23T03:54:18.432Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Get Your Butt Kicked on Route 66 Party!",
-   "date": "2026-09-22",
-   "time": "16:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/get-your-butt-kicked-on-route-66-party/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Route-66-PARTY-poster.jpg",
-   "summary": "Experience the good, the bad and the ugly of Route 66 at a very special “Get Your Butt Kicked on Route 66 Party!” presented by Koz Mraz on Tuesday, Sept. 22 at 4 p.m. at the Mary D. Fisher Theatre, presented by the…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "Leonora in the Morning Light",
@@ -555,6 +544,17 @@
    "url": "https://sedonafilmfestival.com/event/younmee-shin-sweet-memories-concert/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Younmee-Shin-poster.jpg",
    "summary": "Enjoy a celebration of the songs and stories that have traveled through generations when international musician and singer Younmee Shin performs her Sweet Memories Concert on Saturday, Nov. 14 at 4 p.m. at the Mary…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Giant — The Play",
+   "date": "2026-11-19",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/giant-the-play/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Giant-poster.jpg",
+   "summary": "“Giant” — the 5-star critically acclaimed play starring John Lithgow as Roald Dahl — comes to the big screen. Winner of 3 Olivier Awards including Best Play and a Tony Award for Best Actor in a Play (John Lithgow),…"
   }
  ]
 }
