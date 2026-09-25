@@ -1,33 +1,11 @@
 {
- "updated": "2026-09-24T21:16:55.182Z",
+ "updated": "2026-09-25T04:02:24.411Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Feng E Concert",
-   "date": "2026-09-24",
-   "time": "19:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/feng-e-concert/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Feng-E-poster.jpg",
-   "summary": "Prepare to be amazed by Feng E, the viral ukulele phenomenon whose explosive technique and soulful stage presence have wowed audiences worldwide. He is making a Sedona stop on his U.S. tour Thursday, Sept. 24 at 7…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Outdoor Film: Star Wars: Return of the Jedi",
-   "date": "2026-09-24",
-   "time": "19:00",
-   "venue": "Basecamp Sedona Beer Company",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/outdoor-film-star-wars-return-of-the-jedi/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/07/Return-of-the-Jedi-poster.jpg",
-   "summary": "“Star Wars: Return of the Jedi” (1983) follows the ongoing struggle between the malevolent Galactic Empire and the freedom fighters of the Rebel Alliance. Luke Skywalker (Mark Hamill) battles horrible Jabba the Hutt…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "The Sun Never Sets",
@@ -555,6 +533,28 @@
    "url": "https://sedonafilmfestival.com/event/a-winters-eve-with-david-arkenstone-friends/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/David-Arkenstone-poster-2026.jpg",
    "summary": "Returning to Sedona by popular demand, “A Winter’s Eve with David Arkenstone & Friends” is a fun and lively holiday concert featuring world-class musicians, heartwarming seasonal favorites, and David’s signature…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "The Storytellers Concert",
+   "date": "2027-01-09",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-storytellers-concert/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/08/Storytellers-2027-poster.jpg",
+   "summary": "The Storytellers return to the Mary D. Fisher Theatre for two days of rootsy, bluegrassy musical storytelling on Saturday and Sunday, January 9 and 10, presented by the Sedona International Film Festival."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Psychic Standup Comedy Night with Karen Rontowski",
+   "date": "2027-01-23",
+   "time": "18:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2.jpg",
+   "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
   }
  ]
 }
