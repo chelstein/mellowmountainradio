@@ -1,21 +1,6 @@
 {
- "updated": "2026-09-25T21:15:39.786Z",
+ "updated": "2026-09-26T04:08:30.234Z",
  "concerts": [
-  {
-   "id": "Z7r9jZ1A70_qf",
-   "artist": "Boz Scaggs",
-   "date": "2026-09-25",
-   "time": "19:30:00",
-   "venue": "Fox Theatre - Tucson AZ",
-   "city": "Tucson",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A70_qf",
-   "img": "https://s1.ticketm.net/dam/a/c20/609fc235-8849-40ef-86ff-38b231705c20_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "1900-01-01T18:00:00Z",
-   "lineup": []
-  },
   {
    "id": "15v0Z_78AGI_F",
    "artist": "Little River Band",
@@ -27,7 +12,7 @@
    "url": "https://www.ticketmaster.com/little-river-band-scottsdale-arizona-09-25-2026/event/1900644405328648",
    "img": "https://s1.ticketm.net/dam/a/3e2/8a977022-2616-44d5-8fa6-b3f3f42293e2_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-05-22T17:00:00Z",
    "lineup": []
   },
