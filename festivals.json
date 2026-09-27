@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-27T04:22:19.000Z",
+ "updated": "2026-09-27T11:39:50.103Z",
  "festivals": [
   {
    "name": "FORM Arcosanti Festival",
@@ -22,24 +22,34 @@
    "end": "2026-10-11"
   },
   {
+   "name": "27th Annual Mariachi & Folklorico Festival",
+   "city": "Chandler",
+   "state": "AZ",
+   "url": "https://www.ticketmaster.com/27th-annual-mariachi-folklorico-festival-chandler-arizona-11-01-2026/event/1900649DCB9BB359",
+   "img": "https://s1.ticketm.net/dam/e/254/9f8b955c-4b45-421f-aba5-aa1e2df32254_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Latin",
+   "start": "2026-11-01",
+   "end": "2026-11-01"
+  },
+  {
+   "name": "Space Cadet Fest",
+   "city": "Phoenix",
+   "state": "AZ",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7PEQ6",
+   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Other",
+   "start": "2026-11-07",
+   "end": "2026-11-07"
+  },
+  {
    "name": "Ohana Festival",
    "city": "Dana Point",
    "state": "CA",
    "url": "https://on.fgtix.com/trk/ycJM",
    "img": "https://s1.ticketm.net/dam/a/336/a35b1108-383e-4837-8158-fc7479bc9336_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
-   "start": "2026-09-26",
+   "start": "2026-09-27",
    "end": "2026-09-27"
-  },
-  {
-   "name": "Day Trip Block Party Denver",
-   "city": "Denver",
-   "state": "CO",
-   "url": "https://daytripdenver.frontgatetickets.com",
-   "img": "https://s1.ticketm.net/dam/a/401/21bf116a-2fe0-4cd5-b67e-887c2bcd1401_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Undefined",
-   "start": "2026-09-26",
-   "end": "2026-09-26"
   },
   {
    "name": "Neverender Festival - Single Day 10/3",
