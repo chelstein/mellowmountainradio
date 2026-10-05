@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-05T04:43:21.247Z",
+ "updated": "2026-10-05T13:58:15.572Z",
  "festivals": [
   {
    "name": "FORM Arcosanti Festival Car Registration",
@@ -40,16 +40,6 @@
    "genre": "Other",
    "start": "2026-11-07",
    "end": "2026-11-07"
-  },
-  {
-   "name": "Neverender Festival - 2 Day Pass",
-   "city": "Santa Ana",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/neverender-festival-2-day-pass-santa-ana-california-10-03-2026/event/0900648DA22D560C",
-   "img": "https://s1.ticketm.net/dam/a/a59/7402034d-479c-447a-8d0a-9ac40942da59_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Rock",
-   "start": "2026-10-03",
-   "end": "2026-10-04"
   },
   {
    "name": "Niteharts Festival",
@@ -120,6 +110,36 @@
    "genre": "Jazz",
    "start": "2026-11-18",
    "end": "2026-11-18"
+  },
+  {
+   "name": "Reggae Fest Vegas at The House Of Blues Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.universe.com/events/reggae-fest-vegas-at-the-house-of-blues-las-vegas-tickets-7H9WLC?ref=ticketmaster",
+   "img": "https://s1.ticketm.net/dam/a/510/db6fc217-d801-463d-a374-9aaae8de3510_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Reggae",
+   "start": "2026-11-21",
+   "end": "2026-11-21"
+  },
+  {
+   "name": "Still Thankful Jazz Festival",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/still-thankful-jazz-festival-san-diego-california-11-29-2026/event/0A006543A26FBBDC",
+   "img": "https://s1.ticketm.net/dam/c/bea/03d47f66-d37b-4aca-aa17-0135be64dbea_105801_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Jazz",
+   "start": "2026-11-29",
+   "end": "2026-11-29"
+  },
+  {
+   "name": "Decibel - Metal & Beer Festival: 3-DAY PASS (Pre-Fest at Ratio)",
+   "city": "Denver",
+   "state": "CO",
+   "url": "https://www.ticketmaster.com/decibel-metal-beer-festival-3day-pass-denver-colorado-12-03-2026/event/1E006490A2EB96C9",
+   "img": "https://s1.ticketm.net/dam/a/a9f/faab7e5f-02dc-46e8-bd14-f5b794ed3a9f_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Metal",
+   "start": "2026-12-03",
+   "end": "2026-12-03"
   },
   {
    "name": "Coachella",
