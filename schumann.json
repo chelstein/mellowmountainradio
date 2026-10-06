@@ -17,10 +17,10 @@
  "stability": "no_signal",
  "state_label": "active",
  "spectrogram": "https://sosrff.tsu.ru/new/shm.jpg",
- "observed_age_hours": 939.3,
+ "observed_age_hours": 944.9,
  "stale": true,
  "staleness_note": "Last observation is 39 days old. This is the last reading the upstream returned, not a current one — the source has stopped producing new observations.",
  "signal_usable": false,
- "last_fetch_attempt": "2026-10-05T23:52:16.668Z",
+ "last_fetch_attempt": "2026-10-06T05:30:07.699Z",
  "last_fetch_error": "Unexpected end of JSON input"
 }
