@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-06T22:29:15.763Z",
+ "updated": "2026-10-07T04:59:35.885Z",
  "concerts": [
   {
    "id": "17k8v0G6uKw-BKF",
@@ -60,22 +60,7 @@
    "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-10-14-2026/event/170064F4CBD6D980",
    "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
-   "saleStart": "2026-07-31T17:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "17AYv0G62K5UqJk",
-   "artist": "Lionel Richie",
-   "date": "2026-10-16",
-   "time": "20:00:00",
-   "venue": "Encore Theater at Wynn Las Vegas",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-10-16-2026/event/170064F4CBD9D986",
-   "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
+   "status": "cancelled",
    "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
@@ -107,21 +92,6 @@
    "price": null,
    "status": "onsale",
    "saleStart": "1900-01-01T06:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "17AYv0G62K5MuJ2",
-   "artist": "Lionel Richie",
-   "date": "2026-10-17",
-   "time": "20:00:00",
-   "venue": "Encore Theater at Wynn Las Vegas",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-10-17-2026/event/170064F4CBDCD98F",
-   "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
   {
@@ -576,6 +546,36 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-07-19T15:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "17AYv0G62K5UqJk",
+   "artist": "Lionel Richie",
+   "date": "2027-01-08",
+   "time": "20:00:00",
+   "venue": "Encore Theater at Wynn Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-01-08-2027/event/170064F4CBD9D986",
+   "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "rescheduled",
+   "saleStart": "2026-07-31T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "17AYv0G62K5MuJ2",
+   "artist": "Lionel Richie",
+   "date": "2027-01-09",
+   "time": "20:00:00",
+   "venue": "Encore Theater at Wynn Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-01-09-2027/event/170064F4CBDCD98F",
+   "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "rescheduled",
+   "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
   {
