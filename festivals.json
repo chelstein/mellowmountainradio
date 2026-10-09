@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-09T12:48:28.317Z",
+ "updated": "2026-10-09T22:24:51.814Z",
  "festivals": [
   {
    "name": "FORM Arcosanti Festival",
@@ -120,6 +120,26 @@
    "genre": "Reggae",
    "start": "2026-11-21",
    "end": "2026-11-21"
+  },
+  {
+   "name": "Still Thankful Jazz Festival",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/still-thankful-jazz-festival-san-diego-california-11-29-2026/event/0A006543A26FBBDC",
+   "img": "https://s1.ticketm.net/dam/c/bea/03d47f66-d37b-4aca-aa17-0135be64dbea_105801_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Jazz",
+   "start": "2026-11-29",
+   "end": "2026-11-29"
+  },
+  {
+   "name": "Decibel - Metal & Beer Festival: 3-DAY PASS (Pre-Fest at Ratio)",
+   "city": "Denver",
+   "state": "CO",
+   "url": "https://www.ticketmaster.com/decibel-metal-beer-festival-3day-pass-denver-colorado-12-03-2026/event/1E006490A2EB96C9",
+   "img": "https://s1.ticketm.net/dam/a/a9f/faab7e5f-02dc-46e8-bd14-f5b794ed3a9f_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Metal",
+   "start": "2026-12-03",
+   "end": "2026-12-04"
   },
   {
    "name": "Coachella",
