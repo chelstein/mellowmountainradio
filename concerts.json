@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-10T04:58:13.660Z",
+ "updated": "2026-10-10T12:07:03.015Z",
  "concerts": [
   {
    "id": "17k8v0G6uKw-BKF",
@@ -204,6 +204,21 @@
    "lineup": []
   },
   {
+   "id": "vvG1IZ_7KGPF5A",
+   "artist": "America",
+   "date": "2026-10-23",
+   "time": "20:00:00",
+   "venue": "Pechanga Resort Casino",
+   "city": "Temecula",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/america-the-happy-trails-tour-2026-temecula-california-10-23-2026/event/0A006444CC9482C5",
+   "img": "https://s1.ticketm.net/dam/a/a71/2d744828-8f76-4d6d-96e4-f8f780b20a71_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-03-12T22:00:00Z",
+   "lineup": []
+  },
+  {
    "id": "1A9ZkoPGkdL5e46",
    "artist": "Earth, Wind & Fire",
    "date": "2026-10-23",
@@ -216,6 +231,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-03-27T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "vvG1IZ_A6D4r2M",
+   "artist": "America",
+   "date": "2026-10-24",
+   "time": "19:30:00",
+   "venue": "Humphreys Concerts By the Bay",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/america-the-happy-trails-tour-san-diego-california-10-24-2026/event/0A006451FB55E3F7",
+   "img": "https://s1.ticketm.net/dam/a/a71/2d744828-8f76-4d6d-96e4-f8f780b20a71_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-03-14T17:00:00Z",
    "lineup": []
   },
   {
