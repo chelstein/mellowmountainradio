@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-11T04:45:35.954Z",
+ "updated": "2026-10-11T12:20:12.205Z",
  "festivals": [
   {
    "name": "FORM Arcosanti Festival",
@@ -48,7 +48,7 @@
    "url": "https://on.fgtix.com/trk/4iDbc",
    "img": "https://s1.ticketm.net/dam/a/035/252aca5d-0a29-4652-9ce0-11e8515b8035_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Undefined",
-   "start": "2026-10-10",
+   "start": "2026-10-11",
    "end": "2026-10-11"
   },
   {
@@ -139,7 +139,27 @@
    "img": "https://s1.ticketm.net/dam/a/a9f/faab7e5f-02dc-46e8-bd14-f5b794ed3a9f_RETINA_PORTRAIT_16_9.jpg",
    "genre": "Metal",
    "start": "2026-12-03",
-   "end": "2026-12-04"
+   "end": "2026-12-05"
+  },
+  {
+   "name": "Totally Tubular Festival",
+   "city": "Rancho Mirage",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/totally-tubular-festival-rancho-mirage-california-01-01-2027/event/0900652A153D27DB",
+   "img": "https://s1.ticketm.net/dam/a/b99/973af7d5-cf5e-4e7e-93a1-f91c21e34b99_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Pop",
+   "start": "2027-01-01",
+   "end": "2027-01-01"
+  },
+  {
+   "name": "Lost In Dreams",
+   "city": "Anaheim",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/lost-in-dreams-presents-armnhmr18-from-anaheim-california-01-02-2027/event/090065468B706282",
+   "img": "https://s1.ticketm.net/dam/a/cc5/b564516c-d6e9-4ed6-b7a0-a9c35075fcc5_1409161_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Dance/Electronic",
+   "start": "2027-01-02",
+   "end": "2027-01-02"
   },
   {
    "name": "Coachella",
