@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-17T20:18:23.333Z",
+ "updated": "2026-10-18T03:39:30.869Z",
  "concerts": [
   {
    "id": "17k8v0G6uKw-BKF",
@@ -35,21 +35,6 @@
    ]
   },
   {
-   "id": "Z7r9jZ1A7-w7J",
-   "artist": "Bonnie Raitt",
-   "date": "2026-10-17",
-   "time": "19:00:00",
-   "venue": "The Rady Shell at Jacobs Park",
-   "city": "San Diego",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A7-w7J",
-   "img": "https://s1.ticketm.net/dam/a/391/75137288-978d-45fa-a9c6-b98e5deac391_90071_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "1900-01-01T06:00:00Z",
-   "lineup": []
-  },
-  {
    "id": "1A9ZkoPGkdL6xfL",
    "artist": "Earth, Wind & Fire",
    "date": "2026-10-17",
@@ -60,7 +45,7 @@
    "url": "https://www.ticketmaster.com/earth-wind-fire-las-vegas-nevada-10-17-2026/event/17006465DF1E251F",
    "img": "https://s1.ticketm.net/dam/a/fb3/7d72d89c-13a9-42eb-bca6-9a9b3cf1cfb3_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-03-27T17:00:00Z",
    "lineup": []
   },
