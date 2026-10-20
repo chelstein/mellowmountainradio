@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-20T04:00:19.581Z",
+ "updated": "2026-10-20T11:06:40.662Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
@@ -371,6 +371,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "The Nutcracker",
+   "date": "2026-12-02",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-nutcracker/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/10/The-Nutcracker-2026-poster.jpg",
+   "summary": "Peter Wright’s production of this festive family favorite sparkles to the wondrous swell of Tchaikovsky’s orchestral score, alongside the glow and grandeur of Julia Trevelyan Oman’s period designs. The Royal Opera…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "A Winter’s Eve with David Arkenstone & Friends",
    "date": "2026-12-10",
    "time": "19:00",
@@ -401,6 +412,28 @@
    "url": "https://sedonafilmfestival.com/event/psychic-standup-comedy-night-with-karen-rontowski/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/05/Psychic-Standup-poster-2027-2-1.jpg",
    "summary": "Psychic Standup is a show unlike any other. Karen Rontowski combines her 35 years as a standup comic with her 25 years of tarot reading and the results are predictably hilarious."
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Alice’s Adventures in Wonderland",
+   "date": "2027-03-31",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/alices-adventures-in-wonderland/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/10/Alice-Adventure-2026-poster.jpg",
+   "summary": "At a garden party on a sunny afternoon, Alice is surprised to see her parents’ friend Lewis Carroll transform into a white rabbit. When she follows him down a rabbit hole, events become curiouser and curiouser. As…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Swan Lake",
+   "date": "2027-05-19",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/swan-lake/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/10/Swan-Lake-2026-poster.jpg",
+   "summary": "Liam Scarlett’s production for The Royal Ballet brings together Tchaikovsky’s towering score and John Macfarlane’s picturesque designs to create an enduring ballet spectacle of love, treachery and forgiveness."
   }
  ]
 }
