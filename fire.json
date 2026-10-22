@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-21T16:50:32.204Z",
+ "updated": "2026-10-22T03:50:01.024Z",
  "agency": "Coconino National Forest",
  "source": "https://www.fs.usda.gov/r03/coconino/alerts",
  "available": true,
@@ -61,7 +61,5 @@
  "count": 4,
  "interpretation": "No seasonal Stage restriction is posted, but year-round camping and campfire orders are in force. This is NOT 'no restrictions' — check the orders below, particularly the Sedona and Oak Creek Canyon ones, before lighting anything.",
  "effective": "August 31, 2026",
- "order": "#03-04-06-26-04",
- "last_fetch_attempt": "2026-10-21T21:24:32.271Z",
- "last_fetch_error": "fs.usda.gov 403"
+ "order": "#03-04-06-26-04"
 }
