@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-22T03:50:00.987Z",
+ "updated": "2026-10-22T11:23:17.217Z",
  "concerts": [
   {
    "id": "17k8v0G6uKw-BKF",
@@ -32,38 +32,6 @@
    "lineup": [
     "The Hondo Rodeo Fest",
     "Parker McCollum"
-   ]
-  },
-  {
-   "id": "17AYv0G62liYYlG",
-   "artist": "Earth, Wind & Fire",
-   "date": "2026-10-21",
-   "time": "19:00:00",
-   "venue": "South Point Showroom at South Point Hotel Casino and Spa",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/serpentine-fire-music-of-earth-wind-las-vegas-nevada-10-21-2026/event/170064FAECC30ACC",
-   "img": "https://s1.ticketm.net/dam/e/b58/20ee0afb-28de-4534-8f36-c2fac57f8b58_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-08-04T19:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "vvG1iZ_kNUygab",
-   "artist": "Bonnie Raitt",
-   "date": "2026-10-21",
-   "time": "19:30:00",
-   "venue": "Hollywood Pantages Theatre",
-   "city": "Los Angeles",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/bonnie-raitt-live-2026-with-special-los-angeles-california-10-21-2026/event/0B006468F6E75258",
-   "img": "https://s1.ticketm.net/dam/a/391/75137288-978d-45fa-a9c6-b98e5deac391_90071_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-03-20T17:00:00Z",
-   "lineup": [
-    "Jon Cleary & the Absolute Monster Gentlemen"
    ]
   },
   {
@@ -334,6 +302,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-08-07T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "rZ7HnEZ1AfGtq7",
+   "artist": "America",
+   "date": "2026-11-25",
+   "time": "19:00:00",
+   "venue": "El Cid",
+   "city": "Los Angeles",
+   "state": "CA",
+   "url": "https://www.ticketweb.com/event/ezcodylee-make-america-stunt-4-el-cid-tickets/14329744",
+   "img": "https://s1.ticketm.net/dam/c/797/5e693c26-2881-4776-8f0c-3aa94bfa3797_106511_RETINA_PORTRAIT_16_9.jpg",
+   "price": 27,
+   "status": "onsale",
+   "saleStart": "2026-09-25T17:00:00Z",
    "lineup": []
   },
   {
