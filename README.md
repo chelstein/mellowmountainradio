@@ -2,7 +2,7 @@
 
 Official website and MCP server for **KAZM 106.5 FM & 780 AM, Mellow Mountain Radio** in Sedona, Arizona.
 
-[![smithery badge](https://smithery.ai/badge/chuck/mellowmountainradio)](https://smithery.ai/servers/chuck/mellowmountainradio)
+[![LightNow capabilities](https://lightnow.ai/badge/com.mellowmountainradio.mcp/kazm)](https://lightnow.ai/servers/com.mellowmountainradio.mcp/kazm)
 
 ## MCP Server
 
