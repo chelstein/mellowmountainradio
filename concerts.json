@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26T12:29:35.586Z",
+ "updated": "2026-10-26T22:25:21.113Z",
  "concerts": [
   {
    "id": "17k8v0G6uKw-BKF",
@@ -626,6 +626,21 @@
    "lineup": []
   },
   {
+   "id": "1A9Zk49GkdwjH7q",
+   "artist": "The Doobie Brothers",
+   "date": "2027-02-26",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-02-26-2027/event/17006557F273C11D",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
    "id": "1A9ZkfUGkd3RMhv",
    "artist": "Chicago",
    "date": "2027-02-26",
@@ -638,6 +653,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-10-16T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk49GkdwLG7I",
+   "artist": "The Doobie Brothers",
+   "date": "2027-02-27",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-02-27-2027/event/17006557F27CC128",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
    "lineup": []
   },
   {
@@ -671,6 +701,21 @@
    "lineup": []
   },
   {
+   "id": "1A9Zk49Gkdw-j7D",
+   "artist": "The Doobie Brothers",
+   "date": "2027-03-05",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-03-05-2027/event/17006557F285C13B",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
    "id": "1A9ZkfUGkd3S6h9",
    "artist": "Chicago",
    "date": "2027-03-05",
@@ -683,6 +728,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-10-16T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk49GkdwNjAC",
+   "artist": "The Doobie Brothers",
+   "date": "2027-03-06",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-03-06-2027/event/17006557F28DC14E",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
    "lineup": []
   },
   {
@@ -748,6 +808,36 @@
    ]
   },
   {
+   "id": "vvG1IZ_49-BVD2",
+   "artist": "Chicago",
+   "date": "2027-06-27",
+   "time": "20:00:00",
+   "venue": "Humphreys Concerts By the Bay",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/chicago-san-diego-california-06-27-2027/event/0A006555E1EB4ECF",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "vvG1IZ_49-H0Db",
+   "artist": "Chicago",
+   "date": "2027-06-28",
+   "time": "20:00:00",
+   "venue": "Humphreys Concerts By the Bay",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/chicago-san-diego-california-06-28-2027/event/0A006555E1F24ED8",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
    "id": "rZ7HnEZ1AfuYaf",
    "artist": "Ambrosia",
    "date": "2027-07-07",
@@ -779,6 +869,81 @@
     "David Wilcox",
     "Jack Tempchin"
    ]
+  },
+  {
+   "id": "1A9Zk49GkdwPiA9",
+   "artist": "The Doobie Brothers",
+   "date": "2027-08-27",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-08-27-2027/event/17006557F296C157",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk49GkdwEjAN",
+   "artist": "The Doobie Brothers",
+   "date": "2027-08-28",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-08-28-2027/event/17006557F29DC163",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk49GkdwtjAS",
+   "artist": "The Doobie Brothers",
+   "date": "2027-09-01",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-09-01-2027/event/17006557F2A5C173",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk49GkdwljAT",
+   "artist": "The Doobie Brothers",
+   "date": "2027-09-03",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-09-03-2027/event/17006557F2ADC17F",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk49GkdwcjkG",
+   "artist": "The Doobie Brothers",
+   "date": "2027-09-04",
+   "time": "20:00:00",
+   "venue": "Fontainebleau Las Vegas",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/the-doobie-brothers-live-in-las-las-vegas-nevada-09-04-2027/event/17006557F2B5C18C",
+   "img": "https://s1.ticketm.net/dam/a/10f/71863892-5d02-47ee-a56d-68fe340c910f_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
   }
  ]
 }
