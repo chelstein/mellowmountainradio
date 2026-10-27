@@ -2,20 +2,6 @@
   "ok": true,
   "blocks": [
     {
-      "url": "https://github.com/chelstein/mellowmountainradio/releases/download/tape-kazm-2026-10-12-0600/kazm-2026-10-12-0600.mp3",
-      "date": "2026-10-12",
-      "start": 6,
-      "recStart": 34103,
-      "durationSec": 19800
-    },
-    {
-      "url": "https://github.com/chelstein/mellowmountainradio/releases/download/tape-kazm-2026-10-12-1800/kazm-2026-10-12-1800.mp3",
-      "date": "2026-10-12",
-      "start": 18,
-      "recStart": 65146,
-      "durationSec": 19800
-    },
-    {
       "url": "https://github.com/chelstein/mellowmountainradio/releases/download/tape-kazm-2026-10-13-0600/kazm-2026-10-13-0600.mp3",
       "date": "2026-10-13",
       "start": 6,
@@ -356,6 +342,13 @@
       "date": "2026-10-26",
       "start": 6,
       "recStart": 24683,
+      "durationSec": 19800
+    },
+    {
+      "url": "https://github.com/chelstein/mellowmountainradio/releases/download/tape-kazm-2026-10-26-1800/kazm-2026-10-26-1800.mp3",
+      "date": "2026-10-26",
+      "start": 18,
+      "recStart": 82667,
       "durationSec": 19800
     }
   ]
