@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-27T17:42:03.502Z",
+ "updated": "2026-10-27T21:56:11.586Z",
  "festivals": [
   {
    "name": "27th Annual Mariachi & Folklorico Festival",
@@ -20,6 +20,16 @@
    "genre": "Other",
    "start": "2026-11-07",
    "end": "2026-11-07"
+  },
+  {
+   "name": "Innings Festival",
+   "city": "Tempe",
+   "state": "AZ",
+   "url": "https://on.fgtix.com/trk/MzqK",
+   "img": "https://s1.ticketm.net/dam/a/373/cbfeb4c7-d2c4-469b-8343-e99ec4f09373_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Undefined",
+   "start": "2027-02-26",
+   "end": "2027-02-28"
   },
   {
    "name": "Strong Music Festival",
