@@ -59,5 +59,22 @@ jobs:
             echo "No changes."
           else
             git commit -m "Update Sedona data [skip ci]"
-            git push
+            for attempt in 1 2 3 4 5; do
+              # A scheduled job can run for minutes while main advances.
+              # Never overwrite another commit; rebase our data commit first.
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "::error::Generated data conflicts with new main; refusing to overwrite changes."
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo "Sedona data updated successfully."
+                exit 0
+              fi
+              echo "::warning::Push raced with another update (attempt ${attempt}/5)."
+              sleep $((attempt * 4))
+            done
+            echo "::error::Could not push after five safe retries."
+            exit 1
           fi
