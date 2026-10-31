@@ -748,6 +748,35 @@
   // source can be re-pointed server-side with no site deploy. Until then,
   // fetchFeed transparently falls back to direct fetch + allorigins, so the
   // site works the same before and after the workflow goes live.
+  // Same-origin news.json, written every six hours by the Update Sedona data
+  // workflow (scripts/fetch-news.mjs). This is the leg that actually works:
+  // the runner fetches the publishers where CORS does not apply and commits
+  // JSON the browser reads from our own origin, exactly as fire, concerts,
+  // festivals, horoscopes and showtimes already do.
+  //
+  // It is first on purpose. The relay below it is correct code that sat
+  // undeployed for two months, during which every other leg was also dead
+  // (n8n unregistered, codetabs 522, allorigins 500, corsproxy.io now keyed),
+  // so the news pages rendered empty the whole time. A leg that needs someone
+  // to SSH into a droplet before it works does not belong first.
+  var NEWS_JSON = "news.json";
+  var newsJsonPromise = null;
+  function newsFromJson(key) {
+    if (!newsJsonPromise) {
+      newsJsonPromise = fetch(NEWS_JSON, { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .catch(function () { return null; });
+    }
+    return newsJsonPromise.then(function (doc) {
+      var feed = doc && doc.feeds && doc.feeds[key];
+      // An entry with no stories is a miss, so the remaining legs still run.
+      if (!feed || !feed.items || !feed.items.length) throw new Error("no stories in news.json");
+      return feed.items.map(function (it) {
+        return { title: it.title, link: it.link, date: it.date, summary: it.summary };
+      });
+    });
+  }
+
   // Server-side relay on the station MCP box. Feeds are fetched there, where
   // CORS does not apply, because no publisher worth carrying sends an
   // Access-Control-Allow-Origin header: Red Rock News, BBC World and the
@@ -1156,15 +1185,17 @@
   function fetchText(url) {
     return fetch(url, { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); });
   }
-  // Try our own n8n proxy first (when keyed), then the source directly, then a
-  // public CORS proxy. Each leg falls through on failure, so the feed renders
-  // from whichever path is reachable.
+  // Same-origin news.json first (no CORS, no relay, no deploy), then our own
+  // relay when keyed, then the source directly, then a public CORS proxy. Each
+  // leg falls through on failure, so the feed renders from whichever path is
+  // reachable.
   function fetchFeed(url, key) {
     var legs = [];
+    if (key) legs.push(newsFromJson.bind(null, key));
     if (key && FEED_PROXY) legs.push(FEED_PROXY + "?src=" + encodeURIComponent(key));
     if (key && FEED_PROXY_2) legs.push(FEED_PROXY_2 + "?src=" + encodeURIComponent(key));
     if (url) {
-      legs.push(url);   // rss.app feeds are CORS-open, so this direct hit works in-browser
+      legs.push(url);   // works for any publisher that does send CORS
       // CORS proxies for feeds that aren't (e.g. Google News) — several, so one
       // going down (corsproxy.io now wants a key) never blanks the headlines.
       legs.push("https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(url));
@@ -1174,8 +1205,12 @@
     var i = 0;
     function attempt() {
       if (i >= legs.length) return Promise.reject(new Error("feed unavailable"));
-      return fetchText(legs[i++]).then(function (txt) {
-        var items = parseFeed(txt);
+      var leg = legs[i++];
+      // A leg is either a URL to fetch and parse, or a function returning items.
+      var run = typeof leg === "function"
+        ? leg()
+        : fetchText(leg).then(parseFeed);
+      return run.then(function (items) {
         if (items && items.length) return items;  // a 200 with no parseable stories is a miss, not a win
         throw new Error("empty feed");
       }).catch(attempt);
