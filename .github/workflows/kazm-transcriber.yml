@@ -41,7 +41,7 @@ concurrency:
 
 jobs:
   transcribe:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, mmr-ci]
     timeout-minutes: 350
     env:
       AZ_HOST: https://streaming.mellowmountainradio.com
@@ -50,6 +50,13 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      # Ubuntu 24.04 system Python is externally managed (PEP 668).
+      # Use an isolated Python toolcache instead of installing into system Python.
+      - name: Set up Python 3.12 for transcription
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       # apt-get install without a preceding update works only until the runner
       # image's pre-baked package index goes stale. On 2026-09-01 Ubuntu published
