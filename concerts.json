@@ -1,21 +1,6 @@
 {
- "updated": "2026-10-31T04:40:52.091Z",
+ "updated": "2026-10-31T11:52:53.505Z",
  "concerts": [
-  {
-   "id": "17k8v0G6uKw-BKF",
-   "artist": "Three Dog Night",
-   "date": "2026-10-30",
-   "time": "20:00:00",
-   "venue": "Gila River Resorts & Casinos - Wild Horse Pass",
-   "city": "Chandler",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/three-dog-night-chandler-arizona-10-30-2026/event/190064D4F287A4C8",
-   "img": "https://s1.ticketm.net/dam/e/46b/51e56a00-26f6-4be9-92c5-18854398746b_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-07-10T17:00:00Z",
-   "lineup": []
-  },
   {
    "id": "17k8v0G655xo6Vd",
    "artist": "Lynyrd Skynyrd",
@@ -33,21 +18,6 @@
     "The Hondo Rodeo Fest",
     "Parker McCollum"
    ]
-  },
-  {
-   "id": "1A9ZkoPGkdLC34z",
-   "artist": "Earth, Wind & Fire",
-   "date": "2026-10-30",
-   "time": "20:30:00",
-   "venue": "The Venetian Theatre at The Venetian Resort",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/earth-wind-fire-las-vegas-nevada-10-30-2026/event/17006465DF392578",
-   "img": "https://s1.ticketm.net/dam/a/fb3/7d72d89c-13a9-42eb-bca6-9a9b3cf1cfb3_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-03-27T17:00:00Z",
-   "lineup": []
   },
   {
    "id": "1A9Zko0GkdH31Rx",
