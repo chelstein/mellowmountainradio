@@ -24,9 +24,9 @@ on:
         required: false
         default: ''
       count:
-        description: 'How many missing blocks to transcribe this run (newest first). large-v3 runs ~20 min per block, well under the timeout, but stay modest on batch size during any future backlog.'
+        description: 'How many missing blocks to transcribe this run (oldest first). Blank = auto: as many as the backlog needs, up to 4. large-v3 runs ~20-45 min per block, so 4 stays inside the timeout.'
         required: false
-        default: '1'
+        default: ''
       force:
         description: 'Set true to re-transcribe the newest <count> blocks even if their transcripts already exist.'
         required: false
@@ -65,7 +65,22 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y ffmpeg
           fi
-          pip install --quiet faster-whisper requests
+          # Pinned, and they must stay pinned. An unpinned `pip install
+          # faster-whisper` resolved the newest PyAV on every run, and av 19.0.0
+          # (released 2026-09-29) removed the metadata_errors argument to
+          # av.open(). faster-whisper 1.2.1 still passes it in decode_audio, and
+          # it declares only `av>=11`, so pip happily installed a combination
+          # that cannot decode audio. The transcriber died on every run from
+          # 2026-09-29 onward with:
+          #   TypeError: open() got an unexpected keyword argument 'metadata_errors'
+          # Verified: av 18.1.0 is the last release that accepts the argument, it
+          # ships cp311-abi3 wheels so it installs on everything from 3.11 up
+          # (including the runner's current 3.14), and faster-whisper 1.2.1
+          # decode_audio works against it. faster-whisper has had no release
+          # since 2025-10-31, so upgrading it is not a fix.
+          # Before bumping either pin, check that av.open still takes
+          # metadata_errors — or that faster-whisper has stopped passing it.
+          pip install --quiet "faster-whisper==1.2.1" "av==18.1.0" requests
 
       - name: Pick blocks to transcribe
         id: pick
@@ -74,8 +89,19 @@ jobs:
           import json, os, subprocess, urllib.request
 
           want_tag = "${{ github.event.inputs.tag }}".strip()
-          count    = int("${{ github.event.inputs.count }}".strip() or "1")
+          count_in = "${{ github.event.inputs.count }}".strip()
           force    = "${{ github.event.inputs.force }}".strip().lower() == "true"
+
+          # One block per run keeps pace with exactly one new tape per run, so a
+          # backlog never closes — it is carried forever and the oldest end of it
+          # prunes at 14 days, unrecoverably. That is not theoretical: a month of
+          # failed runs (2026-09-29 to 2026-10-31) built a backlog of roughly a
+          # full shelf, and a fixed count of 1 would have transcribed 4 blocks a
+          # day while 4 more arrived, draining none of it before it pruned.
+          # So when no count is given, take as many as the backlog needs, capped.
+          # 4 x ~45min stays well inside the 350min job timeout, and once the gap
+          # is closed this naturally falls back to 1 per run.
+          MAX_PER_RUN = 4
 
           # All tape releases still on the shelf (newest first)
           out = subprocess.run(
@@ -104,17 +130,24 @@ jobs:
                   if n.endswith(".json"):
                       done.add("tape-" + n[:-5])
 
+          missing = sorted(t for t in tapes if t not in done)
+
           if want_tag:
               picks = [want_tag]
           elif force:
               # force targets the newest blocks — regeneration of recent output
-              picks = tapes[:count]
+              picks = tapes[:int(count_in or "1")]
           else:
               # missing blocks drain OLDEST-first: tapes prune at 14 days, and an
               # untranscribed tape that prunes is speech lost forever
-              picks = sorted(t for t in tapes if t not in done)[:count]
+              n = int(count_in) if count_in else min(len(missing), MAX_PER_RUN)
+              picks = missing[:n]
 
-          print(f"[transcriber] {len(tapes)} tapes on shelf, {len(done)} transcribed, picking: {picks}")
+          print(f"[transcriber] {len(tapes)} tapes on shelf, {len(done)} transcribed, "
+                f"{len(missing)} missing, picking {len(picks)}: {picks}")
+          if len(missing) > MAX_PER_RUN:
+              print(f"::warning::{len(missing)} untranscribed tapes on the shelf — "
+                    f"draining {len(picks)} this run, oldest first. Tapes prune at 14 days.")
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
               f.write("picks=" + json.dumps(picks) + "\n")
           PYEOF
