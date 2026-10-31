@@ -1,0 +1,32 @@
+name: Mellow Mountain Radio self-hosted runner smoke
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/mmr-self-hosted-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    # Public repository: never schedule a persistent runner from a fork PR.
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' ||
+          (github.event.pull_request.head.repo.full_name == github.repository &&
+           github.actor == 'chelstein') }}
+    runs-on: [self-hosted, Linux, X64, mmr-ci]
+    timeout-minutes: 5
+    steps:
+      - name: Confirm dedicated MMR Ubuntu runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          echo "Runner: ${RUNNER_NAME}"
+          echo "Account: $(id -un)"
+          echo "Host: $(hostname)"
+          echo "CPUs: $(nproc)"
+          echo "Architecture: $(uname -m)"
+          echo "PASS: dedicated Mellow Mountain Radio runner works"
