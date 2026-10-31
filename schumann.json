@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-18T16:03:29.362Z",
+ "updated": "2026-10-31T15:53:38.440Z",
  "source": "Zero Trust Radio · Tomsk observatory",
  "available": true,
  "station": "tomsk",
@@ -17,10 +17,8 @@
  "stability": "no_signal",
  "state_label": "active",
  "spectrogram": "https://sosrff.tsu.ru/new/shm.jpg",
- "observed_age_hours": 1551.3,
+ "observed_age_hours": 1555.3,
  "stale": true,
  "staleness_note": "Last observation is 65 days old. This is the last reading the upstream returned, not a current one — the source has stopped producing new observations.",
- "signal_usable": false,
- "last_fetch_attempt": "2026-10-31T11:52:55.186Z",
- "last_fetch_error": "Unexpected end of JSON input"
+ "signal_usable": false
 }
