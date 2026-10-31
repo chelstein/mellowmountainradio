@@ -16,6 +16,11 @@ jobs:
       ${{ github.event_name == 'workflow_dispatch' ||
           (github.event.pull_request.head.repo.full_name == github.repository &&
            github.actor == 'chelstein') }}
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        lane: [1, 2, 3, 4]
     runs-on: [self-hosted, Linux, X64, mmr-ci]
     timeout-minutes: 5
     steps:
@@ -29,4 +34,7 @@ jobs:
           echo "Host: $(hostname)"
           echo "CPUs: $(nproc)"
           echo "Architecture: $(uname -m)"
+          echo "Lane: ${{ matrix.lane }}"
+          # Brief overlap makes the concurrency/runner assignment auditable.
+          sleep 25
           echo "PASS: dedicated Mellow Mountain Radio runner works"
