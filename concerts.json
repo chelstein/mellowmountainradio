@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-30T22:02:04.293Z",
+ "updated": "2026-10-31T04:40:52.091Z",
  "concerts": [
   {
    "id": "17k8v0G6uKw-BKF",
@@ -12,7 +12,7 @@
    "url": "https://www.ticketmaster.com/three-dog-night-chandler-arizona-10-30-2026/event/190064D4F287A4C8",
    "img": "https://s1.ticketm.net/dam/e/46b/51e56a00-26f6-4be9-92c5-18854398746b_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-07-10T17:00:00Z",
    "lineup": []
   },
@@ -45,7 +45,7 @@
    "url": "https://www.ticketmaster.com/earth-wind-fire-las-vegas-nevada-10-30-2026/event/17006465DF392578",
    "img": "https://s1.ticketm.net/dam/a/fb3/7d72d89c-13a9-42eb-bca6-9a9b3cf1cfb3_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-03-27T17:00:00Z",
    "lineup": []
   },
