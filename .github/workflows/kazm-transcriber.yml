@@ -214,10 +214,22 @@ jobs:
       - name: Transcribe and align
         if: steps.pick.outputs.picks != '[]'
         run: |
-          cat > /tmp/kazm_transcribe.py <<'PYEOF'
+          # Everything scratch goes in RUNNER_TEMP, never a fixed /tmp path.
+          # The mmr-ci runners share a host between runner users (mmrci02,
+          # mmrci03, mmrci04 …) and /tmp is sticky, so a fixed name written by
+          # one user cannot be overwritten by another: run 383 died on
+          #   /tmp/kazm_transcribe.py: Permission denied
+          # because mmrci04 had created that file on runs 381-382 and mmrci02
+          # drew the next job. ubuntu-latest never showed this because every
+          # job got a fresh VM. RUNNER_TEMP is per-job and always ours, so this
+          # also removes the same collision risk on the mp3/wav/json scratch
+          # files, which were equally fixed-path.
+          WORK="${RUNNER_TEMP:-/tmp}"
+          cat > "$WORK/kazm_transcribe.py" <<'PYEOF'
           import json, os, re, subprocess, sys, urllib.request, urllib.parse
           from datetime import datetime, timezone
 
+          WORK = os.environ.get("RUNNER_TEMP") or "/tmp"
           AZ_HOST    = os.environ["AZ_HOST"]
           AZ_STATION = os.environ["AZ_STATION"]
           AZ_KEY     = os.environ.get("AZ_KEY", "")
@@ -322,7 +334,7 @@ jobs:
           def upload(name, date, doc):
               # Permanent monthly release; the tape pruner only touches tape-* tags.
               tag = "transcripts-" + date[:7]
-              path = f"/tmp/{name}.json"
+              path = os.path.join(WORK, f"{name}.json")
               with open(path, "w") as f:
                   json.dump(doc, f, separators=(",", ":"))
               exists = subprocess.run(["gh", "release", "view", tag,
@@ -345,8 +357,8 @@ jobs:
           tag = sys.argv[1]
           name, date, start_h = block_identity(tag)
           rec0 = rec_start_secs(date, start_h)
-          mp3 = f"/tmp/{name}.mp3"
-          wav = f"/tmp/{name}.wav"
+          mp3 = os.path.join(WORK, f"{name}.mp3")
+          wav = os.path.join(WORK, f"{name}.wav")
 
           print(f"[transcriber] downloading {tag}")
           subprocess.run(["gh", "release", "download", tag,
@@ -394,6 +406,6 @@ jobs:
 
           for TAG in $(echo '${{ steps.pick.outputs.picks }}' | python3 -c "import sys,json; print(' '.join(json.load(sys.stdin)))"); do
             echo "::group::$TAG"
-            python3 /tmp/kazm_transcribe.py "$TAG"
+            python3 "$WORK/kazm_transcribe.py" "$TAG"
             echo "::endgroup::"
           done
