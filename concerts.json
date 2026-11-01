@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-31T21:11:16.154Z",
+ "updated": "2026-11-01T05:00:22.276Z",
  "concerts": [
   {
    "id": "17k8v0G655xo6Vd",
@@ -30,7 +30,7 @@
    "url": "https://www.ticketmaster.com/three-dog-night-las-vegas-nevada-10-31-2026/event/17006464FC48ABE2",
    "img": "https://s1.ticketm.net/dam/a/0bc/4679fff2-ad49-4758-b6ba-c683f6e090bc_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-03-13T17:00:00Z",
    "lineup": []
   },
@@ -45,7 +45,7 @@
    "url": "https://www.ticketmaster.com/earth-wind-fire-las-vegas-nevada-10-31-2026/event/17006465DF3D2591",
    "img": "https://s1.ticketm.net/dam/a/fb3/7d72d89c-13a9-42eb-bca6-9a9b3cf1cfb3_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-03-27T17:00:00Z",
    "lineup": []
   },
