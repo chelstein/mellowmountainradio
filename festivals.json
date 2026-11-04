@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-04T13:57:09.951Z",
+ "updated": "2026-11-04T23:22:47.762Z",
  "festivals": [
   {
    "name": "Space Cadet Fest",
@@ -20,6 +20,16 @@
    "genre": "Undefined",
    "start": "2027-02-26",
    "end": "2027-02-28"
+  },
+  {
+   "name": "Reggae Rise Up Arizona Festival (Children 12 & younger FREE with a paid guardian)",
+   "city": "Tempe",
+   "state": "AZ",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A70d8U",
+   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Other",
+   "start": "2027-04-02",
+   "end": "2027-04-02"
   },
   {
    "name": "Palm Springs International Jazz Festival",
@@ -80,6 +90,16 @@
    "genre": "Dance/Electronic",
    "start": "2027-01-02",
    "end": "2027-01-02"
+  },
+  {
+   "name": "BurnDown Fest",
+   "city": "Santa Ana",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/burndown-fest-santa-ana-california-01-16-2027/event/0900655EA03A7BE5",
+   "img": "https://s1.ticketm.net/dam/c/fbc/b293c0ad-c904-4215-bc59-8d7f2414dfbc_106141_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Rock",
+   "start": "2027-01-16",
+   "end": "2027-01-16"
   },
   {
    "name": "MLK Jazz Fest",
