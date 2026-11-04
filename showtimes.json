@@ -1,22 +1,11 @@
 {
- "updated": "2026-11-03T22:59:41.983Z",
+ "updated": "2026-11-04T05:24:21.187Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "James McNeill Whistler",
-   "date": "2026-11-03",
-   "time": "",
-   "venue": "",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/james-mcneill-whistler/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/10/James-McNeill-Whistler-poster.jpg",
-   "summary": "In an era of great change and great beauty emerged the character of James McNeill Whistler. Considered by some to be one of the great innovators of 19th century art, he was a contemporary of the Impressionists, much…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "The Art of Magic",
@@ -294,6 +283,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "The Only Living Pickpocket in New York",
+   "date": "2026-11-20",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/the-only-living-pickpocket-in-new-york/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/11/Pickpocket-poster.jpg",
+   "summary": "“The Only Living Pickpocket in New York” is a nostalgic portrait of a small-time career criminal navigating today’s digitally networked world. Writer/Director Noah Segan’s modern metropolis is powered by the ephemera…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Transgender Day of Remembrance",
    "date": "2026-11-20",
    "time": "19:00",
@@ -313,6 +313,17 @@
    "url": "https://sedonafilmfestival.com/event/carmen-met-opera-encore/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/10/Carmen-2026-poster.jpg",
    "summary": "Richard Eyre’s beloved production returns to theaters in a special encore presentation of the thrilling 2010 cinema transmission — a fan favorite of The Met: Live in HD series — led by mezzo-soprano Elīna Garanča as…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Super Improv! Fun Feuding Families!",
+   "date": "2026-11-21",
+   "time": "19:00",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/super-improv-fun-feuding-families/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/11/Super-Improv-FEUDING-poster.jpg",
+   "summary": "Ever wished your family gatherings came with a laugh track? Here’s your chance! Super Improv! is crossing the line—but don’t worry, it’s a relative boundary! From ridiculous family feuds to unexpected reunions and…"
   },
   {
    "source": "Sedona Film Festival",
