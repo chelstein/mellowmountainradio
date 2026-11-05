@@ -1,8 +1,20 @@
 {
- "updated": "2026-11-04T23:32:26.279Z",
+ "updated": "2026-11-05T05:53:36.146Z",
  "feeds": {
   "news-local": {
    "items": [
+    {
+     "title": "City speeds up permits for demolition and repair of flood-damaged property",
+     "link": "https://www.redrocknews.com/2026/11/04/city-speeds-up-permits-for-demolition-and-repair-of-flood-damaged-property/",
+     "date": "Wed, 04 Nov 2026 23:15:30 +0000",
+     "summary": "To support Sedona homeowners as they begin the process of repairing flood damage, the city of Sedona will be working to speed up the process for permits associated with demolition or repair required for flood-damaged homes and businesses. “We want to be able to help people get back to their homes and resume their lives […] The post City speeds up permits for demolition and repair of flood-damaged …"
+    },
+    {
+     "title": "Yavapai County offers free flood debris disposal, waives demolition permit fees",
+     "link": "https://www.redrocknews.com/2026/11/04/yavapai-county-offers-free-flood-debris-disposal-waives-demolition-permit-fees/",
+     "date": "Wed, 04 Nov 2026 22:36:01 +0000",
+     "summary": "The Yavapai County Board of Supervisors officially declared a county emergency following severe heavy rainfall and widespread flooding that began on Sunday, Nov. 1. The county has announced temporary relief measures for affected residents, according to Yavapai County Board of Supervisors Communications Manager David McAtee. Under a proclamation signed by Yavapai County Board of Supervisors […] The…"
+    },
     {
      "title": "Sedona Mayor Ploog signs local Proclamation of Emergency",
      "link": "https://www.redrocknews.com/2026/11/03/sedona-mayor-ploog-signs-local-proclamation-of-emergency/",
@@ -20,21 +32,9 @@
      "link": "https://www.redrocknews.com/2026/11/01/flooding-causes-2700-gallon-liquid-sewage-spill-at-bear-wallow-lane/",
      "date": "Mon, 02 Nov 2026 04:02:54 +0000",
      "summary": "Around 9:45 a.m. Sunday, Nov. 1, heavy rainfall and localized flooding caused severe inflow and infiltration at the Bear Wallow Pump Station. The incoming flow overwhelmed the facility, causing a sewer spill into Oak Creek near 135 Bear Wallow Lane, according to Julie Graham, communications and public affairs manager for the city of Sedona. Pumper […] The post Flooding causes liquid sewage spill a…"
-    },
-    {
-     "title": "Sedona urges evacuation of areas along Oak Creek",
-     "link": "https://www.redrocknews.com/2026/11/01/sedona-urges-evacuation-of-areas-along-oak-creek/",
-     "date": "Sun, 01 Nov 2026 16:34:45 +0000",
-     "summary": "Several neighborhoods and resorts along Oak Creek now in “GO” evacuation status due to flooding in Yavapai County’s “Ready, Set, Go” evacuation system, according to an email sent by Sedona Communications and Public Affairs Manager Julie Graham at 9:23 a.m., on Sunday, Nov. 1. The city had previously warned residents in certain areas of Sedona […] The post Sedona urges evacuation of areas along Oak…"
-    },
-    {
-     "title": "Pete Furman reflects on city service",
-     "link": "https://www.redrocknews.com/2026/11/01/pete-furman-reflects-on-city-service/",
-     "date": "Sun, 01 Nov 2026 14:00:00 +0000",
-     "summary": "Sedona City Councilman Pete Furman opted not to run for reelection in 2026 and will be leaving office next month, making Tuesday, Oct. 27, his last regular meeting as an elected official. “[Because of the] health challenges I’ve had over the last four years, and then the recent tragedy in my family, it’s the right […] The post Pete Furman reflects on city service appeared first on Sedona Red Rock …"
     }
    ],
-   "fetched_at": "2026-11-04T23:32:26.279Z",
+   "fetched_at": "2026-11-05T05:53:36.146Z",
    "source": "https://www.redrocknews.com/feed/"
   },
   "news-regional": {
@@ -192,12 +192,18 @@
    ],
    "fetched_at": "2026-10-31T15:58:07.342Z",
    "source": "https://azdailysun.com/search/?f=rss&t=article&c=news&l=25",
-   "last_fetch_attempt": "2026-11-04T23:32:26.279Z",
+   "last_fetch_attempt": "2026-11-05T05:53:36.146Z",
    "last_fetch_error": "HTTP 429",
    "stale": true
   },
   "news-national": {
    "items": [
+    {
+     "title": "Hong Kong activist Joshua Wong sentenced to 10 years in prison",
+     "link": "https://www.npr.org/2026/11/05/g-s1-152032/hong-kong-activist-wong-sentenced",
+     "date": "Thu, 05 Nov 2026 00:29:56 -0500",
+     "summary": "Wong was sentenced for his second conviction under a Beijing-imposed national security law, in a case that critics say reflects the crackdown on the city's once-thriving pro-democracy movement."
+    },
     {
      "title": "Where voters stand on state ballot measures, from abortion to LGBTQ rights to guns",
      "link": "https://www.npr.org/2026/11/04/nx-s1-6028833/midterms-ballot-measures-abortion-lgbtq-guns",
@@ -251,36 +257,30 @@
      "link": "https://www.npr.org/2026/11/04/g-s1-150276/2026-midterms-democrats-investigations",
      "date": "Wed, 04 Nov 2026 12:38:36 -0500",
      "summary": "Democrats will have the ability to subpoena records and compel individuals to testify. The Epstein files, Elon Musk, the Iran war and Trump's business interests may all come under the microscope."
-    },
-    {
-     "title": "Kansas just elected a Democrat. His message to Washington? Be decent",
-     "link": "https://www.npr.org/2026/11/04/nx-s1-6028587/adam-hamilton-kansas-senate-political-divides",
-     "date": "Wed, 04 Nov 2026 11:08:41 -0500",
-     "summary": "The Methodist pastor who flipped a Republican Senate seat says voters want more than political change. He tells NPR what he heard from Kansans about decency, faith and finding common ground."
     }
    ],
-   "fetched_at": "2026-11-04T23:32:26.279Z",
+   "fetched_at": "2026-11-05T05:53:36.146Z",
    "source": "https://feeds.npr.org/1001/rss.xml"
   },
   "news-world": {
    "items": [
     {
-     "title": "'This is a disaster': Angry Republicans blame Trump for midterms defeat",
-     "link": "https://www.bbc.co.uk/news/articles/c6x29rr8djy3o?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 04 Nov 2026 13:33:30 GMT",
-     "summary": "Some Republicans tell the BBC the president's focus on his legacy and indifference to voter concerns cost them."
+     "title": "Vance walks Trump tightrope with scathing election critique blaming Iran war",
+     "link": "https://www.bbc.co.uk/news/articles/crz98zqkz7z0o?at_medium=RSS&at_campaign=rss",
+     "date": "Thu, 05 Nov 2026 03:47:56 GMT",
+     "summary": "The vice-president's blunt assessment of Republican election defeat marked one of the sharpest breaks with a sitting president in recent memory."
     },
     {
-     "title": "US midterm results a 'victory' for Canadians hopeful of tariff relief",
-     "link": "https://www.bbc.co.uk/news/articles/cqev3mw3e0kdo?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 04 Nov 2026 18:01:31 GMT",
-     "summary": "With Canada-US trade talks back on, Tuesday’s midterm Democratic wave puts pressure on the White House to come to a deal."
+     "title": "What Democrats can and can't do with their new power after taking Congress",
+     "link": "https://www.bbc.co.uk/news/articles/cq1kdgnn2xdeo?at_medium=RSS&at_campaign=rss",
+     "date": "Wed, 04 Nov 2026 18:01:27 GMT",
+     "summary": "Democrats can vote legislation through. But Trump still has veto power."
     },
     {
-     "title": "Ukraine says bodycam video shows deadly Russian double-tap bombing",
-     "link": "https://www.bbc.co.uk/news/articles/c98rz6penv86o?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 04 Nov 2026 22:48:43 GMT",
-     "summary": "At least 40 people were killed and another 30 may still be under the rubble after Monday's attack on a Ukrainian village, Kyiv says."
+     "title": "Joshua Wong, face of Hong Kong's pro-democracy protests, jailed for 10 years",
+     "link": "https://www.bbc.co.uk/news/articles/cwp9g3rlp8jlo?at_medium=RSS&at_campaign=rss",
+     "date": "Thu, 05 Nov 2026 03:56:16 GMT",
+     "summary": "Wong, 30, is among hundreds of Hongkongers detained under the controversial national security law."
     },
     {
      "title": "French blood storage impacted by freezer hacks as theories swirl about culprits",
@@ -289,22 +289,40 @@
      "summary": "The French Blood Establishment (EFS) said cold rooms storing blood were impacted by hackers."
     },
     {
+     "title": "Typhoons batter East Asia as El Niño makes Pacific 'burn with fever'",
+     "link": "https://www.bbc.co.uk/news/articles/cw33kgj7nkemo?at_medium=RSS&at_campaign=rss",
+     "date": "Wed, 04 Nov 2026 23:12:47 GMT",
+     "summary": "Even for countries where typhoons are a way of life, the last few months have brought unusually wild weather."
+    },
+    {
      "title": "'Most difficult days of my life' for keeper Owono",
      "link": "https://www.bbc.co.uk/sport/football/articles/c6zxjz40l280o?at_medium=RSS&at_campaign=rss",
      "date": "Wed, 04 Nov 2026 16:40:38 GMT",
      "summary": "FC Andorra goalkeeper Jesus Owono puts out a statement through his club, expressing his sorrow and pain after Tenerife forward Jesus de Miguel's death."
     },
     {
+     "title": "Pope Leo hosts Bob Dylan at official residence in Rome",
+     "link": "https://www.bbc.co.uk/news/articles/cm0e035n13ylo?at_medium=RSS&at_campaign=rss",
+     "date": "Thu, 05 Nov 2026 02:09:23 GMT",
+     "summary": "Pope Leo had previously quoted Dylan's work in the preface of a book warning against nuclear rearmament."
+    },
+    {
+     "title": "Mother and daughter die after suspected grizzly bear attack in Canada",
+     "link": "https://www.bbc.co.uk/news/articles/cqvgry8k5d01o?at_medium=RSS&at_campaign=rss",
+     "date": "Wed, 04 Nov 2026 23:50:40 GMT",
+     "summary": "Authorities in British Columbia say evidence suggests an animal may have been involved in the women's deaths."
+    },
+    {
+     "title": "Ukraine says bodycam video shows deadly Russian double-tap bombing",
+     "link": "https://www.bbc.co.uk/news/articles/c98rz6penv86o?at_medium=RSS&at_campaign=rss",
+     "date": "Wed, 04 Nov 2026 22:48:43 GMT",
+     "summary": "At least 40 people were killed and another 30 may still be under the rubble after Monday's attack on a Ukrainian village, Kyiv says."
+    },
+    {
      "title": "Israel's president begins consultations with parties after election deadlock",
      "link": "https://www.bbc.co.uk/news/articles/c6z98z5z91ppo?at_medium=RSS&at_campaign=rss",
      "date": "Wed, 04 Nov 2026 16:18:21 GMT",
      "summary": "Herzog warns politicians that \"not every commitment and promise can be fulfilled\" if they want to avoid another election."
-    },
-    {
-     "title": "Delhi air quality worsens ahead of Diwali as firework restrictions enter force",
-     "link": "https://www.bbc.co.uk/news/articles/c699z8792n7ro?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 04 Nov 2026 07:39:38 GMT",
-     "summary": "On Wednesday morning, Delhi's air quality index reading stood at 377, in the \"very poor\" category."
     },
     {
      "title": "Secret police files released in Hungary, 37 years after fall of communism",
@@ -319,28 +337,10 @@
      "summary": "\"We endorse this message,\" Mohammed Bagher Ghalibaf says, as Donald Trump acknowledges the conflict's role in the Republican Party's defeat."
     },
     {
-     "title": "ANC under pressure to reverse South Africa decline",
-     "link": "https://www.bbc.co.uk/news/articles/cr4g1x6l77xyo?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 04 Nov 2026 11:47:44 GMT",
-     "summary": "As South Africans vote in local elections, residents tell the BBC they are tired of the poor quality of services they get."
-    },
-    {
      "title": "Nadal set to join Real Madrid board of directors",
      "link": "https://www.bbc.co.uk/sport/articles/cmy56zekeneqo?at_medium=RSS&at_campaign=rss",
      "date": "Wed, 04 Nov 2026 13:21:01 GMT",
      "summary": "Tennis great Rafael Nadal is set to join the board of Spanish football giants Real Madrid."
-    },
-    {
-     "title": "Sharp objects found in Halloween sweets in three European nations",
-     "link": "https://www.bbc.co.uk/news/articles/cvglw7x239pwo?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 04 Nov 2026 12:34:33 GMT",
-     "summary": "Dozens of cases are reported in Austria, Germany and Hungary, including a nine-year-old girl hurting her tongue while eating chocolate containing a pin."
-    },
-    {
-     "title": "Rwanda's army team removed from Africa league after US sanctions, NBA says",
-     "link": "https://www.bbc.co.uk/news/articles/c699zdx9knmpo?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 04 Nov 2026 11:46:09 GMT",
-     "summary": "The US imposed sanctions on Rwanda's army over its role in the conflict in DR Congo."
     },
     {
      "title": "'I'm not a quitter': Kim Kardashian on retaking the bar exam",
@@ -403,22 +403,22 @@
      "summary": "For some young Africans, these victories offer a glimpse of what a new generation of voters could do at home."
     }
    ],
-   "fetched_at": "2026-11-04T23:32:26.279Z",
+   "fetched_at": "2026-11-05T05:53:36.146Z",
    "source": "https://feeds.bbci.co.uk/news/world/rss.xml"
   },
   "sports-az": {
    "items": [
     {
+     "title": "Arizona State Set to Start Third Quarterback of Season Against BYU - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOZVdfTl9OTDdocFJmX1NmRWU2OHFoWk8tUTJfeVZuUXo3WHhmWS1uMkxzT09oN2RtMHVZREJBWGRSYW1jSDY1TzR5ckRVQ2FVbDlSR05UdGlLNmxqQm12emRTYnI2Qjd6SUQ0VlVaT1lYdGRMTllybjhoM3hxODNWRDd0Z3A?oc=5",
+     "date": "Fri, 30 Oct 2026 19:22:15 GMT",
+     "summary": "Arizona State Set to Start Third Quarterback of Season Against BYU Yahoo Sports"
+    },
+    {
      "title": "What channel is Arizona State vs BYU on? TV schedule Saturday - azcentral.com and The Arizona Republic",
      "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxPN3F4b3gwdThsX3NxUjZUMldQdnhJUjhNbW9vdUJPNUY1Wkh0WEdjVmZRRUlWZGk0LWVZNHQ0WjZ3ejk1bkNhZlFyOWY1TDI4cnhYT19sU0w1ZTA0N25RVF9kZUZPd0FmN3gxZTd0MG5PdkptamNwZEhhc0hnSC1VbjBVblEtVWJyQzZSb3gzZ0pBTXNNOGhUc1BiNGxDVk0wOW5WaDE2cGV1YVNVYmota3dUUE1HbDhrdXFOUmdfdzQzV1kxaEhnODh2V2RfRUpNenc?oc=5",
      "date": "Sat, 31 Oct 2026 16:45:00 GMT",
      "summary": "What channel is Arizona State vs BYU on? TV schedule Saturday azcentral.com and The Arizona Republic"
-    },
-    {
-     "title": "Arizona State set to start freshman Jake Fette vs. BYU amid Mikey Keene injury - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxON1YtVGw5X2E4MDhLZlBkMGtwbklwQldFTUhzd2ZLRDlzck54bFI0VFpkZ1pBcVRwYTZNZUtJUHlFb1ZNOTJnM2Z2dlZWZ2p4ODNRaVhyVmxLQ2pXT3RVOWdZVnI3WHFXakFod1JONzAxWnc3WmNjVFpacDlLQ0pfb0FfaFA0NHhU?oc=5",
-     "date": "Fri, 30 Oct 2026 16:49:39 GMT",
-     "summary": "Arizona State set to start freshman Jake Fette vs. BYU amid Mikey Keene injury Yahoo Sports"
     },
     {
      "title": "Jake Fette has ‘earned’ starting spot, Dillingham says his potential is ‘as high as anybody’ - Arizona Sports",
@@ -439,28 +439,22 @@
      "summary": "The 3 most unforgettable moments in Arizona Cardinals and Dallas Cowboys history Burn City Sports"
     },
     {
-     "title": "Live Updates: ASU voting locations, results for Arizona midterm elections - The State Press",
-     "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE0wQVlFVi0zUjBJc3hTVnZpUGVPSkZLT1VVZmh3dTlkamNiSEJwZmlUbDZ2UU0zNnRqRWlMcWRlVEV0WkgxcUlYcnVfRWZNRFBrVTlJY1JqbGxaVVdDTURRMXRFWVBvTmF6OGcySjlnUTRLLWQzTlpaZUxKdFJZZw?oc=5",
-     "date": "Tue, 03 Nov 2026 17:45:00 GMT",
-     "summary": "Live Updates: ASU voting locations, results for Arizona midterm elections The State Press"
-    },
-    {
-     "title": "Arizona State Sun Devils vs. BYU Cougars: Oct 31, 2026 - FOX Sports",
-     "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNdWdPN3BxSVE4QlMzakZVWWJGSzRQVmdtcGtnMHE4dGtjajZXc0ZEdVN6SHJXbEFETHNJcjMxQ1BkcHhsV19SZFQ5UVh2TURnVEU4UG16X25oX3o4akRLOW9MQmpBbzNqcVl4OGJFQVNrTGRYa0ZhcG5LY3RBVTFmWkJJQUxlVTdrdDF0YThBaldrc2tTRF9yODNIMjlfT2x4T1NsN1BpVjVydWViRXVTczcyR0k?oc=5",
-     "date": "Sat, 31 Oct 2026 07:00:00 GMT",
-     "summary": "Arizona State Sun Devils vs. BYU Cougars: Oct 31, 2026 FOX Sports"
-    },
-    {
      "title": "Cardinals Eying These 3 Free Agents After Jeremiyah Love Injury - Sports Illustrated",
      "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOWVZzZjdXdzRCN1RaVGo2RmpFVk9SbXdJUlcwMkxOajNsOXpWUDltMGgwSUdqb1RGSzBBRE85S3ZpY3cxUTFldk9nMGNleTlqR2V4OVgtdHlJeHRYUjB6bjlKa0ItSWxTOVNSSVF0WC1va19GWGZoSVkzU2RMWUx0dE1fbC1nZU1SYm5POXFIWDdWenR3enR1c2swVmtXM0RHcUhJR2NB?oc=5",
      "date": "Tue, 03 Nov 2026 22:45:52 GMT",
      "summary": "Cardinals Eying These 3 Free Agents After Jeremiyah Love Injury Sports Illustrated"
     },
     {
-     "title": "Big 12 admits officiating errored in touchdown ruling - azcentral.com and The Arizona Republic",
-     "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxOZ0RnS0dBS3dVYllyOGNLVkN6ZWtqUmJBdE5naW5LWGxsSnhtZERrTk83TndNbHhJY04xUHgzNXNPdlZiRGFlMFB4M3otWmY0dTR4c0tfWlQyeWcxU2phbmQ1aVUyUmdXSWtQTWpNazJibTR2NGIwRlRNTkNldVhhQjJzZnhqVFhES2pHUUlNcFA0SHdxaERCTVBMMnI4d2kzT08zZlRTSTBzV2FIeksyb3lPOW9URHluNlgtMDJ5VzE4QkZMZ2NXeDZXRXhYWkR0XzZNS3B4azJGQQ?oc=5",
-     "date": "Sun, 01 Nov 2026 15:48:32 GMT",
-     "summary": "Big 12 admits officiating errored in touchdown ruling azcentral.com and The Arizona Republic"
+     "title": "Live Updates: ASU voting locations, results for Arizona midterm elections - The State Press",
+     "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE0wQVlFVi0zUjBJc3hTVnZpUGVPSkZLT1VVZmh3dTlkamNiSEJwZmlUbDZ2UU0zNnRqRWlMcWRlVEV0WkgxcUlYcnVfRWZNRFBrVTlJY1JqbGxaVVdDTURRMXRFWVBvTmF6OGcySjlnUTRLLWQzTlpaZUxKdFJZZw?oc=5",
+     "date": "Tue, 03 Nov 2026 17:45:00 GMT",
+     "summary": "Live Updates: ASU voting locations, results for Arizona midterm elections The State Press"
+    },
+    {
+     "title": "Arizona State set to start freshman Jake Fette vs. BYU amid Mikey Keene injury - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxON1YtVGw5X2E4MDhLZlBkMGtwbklwQldFTUhzd2ZLRDlzck54bFI0VFpkZ1pBcVRwYTZNZUtJUHlFb1ZNOTJnM2Z2dlZWZ2p4ODNRaVhyVmxLQ2pXT3RVOWdZVnI3WHFXakFod1JONzAxWnc3WmNjVFpacDlLQ0pfb0FfaFA0NHhU?oc=5",
+     "date": "Fri, 30 Oct 2026 16:49:39 GMT",
+     "summary": "Arizona State set to start freshman Jake Fette vs. BYU amid Mikey Keene injury Yahoo Sports"
     },
     {
      "title": "Arizona State opens Randy Bennett era with promising, but unpretty win - Arizona Sports",
@@ -469,10 +463,10 @@
      "summary": "Arizona State opens Randy Bennett era with promising, but unpretty win Arizona Sports"
     },
     {
-     "title": "ASU football freshman QB Jake Fette brings early swagger to gridiron - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPTlNuQVduYW44R29nZENzZnJGZFZrdHBJY2VIamhHX0lDOFNlQ2s1bkNnWVpvMTRYMnBDYndUc2RNMGRqVWNUWE4wSDlaNFowZ3BnRTQ0QnBMYVlka09pSDF0MmlCN2JQajl5NEJuXzVlZE81alRSWjM0a2pKQV8wX2hHbGU?oc=5",
-     "date": "Fri, 30 Oct 2026 12:03:44 GMT",
-     "summary": "ASU football freshman QB Jake Fette brings early swagger to gridiron Yahoo Sports"
+     "title": "Arizona State football gave BYU football a scare. Here's how - azcentral.com and The Arizona Republic",
+     "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQeUNRZklyempNcDUwc3ktbWJzd3c1SEFwQTIyTnFBVnk3OThFTHlaQzNuMmtTOFVGUUJXamxReWtqeWpJYjl2ckNXa3VSZDhZSzVUaVo2QnhKV2t5dFBWYWdXVWRiMlBucjRPQldEQVFYMXBuQ054elpJYUgyOG5PUEloTnVFZENMQktyRF8xVDdSbzRoaVFXZzB2RHlCaUpVdXk1YzdSWlhCa1h3NGhZTVp3eEM5aWNrSTFqVzdiWVBnTFBDNE1V?oc=5",
+     "date": "Sun, 01 Nov 2026 01:57:00 GMT",
+     "summary": "Arizona State football gave BYU football a scare. Here's how azcentral.com and The Arizona Republic"
     },
     {
      "title": "Molly Miller is back for her second year at Arizona State, turns heads during home opener - Fox News",
@@ -481,28 +475,28 @@
      "summary": "Molly Miller is back for her second year at Arizona State, turns heads during home opener Fox News"
     },
     {
+     "title": "3 Cardinals Most Likely to Be Traded Next After Jacoby Brissett Move - Sports Illustrated",
+     "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxQeWNzU085THNEUjZUMWlwUXNBLWRmbUFmd0JPQkZKeTQycnFzMm40OE9MTDl2eU4zMzBNZVQ1SGJzaC1HemhEMEFJZkNqVU5CbHVxeGN0M3BWZWltSUdNd3V2TklnM0Q4RWUyU2FncXl6VkpzRGg3d0MzdXVkVTdPWjN0WVZlZk1kZlRpUHJIbDQ5S194NzRhQ1l6WVpaQQ?oc=5",
+     "date": "Wed, 04 Nov 2026 21:44:40 GMT",
+     "summary": "3 Cardinals Most Likely to Be Traded Next After Jacoby Brissett Move Sports Illustrated"
+    },
+    {
      "title": "Arizona Cardinals fans react to Gardner Minshew magic, Jacoby Brissett’s benching - Burn City Sports",
      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNa1BmU25oY1ZkWWtLbmVmY2tMZjczUTl2aE1OeE15SnlYa0REdFJkYnp4NWFCQ0VuMUVsaXJNa1BtVGhobW8wcUhLNGpUVjhaaVRjZHdVTzFFaGc1Q3lnOUVuZVkyYkszVWRzQ09LNWJocWxOMndRd2otZmV0cWRPQQ?oc=5",
      "date": "Mon, 02 Nov 2026 20:35:32 GMT",
      "summary": "Arizona Cardinals fans react to Gardner Minshew magic, Jacoby Brissett’s benching Burn City Sports"
     },
     {
-     "title": "Breaking Down the Fallout for Cardinals, Jeremiyah Love After IR Move - Sports Illustrated",
-     "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPblA3aHd2RmY3dXdNb0ZJc2ZTSVdjSmtvVDVTR2RyMDR6SUVwT2RlM2VmejhXbTR3WW5nY0RYLW1DVmd3UUtXTVlVTGczWHdUV09fdG9OcEtNSmFqRGVkVGRTUTNubDFtWUQtOWxtbV9RLUVfQVptUVhZaVgybURMMlVmbE1vUHZzaEoxWXFVcDdiWks3RG1hWXlRX2FWN1cwY2c?oc=5",
-     "date": "Tue, 03 Nov 2026 20:28:53 GMT",
-     "summary": "Breaking Down the Fallout for Cardinals, Jeremiyah Love After IR Move Sports Illustrated"
+     "title": "BREAKING: S Lyrik Rawls is Done For The Season, Won't Return For Arizona State - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNYlhDamVRUEFoYjlyeVlCemRySXZ4Tkh4X1NwbUx1QWEyelNRS2RPcGRuY181VGlNZzdOXzJ1aE1HOEJ4c2c1VkFlRkVMbTZNWDVDNmZVTVU5eEg0aHdlbFFNRUM1VWJsa05OMGhpbmpxY0hldmZGalRxZGQ1Q0pyLWt5NUJUbUpU?oc=5",
+     "date": "Wed, 04 Nov 2026 20:39:42 GMT",
+     "summary": "BREAKING: S Lyrik Rawls is Done For The Season, Won't Return For Arizona State Yahoo Sports"
     },
     {
      "title": "How Gardner Minshew sparked the Arizona Cardinals to a crazy win over Dallas - Arizona Sports",
      "link": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOd2k2Uk1uQmQ2cXBabW5zTkZnZFVCNkNsV0NDMlB2c1pFc2RERVUwWWs0ajRQX3N2S1NVZzhVd1VzMlhWWXV2Tk9jcnpVZWRLb0xTRG9jUTc5Sk1KQkYxLXhyMk1Sdko5QU1YMHl6NHZyQm5DS0pnTkFwQVNBUUlZQkRYZmFoT0MxU1ExeTVYMVNlQWVKcWt1WVI3cHNEMDdTU2Y1c2pKRllKanBIZGtwQ1lRbFNoejFVN3l0dXFNVzdPbk5vdFdjOW43LTFPLTlrdllodkJ6MWJ1Y3ZmeUE?oc=5",
      "date": "Wed, 04 Nov 2026 17:13:10 GMT",
      "summary": "How Gardner Minshew sparked the Arizona Cardinals to a crazy win over Dallas Arizona Sports"
-    },
-    {
-     "title": "Arizona State football gave BYU football a scare. Here's how - azcentral.com and The Arizona Republic",
-     "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQeUNRZklyempNcDUwc3ktbWJzd3c1SEFwQTIyTnFBVnk3OThFTHlaQzNuMmtTOFVGUUJXamxReWtqeWpJYjl2ckNXa3VSZDhZSzVUaVo2QnhKV2t5dFBWYWdXVWRiMlBucjRPQldEQVFYMXBuQ054elpJYUgyOG5PUEloTnVFZENMQktyRF8xVDdSbzRoaVFXZzB2RHlCaUpVdXk1YzdSWlhCa1h3NGhZTVp3eEM5aWNrSTFqVzdiWVBnTFBDNE1V?oc=5",
-     "date": "Sun, 01 Nov 2026 01:57:00 GMT",
-     "summary": "Arizona State football gave BYU football a scare. Here's how azcentral.com and The Arizona Republic"
     },
     {
      "title": "Cardinals-Seahawks Week 9 Battle Takes Major Twist - Sports Illustrated",
@@ -515,6 +509,12 @@
      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNTGNhNERKdF9vR1JMcDNDeThUUGRfR1FsRzMtVW9LNjlxRGk2RUJUbG5fWnN0b0VEQnJZeFdxTmlTeUZ6SngxNTdYczEzU2JyZG1VcmFPbVdUdk0wcVM5ME4yYlMzSExTRGNwTWNiYVpCQmxBYmRKLWMwRXpXUHFoS3NvWEMwUjZYdnZydXo2UWY?oc=5",
      "date": "Sat, 31 Oct 2026 19:17:25 GMT",
      "summary": "ASU freshman Jake Fette gets first college start at No. 8 BYU with Mikey Keene injured Arizona Sports"
+    },
+    {
+     "title": "ASU football freshman QB Jake Fette brings early swagger to gridiron - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPTlNuQVduYW44R29nZENzZnJGZFZrdHBJY2VIamhHX0lDOFNlQ2s1bkNnWVpvMTRYMnBDYndUc2RNMGRqVWNUWE4wSDlaNFowZ3BnRTQ0QnBMYVlka09pSDF0MmlCN2JQajl5NEJuXzVlZE81alRSWjM0a2pKQV8wX2hHbGU?oc=5",
+     "date": "Fri, 30 Oct 2026 12:03:44 GMT",
+     "summary": "ASU football freshman QB Jake Fette brings early swagger to gridiron Yahoo Sports"
     },
     {
      "title": "‘We’ve done this before’: Kenny Dillingham addresses Florida State rumors - Arizona Sports",
@@ -535,16 +535,16 @@
      "summary": "College football betting: Underdogs Arizona State, San Jose State should cover Las Vegas Review-Journal"
     },
     {
-     "title": "Randy Bennett in for a rude awakening with ASU basketball, per media - azcentral.com and The Arizona Republic",
-     "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNQmZONEVQRm1mb0xTbVBHell3cGxueEtQNWU5bGxtS2lVXy1qa1hnZ1M1bGJwVExfVzhseGhJX1oyaWtyS3NzNGtvYjYwcU5KUnZ0dkRlQnQ2Vnkzc2VwYnhCcWdmV21uMHBkdkdqVVI0X2lRUm82VGFqM0JHLWtGR2JwZmNMelEyb1VKUDJ4eTN2eUFQeEtJSjIyS3J3T1F0ZzcySTB0U051dDhLUkdpSkx4eS1VcjFLd2tOekMzYS05Y3pyUHc?oc=5",
-     "date": "Fri, 30 Oct 2026 04:32:00 GMT",
-     "summary": "Randy Bennett in for a rude awakening with ASU basketball, per media azcentral.com and The Arizona Republic"
+     "title": "Arizona State football safety Lyrik Rawls is out for the season - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOeVpUX3VoVlF5STFNN1YxSjNKbGlNbk85WHdnMnNWYXhvNlJJTUx6T0x0S0d2anZaeEMxWVVUb2UxTE1xTVp0V1ZWOFZJVGt6TC1zVmlCd2lvVlJXWUJ3SmZMT1F3anNTSi11dmhOYnR1V016ZVc3UXo3UXBHeGl6ZjZVamU1Z1BHQXc?oc=5",
+     "date": "Wed, 04 Nov 2026 23:45:47 GMT",
+     "summary": "Arizona State football safety Lyrik Rawls is out for the season Yahoo Sports"
     },
     {
-     "title": "Arizona Cardinals | Football, History, & Notable Players - Britannica",
-     "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE9zcDdTUWdTZlU5bVRaTEdRMWs5VVBTLU9yODVqR1J1VG9Ra3JhYlo0dGU0Y1k2dk9TZ1o2Y1JJemN1aFVPMUtDZ3Flc2IxMl85RWZ0QmxkTi1GZWJ2WEtr?oc=5",
-     "date": "Mon, 02 Nov 2026 08:00:00 GMT",
-     "summary": "Arizona Cardinals | Football, History, & Notable Players Britannica"
+     "title": "25 Players Highlight Cardinals-Seahawks Week 9 Injury Report - Sports Illustrated",
+     "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOQldVdlY5WUJ5ak5LdmFyNXNIZVVLQk9aeHEzVnRxUnhzVDlTaHAxX0VJUkYyeWFiM2xlcldudlprckxpZ1RwaW9iNHNuY3pkQkpSU3ZWSkFvVF96TG9zc3BtQ29IdUZ6b0IxX0tHM2k5YjJiUlhXcTNxeDA1c1E0MHY2RzRLd1Q1UWlzQXNtT1g1SUV4OUI1OXhBRXB4TElBaUE1Nkd3dEw5OGtPakFiaG1PTEw?oc=5",
+     "date": "Thu, 05 Nov 2026 02:09:20 GMT",
+     "summary": "25 Players Highlight Cardinals-Seahawks Week 9 Injury Report Sports Illustrated"
     },
     {
      "title": "1 Arizona highway remains closed in wake of weekend storms, flooding - KTAR News 92.3 FM",
@@ -553,173 +553,179 @@
      "summary": "1 Arizona highway remains closed in wake of weekend storms, flooding KTAR News 92.3 FM"
     },
     {
-     "title": "Big 12 Breaks Silence on BYU-Arizona State Controversy - Heavy.com",
-     "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQbFQxVFNkV0g0WHdCTW90WkRGdU9qQzVaeVd6N09ac29JdUNFbTk4aHBNTjZOUkJPMElNdWNNbzF3VTBOd1ROM05YSlpFalowRnlEYThrZUozYmU4WHZUUGtVUEZNNjZoem5wS2Z0NHZJUWRTX1FvYXpxMUNGWjd2RVlFY0hSM1lyUDhrdWxqSUhPNEUtakJJWmtibjBBQTFaUjhNMGwya0lta0tSTWc?oc=5",
-     "date": "Sun, 01 Nov 2026 21:49:29 GMT",
-     "summary": "Big 12 Breaks Silence on BYU-Arizona State Controversy Heavy.com"
+     "title": "Mountain View to honor deceased star who played for BYU and the 49ers - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPRU8tcVlhWFgwa0d6emZtWm9rOGs5M2swMkFBbHpvQU5mQTdFR2VmSXlvWkhRTzNvLWlpTDVndEE4Y1djTnkyVG1sMDhTSFRidmFmQXd5QmlRT094VWo1X3B0XzU2SW5zWS1KYk1QeFlrcVRoUnpPcVpzUUNtckxWN25lN3hYVkoxWWc?oc=5",
+     "date": "Wed, 04 Nov 2026 16:51:32 GMT",
+     "summary": "Mountain View to honor deceased star who played for BYU and the 49ers Yahoo Sports"
     }
    ],
-   "fetched_at": "2026-11-04T23:32:26.279Z",
+   "fetched_at": "2026-11-05T05:53:36.146Z",
    "source": "https://news.google.com/rss/search?q=%28Arizona%20Diamondbacks%29%20OR%20%28Arizona%20Cardinals%29%20OR%20%28Phoenix%20Suns%29%20OR%20%28Arizona%20Wildcats%29%20OR%20%28Arizona%20State%20Sun%20Devils%29%20when%3A7d&hl=en-US&gl=US&ceid=US:en"
   },
   "sports-national": {
    "items": [
     {
-     "title": "Detroit Lions LB Jack Campbell: 'I have full movement in my lower body' - Detroit Free Press",
-     "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOQ1A5SXUzNGZSVHBVT2lCYVJvUHIxRFZBWWVUcDg2R01WZ0o1c1pCeTk0Ym8xWm9mQ2N3UVY5VEw3RDJfVy1aemxiMzNROGxKOTdtcjlqRU5INURzMmVtUHFra013b3VubnJaa2o4cXNkb1QxMV9SQUp2QlY1Y0dDV0NvWHRnajUzbkRudi0tMnJxcVJHaEo2SHRiSnpCRDVjamRYampYdkhaSE5ZQndHazBLa05ROVlwLWtvdFFnZUdjUQ?oc=5",
-     "date": "Wed, 04 Nov 2026 20:24:00 GMT",
-     "summary": "Detroit Lions LB Jack Campbell: 'I have full movement in my lower body' Detroit Free Press Erin Andrews Felt Really Bad Reporting On Jack Campbell Sunday Yahoo Sports As Lions return, they keep Jack Campbell close: ‘We know who we’re doing this for’ MLive.com Lions All-Pro LB Jack Campbell remains hospitalized with neck injury NFL.com Tears from teammates as immobilized Detroit Lions linebacker Ja…"
+     "title": "Malachi Toney expected to undergo surgery after injuring ankle in practice ahead of showdown with Notre Dame - CBS Sports",
+     "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxOdDdsWlNsTG9kYlp6VjdvU2VFSXpwelk2NFFkbUNWSWZGV2V5dWJGZHZ5Y1ZVQ0V6UXFGdUM3dDd6U3dtSUdjWDRqYVkta1dqTi11STdkd1hzcUVUdlRLcVhzNHZLNlZBdVcxcGZTcS05ZWFtdHlLd2VIc0ZkNm9YejNsMktmWTJZaTJtMTgyT3FYOTJNTkx4Nkc5dUZFdW1pUlhyRjdGZGYyQQ?oc=5",
+     "date": "Thu, 05 Nov 2026 01:56:00 GMT",
+     "summary": "Malachi Toney expected to undergo surgery after injuring ankle in practice ahead of showdown with Notre Dame CBS Sports Sources: Miami star WR Malachi Toney to have surgery for high ankle sprain ESPN Malachi Toney to Undergo Surgery on Injury, Latest Rumors on Miami WR's Status and Return Timeline Bleacher Report Miami must 'pivot' without Toney vs. Notre Dame Yahoo Sports Leonard Moore Talks Prep…"
     },
     {
-     "title": "Sources - Ravens finalizing trade with Cardinals for QB Brissett - ESPN",
-     "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQRks5dUVDblBzVkRLNVM4Z2QtdDB3YXBhdm1tOWRmTmFhSHJxaXBDTk1TS3RKZ1JZejl4cjZtNEllWExrR3hlcTVpZi14MUk1Znltak5PdlpNWkZsTlZGNnRQWGJIbzdLTjF2cnlaa2R2SHViZkRrZFVFbkhkYUJheERBcWl6d2Qxa0NYUDZmWjA5R21MWG1uTXc1SlNxekU?oc=5",
-     "date": "Wed, 04 Nov 2026 19:51:00 GMT",
-     "summary": "Sources - Ravens finalizing trade with Cardinals for QB Brissett ESPN Two Ravens Players Who Benefit Most From The Jacoby Brissett Trade Sports Illustrated NFL Network: Cardinals to trade QB Jacoby Brissett to Ravens NFL.com Mailbag: Why Did the Ravens Reportedly Trade for Jacoby Brissett? Baltimore Ravens Grade the trade: Ravens get much-needed quarterback help with Jacoby Brissett Yahoo Sports"
+     "title": "Colts' Shane Steichen defends Jonathan Taylor usage, says RB will keep role - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPeWpLa1NIUDZqRjBDekZ0bnA4M2JwRXpaOFJrQTJsSUhPUjNqcGlSRXVLYl90bmpZZjgwSVlZbjZpZXNsdnRiQ2ZwOUpValZjNjYzSDBCS2MwTDFkZllVbGx5QzNQelJsOVcxejdlX1h2QnZkQTFMVHN0S3UwZktMQy1FTXc2NFF2R0hDTVlCa3JfdGJyT2RwQjVQc25scVMxeWpF?oc=5",
+     "date": "Wed, 04 Nov 2026 21:08:00 GMT",
+     "summary": "Colts' Shane Steichen defends Jonathan Taylor usage, says RB will keep role ESPN Packers Trade Proposal Eyes Ascending RB as Jonathan Taylor Plan B Yahoo Sports Keeler: If Broncos trade for Jonathan Taylor, road to Super Bowl runs through Broncos Country The Denver Post Shane Steichen: Jonathan Taylor is on our football team, wants to win this game NBC Sports Why trading Jonathan Taylor is the onl…"
     },
     {
-     "title": "15 players to watch amid NFL trade deadline buzz - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNLTlROFRJR0oxV1Q0S1pLQnRZZmFNc2p0TVJ2ZTNjb2JCeUhJM3RYQi1yY3dRRkNpUFRKdHVpdHQ5ZVZFYXRRZm1mb3RjNlY3cW5EblFRdnoxOTdwZE9IYk5pcnY3RkN5MF93MXJOaVptTkFQZ2dhMzIzVk1Sd2VCd193RzA0MC1FWnJhM2ZJaWtNQ3JHazdnWnJQa0NxWVM2RWc?oc=5",
-     "date": "Wed, 04 Nov 2026 20:25:00 GMT",
-     "summary": "15 players to watch amid NFL trade deadline buzz Yahoo Sports 2026 NFL trade deadline: Players to watch, buzz and goals for all 32 teams ESPN Which NFL teams should be buyers, sellers or stand pat at the trade deadline? - The Athletic The New York Times Assessing Which Star Players Could Be on the Move at the NFL Trade Deadline Sports Illustrated NFL Trade Rumors on Jonathan Taylor, Josh Sweat and…"
-    },
-    {
-     "title": "NFL Power Rankings: Week 9 Edition - Bleeding Green Nation",
-     "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPUUhtTHNGY0pZa1JqRG91QTJ2bVdtc29fY0ZDM1l6RlNOVktCTlRfanh0T3FneW9yWEhlV29mU3JpekVXZlBkNzZuS2kxRkJoQjEzSFB4b1k4dTBNc0syX0dQcXR5OU9pUTFEanU1VEI1bU5RQmZWaEJTQ3lOTWp1N28zRTgyeHdRaXM2bzJFb04yN1lKXzFIdUkyM01XWVR6VHoxVWZYaGQyTXh4eHFuRg?oc=5",
-     "date": "Wed, 04 Nov 2026 15:26:58 GMT",
-     "summary": "NFL Power Rankings: Week 9 Edition Bleeding Green Nation NFL Power Rankings: Stacking all 32 teams for Week 9, plus best in-season trades ESPN NFL Power Rankings, Week 9: Bills claim No. 1 spot, while Bears vault into top three NFL.com Putting our differences aside to anoint Bears contenders: Man vs. machine rankings, Week 9 The New York Times 2026 NFL Power Rankings Week 9: Broncos, Bears Make Mo…"
-    },
-    {
-     "title": "Fenerbahce stun Liverpool. A failed Barcola experiment, and where was Iraola’s defence? - The New York Times",
-     "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQdWxRc09kVW53aUJUWEd3TkdPTndKbDliamhyTXNoMVhYUjd1WHFkdWlTTXVJMG4tczJpeVJKeFJCSGcxY0o4X2Z0Yi1tUk5yM0txUXFUby1vVWR1QzNyNGo2bjNBMi0ydi1hRVJWanFzSUQwZmN2dGstTU1oVU1fdlFTSHdhbWtGTzJaMFFZeTBjVm5OTm9mLTNaMHdJUUxESmFWVWg2d2liNTFwNVpfNGdXRmc?oc=5",
-     "date": "Wed, 04 Nov 2026 23:09:57 GMT",
-     "summary": "Fenerbahce stun Liverpool. A failed Barcola experiment, and where was Iraola’s defence? The New York Times Fenerbahce 3-2 Liverpool: Reds suffer defeat in Istanbul as weaknesses exposed BBC Muriqi caps Fenerbahce comeback to make Liverpool pay for defensive lapses The Guardian Team news: Confirmed Liverpool line-up v Fenerbahce Liverpool FC Liverpool bemoan 'cheap, messy goals' in loss at Fenerbah…"
-    },
-    {
-     "title": "NFL Fantasy 2026 Start 'Em, Sit 'Em: Quarterbacks for Week 9 - NFL.com",
-     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOdkt3cHJXR29aWFNqRWtMaUwyS21vOTRnbVN1RFFOb2h4Z0RJNWN3MEpIdUp2azR1RlZzcWxBZ1BMR0RoSWxmN0tPN3Qtajd3UmN6Z1hzeDZ6cmtUWUNGdEhTa2ZjTFZHWnBNSzVWUnBVSlp5WEJ4N1l0VWJoZUhKQTUwdlo3ZFQt?oc=5",
-     "date": "Wed, 04 Nov 2026 17:46:59 GMT",
-     "summary": "NFL Fantasy 2026 Start 'Em, Sit 'Em: Quarterbacks for Week 9 NFL.com Week 9 Fantasy Football Quarterback Rankings Yahoo Sports Fantasy football Week 9 RB preview: Jonah Coleman and Mike Washington Jr. take over, but only one delivers CBS Sports Upgrades For Week 9 Running Back Rankings: Quinshon Judkins' Heavenly Matchup FantasyLife NFL Week 9 fantasy football rankings and the much-anticipated Leg…"
-    },
-    {
-     "title": "LIV Golf: Breakaway league to wind down after potential financial backers withdraw support - BBC",
-     "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE9tR1h6dXc5b3pzRkZZOHpiVUtONzk2NlBHNmEzQldPaFpkVGZMbDJQbC1FZ2o4azBRZk8za2lQVUFaeFJuNEx3YkN1TXB4TURORms5YjhfVEhtRFNQQmpteTh0dw?oc=5",
-     "date": "Wed, 04 Nov 2026 21:52:13 GMT",
-     "summary": "LIV Golf: Breakaway league to wind down after potential financial backers withdraw support BBC Sources: BC Partners pulls out of financing deal in major blow to LIV Golf 2.0 ESPN Report: LIV Golf's financial backer dropping plan for new league in 2027 KCCI LIV Golf's new funding partner pulls out over lack of player commitment in huge blow to league: report Fox News LIV Golf collapse imminent afte…"
-    },
-    {
-     "title": "Spanish soccer player Jesús de Miguel dies after collision in match - NBC News",
-     "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNVnpxR3U1dXdwWUxudzBGTzZ5WXJoNzQxSkJzbm9VZUdaS2MxLXdMcEhKTzVJNWlpdTd0bFlrVTBjUFhvRUhRY3hUT3NPU3Y1X0dDS2s3RFZKc012QTFaRFpiOG15MHhXV0o2eTNScmZNWjNxbllVTGJhTnJiZW13c3Zqc3BaWDUyOENYZko4ZkVOeDQtSlNwR2VBS1RaQmE2elJ3OW1NNGQ?oc=5",
-     "date": "Wed, 04 Nov 2026 14:09:17 GMT",
-     "summary": "Spanish soccer player Jesús de Miguel dies after collision in match NBC News Jesus de Miguel, the Spanish striker whose tragic death has shocked football The New York Times Owono says he is enduring most difficult days of his life after De Miguel collision Reuters Tenerife provide injury update on Jesús de Miguel 🏥 Yahoo Sports Goalkeeper feels 'enormous pain' after collision that led to Tenerife…"
-    },
-    {
-     "title": "NBA Power Rankings for all 30 teams with huge changes after opening weeks of new season - SB Nation",
-     "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPdXJIbE01R3AyT3ZnNW5GU0VnakN0YTNSS0pkMzc2ZW1vSkFIY1liQ2xSSVNaaHhnQ01jWU92ZWEwakhZMG83SU5vOV8xZ29iNDVQZE5wMXdMZFhNRElTZklFLXJEWHREQzU3cHVtZnBHRzc5M0VpOG5ucXJzYWRPX1FPY2lqd21PM1BtTDZEdUF1X1gtTEU1djdyc21xdG5uNTY3Y1d5ajNkZw?oc=5",
-     "date": "Wed, 04 Nov 2026 13:00:00 GMT",
-     "summary": "NBA Power Rankings for all 30 teams with huge changes after opening weeks of new season SB Nation NBA Power Rankings: Summing up all 30 teams' starts ESPN Power Rankings: Undefeated Grizzlies surge into Top 5 NBA.com NBA Power Rankings: Liftoff in Houston, and how far have the Thunder fallen? The New York Times NBA power rankings: Rockets and Sixers shoot to top, Knicks drop USA Today"
-    },
-    {
-     "title": "CFP Rankings shake up national title odds as SEC gains ground, Ohio State slides - CBS Sports",
-     "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPczVSNUZlYW5saGhvNmlBNkpkLUdXQ0FtSWJkUGRpX3BLUG5UUUtOcnF3U0JCR1ZTeHlRQWlkWGtPeHpwUlg0YzZUR1BOODNPbUZvajhoazRFOFJwV3RHZ05XMFV6aU9wczlIaktsLWgxRTZYVGNtT2RWQTFLVGRqTHZ0R041anNIRjRuZUtRZGJqejJ4cm9Tcy1jMjU?oc=5",
-     "date": "Wed, 04 Nov 2026 15:11:31 GMT",
-     "summary": "CFP Rankings shake up national title odds as SEC gains ground, Ohio State slides CBS Sports The CFP selection committee has spoken: Notre Dame has no margin for error. Now what? - The Athletic The New York Times Craig Carton says Alabama is 'screwing everybody else' after Crimson Tide land at No. 5 in rankings Fox News College Football Playoff bracket, based on current committee rankings NCAA.com …"
-    },
-    {
-     "title": "Valkyries parade down S.F. Embarcadero in open-top buses as joyful fans line route - San Francisco Chronicle",
-     "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNZHRoT1o3WkhNZXd2d252ZUxacjdmcUdGVjBkWHdZX3hOMVl2akpfc2E1enlYVV9NSmZRaURhSG9mSlFWYXd0ZkUtTUpsZ2pNUTNZMXBVSzdqVmpYT2RLeGkyWEpHdGZhaExDUmx4XzZIancxY3hfQ1FSdm95eDFxbGZ6VVMyMTFpcDJEUjJoN2JiYXpEZVhMdnF3?oc=5",
-     "date": "Wed, 04 Nov 2026 22:45:38 GMT",
-     "summary": "Valkyries parade down S.F. Embarcadero in open-top buses as joyful fans line route San Francisco Chronicle Valkyries victory celebration: San Francisco parade draws crowds downtown KTVU Valkyries, fans revel in franchise's first WNBA title during championship parade in downtown San Francisco Yahoo Sports WNBA Finals saw surge in attendance and record ratings ESPN PHOTOS: 2026 Golden State Valkyrie…"
-    },
-    {
-     "title": "Coach: Seahawks QB Sam Darnold ruled out with quad injury, is week-to-week - ESPN",
-     "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxObzJvN29Db0hubFZ4ZTN1LW0tMzdCZlpSRXcxbXVuajJ0bTk0MXRCbTlIUU5GNmM3bUNQdGpyc1pzZUV5dlljVGxHM0diNFpBTWhDcUlOazh3bGJxUS1IVTQ0QjNrcFVpRzB3ajNZN0toSHRhTzRXTHl3ZHgzSXVoUjhPR0lwNDZ4dzMtb1FZdw?oc=5",
-     "date": "Wed, 04 Nov 2026 19:00:00 GMT",
-     "summary": "Coach: Seahawks QB Sam Darnold ruled out with quad injury, is week-to-week ESPN Seahawks quarterback Sam Darnold ruled out against the Cardinals with quad injury Anchorage Daily News Sam Darnold out vs. Cardinals; Drew Lock (elbow) to start for Seahawks if healthy - The Athletic The New York Times Bump: Darnold injury adds another twist to Seahawks QB discourse Seattle Sports Sam Darnold Won't Pla…"
-    },
-    {
-     "title": "49ers will have to make a decision on Brandon Aiyuk, sooner or later - NBC Sports",
-     "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQeDNoV0M1V094UmtLNHRZZTdUaHVPR2ZQNWUwN3N0SThfaE9BZFZ0ZzVWX3RXMmdybE9IbGV4ZDN3aTJzbzlCSWhCOFhDYkl0dTJ1U1l1S0drX3NXOHA2VjQwRm5uT1RoSlktQlE1TjB2WXptcW9CRTdSR3hfNGRSYTlWUER2Q2VLVUtOQTJqU201SWJxSnFkTzZDQUdNajBQT1lRZVhEVUFWc0Q5MlpPcE9XYWx6MklDLTNDRHgzUjBBN01zZW51bw?oc=5",
-     "date": "Wed, 04 Nov 2026 19:17:13 GMT",
-     "summary": "49ers will have to make a decision on Brandon Aiyuk, sooner or later NBC Sports Brandon Aiyuk files to be reinstated, plans to report to 49ers on Friday ESPN “I Have No Expectation”: Kyle Shanahan on Brandon Aiyuk After WR Filed to Be Reinstated From 49ers’ Reserve Squad List Yahoo Sports San Francisco 49ers coach shuts down reunion talks as Brandon Aiyuk seeks NFL reinstatement Fox News Brandon A…"
+     "title": "Champions League: Liverpool’s Istanbul nightmare, Como score nine and Bellingham’s wondergoal - The New York Times",
+     "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNbE5sLWcwNHRrbW1MVkZCcmp5Qzdld0VsTDVUZnliRlVSSFhDck9HNkgwZ2JQODdkQlVWSEp2M3NobHc2TmxoQXNZbGo1TDFXUXhmelBYR0hGeTBOdUhOUDRqUEpxYW15dWlFcUVnMUdOeFpwSGJIU0hwZVRnMGs1cDYxNFdSOTNNYi12elZCMDBsZDVKMHZjOFUtcw?oc=5",
+     "date": "Wed, 04 Nov 2026 23:15:29 GMT",
+     "summary": "Champions League: Liverpool’s Istanbul nightmare, Como score nine and Bellingham’s wondergoal The New York Times Watch Champions League Match of the Day, plus reaction after Arsenal and Man City win BBC Champions League recap: Fenerbahçe stun Liverpool, Como's 9-1 win makes history ESPN Champions League scores: Manchester City, Real Madrid survive scares in wins; Liverpool upset, Arsenal cruise CB…"
     },
     {
      "title": "Major League Baseball’s New Salary Cap Proposal Is As Shady As Its Old One - Defector",
      "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPMFVIRXFiaVhPVG0yR2dMLXdNLWR5VkIxSERGWHItVkZyd1VQRkhNWE5vLWtqSHB0UHktVkZOelBJbkZoN1I5alhwdTZRZy1ld2FUczlYamdQbFlpbUYteWpFeUR5TjRhT2N3UG51TGhVbGZlMGpVV2dqOUdnNU9MVlpaOW1tUDlJcmdfUXdMQzRsVVJkY1VoTzJR?oc=5",
      "date": "Wed, 04 Nov 2026 18:49:00 GMT",
-     "summary": "Major League Baseball’s New Salary Cap Proposal Is As Shady As Its Old One Defector MLB increases cap and floor in latest proposal, sets 2028 target MLB.com MLB proposes delaying salary cap until 2028 season ESPN Your guide to MLB’s coming lockout: Why it’s happening, whether games will be lost, and when baseball will be back The New York Times Report: Albert Pujols interviewing for Astros' manage…"
+     "summary": "Major League Baseball’s New Salary Cap Proposal Is As Shady As Its Old One Defector MLB increases cap and floor in latest proposal, sets 2028 target MLB.com Your guide to MLB’s coming lockout: Why it’s happening, whether games will be lost, and when baseball will be back The New York Times MLB proposes delaying salary cap until 2028 season ESPN Why this year’s World Series won’t prevent a labor di…"
+    },
+    {
+     "title": "Lions' Jack Campbell releases statement on progress of neck injury - The Detroit News",
+     "link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNdjBKMUU1N1lmWTdpdnR0dEFiTmt2dGM1ZVBUeU1BLXBpaGc0UzFPQkUzYnZjMndPLTNxb3ZXMktDX2tISi12dkNkVmRmNXNCRU15SHRqNmx5ZGdDUVNJSmJOUHBGRC10anYycU1YaTFTSG4tQW1nTm9FMndKTkZHMXN2ckV3VGs2SjNMb0k5OWh2aXlQend5Qmg1bE5tYS01TzVkQUtJdHdCLWVyalB6aUoyc0pJdnd1SHdMd2F5MDh5U1p3SkdfWXFTajBzOEp4SnJ4UFFNYw?oc=5",
+     "date": "Wed, 04 Nov 2026 23:29:00 GMT",
+     "summary": "Lions' Jack Campbell releases statement on progress of neck injury The Detroit News Lions' Jack Campbell has full movement in lower body after neck injury ESPN Statement from Jack Campbell Detroit Lions KIRK SPEAKS: Northwestern Black Heart Gold Pants Detroit Lions out to 'honor Jack' Campbell with play against Dolphins Detroit Free Press"
+    },
+    {
+     "title": "Why the College Football Playoff Committee Ranked Notre Dame 11th - 247Sports",
+     "link": "https://news.google.com/rss/articles/CBMigwJBVV95cUxNSnBTRHY2Um9keVdzWlZRWXdPYnU4Mm52UXRCZ05nY3NFZ0xqdk9IczR0QXF0bWdudTlUUFdwZ25SVlR5OFpGQXIxbFBSVmotRmNMYjlHckhWUTVBd0NaWHFTLWtDOUZ0NUFXUTkyNTRWQWsxZWhmTWxYRUdCSTNmQkZfMXZUTzBfTHltLXlpMWFqUEFaODRpRzNpa3daZVNTdGFsNUNpRXA0aHNDT1NLdERsTzl6OGc2QUhIM21vUVFDQVBXOEZjRHctSlJQMndpMnFyNmZiUVVLeVBPV3Y4S2tKMHBEVDE0MG9NSnJSOFdFVVhQc0pJQlV4bHJsc0VGVVlV?oc=5",
+     "date": "Wed, 04 Nov 2026 22:39:43 GMT",
+     "summary": "Why the College Football Playoff Committee Ranked Notre Dame 11th 247Sports What could keep each team in CFP rankings from winning it all? ESPN Alabama Is No. 5 in the College Football Playoff Rankings, but Its Biggest Problem Hasn't Changed Yahoo Sports Mandel’s Mailbag: CFP committee still loves Alabama. Philip Rivers is a red flag for NC State The New York Times College Football Playoff bracket…"
+    },
+    {
+     "title": "LIV Golf collapse imminent after BC Partners withdraws - Axios",
+     "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9Cb3h2ODU0aFl5MnQ0M1dWRk5jZEtFeVRoLU5EN0lCQW02TVNoUS1BZnNxVHpJc1VkMTItWTluellWcFc5SG1jTWM1V28yeGl3dWNQcVBjQ2hrZUw5RS1qVWRMSE5aVkxuM0JNeWhGU1M2UQ?oc=5",
+     "date": "Wed, 04 Nov 2026 22:57:41 GMT",
+     "summary": "LIV Golf collapse imminent after BC Partners withdraws Axios Sources: BC Partners pulls out of financing deal in major blow to LIV Golf 2.0 ESPN Report: LIV’s financial backer dropping plan for new league in 2027 AP News Report: LIV Golf facing shutdown after investor withdrawal GOLF.com LIV Golf could be forced to liquidate assets after losing financial backer BC Partners - The Athletic The New Y…"
+    },
+    {
+     "title": "ESPN: Ravens acquire Jacoby Brissett from Cards - NBC Sports",
+     "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxOajEyWENja1doNVB1YmFVY1V2RmFNTGdoYkRPM0NCN3hpcDhVeGlKTE0yaGJmYnlFSzBJY1RwV1JVeXFUWjRXTl9ScGNRRVZkVjN4eUM0UUJ4WEpWY0MySEJJLTlaMDBvZ0hQOWRwQkE1SDctNEVpXzZnUVZNNWlKekJReC16NWlPNkNiUFBhUlc3S2k0ci1OUWgtT05fcG5zNXpZbkc3YVh6OFVqWUpIck9n?oc=5",
+     "date": "Thu, 05 Nov 2026 04:03:43 GMT",
+     "summary": "ESPN: Ravens acquire Jacoby Brissett from Cards NBC Sports Sources - Ravens finalizing trade with Cardinals for QB Brissett ESPN Cardinals’ $15.5 Million QB Deal Comes With Surprising Trade Revelation Yahoo Sports NFL Network: Cardinals to trade QB Jacoby Brissett to Ravens NFL.com Mailbag: Why Did the Ravens Reportedly Trade for Jacoby Brissett? Baltimore Ravens"
+    },
+    {
+     "title": "San Francisco celebrates Valkyries' historic championship with an all-time parade - SFGATE",
+     "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxORTF1dFZFUHhrUi1VQjZVYnFEM0dVVTZPOVNZeDVsNHN5Z0ltZjdpZGFrZWRYVFRsaUdpNEVVS2prOWlsSE5pdEN6QVlOX05yOFJkMTlEai05QkhrMG8zMEMtV29EVXpGWWJ5TFFXcTUxdnM5ZG4xWThPcnNEYl9mSjRQVmNXMHFiN01UZ3JwM2lSNUdFN21FZkJB?oc=5",
+     "date": "Thu, 05 Nov 2026 02:39:03 GMT",
+     "summary": "San Francisco celebrates Valkyries' historic championship with an all-time parade SFGATE Golden State Valkyries Reign Supreme in San Francisco, a City of Start-Ups The New York Times WNBA Finals saw surge in attendance and record ratings ESPN Valkyries victory celebration: San Francisco parade draws crowds downtown KTVU Golden State Valkyries championship celebration and parade ABC7 Bay Area"
+    },
+    {
+     "title": "Former Good Good Golf executive sues company over blame for controversial advertisement - The New York Times",
+     "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOWUszZmlCemJXZmdkNDM1SkttTWNFUy1IWEtZdW5CWEJkNmVDR1dGY25RX3RiYlE3aFU3MEJLdnAwUXZwX3FxNmFoVDFUbXZzVnloZ252Ty1ZYVhWRHc5bU05VF9ITHFSSkt6R1dCai1IR2dCa1NrUjFnRlB3V21nUF9EaG5JWnJ2bFFBQkVUNHhQSUQwSkppY2VSZjlOc2o4di1V?oc=5",
+     "date": "Wed, 04 Nov 2026 22:36:40 GMT",
+     "summary": "Former Good Good Golf executive sues company over blame for controversial advertisement The New York Times"
+    },
+    {
+     "title": "Brian Thomas Jr. to the Patriots, Jonathan Taylor to the Vikings and more trades we'd love to see for fantasy football - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMigAJBVV95cUxOLS0xMENKbjd6NEtNQk5MUHJacmF2aXhuQ3kwUFZxS0NEbVdqVm1FZ0RPaGw1VXVOZEl2Q05hRlVTbzlfdU03eGtpTDd2cWtfTEV6UVBBQ0pBek1MbG1Dd0pBZ21tTGN3bVJWQkN4eEIzckhwaUprOGdPT1k1ZUNENHJaNTJOM19MZWd5MGtUTDNIRHhrUGFZcXZ1c3o4RFVRaWtFR0NfZ3JOd1dnUWdZRXpOVnpHMW9Kd2FPNm4zaWpJLVdNUmctX1Vlb0FhcFVrN1h0V1FNMlRKTzYwVEdfNVd5dU15M0NWRGhLZmNMcklhb3RWU00zREZ1OERHbkNQ?oc=5",
+     "date": "Wed, 04 Nov 2026 15:38:34 GMT",
+     "summary": "Brian Thomas Jr. to the Patriots, Jonathan Taylor to the Vikings and more trades we'd love to see for fantasy football Yahoo Sports 2026 NFL trade deadline: Players to watch, buzz and goals for all 32 teams ESPN Will Jonathan Taylor, Brian Thomas Jr. get traded? How will Raiders decide on future with Maxx Crosby? What league sources are saying Yahoo Sports Which NFL teams should be buyers, sellers…"
+    },
+    {
+     "title": "NFL Fantasy 2026 Start 'Em, Sit 'Em: Quarterbacks for Week 9 - NFL.com",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOdkt3cHJXR29aWFNqRWtMaUwyS21vOTRnbVN1RFFOb2h4Z0RJNWN3MEpIdUp2azR1RlZzcWxBZ1BMR0RoSWxmN0tPN3Qtajd3UmN6Z1hzeDZ6cmtUWUNGdEhTa2ZjTFZHWnBNSzVWUnBVSlp5WEJ4N1l0VWJoZUhKQTUwdlo3ZFQt?oc=5",
+     "date": "Wed, 04 Nov 2026 17:46:59 GMT",
+     "summary": "NFL Fantasy 2026 Start 'Em, Sit 'Em: Quarterbacks for Week 9 NFL.com NFL Week 9 fantasy football rankings and the much-anticipated Legend of Zelda top-20 The New York Times Fantasy Football Rankings: Hayden Winks' RB Blueprint for Week 9 Yahoo Sports QB Rankings Downgrades For Week 9 Fantasy Football: Jordan Love & More FantasyLife Fantasy football D/ST outlook for Weeks 9-12: Fire up Texans, and …"
+    },
+    {
+     "title": "Eagles injury update: Joe Milton might not get much extra help - NBC Sports Philadelphia",
+     "link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxOUW9JamVWdUdHRjhvbndxU2RNS29xVW9ieTRRSnhYQ1dsQmRvdHFRalNhSjlIakhCa1ZNdXlJcG1pSGlvTzAyWEhGSkQxZW84SWYxazM3SEtyR1ZNRS1lcmEyVGdaMDNZc3hVRExzaUVVUFlvVTFSYmNiSVJBRm0zNExQTmItd1JiamNYV2QtbGFMdGxNLTRNR1NLQk1yN3RZQ2ZiOFAxNlVsMk5OMUstcGxqNEhURDNmQTAwZndqUUZ2OXhzZ3ZqQnlrUUFGYnpvX1YwRTVUYmtoY0s3OS1kRFprVnVUY3Zh0gHwAUFVX3lxTE84UENxd1VMQmhqNlRkSEp2RUVrYlUtTTNMXzlrSnFyRFhCMXJRLUVldFpQZGktejVhemgyaF9ad3g0QlRmb240aHAzamswekZNM3FPa3h0TzBlSllNU0Q4Ymh1SVJlWEh5M2xSVFowOHQwVlNfY2JhQm9sSzNlVXZmMHp5NEZiYW5ONjlRYS1wVnJBYXpjN3lTRkZqNEtiYlBnUm10Y3JhdzNmVDROanhOMW81bFVOaUM0WFJZVlRhc1BHOTYzTC1xYVUxZnVieEVKQmpXYXVObmZTekF5Q2JPWmFnczEyUHljY2h5MUlhZg?oc=5",
+     "date": "Thu, 05 Nov 2026 00:22:18 GMT",
+     "summary": "Eagles injury update: Joe Milton might not get much extra help NBC Sports Philadelphia Sources: Slumping Eagles turn to Joe Milton as starting QB vs. Giants ESPN NFL Network: Eagles to start Joe Milton over Tanner McKee in Week 9 vs. Giants NFL.com And Now, A Game Of \"Who’s The Saddest Team In Football?\" Defector Eagles turn to Joe Milton at QB, is Cole Payton next? | David Murphy Inquirer.com"
+    },
+    {
+     "title": "New Philip Rivers Rumors on NC State Meeting, Potential Coaching Staff amid Russell Wilson Buzz - Bleacher Report",
+     "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxPRFYzcXB6X2RzX19PSmRPNHphZ2xsQ0c0b3VLZHFqSk5hMnlRQmxGXzFMTVZiR1U0TlRqa3pETDRSaG9MX2VSYksySkFjQVJPR3RDc1JDdWUwVEJfWVY0aDhQQU5zT1g4d1EzQjkyblY4d0JSUWFDRTJQc3lkdGx1U2xybzdQNnV3TVVfeVJKUUl0cThLOHpFRFpWSFNVMjNVZHJ2bXJzUXVCWHFkWlg1N0FEUjh1LXh5NWk4ay1kRWhzYUtmbVJaem1CWEVfLWRsemc?oc=5",
+     "date": "Wed, 04 Nov 2026 21:26:44 GMT",
+     "summary": "New Philip Rivers Rumors on NC State Meeting, Potential Coaching Staff amid Russell Wilson Buzz Bleacher Report Ex-NFL QB Russell Wilson interviews with NC State for head coaching job ESPN NC State coaching search | Ex-Pack QB Russell Wilson interviews for Wolfpack head coaching job ABC11 News Philip Rivers confirms meeting with N.C. State; Is he inching closer to a return? AL.com Former Steelers …"
+    },
+    {
+     "title": "Saints' Jordyn Tyson returns to practice, listed as limited participant - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNQTFMMmVhOHhMTGc0OGVQUmVrd3JBMkhGUWpfNTRFcDhTTExUUXVtRE9TV2E2Q2h5NHhfbE9RQW80WDNNWUduWTRnWXpMQTNOWDZkQUo1YWlud0c5YnRjcF94Qm1NWlQxSWxrNEZHSUhLLV9GSDJhaTUxc0RMOUZUckZNZ18zMFp1TDBkaUh6SlJMV0czM29xWQ?oc=5",
+     "date": "Thu, 05 Nov 2026 00:05:00 GMT",
+     "summary": "Saints' Jordyn Tyson returns to practice, listed as limited participant ESPN How impending returns of Jordyn Tyson and Travis Etienne impact Saints’ fantasy fortunes The New York Times Tyson (hamstring) designated to return from IR NBC Sports The Saints see Jordyn Tyson back at it practice — and get another surprising return NOLA.com Former ASU Star, First Round Draft Pick Jordyn Tyson Returns to …"
+    },
+    {
+     "title": "Sam Darnold (quad) out for Week 9 vs. Cardinals - NBC Sports",
+     "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOb1JPdGVsMWZ3WkcyN3g0aGtBb2pfS3V2aGVVTTB0dnFJVldDekpSVHEtOHgzMThJUzR3RWYyX2gyeHdMXzlLc2pQTDI3dlVSZkJKMnk3NU15dTFwekZkREV2SmF0Qlg4bWo5ZDFENDhKNS1qR01tSmNIb2J1MTd5MnNoWlp5TV9VOEs0N1M5UGduaHRXRGR1amFuSHloNUxlTEdhSENoUHBHdDF2V0Fj?oc=5",
+     "date": "Wed, 04 Nov 2026 23:20:50 GMT",
+     "summary": "Sam Darnold (quad) out for Week 9 vs. Cardinals NBC Sports Coach: Seahawks QB Sam Darnold ruled out with quad injury, is week-to-week ESPN Adrian Martinez signed by Seattle Yahoo Sports Seahawks QB Sam Darnold to miss Week 9 with quad injury, Drew Lock expected to start USA Today Seahawks will be without Sam Darnold against Cardinals The Seattle Times"
+    },
+    {
+     "title": "Brandon Aiyuk reportedly plans to report to the 49ers' facility on Friday - NBC Sports Bay Area & California",
+     "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQUkRhMjB1WVZQTG1ibXVTWWlXUDhZTHNsc1Npb29IT1pUZmJ3WmFFQkdpTUZoZGxTcU1XTE5PQUlLNHFwMDFZWnE5UnlFX1F2TjFJcnB5dzloM01ONEFSeC1nd09oUmswcVFQQVkySTA4QXRzOEg3UFV4Y3BOMGRkR0lXa3ZXeUJqOXBwc3VIWHlfVjc0ekdfR2N0VXRfX2Z2OTc1cFRoM3NjS1XSAbMBQVVfeXFMT3BacTNUQmh5TFhtcVhuWXBQcDdHVVZQc2hBLUlZOGFqX1dkdl9JZ2ttcjBDZDcxTnBJTTdkSmhFVjdOdjc1S19RX1ZZcmcwSFlfQ19rd1p3Smg0dlZKQ1lVV1lwZTR4ZUxRRXViQXZvUF8yeHoteFhkQkxlLWlGaFQ5Wm9YUlZlQXB2UVNVaVMtTGl6S185TTVQMzU3T3dpa1daVE5PSmdSeG9MZHZPQ25wVVE?oc=5",
+     "date": "Wed, 04 Nov 2026 15:31:29 GMT",
+     "summary": "Brandon Aiyuk reportedly plans to report to the 49ers' facility on Friday NBC Sports Bay Area & California Brandon Aiyuk files to be reinstated, plans to report to 49ers on Friday ESPN 49ers players react to Brandon Aiyuk filing for reinstatement Yahoo Sports Kyle Shanahan: Nothing’s changed for me with Brandon Aiyuk, I’ve moved on mentally NBC Sports San Francisco 49ers coach shuts down reunion t…"
     },
     {
      "title": "Bears Notes: Caleb's Cleats, MNF's Unsung Heroes, Week 9 Injury Watch - Bleacher Nation",
      "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1rX2xjZmdLQnpfNXNPV2c5bGxVMlVTWmctU3g0dXFQUWh0dnB5YUtzV01SdXJKeXlIRG9RaUM3RlkxN2VMMXJNWmdxa2xxSjRjdjgyOWdkd1VNRWJCUkxwbldUR2dSc2RfOE1rN1Y1ek1fUGhReXdhaUlnbw?oc=5",
      "date": "Wed, 04 Nov 2026 15:22:04 GMT",
-     "summary": "Bears Notes: Caleb's Cleats, MNF's Unsung Heroes, Week 9 Injury Watch Bleacher Nation Super Bowl odds: Bears continue rising while Lamar Jackson injury sends Ravens falling The New York Times Reviewing the Bears’ PFN grades from Week 8 vs. Seahawks Yahoo Sports Bears-Seahawks on 'Monday Night Football': What We Learned from Chicago's 34-17 win NFL.com Bears 34-17 Seahawks (Nov 2, 2026) Game Recap …"
+     "summary": "Bears Notes: Caleb's Cleats, MNF's Unsung Heroes, Week 9 Injury Watch Bleacher Nation Jeffery Simmons, Bears' defense handle Seahawks ESPN Super Bowl odds: Bears continue rising while Lamar Jackson injury sends Ravens falling The New York Times Bears-Seahawks on 'Monday Night Football': What We Learned from Chicago's 34-17 win NFL.com Stacy Rost: What led to Seahawks’ dismal showing vs Bears Seatt…"
+    },
+    {
+     "title": "FSU contracts with Parker Executive Search reveal cost for both searches and a timeline for the AD hire - 247Sports",
+     "link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPVnNsWWtET2NZbjlEVjg1djdNSXZ3MC1VdjF6T05YVzJGZzkxR3JkUEJmZkE3OGZxN1NIZHg4TEVNLUZrdXlhWkpiSDd6aDJia19JWWpyWnNhSVV4aEFJeUZ3cXl4cWhRMzNLLVozanBSMVF1NklZR1owWEF3UHByOUpFaXJTd3g3V3pqVHlFU3lSbEo0S3ZIQjQtU0xBSFlwRkRaVWVYN2d2NTRXX3NSWWxzUENzY0FOUGQ4TjhXaGJibjJvWmlSMWFjVQ?oc=5",
+     "date": "Wed, 04 Nov 2026 22:23:22 GMT",
+     "summary": "FSU contracts with Parker Executive Search reveal cost for both searches and a timeline for the AD hire 247Sports What's next for Florida State after firing Mike Norvell ESPN What's next for Mike Norvell? Potential paths for ex-FSU coach, including high-profile coordinator options CBS Sports Florida State Makes Football Leadership Change - Florida State University Seminoles.com Florida State’s Coa…"
+    },
+    {
+     "title": "The Best and Worst of the NHL’s Hometown Remix Uniforms - SportsLogos.Net News",
+     "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQSEJuV2RnWTFfSTl2V1FWLVBvZUhSSlV0blhRdnVIbkF0T3JEanozNlJlREtmS25QQUl1U2p4Z1JmSEtFNjAyY1BET1FtSXhBQjFsZEI2NXJmUjA1ald5amQyLUV1S191TlpjWXNubVVYaGtmYlJvX3RqREFndzVpVzBhQm5yWXVhYklFVmFGWExvVHg3OEtCR2hWR2VIY01oVTBDUA?oc=5",
+     "date": "Wed, 04 Nov 2026 17:12:46 GMT",
+     "summary": "The Best and Worst of the NHL’s Hometown Remix Uniforms SportsLogos.Net News Who's No. 1? Our definitive ranking of the NHL's new Hometown Remix jerseys ESPN Nuggets DeRozan rocks Avalanche Hometown Remix jersey before game NHL.com Flyers have a cool alternate Liberty Bell logo. So why isn’t it on their new jerseys? - The Athletic The New York Times Predators Honor Dolly Parton with Hometown Remix…"
     },
     {
      "title": "Deshaun Watson placed in the concussion protocol; Shedeur Sanders has good chance to start vs. the Saints - Cleveland.com",
      "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOaDdRdTV0MG1LSTVBdVdLaXdiMzJtWTRsU0RZME52MjdEWlJUeHRPajVLY1BCVjFRdlhEclVCN0lYQmExY1dQdmIwOFU3TmRhZS1KTkswSkVITXFiQjNfUjJMSEdhWnpXUGxSVFo5ZGhvV0ZxN0thT050ZmxfbkFycEdvanRYYzgzcjJxelhCYlo3VlM1MXVJZG9xdjlUay1DVlRLLVRMODNnZVNrUUVqZUVObFpyUTlHeVhZNUM5aXBfWEJTZ2kwT3lscU9Xbk9iRkE?oc=5",
      "date": "Wed, 04 Nov 2026 17:28:00 GMT",
-     "summary": "Deshaun Watson placed in the concussion protocol; Shedeur Sanders has good chance to start vs. the Saints Cleveland.com Browns QB Watson in concussion protocol; status vs. Saints unclear ESPN Shedeur Sanders really wants to talk trash on Saints’ defense, but he’s ‘maturing’ Yahoo Sports Deshaun Watson enters concussion protocol ahead of Browns' Week 9 game vs. Saints NFL.com KC Concepcion: Browns …"
+     "summary": "Deshaun Watson placed in the concussion protocol; Shedeur Sanders has good chance to start vs. the Saints Cleveland.com Browns QB Watson in concussion protocol; status vs. Saints unclear ESPN Deshaun Watson enters concussion protocol ahead of Browns' Week 9 game vs. Saints NFL.com Browns take day-to-day approach at quarterback heading into Week 9 Cleveland Browns KC Concepcion: Browns are confiden…"
     },
     {
-     "title": "Report: Tyler Huntley to miss the rest of 2026 season - NBC Sports",
-     "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNT1VWLU9sSHdjVWd6bXlhb25FV3BWQmVmcFZxcTM1d2g0a1g2SGl3ZFl6RWFtTXJnZ1JNZjVBV3JvWmZRMkUwMmpnLWRFRWNHcDdMaGh0UFh4bnNZakpiXzRSV3RtcXE0T19pbW1kb2VCOG9MWDJHR25uM25fenBWMXhvS3QwQ0ZkZTFyN0xCNXBSZk16RmxYbU9UNG9QOXdCMk0xa25aUmJzOUFuYlpRN3ZVZUM?oc=5",
-     "date": "Wed, 04 Nov 2026 12:49:19 GMT",
-     "summary": "Report: Tyler Huntley to miss the rest of 2026 season NBC Sports Sources: Ravens QB Huntley (turf toe) to miss rest of 2026 season ESPN Ravens turn to Joe Fagnano vs. Jaguars on Thursday night CBS Sports Ravens QB Tyler Huntley reportedly suffered season-ending turf toe injury after replacing Lamar Jackson vs. Bills Yahoo Sports Ravens to start undrafted rookie QB Joe Fagnano vs. Jaguars on Thursd…"
+     "title": "NFL news roundup: Micah Parsons returns to Packers practice; Jaguars' Bhayshul Tuten game-time call - NFL.com",
+     "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPWGZlcklheERyRkpSZmE0RVlXaWVsb2x0U0l2TWhpdTFoYlpCUHZSSHZuWWlNSngwbUZsX1JQWXQ2ZXFlTzIyc1N5YUZlWlBSTFR6ZDFPamNSYVFHTDRGMTlJSDl2NjZzUlpvVTNxRjk1ZGlxYWNDUHo2ZmxMS1ZOZlJvdnRuUHczLVFhVA?oc=5",
+     "date": "Wed, 04 Nov 2026 14:04:22 GMT",
+     "summary": "NFL news roundup: Micah Parsons returns to Packers practice; Jaguars' Bhayshul Tuten game-time call NFL.com NFL Week 9 injury report: Micah Parsons returns to Packers practice, Rams lose Jaylen Watson for season CBS Sports Micah Parsons believes patience in ACL recovery will pay off for Green Bay Packers PackersNews.com Parsons returns to practice for first time since last year's knee injury WLUK …"
+    },
+    {
+     "title": "Mariners News: Jason Kanzler, Edwin Uceta, and Robinson Canó, Jr. - Lookout Landing",
+     "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxONXhMWnZWRlYwYjVNR2p0VjBPS3RoUjdQYU1DRUZic01tN2VSUl9LbENRS0poYUQ1Vng4UWlXY2xIeHFaYlJHbDBPd2g4Q2RWQ19VUjFtcC1GbUpmRlRSa3M2YWxSYmRVLU5ha1VOeVFmRFlIdHpEWm0tWWJCbFhwNFF6QWkwSGpVdTh5cnBvMkZ3eXNvQjkweTZoeVVLMmlKRVFJMldjZXJWT2hrWE9kR0Q2VFZyYUI2cXpIMA?oc=5",
+     "date": "Wed, 04 Nov 2026 15:00:00 GMT",
+     "summary": "Mariners News: Jason Kanzler, Edwin Uceta, and Robinson Canó, Jr. Lookout Landing Mariners hire Kanzler as manager to replace fired Wilson ESPN Kanzler's 'unique path' arrives in Seattle as Mariners' new manager MLB.com Mariners hire Cubs executive with no managerial experience as new manager CBS Sports Penfield graduate Jason Kanzler named Seattle Mariners manager 13WHAM-TV"
+    },
+    {
+     "title": "Free Agent Rankings: The Next 10 - MLB Trade Rumors",
+     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNcVBqekxWQkxpQ3RSYzJTUGxaZ0steWJ2Nk5UU1BBZVplV0lfaEczREpxd1hYR3FwNVAtT0djWU5YU0VhU1c0ak5fc0l0VmRkWjVvMXVKYUNSczl3dDg1OXNJNWRZUUduNi1RdXRWUVVjLWpOTXZROXRPdnllWTZVQw?oc=5",
+     "date": "Wed, 04 Nov 2026 22:54:18 GMT",
+     "summary": "Free Agent Rankings: The Next 10 MLB Trade Rumors Team-by-team breakdown of every free agent MLB.com Rankings, contract projections: Top 50 2026-27 MLB free agents ESPN MLB free agency: Predicting landing spots for top players, including Jazz Chisholm Jr., Freddy Peralta, more CBS Sports What will Tarik Skubal and other MLB free agents make this offseason? The New York Times"
     },
     {
      "title": "Man Utd: Michael Carrick run has echoes of Jose Mourinho and Ole Gunnar Solskjaer - BBC",
      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9KdThoaGRxYnhQVlpvaW1LWjlKT2hRQ3d5TXduOTByTlpYSXRSZk9HQ3BwVDRqVUVxSFJ1NkY0UmI1ajgyZFhTZjNFTEhwaHJSYVc0SjNpX3doRXRVdFdjWUhoRTQxRzV3?oc=5",
      "date": "Wed, 04 Nov 2026 16:12:46 GMT",
-     "summary": "Man Utd: Michael Carrick run has echoes of Jose Mourinho and Ole Gunnar Solskjaer BBC Did Man United's Champions League comeback save Carrick's job? ESPN Champions League briefing: Manchester United fans get just reward, PSG make more history - The Athletic The New York Times Why Bruno Fernandes Was Allowed to Retake Game-Changing Penalty vs. Roma Sports Illustrated Football Daily | Manchester Uni…"
-    },
-    {
-     "title": "A 24-year-old running the NYC marathon collapsed 2 miles from the finish line and died - CNN",
-     "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNYTc1TExLYVJzLVJZeThZNFlDSF91Sl9DWFROSllZMUg4cVZFcEtvU1NXWk41RlhwRk9jRmFrbWZ1VWs1SXRSQjZ3VFFOdldOYzdjbFNuTU1EU0h2bE5SLUt0VXc5RDhHNkV4US1HQUhZSFRJRFQzNERwa01QV00yQzZ0aVItQUdhWVE?oc=5",
-     "date": "Wed, 04 Nov 2026 13:00:15 GMT",
-     "summary": "A 24-year-old running the NYC marathon collapsed 2 miles from the finish line and died CNN NYC Marathon Runner’s Death Linked to Rhabdomyolysis, Father Says The New York Times NYC marathoner with 'heart for Jesus' remembered after tragic death for faith, strength and charity Fox News NYC Marathon runner dies after collapsing 2 miles from end ESPN Exclusive | NYC Marathon runner Rachel Apa remember…"
-    },
-    {
-     "title": "Sources: Slumping Eagles turn to Joe Milton as starting QB vs. Giants - ESPN",
-     "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNT2QzOTJ2UlRIM3o4ZldVSlJ5T2hISDlkXzJZYVZEUDhsaDZxc2tpYlZuTlRORWRWNENSSkNSOTNSMDZiek5YZVE1QXJuNGhpYy1GSTA0UC1HQ1NuVTNqSVNqX2VPZmxBTWNfMUZpYmMxdUdYRk5lWm9rWWctLUtWNG81MDdLMHVuNlBqV3NKZTg4MXlYWThJc2Ixd3JnQQ?oc=5",
-     "date": "Wed, 04 Nov 2026 19:04:00 GMT",
-     "summary": "Sources: Slumping Eagles turn to Joe Milton as starting QB vs. Giants ESPN Eagles to start Joe Milton at quarterback vs. Giants, replacing Tanner McKee CBS Sports And Now, A Game Of \"Who’s The Saddest Team In Football?\" Defector Joe Milton 'Has a F--king Cannon,' Eagles Players React to QB Change Amid Jalen Hurts Injury Bleacher Report Eagles turn to Joe Milton, the first of two QB auditions they …"
-    },
-    {
-     "title": "Hockey nations refuse to play Russia as Germany mulls exit as host - Euronews.com",
-     "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQbzdJVVl1X3paN2NqaXlTN1ptbVRRcENpUU91dW1ZaDdhMFp4d0EtSlRwQlMxbW9sSTBDUkFoUW5BSWhwbFNCbWhNcEx2bnhpc2FjWWg4QXRESk90V01SSkt4cTJEUGt6b0sxamE3TEpzM1YzSEt1b1ExTUtqZ2o3TFV4c0t6aklKY08zbVRCMkk2UXhEMGZjVmhZc1hBRWhDd0h5b3pzZGxjY0ZSZC1v?oc=5",
-     "date": "Wed, 04 Nov 2026 10:57:32 GMT",
-     "summary": "Hockey nations refuse to play Russia as Germany mulls exit as host Euronews.com Major hockey worlds sponsors monitoring Russia's inclusion ESPN Hockey’s Russia crisis deepens as major sponsors threaten to pull out of 2027 men’s World Championship The New York Times World Junior Ice Hockey Championships: Canada bars Russia and Belarus from tournament BBC IIHF statement IIHF"
-    },
-    {
-     "title": "Joaquin Buckley calls out Dustin Poirier, Sean Strickland for use of racial slur, Poirier and Strickland respond - MMA Fighting",
-     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxQTkNId3kxT1VLY0VqNnBMVlJidVNKQ0FPZUJ4YVFaakhCX3RwX2Z1bjE5NVZYT2Z0eFBCbWVwM0RzWHBzNFMxTFUxT0Frbjk0N0llbzVIMTVpZ25BRDRXMDVVMk1fZUk5X3E3YmxlVVBET0x5TFJJUEt0TmVwTFZRZ1hSOUExckRPT2tOcUdkbFkxeU0wbEJRS3cwRjBjYWlOdW54SUVtWm9LZTlqVHFSbi1TVTh4eWl1VWd5dTZHU2JydnlYSm9nRGtCUEdWSG1CRUtYbU1MMzZCRUJfRnp1NU1ZVQ?oc=5",
-     "date": "Wed, 04 Nov 2026 17:30:00 GMT",
-     "summary": "Joaquin Buckley calls out Dustin Poirier, Sean Strickland for use of racial slur, Poirier and Strickland respond MMA Fighting Poirier fires back at Joaquin Buckley as Strickland shares knockdown clip Sherdog Calls Mount Against UFC Fighter for Threatening Dustin Poirier Over the Airport Incident EssentiallySports Sean Strickland drops Joaquin Buckley in sparring footage leaked amid online feud Blo…"
-    },
-    {
-     "title": "Miami WR Malachi Toney's status uncertain for Notre Dame showdown - On3",
-     "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPYldMelVUTl83NHEyZzdCRm1zV2tDak1xdHlUeHV0WllzV0NUTG1oWEJSZl9idnBYclVkWXJCMkZYS3RfV1k4M0R5RUlvakxYR09IWk1kWm5yREdPOVRkSHcyYTB2ajgtQkRjZmRiV0c0YnEzV1ZVRzdKMmQ3d25GbHg5LXNWTWE4bFB0MDFxZWZ3UHFn?oc=5",
-     "date": "Wed, 04 Nov 2026 19:28:18 GMT",
-     "summary": "Miami WR Malachi Toney's status uncertain for Notre Dame showdown On3 Sources -- Miami's Toney (ankle) uncertain for Notre Dame game ESPN Notre Dame Gets Sudden Injury News on Miami Star Malachi Toney Ahead of Saturday Yahoo Sports Hurricanes star Malachi Toney dealing with injury heading into Notre Dame game Sun Sentinel Malachi Toney vs. Leonard Moore is the showdown within the Miami vs. Notre D…"
-    },
-    {
-     "title": "Immediate Reaction: AEK Athens 2-3 Real Madrid - Managing Madrid",
-     "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQYVNuUkh4WVh5UTBvRVNkZmgxdUxCMEtvQmRpOUFFNEF2c0tlM3NlVWRDWUtIYWhuNEF6M21IcGw5WDh4ZFFkR2JWV01PT1c2OTFRRFMwZzdNdVhXdVdVZkNGSGFIbUdXdTdhMzVXYVJCR2FIdk9MTUwxNG1RblNNay1DUVc5dEhjOXlJclg5TmZ0cGxwUkNyeGFRc1ZoWFEzZHBIRDcyU2QxQWlEejRwRENBN0NHZw?oc=5",
-     "date": "Wed, 04 Nov 2026 19:39:45 GMT",
-     "summary": "Immediate Reaction: AEK Athens 2-3 Real Madrid Managing Madrid AEK Athens 2-3 Real Madrid: Federico Valverde scores late winner as Real Madrid complete comeback BBC Thunderous Valverde goal keeps Real Madrid perfect in UEFA Champions League USA Today AEK Athens vs. Real Madrid: Preview, Predictions and Lineups Sports Illustrated CONFIRMED lineups: AEK Athens vs Real Madrid, 2026 Champions League M…"
-    },
-    {
-     "title": "Christian Pulisic, Folarin Balogun return to USMNT roster for Nations League - The Guardian",
-     "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOa1NIeU1TOThsRjY0MUxfTnNmNDFuSmg5dmZ3a0EzeF9UT0JLalduNU00Yl83Rk5hOU5ZUDJwdjdwQ1ZmSmJMUjVuaWNvcWdyUUNGYl90QkFtUWItajJQYTJNWTlLc29UZWhqM3MwelF3aTc0RjY2OHlHR2h1YmdaMTZsT3RZZmg3QTFWYzdvaUlTS1JNUFU5NHV3?oc=5",
-     "date": "Wed, 04 Nov 2026 17:25:00 GMT",
-     "summary": "Christian Pulisic, Folarin Balogun return to USMNT roster for Nations League The Guardian Pulisic, Balogun, McKennie return to USMNT for Nations League QF vs. Haiti ESPN World Cup Hero Balogun Returns For USA's Nations League Quarterfinal Vs. Haiti FOX Sports Julian Hall’s USMNT recall for Nations League puts him on cusp of being cap-tied The New York Times Mauricio Pochettino mixes veterans, yout…"
+     "summary": "Man Utd: Michael Carrick run has echoes of Jose Mourinho and Ole Gunnar Solskjaer BBC Did Man United's Champions League comeback save Carrick's job? ESPN Champions League briefing: Manchester United fans get just reward, PSG make more history - The Athletic The New York Times Manchester United’s wild win against Roma showed angry fans we care, says Dalot The Guardian Why Bruno Fernandes Was Allowe…"
     }
    ],
-   "fetched_at": "2026-11-04T23:32:26.279Z",
+   "fetched_at": "2026-11-05T05:53:36.146Z",
    "source": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en"
   },
   "native-ict": {
    "items": [
+    {
+     "title": "Crystalyne Curley to be first woman to lead Navajo Nation",
+     "link": "https://ictnews.org/politics/election-2026/crystalyne-curley-to-be-first-woman-to-lead-navajo-nation/",
+     "date": "Thu, 05 Nov 2026 00:48:29 +0000",
+     "summary": "Navajo Nation Presidential Candidate and current Speaker of the Navajo Nation Council Crystalyne Curley at Navajo Nation presidential forum on June 24, 2026, in Farmington, New Mexico. Only 10 of the 16 candidates participated in the Farmington forum. (Jourdan Bennett-Begaye/ICT) \" data-large-file=\"https://ictnews.org/wp-content/uploads/2026/07/Crystalyne-Curley-ict-1024x576.jpg\" /> Crystalyne Cur…"
+    },
     {
      "title": "Pocahontas Reframed Film Festival turns 10 in Richmond",
      "link": "https://ictnews.org/sponsored-content/pocahontas-reframed-film-festival-turns-10-in-richmond/",
@@ -772,16 +778,10 @@
      "title": "8 Native candidates battle for the U.S. House",
      "link": "https://ictnews.org/politics/election-2026/seven-native-candidates-battle-for-the-u-s-house/",
      "date": "Wed, 04 Nov 2026 02:32:45 +0000",
-     "summary": "Claire Valdez, Ysleta Del Sur Pueblo, talks to voters in her district on November 3, 2026. (Jourdan Bennett-Begaye/ICT) \" data-large-file=\"https://ictnews.org/wp-content/uploads/2026/11/IMG_0692-1024x576.jpg\" /> Sharice Davids, Claire Valdez, Tom Cole, and Josh Brecheen declared winners as polls close across the country The post 8 Native candidates battle for the U.S. House appeared first on ICT ."
-    },
-    {
-     "title": "Voting begins on last day to cast ballots in US midterms with observers keeping close watch at polls",
-     "link": "https://ictnews.org/politics/election-2026/voting-begins-on-last-day-to-cast-ballots-in-us-midterms-with-observers-keeping-close-watch-at-polls/",
-     "date": "Tue, 03 Nov 2026 16:56:37 +0000",
-     "summary": "A student passes a ‘VOTE!’ mural on Election Day near the University of Texas campus in Austin, Texas, Tuesday, Nov. 3, 2026. (AP Photo/Eric Gay) \" data-large-file=\"https://ictnews.org/wp-content/uploads/2026/11/AP26307532787980-1024x683.jpg\" /> Election administrators in the Navajo Nation announced changes to several of its polling locations, and in Utah's rural San Juan County, voters were being…"
+     "summary": "Claire Valdez, Ysleta Del Sur Pueblo, talks to voters in her district on November 3, 2026. (Jourdan Bennett-Begaye/ICT) \" data-large-file=\"https://ictnews.org/wp-content/uploads/2026/11/IMG_0692-1024x576.jpg\" /> Five of the eight candidates so far are declared winners in their races. Only races left are Jonathan Nez in Arizona and Bill Hill in Alaska. The post 8 Native candidates battle for the U.…"
     }
    ],
-   "fetched_at": "2026-11-04T23:32:26.279Z",
+   "fetched_at": "2026-11-05T05:53:36.146Z",
    "source": "https://ictnews.org/feed"
   },
   "native-nations": {
@@ -791,6 +791,12 @@
      "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNVVZaWmR5OHEtbVg0WVAybkRDZjloUE5vZ2ItWmg1eEFxZUNUa2FXSkZKYzBNZlZRalMtSExkZWg1aVpZQ2tsNHVBeVIxNHgyNGtGNHV3bThUc2ltanh3Qi1IeXpzVHZRZTZNc1cwR2xlNnBLZEh3ZWx5SGRYMjJmaFg0UmMzdEd5d2diamV5Y1kwSy1rZEtTN2MxeW5iMnVIWl91dUR3?oc=5",
      "date": "Fri, 23 Oct 2026 07:00:00 GMT",
      "summary": "Navajo Nation Urges Caution as Rainfall, Flooding Damage Roads Native News Online"
+    },
+    {
+     "title": "Navajoland diocese responds to severe river flooding across Navajo Nation - Episcopal News Service",
+     "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNZ2tJaTFzeHZncHpKVnBLUXF4VHRyREE1UzhnUnRyTXJTUURHeGVyOUExNE4xTVoyM0VZVzJxUjhPQmRtMzJTeUlZM1FZUmpaZUF6M3BsWVJuRWtsRXRZRDhselpBT0ZzOWo4Y0U3b3AxUTk2eGJtTktyMDREMGJ5Mnh1SVd4WFl6Si15SC1lbWdUdG9zLThvcWg5MVFSU3gzRERyWi04NkR5LUVyVXFSWndjcnpqSFotTlE?oc=5",
+     "date": "Tue, 03 Nov 2026 17:25:57 GMT",
+     "summary": "Navajoland diocese responds to severe river flooding across Navajo Nation Episcopal News Service"
     },
     {
      "title": "25th Navajo Nation Council. . 25th Navajo Nation Council - Special Session, Oct. 30 - Facebook",
@@ -817,22 +823,10 @@
      "summary": "Providing Relief in Navajo Nation After Monsoon Rains Samaritan's Purse"
     },
     {
-     "title": "Navajoland diocese responds to severe river flooding across Navajo Nation - Episcopal News Service",
-     "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNZ2tJaTFzeHZncHpKVnBLUXF4VHRyREE1UzhnUnRyTXJTUURHeGVyOUExNE4xTVoyM0VZVzJxUjhPQmRtMzJTeUlZM1FZUmpaZUF6M3BsWVJuRWtsRXRZRDhselpBT0ZzOWo4Y0U3b3AxUTk2eGJtTktyMDREMGJ5Mnh1SVd4WFl6Si15SC1lbWdUdG9zLThvcWg5MVFSU3gzRERyWi04NkR5LUVyVXFSWndjcnpqSFotTlE?oc=5",
-     "date": "Tue, 03 Nov 2026 17:20:14 GMT",
-     "summary": "Navajoland diocese responds to severe river flooding across Navajo Nation Episcopal News Service"
-    },
-    {
      "title": "Controller seeks emergency trust fund as flooding strikes Navajo Nation - Navajo Times",
      "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNdE02Q2tFbzdDeWU2Wk9BMnNJRENIaERoWHRzcVhjTEpVZmZsZm9WVmRLNEJfT1M3dHV5TDQyZ0R2UUhlR3BZQ25iSFYteGdtM0hsakc4UjNuQnMwaEgxZGZURVpncFhVbFRRVXlCVWhTRm9BOEs0dVo0U2Q4SWgxOWpyaVJSb0Izc2x1T1NfWWY3SzdOVWFjQm8xOGdKYk9GM1otdDhkcw?oc=5",
      "date": "Sun, 25 Oct 2026 00:35:53 GMT",
      "summary": "Controller seeks emergency trust fund as flooding strikes Navajo Nation Navajo Times"
-    },
-    {
-     "title": "Flooding in Navajo Nation threatens access to the polls - WBUR",
-     "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5SaWNjS3lfYmJmMUxjNnBNOXE3Q0dsT09NVC03WXg0TzlINWZwb1JXQ3F5a0lEMDZkSlA4OHRBOVBlODhOWDlxNDAxTDF0RDBKc1BRZmxuVDJ3anZYVG50aDJmQzZYdVRKdmk0MHVHRGNGS085aUtWeUdGWEU0TU0?oc=5",
-     "date": "Tue, 03 Nov 2026 17:07:52 GMT",
-     "summary": "Flooding in Navajo Nation threatens access to the polls WBUR"
     },
     {
      "title": "Navajo Nation impacted by historic flood on the San Juan River - KOAT",
@@ -841,16 +835,28 @@
      "summary": "Navajo Nation impacted by historic flood on the San Juan River KOAT"
     },
     {
+     "title": "News - Power Distribution Specialists Light Up Navajo Nation - DVIDS",
+     "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPdWM1WEptMzlzTUNERUxYR1hncmM2STFQRmtUblB1TkJBMlFwUFBsSFgxNzdreER1NjA4aTBGcEZIX3BQZVN1SjZwRzlTR0pzMVpSS2hyTnpzbkZ4QUZyNVg5RGx6ZmlMT2E4Z1hHX3lXNkcwSDZROGt0VTBLUmc4UVVlQVg1QUJ4U2w1TVJ1Wm5lLWhn?oc=5",
+     "date": "Tue, 03 Nov 2026 04:50:00 GMT",
+     "summary": "News - Power Distribution Specialists Light Up Navajo Nation DVIDS"
+    },
+    {
+     "title": "Flooding in Navajo Nation threatens access to the polls - WBUR",
+     "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5SaWNjS3lfYmJmMUxjNnBNOXE3Q0dsT09NVC03WXg0TzlINWZwb1JXQ3F5a0lEMDZkSlA4OHRBOVBlODhOWDlxNDAxTDF0RDBKc1BRZmxuVDJ3anZYVG50aDJmQzZYdVRKdmk0MHVHRGNGS085aUtWeUdGWEU0TU0?oc=5",
+     "date": "Tue, 03 Nov 2026 17:07:52 GMT",
+     "summary": "Flooding in Navajo Nation threatens access to the polls WBUR"
+    },
+    {
      "title": "Navajo Nation voting location to remain open until 8 p.m. - KJZZ",
      "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQRmhtSmdkenE5UWVDZ09Ib0J0SEZtd09aVDRLenU5eVE3WjFjUFliYzZtWWtaNzZibEhGZEVwT0RSTHJOVGk1RUJLeC1LOFRDaVhzWHh3NWowSjNlUFFCTFVmOVlLcUlrYVpyVTV4Q3NhdzdwU1ZVQUh6VkgxaVh0SUhjRHVwcGs0aWxRbzhtN0stRm5aVS1WSmV4VFV2b2hSSG1yd0Rn?oc=5",
      "date": "Wed, 04 Nov 2026 02:44:00 GMT",
      "summary": "Navajo Nation voting location to remain open until 8 p.m. KJZZ"
     },
     {
-     "title": "News - Power Distribution Specialists Light Up Navajo Nation - DVIDS",
-     "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPdWM1WEptMzlzTUNERUxYR1hncmM2STFQRmtUblB1TkJBMlFwUFBsSFgxNzdreER1NjA4aTBGcEZIX3BQZVN1SjZwRzlTR0pzMVpSS2hyTnpzbkZ4QUZyNVg5RGx6ZmlMT2E4Z1hHX3lXNkcwSDZROGt0VTBLUmc4UVVlQVg1QUJ4U2w1TVJ1Wm5lLWhn?oc=5",
-     "date": "Tue, 03 Nov 2026 04:50:00 GMT",
-     "summary": "News - Power Distribution Specialists Light Up Navajo Nation DVIDS"
+     "title": "Navajo Nation poised to elect Crystalyne Curley as first woman president - AZ Family",
+     "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQSTF5Y184azdnaWFVN3FxcThRWmZtVjhqczV3Wk5rTWFXczVHNktKSC1QVHgwQlpkckR5a3pRbG00WFBRZmRXdW9rdktVcG80WWw4am8yaXNPRWhTUWNYRUxoV1VIR3BjZHMwaVBzby10dm9ZTEpZRjBQa3cxWFpEVWdWdEItOUJ5Tnd2dFQzYlI4QkpVcG5WbVcwdWxqeENuYWszYzR30gG6AUFVX3lxTFBXS3lkNGk5Z1o5WFZZTUlWTmxmV1hGeko5WHRlakhrTDBSeW1RYmktWHpxUGpmN3RTS0dYQ21fMkp2Yi13bzhWU1g4YkJkWTRIdmtRanc1OXZWVkhvS3hsMHg0QUxSOWRYVVJMaG9yZWZhV0VOUjhmRWgtaVFHRS1LbFFOSHAyOFVxOHpGUFM4M1dHZzYybXlKa01UQV9kRGhPcER5VExudTRGTlVtZEMzWnhQcVgyb1dBZw?oc=5",
+     "date": "Thu, 05 Nov 2026 00:16:00 GMT",
+     "summary": "Navajo Nation poised to elect Crystalyne Curley as first woman president AZ Family"
     },
     {
      "title": "Navajo Nation communities ordered to evacuate ahead of expected flooding - The Salt Lake Tribune",
@@ -865,18 +871,6 @@
      "summary": "New round of flooding leads to damage, evacuations in northern New Mexico, Navajo Nation Source New Mexico"
     },
     {
-     "title": "USU offers resources to Navajo Nation amidst record breaking flooding - Utah Public Radio",
-     "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBuNTlrcTNDMVh1d09FRmtmZTJMc2RRMkRxUWlQQS1wNkpoMmJPRWFpazJBcnlZLTBWTzN5QnBxQ29MM2JwYndBUlZNSlRZc2VCWktfYWNmWUNPVkhuSmQ4a2N2MS1PX1p4djNhbzZTT0NCQ1QxQ2c?oc=5",
-     "date": "Fri, 30 Oct 2026 22:21:00 GMT",
-     "summary": "USU offers resources to Navajo Nation amidst record breaking flooding Utah Public Radio"
-    },
-    {
-     "title": "New Mexico pueblos and Navajo Nation get federal energy funding - KOB 4",
-     "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPRzBmYzVoaFNIZXZ4RVlHOExraU12aEowQkY0N1NUSVpNamRCbWpSbnFLeHlZOE45bjIyczJUa3FfMnN2bFctTWxDNTF4THV5Q1hEc2pYYUlDeVBacEZMeE9Mc2VkMXVzVWRWb1E2U09RZ3NCenl0aUF0eVlsczJYY2RnMHBwa0sxQ3NFOTdSNEFQWXE2Uml5S0k1dmgxM1k?oc=5",
-     "date": "Wed, 28 Oct 2026 20:09:21 GMT",
-     "summary": "New Mexico pueblos and Navajo Nation get federal energy funding KOB 4"
-    },
-    {
      "title": "Navajo Nation Becomes the First Tribe Eligible to Administer Clean Water Act Permitting Programs - Native News Online",
      "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNTW5BZkdTcDNiTWZDc0h5V0dLMENqTzJhUVUwRXUxcG1IS0xhSlQ4MHRwN1JfTkxER2NQUnU5Nm9rUVdQLTBRRUtLeWxHLV92THl6U0tKRVFRM3ctSVhIanNGemJSQmxyc2lsMFBuNVN0UnZwY0xkcXZOMEZxQzV6M2FoNGd2eW80SFowN1dpUDBzVHdOdmNtc3hZNjYxQm9ZQU9ONkxHQmZJT2xYa3VtX0pvZFJkQmxGQk5CSi0zYmNLWkJ2Zkx2UFZ6MnlqUQ?oc=5",
      "date": "Thu, 22 Oct 2026 07:00:00 GMT",
@@ -887,6 +881,12 @@
      "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxQSjJpVUl3cUR0STA2ME90c3gwQWhYeWhDMW9qZ0NJUDhGRlBrdnMxVnpoZ0dPU2k3VEwtcFZtMVd4LVpzaXQtMks4eFNULUo0ZV9yS05TRm4zY3pHXzlReXhidHAteTJ3em0xYVZWUGZURUI2UGQySmpiUVllQzhON0ZFclktemJLd211YTRHci1lVHBWSzR4M05UMnlqdDlVeEJjc0o5LUI2dFJWNC1nc2YwQWlXamNwVHNpLTNqQ2U1aEVlV2Zwd1BDd1Eyb244dWtISWFUbS1JenNPenpWU3ozWQ?oc=5",
      "date": "Tue, 27 Oct 2026 14:59:45 GMT",
      "summary": "25th Navajo Nation Council invites families to Halloween Trunk or Treat celebration WINDOW ROCK, Ariz. — The 25th Navajo Nation Council invites families, children and community members to celebrate Halloween at its annual Trunk or Treat event Friday, Facebook"
+    },
+    {
+     "title": "Shiprock polling site still unconfirmed as Navajo Nation election nears - Navajo Times",
+     "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOZXRIM3cyTkpIMXRCQTB4WWtzazZhcWVITG5kT1hxUEp0dXhXYnVvSWtaaVc4aTBuSmFZSDl3blBMU0taaG51bE1CS2syZDFDV1VyLS1hOTBBcE1zeEx6UThOYXBkYlRtTFZlbUtwd0pqNFBQd003V2o5bVZjVlJ4R1ZZMk81cFkycWFwektfRWk4T1RiVG9QUnZTV2FweTA1M0JwdjNMVQ?oc=5",
+     "date": "Thu, 29 Oct 2026 07:34:42 GMT",
+     "summary": "Shiprock polling site still unconfirmed as Navajo Nation election nears Navajo Times"
     },
     {
      "title": "25th Navajo Nation Council approves referendum on setting delegates’ annual salaries at $70,000, ending meeting stipends and approving future raises WINDOW ROCK, Ariz. — On Wednesday, the 25th Navajo Nation Council approved Legislation No. 0232 - Facebook",
@@ -907,10 +907,22 @@
      "summary": "The 25th Navajo Nation Council encourages all eligible voters to make their voices heard and exercise their right to vote! Every vote matters in shaping the future of our communities, our families and the Navajo Nation. Diné Voices Matter! Get Out and Vote! Facebook"
     },
     {
-     "title": "Images - Light Up Navajo Nation VII - DVIDS",
-     "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE0xUjhyQmtzamFQVWM5NWJyRE5jOEVwdElIeDBVb0xuX3FILTAxLV9XeHg5a0tCdUtyeHVMVzhnQnpzOFM1MnZzZTVuSnFYdzZyZ2xKbUZxdWFNbkNuM3BmUEJfX200dUdxUmwyYnFINTRWbEFp?oc=5",
-     "date": "Tue, 03 Nov 2026 04:50:00 GMT",
-     "summary": "Images - Light Up Navajo Nation VII DVIDS"
+     "title": "USU offers resources to Navajo Nation amidst record breaking flooding - Utah Public Radio",
+     "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBuNTlrcTNDMVh1d09FRmtmZTJMc2RRMkRxUWlQQS1wNkpoMmJPRWFpazJBcnlZLTBWTzN5QnBxQ29MM2JwYndBUlZNSlRZc2VCWktfYWNmWUNPVkhuSmQ4a2N2MS1PX1p4djNhbzZTT0NCQ1QxQ2c?oc=5",
+     "date": "Fri, 30 Oct 2026 22:21:00 GMT",
+     "summary": "USU offers resources to Navajo Nation amidst record breaking flooding Utah Public Radio"
+    },
+    {
+     "title": "New Mexico pueblos and Navajo Nation get federal energy funding - KOB 4",
+     "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPRzBmYzVoaFNIZXZ4RVlHOExraU12aEowQkY0N1NUSVpNamRCbWpSbnFLeHlZOE45bjIyczJUa3FfMnN2bFctTWxDNTF4THV5Q1hEc2pYYUlDeVBacEZMeE9Mc2VkMXVzVWRWb1E2U09RZ3NCenl0aUF0eVlsczJYY2RnMHBwa0sxQ3NFOTdSNEFQWXE2Uml5S0k1dmgxM1k?oc=5",
+     "date": "Wed, 28 Oct 2026 20:09:21 GMT",
+     "summary": "New Mexico pueblos and Navajo Nation get federal energy funding KOB 4"
+    },
+    {
+     "title": "Crystalyne Curley to be first woman to lead Navajo Nation - ICT News",
+     "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQWmQxQUFGSjZiUzBydmpmMlBiR3ZJX281MG1fYjJlQmthbExwbVl3ZVFvMkd2cWFEUTJ2YVlidC1sanlYZU04UmJ5WGZlLWpYQ2RxcjUtVFlTZXlUWFd4NGNmNnJPcnVzNnhTNW94U2lSTUlvMm5ocUpIZkRoamIwaDVsTTI2dTYyWEdOSjNFaTl5NTVNSGFVNWJGUHNLWmhaeElz?oc=5",
+     "date": "Thu, 05 Nov 2026 00:48:29 GMT",
+     "summary": "Crystalyne Curley to be first woman to lead Navajo Nation ICT News"
     },
     {
      "title": "On Election Day, flooding has complicated voting in parts of the Navajo Nation - KTAR News 92.3 FM",
@@ -919,25 +931,13 @@
      "summary": "On Election Day, flooding has complicated voting in parts of the Navajo Nation KTAR News 92.3 FM"
     },
     {
-     "title": "Shiprock polling site still unconfirmed as Navajo Nation election nears - Navajo Times",
-     "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOZXRIM3cyTkpIMXRCQTB4WWtzazZhcWVITG5kT1hxUEp0dXhXYnVvSWtaaVc4aTBuSmFZSDl3blBMU0taaG51bE1CS2syZDFDV1VyLS1hOTBBcE1zeEx6UThOYXBkYlRtTFZlbUtwd0pqNFBQd003V2o5bVZjVlJ4R1ZZMk81cFkycWFwektfRWk4T1RiVG9QUnZTV2FweTA1M0JwdjNMVQ?oc=5",
-     "date": "Thu, 29 Oct 2026 07:34:42 GMT",
-     "summary": "Shiprock polling site still unconfirmed as Navajo Nation election nears Navajo Times"
-    },
-    {
-     "title": "WATCH: Full interview with Navajo Nation presidential candidate Justin Jones - AZ Family",
-     "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOckN0Qzg3M3JSZkxhN3NoOVFCSWVOMUpSb3Y2QUxucjhkWWhRaGdscTZyai1YV09QZG5Qa2poMjNyMnVMQUhPQzl1aVgtWVFyb25iNU9mbkpwLU5FakRTb04zVDQxMk15ZFNlMGN6d3NrdlVRcW1ROHo2LUJLUmRBUzlmOXJXYnZsZi03RURtQVhITC02NnVacTV4UllIdFNiZnFGQmZObUQ5M0xsUy1saEZIZlFRdy02UlE?oc=5",
-     "date": "Thu, 29 Oct 2026 17:16:00 GMT",
-     "summary": "WATCH: Full interview with Navajo Nation presidential candidate Justin Jones AZ Family"
-    },
-    {
-     "title": "‘It’s been devastating’: San Juan River flooding leaves Utah families facing months of recovery - The Salt Lake Tribune",
-     "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQRldqZDMydnNfRVkzZDNWX3JuaTQ1Sjg5VF9UckRPVUNmUGxTTm5wUmdITUZQNXJGRHIybEdrQ0VZZU1MXzYyOEM1NE9YYnlBTU1KVEYzZ3ZwQ3NPS2tkWkZkamZSbVB3NkVBZnVWTmZwXzlDS0hCSW9WbWtmX2ZBYi1xUDVrNHdCMURR?oc=5",
-     "date": "Fri, 30 Oct 2026 12:02:31 GMT",
-     "summary": "‘It’s been devastating’: San Juan River flooding leaves Utah families facing months of recovery The Salt Lake Tribune"
+     "title": "Tribal communities displaced after devastating flooding in northern Arizona - AZ Family",
+     "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQWlk2M3lpT0t6Z1BObk5kZDFZb19yS2xOZFlQc2MtWnlpYjB4R1FtQi1iQWVnWS1UcTdpWFI0NXItNExDU0N1cDJlVVR5MzctajJGY1FYNDNOWlViVERTYjRsZUhEUUR3Qlp0a0VjUTNTMURTbE5zQ2N3QkdHVHBrTXhnb18wbnlSTFZjRVpET0VCMTI1MFhSYXZuSHpVZXRycGJKeUhFTXA1YUJFZ2c?oc=5",
+     "date": "Fri, 23 Oct 2026 07:00:00 GMT",
+     "summary": "Tribal communities displaced after devastating flooding in northern Arizona AZ Family"
     }
    ],
-   "fetched_at": "2026-11-04T23:32:26.279Z",
+   "fetched_at": "2026-11-05T05:53:36.146Z",
    "source": "https://news.google.com/rss/search?q=%22Navajo%20Nation%22%20OR%20%22Hopi%20Tribe%22%20OR%20%22Yavapai-Apache%22%20when%3A14d&hl=en-US&gl=US&ceid=US:en"
   }
  }
