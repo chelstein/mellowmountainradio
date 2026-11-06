@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T05:41:28.660Z",
+ "updated": "2026-11-06T13:55:22.853Z",
  "concerts": [
   {
    "id": "17k8v0G655xo6Vd",
@@ -362,6 +362,21 @@
    "price": null,
    "status": "rescheduled",
    "saleStart": "2026-07-31T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk4eGkdmAhP8",
+   "artist": "Eagles",
+   "date": "2027-01-09",
+   "time": "20:30:00",
+   "venue": "Sphere",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/eagles-live-at-sphere-las-vegas-nevada-01-09-2027/event/17006542EE15B950",
+   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-10-30T17:00:00Z",
    "lineup": []
   },
   {
