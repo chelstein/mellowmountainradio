@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T14:10:12.780Z",
+ "updated": "2026-11-13T23:27:11.833Z",
  "festivals": [
   {
    "name": "Innings Festival",
@@ -10,16 +10,6 @@
    "genre": "Undefined",
    "start": "2027-02-26",
    "end": "2027-02-28"
-  },
-  {
-   "name": "Reggae Rise Up Arizona Festival (Children 12 & younger FREE with a paid guardian)",
-   "city": "Tempe",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A70d8U",
-   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Other",
-   "start": "2027-04-02",
-   "end": "2027-04-02"
   },
   {
    "name": "Palm Springs International Jazz Festival",
@@ -140,6 +130,16 @@
    "genre": "Undefined",
    "start": "2027-02-19",
    "end": "2027-02-20"
+  },
+  {
+   "name": "Happy Daps Fest - Day 1",
+   "city": "Santa Ana",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/happy-daps-fest-day-1-santa-ana-california-03-06-2027/event/09006564DF5A0FF1",
+   "img": "https://s1.ticketm.net/dam/a/3d4/c2ed3859-e6a4-4191-b4f6-2bf1eb5093d4_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Rock",
+   "start": "2027-03-06",
+   "end": "2027-03-07"
   },
   {
    "name": "Coachella",
