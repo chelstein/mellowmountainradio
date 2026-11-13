@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-12T23:28:35.335Z",
+ "updated": "2026-11-13T05:51:04.780Z",
  "feeds": {
   "news-local": {
    "items": [
@@ -34,7 +34,7 @@
      "summary": "Bryce Schauwecker was supposed to be at the Sedona Heritage Arts and Crafts Fair in 2025, but Mother Nature had other plans. “The weather canceled it,” Schauwecker said. The Arizona glass artist’s Dry Heat Trades booth was one of over 25 vendors selling everything from silver and copper jewelry and pottery to hand-turned wooden bowls […] The post Museum’s arts and crafts fair returns in fair weath…"
     }
    ],
-   "fetched_at": "2026-11-12T23:28:35.335Z",
+   "fetched_at": "2026-11-13T05:51:04.780Z",
    "source": "https://www.redrocknews.com/feed/"
   },
   "news-regional": {
@@ -191,10 +191,31 @@
     }
    ],
    "fetched_at": "2026-11-12T23:28:35.335Z",
-   "source": "https://azdailysun.com/search/?f=rss&t=article&c=news&l=25"
+   "source": "https://azdailysun.com/search/?f=rss&t=article&c=news&l=25",
+   "last_fetch_attempt": "2026-11-13T05:51:04.780Z",
+   "last_fetch_error": "HTTP 429",
+   "stale": true
   },
   "news-national": {
    "items": [
+    {
+     "title": "Chris Van Hollen says he will challenge Chuck Schumer for Senate majority leader",
+     "link": "https://www.npr.org/2026/11/12/nx-s1-6039357/chris-van-hollen-chuck-schumer-senate-majority-leader",
+     "date": "Thu, 12 Nov 2026 22:52:25 -0500",
+     "summary": "Van Hollen, a progressive from Maryland, said voters sent a clear message in the midterm elections — that they want \"change from the status quo.\""
+    },
+    {
+     "title": "Is Outlook down? Widespread outage hits Microsoft email and other apps",
+     "link": "https://www.npr.org/2026/11/12/nx-s1-6039343/is-outlook-down-widespread-outage-hits-microsoft-email-and-other-apps",
+     "date": "Thu, 12 Nov 2026 20:26:24 -0500",
+     "summary": "A widespread outage has hit Microsoft platforms including Outlook, with many users encountering trouble using their email accounts."
+    },
+    {
+     "title": "Cindy Holscher wins in Kansas, holding governor's office for Democrats",
+     "link": "https://www.npr.org/2026/11/12/g-s1-151239/kansas-governor-midterms-holscher-masterson",
+     "date": "Thu, 12 Nov 2026 18:36:19 -0500",
+     "summary": "Holscher, a state senator, overcame a more well-known Republican who had Trump's endorsement in the state that has gone to the GOP in most other statewide races."
+    },
     {
      "title": "Cindy Holscher wins in Kansas, holding governor's office for Democrats",
      "link": "https://www.npr.org/2026/11/12/g-s1-151187/holscher-kansas-masterson-governor-midterms",
@@ -236,36 +257,30 @@
      "link": "https://www.npr.org/2026/11/12/nx-s1-6038860/dc-logan-circle-shooting",
      "date": "Thu, 12 Nov 2026 11:12:53 -0500",
      "summary": "A gunman opened fire at a gym in Washington, D.C.'s Logan Circle Thursday morning. One person has been confirmed killed and four others injured. The gunman is dead, according to police."
-    },
-    {
-     "title": "U.S. envoys meet with Putin in the Kremlin after Ukraine talks in Abu Dhabi",
-     "link": "https://www.npr.org/2026/11/12/nx-s1-6038809/us-envoys-meet-putin-russia-ukraine-war-talks",
-     "date": "Thu, 12 Nov 2026 10:26:34 -0500",
-     "summary": "Jared Kushner and Steve Witkoff went to the Kremlin to brief Russian President Vladimir Putin and are scheduled to fly later to Ireland for talks with Ukrainian President Volodymyr Zelenskyy."
-    },
-    {
-     "title": "Indonesia's VP resigns as his eligibility and academic credentials are questioned",
-     "link": "https://www.npr.org/2026/11/12/g-s1-153190/indonesias-vp-resigns-as-his-eligibility-and-academic-credentials-are-questioned",
-     "date": "Thu, 12 Nov 2026 09:22:50 -0500",
-     "summary": "Raka is the son of former President Joko Widodo. The Constitutional Court and the Supreme Court ruled last month that the documents that Raka submitted regarding his overseas education didn't meet election requirements."
-    },
-    {
-     "title": "Nvidia CEO Jensen Huang steps down amid alleged spy scandal",
-     "link": "https://www.npr.org/2026/11/12/nx-s1-6037833/jensen-huang-nvidia-stepped-down",
-     "date": "Thu, 12 Nov 2026 09:17:20 -0500",
-     "summary": "Huang co-founded the chipmaker Nvidia, which has become one of the driving forces behind the AI boom. But reports that he may have had an affair with an alleged Chinese spy quickly sank his career."
     }
    ],
-   "fetched_at": "2026-11-12T23:28:35.335Z",
+   "fetched_at": "2026-11-13T05:51:04.780Z",
    "source": "https://feeds.npr.org/1001/rss.xml"
   },
   "news-world": {
    "items": [
     {
-     "title": "US envoys meet Zelensky in Dublin after talks with Putin in Moscow",
-     "link": "https://www.bbc.co.uk/news/articles/cwrkgmymk55zo?at_medium=RSS&at_campaign=rss",
-     "date": "Thu, 12 Nov 2026 21:00:42 GMT",
-     "summary": "US envoy Steve Witkoff says President Putin has agreed to European negotiators joining the next round of Ukraine talks."
+     "title": "Ex-Nvidia CEO Jensen Huang summoned to testify before Congress about affair with alleged Chinese spy",
+     "link": "https://www.bbc.co.uk/news/articles/cmq5vd1wdgz6o?at_medium=RSS&at_campaign=rss",
+     "date": "Fri, 13 Nov 2026 03:57:01 GMT",
+     "summary": "Huang abruptly quit on Thursday as head of one of the world's most valuable companies after revelations of alleged extramarital affairs."
+    },
+    {
+     "title": "Zelensky welcomes US bringing Europe into Russia-Ukraine peace talks",
+     "link": "https://www.bbc.co.uk/news/articles/ckn80j9jv3jxo?at_medium=RSS&at_campaign=rss",
+     "date": "Fri, 13 Nov 2026 02:01:35 GMT",
+     "summary": "The Ukrainian president says it makes sense for European leaders to be involved as Ukraine hopes to eventually join the EU."
+    },
+    {
+     "title": "North Korean hackers used fake video calls in $400m crypto hack, says FBI",
+     "link": "https://www.bbc.co.uk/news/articles/cqdj1ellpd70o?at_medium=RSS&at_campaign=rss",
+     "date": "Fri, 13 Nov 2026 02:48:29 GMT",
+     "summary": "More than 900 victims are thought to have fallen prey to the FaceStealer scheme in the last 18 months."
     },
     {
      "title": "Russian warship hit by Ukrainian drone in Gulf of Finland",
@@ -280,16 +295,22 @@
      "summary": "Schools across Italy have received bomb threats for the second day in a row, sparking fresh panic and evacuations."
     },
     {
-     "title": "Democrat Scott Colom makes history as Mississippi's first black senator since 19th Century",
-     "link": "https://www.bbc.co.uk/news/articles/cw7vppyr80eeo?at_medium=RSS&at_campaign=rss",
-     "date": "Thu, 12 Nov 2026 12:56:55 GMT",
-     "summary": "In a state Trump won two years ago by 22 points, Colom's victory extends a string of Democratic wins in the Senate."
+     "title": "Australian footballers will not be charged after hotel incident, police say",
+     "link": "https://www.bbc.co.uk/news/articles/ckregjwr7njqo?at_medium=RSS&at_campaign=rss",
+     "date": "Fri, 13 Nov 2026 03:02:54 GMT",
+     "summary": "Four Sydney Swans players had been under investigation after an alleged sexual assault after a game in Melbourne."
     },
     {
      "title": "Hegseth awards medal to war memorial guard who reprimanded him and group",
      "link": "https://www.bbc.co.uk/news/articles/cmvg2r3dq7xno?at_medium=RSS&at_campaign=rss",
      "date": "Thu, 12 Nov 2026 18:47:35 GMT",
      "summary": "Specialist Thomas Iglesias had shouted at Hegseth's group to be quiet after they could be heard talking and laughing at the Tomb of the Unknown Soldier."
+    },
+    {
+     "title": "Democrat Scott Colom makes history as Mississippi's first black senator since 19th Century",
+     "link": "https://www.bbc.co.uk/news/articles/cw7vppyr80eeo?at_medium=RSS&at_campaign=rss",
+     "date": "Thu, 12 Nov 2026 12:56:55 GMT",
+     "summary": "In a state Trump won two years ago by 22 points, Colom's victory extends a string of Democratic wins in the Senate."
     },
     {
      "title": "Millions of Ebola dollars missing with staff unpaid while virus spreads, charity says",
@@ -388,31 +409,13 @@
      "summary": "The country begins a 42-day countdown to being declared Ebola-free, provided no new cases are recorded."
     },
     {
-     "title": "'We've got to run': Inside ruined Ukraine power plant under constant drone threat",
-     "link": "https://www.bbc.co.uk/news/videos/cm93rp3gxn6qo?at_medium=RSS&at_campaign=rss",
-     "date": "Thu, 12 Nov 2026 13:02:46 GMT",
-     "summary": "Dan Johnson visits one of the country's largest power stations, barely left standing after a ballistic missile strike by Russia."
-    },
-    {
-     "title": "Hegseth and advisers reprimanded by guard at Tomb of the Unknown Soldier",
-     "link": "https://www.bbc.co.uk/news/videos/ck5y132yq1ymo?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 11 Nov 2026 21:43:35 GMT",
-     "summary": "Following a ceremony marking Veterans Day, a group that included Defence Secretary Pete Hegseth was shouted at to be quiet."
-    },
-    {
-     "title": "Watch: Vinícius Jr's surprise message to boy who received prosthetic legs after Sudan drone strike",
-     "link": "https://www.bbc.co.uk/news/videos/cm894wg251pzo?at_medium=RSS&at_campaign=rss",
-     "date": "Wed, 11 Nov 2026 09:28:36 GMT",
-     "summary": "Real Madrid player Vinícius Jr sent a surprise message to 13-year-old fan Zaher who lost both his legs after being hit by a drone in Khartoum, in 2024."
-    },
-    {
-     "title": "The rise and fall of Jensen Huang - how the tech superstar became mired in scandal",
-     "link": "https://www.bbc.co.uk/news/articles/cmze750zg0jeo?at_medium=RSS&at_campaign=rss",
-     "date": "Thu, 12 Nov 2026 17:11:48 GMT",
-     "summary": "Within days, Huang's status as a seemingly untouchable figure leading the global tech race has crumbled."
+     "title": "Military cemetery decorum: The tradition behind Hegseth's Veterans Day reprimand",
+     "link": "https://www.bbc.co.uk/news/videos/cv5y1309dg3go?at_medium=RSS&at_campaign=rss",
+     "date": "Thu, 12 Nov 2026 23:42:52 GMT",
+     "summary": "BBC's Bernd Debusmann breaks down why Defence Secretary Hegseth's group was reprimanded at Arlington National Cemetery and the history behind its strict rules of conduct."
     }
    ],
-   "fetched_at": "2026-11-12T23:28:35.335Z",
+   "fetched_at": "2026-11-13T05:51:04.780Z",
    "source": "https://feeds.bbci.co.uk/news/world/rss.xml"
   },
   "sports-az": {
@@ -460,16 +463,16 @@
      "summary": "After losing Michael Wilson, which Arizona Cardinals WR will take over? Burn City Sports"
     },
     {
-     "title": "Cardinals' Trade Deadline Said Everything About Monti Ossenfort's Job Security - Sports Illustrated",
-     "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPUW90VllrR25lU2sxUE9nVVdhRzF0aVE0SUpMTjZWWENpaVVyUVdPZUNRZWRlUHdfY1U5WENTUS0zUVFYckptMzNNazNqdE40cWpZbld4RnpYR3JpSWJzSkNaR0tiWnI4dVhBYjBaemktQ2tzRFV0d0tRbEpkckVxYlZhNjgtZnV4SEJBZV9IQW5yWllMdTRHOE5YS3lZV01XMGFQODMwS0VvYlFyQmF5c1JLZEQxZw?oc=5",
-     "date": "Wed, 11 Nov 2026 00:30:00 GMT",
-     "summary": "Cardinals' Trade Deadline Said Everything About Monti Ossenfort's Job Security Sports Illustrated"
-    },
-    {
      "title": "Khing Thibodeaux commits to Arizona State: Sun Devils score another recruiting win in Texas - 247Sports",
      "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNMXVsMV85Y01hTWV2U01EOWt1Y1o3YlRnTlBlOElNWld4SWF1RGJpTFgycTF1YTV6dEJJRnM0MjFXQ2NGd1p2cHM3TkdKNVVobGdUaG8tQnBjelJ0T0hHMzhrajBoMWQwYXFCOWlVajVDUDI3VTNuelF6bzZINE9TeTdhenhlcFpaaThaNEplWndzRkZWTXZMbU41eDA3b2V5X21HM090cHI5ampDWTAzYk93?oc=5",
      "date": "Mon, 09 Nov 2026 16:25:00 GMT",
      "summary": "Khing Thibodeaux commits to Arizona State: Sun Devils score another recruiting win in Texas 247Sports"
+    },
+    {
+     "title": "Cardinals' Trade Deadline Said Everything About Monti Ossenfort's Job Security - Sports Illustrated",
+     "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPUW90VllrR25lU2sxUE9nVVdhRzF0aVE0SUpMTjZWWENpaVVyUVdPZUNRZWRlUHdfY1U5WENTUS0zUVFYckptMzNNazNqdE40cWpZbld4RnpYR3JpSWJzSkNaR0tiWnI4dVhBYjBaemktQ2tzRFV0d0tRbEpkckVxYlZhNjgtZnV4SEJBZV9IQW5yWllMdTRHOE5YS3lZV01XMGFQODMwS0VvYlFyQmF5c1JLZEQxZw?oc=5",
+     "date": "Wed, 11 Nov 2026 00:30:00 GMT",
+     "summary": "Cardinals' Trade Deadline Said Everything About Monti Ossenfort's Job Security Sports Illustrated"
     },
     {
      "title": "ASU welcomes back 1996 Rose Bowl team at 30th anniversary over family weekend - Arizona Sports",
@@ -478,10 +481,10 @@
      "summary": "ASU welcomes back 1996 Rose Bowl team at 30th anniversary over family weekend Arizona Sports"
     },
     {
-     "title": "Arizona State HC Kenny Dillingham shares bad news on starting safety - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPa1ltNFZNWlVFQ3dvLTl0N1pBb2M5Z0NZbXJ1dHZtNEYwcGFkSlNMX0ZmMGJKUkMyYndISFgxUmttMUgxeUZLRksyTmY4bFNscHZnN2YzS2Y1em44WGZHWWpTOFZPZm9IbTlzSTlfRFlJSWt0Sk9ONTJoa1J0Tng0dFRIbXkwOVk5d1E?oc=5",
-     "date": "Thu, 05 Nov 2026 23:45:18 GMT",
-     "summary": "Arizona State HC Kenny Dillingham shares bad news on starting safety Yahoo Sports"
+     "title": "Growing as QB1: Jake Fette Speaks on Learning College Game, Preparing for UCF and More after Tuesday Practice - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNV3pYOXBiTTZ4M0plUnJ4NDA3M0tlYms2VUhDd0RyTFRMcWNMbkhWM2xnMWpyX240bUdlc0RsMHh4MEZwcGtaNFFhRXd1NU1RNDlCMklYM0JDZkc3aXp6X2NJX1pPellyWVE1a0tWZ3ZWTDFidV9LUWZoa0lUak9MVmZEbXM?oc=5",
+     "date": "Tue, 10 Nov 2026 21:21:43 GMT",
+     "summary": "Growing as QB1: Jake Fette Speaks on Learning College Game, Preparing for UCF and More after Tuesday Practice Yahoo Sports"
     },
     {
      "title": "Winners and Losers From Cardinals' Surprising Trade Deadline - Sports Illustrated",
@@ -502,10 +505,10 @@
      "summary": "ASU's Kenny Dillingham reacts to 24-team CFP Arizona Sports"
     },
     {
-     "title": "Growing as QB1: Jake Fette Speaks on Learning College Game, Preparing for UCF and More after Tuesday Practice - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxNV3pYOXBiTTZ4M0plUnJ4NDA3M0tlYms2VUhDd0RyTFRMcWNMbkhWM2xnMWpyX240bUdlc0RsMHh4MEZwcGtaNFFhRXd1NU1RNDlCMklYM0JDZkc3aXp6X2NJX1pPellyWVE1a0tWZ3ZWTDFidV9LUWZoa0lUak9MVmZEbXM?oc=5",
-     "date": "Tue, 10 Nov 2026 21:21:43 GMT",
-     "summary": "Growing as QB1: Jake Fette Speaks on Learning College Game, Preparing for UCF and More after Tuesday Practice Yahoo Sports"
+     "title": "How Molly Miller reloaded Arizona State women's basketball - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPLWVEZ0l6blNDNmhsR0ZDZmEycXVlNDcxaUxpQjRkWTZYbnZyYXp2TURWS2g2R043Qkg1RWxNb0tLWExmcW13ak85R05kQzdrcmM4NmY4SDVfVEhTY3oyV3BiYjE5aHR5VmIxRS11bk9fUmU5VGY3TnBpbXZRSUU4S182My1ZVEpyUHpneg?oc=5",
+     "date": "Fri, 06 Nov 2026 12:04:04 GMT",
+     "summary": "How Molly Miller reloaded Arizona State women's basketball Yahoo Sports"
     },
     {
      "title": "5 Questions That Will Decide Cardinals' Final Trade Deadline Moments - Sports Illustrated",
@@ -514,40 +517,10 @@
      "summary": "5 Questions That Will Decide Cardinals' Final Trade Deadline Moments Sports Illustrated"
     },
     {
-     "title": "Jake Fette catches touchdown pass from Cardae Mack in first home start - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQRTBjWGZ4bzNCZW5QXzBNaWRZWlVKTG8teWVFcE5BdTVhUmhBTVB3SFp2RzZ0TVd1aGZGbEZkMkttTmVrRVN0OGpYNjdYNEQzR1VfZWxlbUVEV3YxUjNGeHVJeDUyaVhDbU9SSjhOR0tPYVpSRTFibWFibzgyYkt0dDNnQ2U3OVZSNVhHT1VibG1pS1l0ZnZoUWRvNVRKTlNSVm9hRkFB?oc=5",
-     "date": "Sun, 08 Nov 2026 01:40:23 GMT",
-     "summary": "Jake Fette catches touchdown pass from Cardae Mack in first home start Arizona Sports"
-    },
-    {
-     "title": "How Molly Miller reloaded Arizona State women's basketball - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPLWVEZ0l6blNDNmhsR0ZDZmEycXVlNDcxaUxpQjRkWTZYbnZyYXp2TURWS2g2R043Qkg1RWxNb0tLWExmcW13ak85R05kQzdrcmM4NmY4SDVfVEhTY3oyV3BiYjE5aHR5VmIxRS11bk9fUmU5VGY3TnBpbXZRSUU4S182My1ZVEpyUHpneg?oc=5",
-     "date": "Fri, 06 Nov 2026 12:04:04 GMT",
-     "summary": "How Molly Miller reloaded Arizona State women's basketball Yahoo Sports"
-    },
-    {
-     "title": "Kenny Dillingham confident ASU can retain standout freshmen like Cardae Mack, Jake Fette - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOVUF3YjZ6YjRaSTVFT1JDVGltMUJfSTY4MGFnQXhFc3NxV2JPYTh5Y0otOXo4UTB2ODhnY3dTUE0zTFdzeEVsaG9CdnpNNV9GSm9CS0t1VXp6VTdUMzdvWDZyNXlQeDVyTHJvQS1tc21FSHFoLTBqYTNCYTQ3eWgxVTRzRXgzclRlOXVDMURzOGs?oc=5",
-     "date": "Fri, 06 Nov 2026 15:38:52 GMT",
-     "summary": "Kenny Dillingham confident ASU can retain standout freshmen like Cardae Mack, Jake Fette Arizona Sports"
-    },
-    {
-     "title": "Murauskas’ first-half dominance, Croy’s second-half shooting keep Arizona State unbeaten - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOLUtoMU9oWU03M3JNdzNtT2FRc002WDlVQTdQR09GM3ZHamI5QlN1QUxnOVpTUmZ0MkRzSXd5OWtGdW4yRHYzMnlhZmJCU3ZjdzlfS2ZDWWFYWDZlVnBRSFY5SGdUc1ZqQkdZbDVWZzBhVzRTRzNBZ0k2Zy11cTZPWWd0cXN5VzdISEdrakJicG5KNndQcVZn?oc=5",
-     "date": "Wed, 11 Nov 2026 05:43:15 GMT",
-     "summary": "Murauskas’ first-half dominance, Croy’s second-half shooting keep Arizona State unbeaten Arizona Sports"
-    },
-    {
-     "title": "Arizona drops in College Football Playoff rankings - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNalVjYXhqUkNDNDZfeTlZSTlZc3RBTEpQV3BjMUQwNkFtY2RhRmFIa1gxb3NLNmRybnBmLU56d2ZYWTRBMUtjTXFsZ09nTGFBRVE3U2FoODNnYjBQRVpOUmdSbVVXT29HSmo3aEFiRTJZb3lhaEhjcTdPeEJHR0o3M2NqdF93ZDhiMTYwMC1BUWRsR0otSzRULXJZUy1XYlc1?oc=5",
-     "date": "Wed, 11 Nov 2026 03:17:02 GMT",
-     "summary": "Arizona drops in College Football Playoff rankings Arizona Sports"
-    },
-    {
-     "title": "The Good, Bad and Ugly From Cardinals Trade Deadline - Sports Illustrated",
-     "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNcEF4WUQ5b1I5TV8wY0pvZUJJVW1wamVKT083MUZIQ2hyMFhiWFNWU0dpZk00aUFmYjZkNDV0eGlsaXJVdXBnbmdrNGdXTTdmSkk3SEl0Wl9KdDhqbVlPeHMwZUozTFF6VVlEZVlJQS1sNHRxZURfQ01sek85TkZVb0lpTndYX1BiVkhacg?oc=5",
-     "date": "Wed, 11 Nov 2026 16:48:37 GMT",
-     "summary": "The Good, Bad and Ugly From Cardinals Trade Deadline Sports Illustrated"
+     "title": "ASU AD Graham Rossini embraces 24-team College Football Playoff shift - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPbWduTGczNEd3RlVhZGdKY3ptd2lZQjd4MEFSWGlScXZuZ0RNWWdJLWFQMzduZlNHYnU3NmFUNmNuVEpLZjdSMmxYUVFMeEEtUEhlWFJNRVcwR0pmVVdiNGpmaXdiLU02MElONnVZeC02bGZEN1M0NF9rUmZUQnVfR3RmZ1Bad1NLTVFsMzVvXzNmMFdMdVNUZUNWdDBmSTh2QzlGaThIRWltTDFGWjlpQy1YU2JxRm1EX29jOGl1RmtuTDNQR2c?oc=5",
+     "date": "Fri, 13 Nov 2026 03:33:13 GMT",
+     "summary": "ASU AD Graham Rossini embraces 24-team College Football Playoff shift Arizona Sports"
     },
     {
      "title": "Fantasy Football Injury Impact: With Michael Wilson Done for the Season, Who Replaces Him in Arizona's Offense? - Sports Illustrated",
@@ -556,58 +529,100 @@
      "summary": "Fantasy Football Injury Impact: With Michael Wilson Done for the Season, Who Replaces Him in Arizona's Offense? Sports Illustrated"
     },
     {
+     "title": "Kenny Dillingham confident ASU can retain standout freshmen like Cardae Mack, Jake Fette - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOVUF3YjZ6YjRaSTVFT1JDVGltMUJfSTY4MGFnQXhFc3NxV2JPYTh5Y0otOXo4UTB2ODhnY3dTUE0zTFdzeEVsaG9CdnpNNV9GSm9CS0t1VXp6VTdUMzdvWDZyNXlQeDVyTHJvQS1tc21FSHFoLTBqYTNCYTQ3eWgxVTRzRXgzclRlOXVDMURzOGs?oc=5",
+     "date": "Fri, 06 Nov 2026 15:38:52 GMT",
+     "summary": "Kenny Dillingham confident ASU can retain standout freshmen like Cardae Mack, Jake Fette Arizona Sports"
+    },
+    {
+     "title": "Jake Fette catches touchdown pass from Cardae Mack in first home start - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQRTBjWGZ4bzNCZW5QXzBNaWRZWlVKTG8teWVFcE5BdTVhUmhBTVB3SFp2RzZ0TVd1aGZGbEZkMkttTmVrRVN0OGpYNjdYNEQzR1VfZWxlbUVEV3YxUjNGeHVJeDUyaVhDbU9SSjhOR0tPYVpSRTFibWFibzgyYkt0dDNnQ2U3OVZSNVhHT1VibG1pS1l0ZnZoUWRvNVRKTlNSVm9hRkFB?oc=5",
+     "date": "Sun, 08 Nov 2026 01:40:23 GMT",
+     "summary": "Jake Fette catches touchdown pass from Cardae Mack in first home start Arizona Sports"
+    },
+    {
+     "title": "Cam Skattebo's puke-and-rally, TD flips traditions continue in NFL - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNUTdlVE9UMEthNFNzQWpTczdieUJZWFNfdnFyc1hNakNFbWd6VmhSWTRrZGRQYURCYllHSTdwT21BQWpPaG93YklyY05sakpybUdOYVlWeGczV3UwMnVSRmk5WUxPSXB3MTMwOGhEalJsVUJfR1gxaGZSREJWMU1WT2tB?oc=5",
+     "date": "Fri, 13 Nov 2026 02:41:00 GMT",
+     "summary": "Cam Skattebo's puke-and-rally, TD flips traditions continue in NFL Yahoo Sports"
+    },
+    {
+     "title": "3 Big Questions We Have After Cardinals' Trade Deadline - Sports Illustrated",
+     "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOdmRhbTVjOURLU1pPSi1LemhKTi01YXNjU2I3N0ZTTGNNYV9xdXJ4MTFGVF9sQ3RmVV8yMmlyWlNBSVZDMUlUdWxsOUpsVWFNRkowa3EtRDEwMGhHY3VIR3NKTjVpVWZtcWVycG9PUzNmV3p0dFQtaktYZmE0OGhpdHhUVVFlU2hWUE5oZ0tWcE5VUEVCOTZHb2tB?oc=5",
+     "date": "Wed, 11 Nov 2026 20:17:26 GMT",
+     "summary": "3 Big Questions We Have After Cardinals' Trade Deadline Sports Illustrated"
+    },
+    {
+     "title": "The Good, Bad and Ugly From Cardinals Trade Deadline - Sports Illustrated",
+     "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNcEF4WUQ5b1I5TV8wY0pvZUJJVW1wamVKT083MUZIQ2hyMFhiWFNWU0dpZk00aUFmYjZkNDV0eGlsaXJVdXBnbmdrNGdXTTdmSkk3SEl0Wl9KdDhqbVlPeHMwZUozTFF6VVlEZVlJQS1sNHRxZURfQ01sek85TkZVb0lpTndYX1BiVkhacg?oc=5",
+     "date": "Wed, 11 Nov 2026 16:48:37 GMT",
+     "summary": "The Good, Bad and Ugly From Cardinals Trade Deadline Sports Illustrated"
+    },
+    {
+     "title": "Gonzaga at Grand Canyon Open Thread - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPT3NMTmg4LS1PSjVHUDFaM1ZfVlV3U1hpRnFiUDhaZ2dyOERzSGMzQzNfQlEtNmhzZlBhOTRFQS1SeG1rOUNMTHU4NHJPODhJN1hsZ2dfazFRTGcySk1pSm9hZmV5dXU0WWJPY2lNeHVJSm1sa19BS2hRZEwxbnkwaDFpOWhKWllS?oc=5",
+     "date": "Fri, 13 Nov 2026 02:20:00 GMT",
+     "summary": "Gonzaga at Grand Canyon Open Thread Yahoo Sports"
+    },
+    {
      "title": "Steph Curry's Influence Could Define Beginning of Cardinals' New Era - Sports Illustrated",
      "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNSHFJaEEtNmZWZUNSZDJpUGh4U01tal9EOEM5UVB4SElTMDNYcFJ0NC1fV3pneFlYdVBPNzJEbzdVWGdpcWRqaW9GVUl4VC1kZVNFNW9tanE2MExRTG9JM0VQdnRrRnpNeldBSVp2eEkzU0JHcmR3aWJlVFU5WmpJMUxNVHM1QkNMdGxQaTF6eDByOFZJNDNCQWlpaUk0dFBmVncyR2hVNmh0eGQw?oc=5",
      "date": "Thu, 12 Nov 2026 16:44:33 GMT",
      "summary": "Steph Curry's Influence Could Define Beginning of Cardinals' New Era Sports Illustrated"
-    },
-    {
-     "title": "In-state 2028 athlete Daryl Little talks Arizona State offer - 247Sports",
-     "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPQmUyUkJDSE4zNW91VUx0ZTZqTWotcF93LUxfTDBKMG9fMEhlMkFOMWUzcXJZM3lycTVLTE1aSkNwYVpaeVlVdkNKLWQ1RkhnV2huNTViWjBuLXR6azkyejVpZk1xRllSa3ZEQWVhSzg2dURCRnpPNDV5Y1BkOU53Rll0cGNZS3lKWmNtaGdfZkRDQVpteWRtX2U0VHMzN0M5ekF3?oc=5",
-     "date": "Mon, 09 Nov 2026 12:51:00 GMT",
-     "summary": "In-state 2028 athlete Daryl Little talks Arizona State offer 247Sports"
     }
    ],
-   "fetched_at": "2026-11-12T23:28:35.335Z",
+   "fetched_at": "2026-11-13T05:51:04.780Z",
    "source": "https://news.google.com/rss/search?q=%28Arizona%20Diamondbacks%29%20OR%20%28Arizona%20Cardinals%29%20OR%20%28Phoenix%20Suns%29%20OR%20%28Arizona%20Wildcats%29%20OR%20%28Arizona%20State%20Sun%20Devils%29%20when%3A7d&hl=en-US&gl=US&ceid=US:en"
   },
   "sports-national": {
    "items": [
     {
-     "title": "2026 Midseason All-Pro Team: Joe Burrow, Penei Sewell, Dexter Lawrence and more - PFF",
-     "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPZGVZN3pkXzZFSjRIMjMtZThJUW5aeFp0YzRMeW9kVGFNRkY4SFRxaEFJcXZvQmJ6amswRXJldlFwRExvNGFtamg0THR1MG84UlBNTHM3R21faElIcHRqVnptY0tHb0RvV1NnRWFmZWpHNE0weFdMUFpibWNGbVZWeTVxWmk0RlFINXM1T1FGbk43OG1TdGhOUVBBdzdnajRjMlE?oc=5",
-     "date": "Thu, 12 Nov 2026 16:03:09 GMT",
-     "summary": "2026 Midseason All-Pro Team: Joe Burrow, Penei Sewell, Dexter Lawrence and more PFF 2026 NFL midseason award rankings: MVP picks, top rookies, OPOY, DPOY, coaches ESPN NFL midseason grades: 2 teams go from Super Bowl hopes to Fs, while overachieving Giants, Browns receive high praise Yahoo Sports 2026 NFL midseason awards: Expert picks for Super Bowl winner, MVP, Coach of the Year, OPOY and more C…"
+     "title": "Thursday Night Football: Stefon Diggs’ late TD gives Commanders 24-21 win - NBC Sports",
+     "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOTUdrX0lEdjQ2YnpNLXFVbXdvMXpYX01ubHNfWmMyMEV1ODZGS3JLVmZVVDFJYmF0TzRQWHl4SXVjcmx1cUtheHBOU0VLQlZLcC1xbWJnOHlPX1JmWFJJMkxvOGVLb2tFa2wxQjM2by1iVm9USlhRSFZzaHZwR1piNHNkczVNVUdHaURWVnZ3TW83RjRkazJTaEZuem9EazZ2TUUxRE1hWm9wa1gyMExJdGxMS0gxN2FQUnJzWV9JbzFfaHdqQVd2eWpNa3pLZw?oc=5",
+     "date": "Fri, 13 Nov 2026 04:30:40 GMT",
+     "summary": "Thursday Night Football: Stefon Diggs’ late TD gives Commanders 24-21 win NBC Sports Commanders keep NFC East hopes alive with win over Giants ESPN Jayden Daniels shakes off 2 fourth-quarter interceptions to lead Commanders to dramatic win over Giants Yahoo Sports Instant Analysis: Giants fall to Commanders, 24-21 Giants.com Commanders vs. Giants odds, picks, prediction: Best bets, player props fo…"
     },
     {
-     "title": "Cain Velasquez compares Josh Hokit to Conor McGregor, predicts UFC 334 main event - MMA Fighting",
-     "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPcUNLd3RTNHF6ZzZyRS1XWmt6QkxNeThORGwzRV90VENYUmcyQXFocERHNU1faW1iYnRVMmk1clJRLTRLaWMwUkhyWVNTN3EtRlVBeVJHTVpKN21CQWtlTG0wU05SQjB0YnB1bmFIUExGV1ZnV1l6TGpnS1NaMUI1Zjh1clpXRFYwRnJoYmVZVklleGVVRUxwbEpmLVFIYkMtallkU0lPdEw3dmN1WnE3bHo0S0VoeUxIYnRV?oc=5",
-     "date": "Thu, 12 Nov 2026 14:00:00 GMT",
-     "summary": "Cain Velasquez compares Josh Hokit to Conor McGregor, predicts UFC 334 main event MMA Fighting Josh Hokit Is Ready To Take Over UFC.com Cain Velasquez Predicts UFC 334 Heavyweight Title Fight Yahoo Sports Matt Brown: Ciryl Gane and Josh Hokit are ‘fighting for second place’ in the heavyweight division at UFC 334 MMA Fighting B/R Staff Predictions for UFC 334 Main Card Bleacher Report"
+     "title": "Cubs' Pete Crow-Armstrong, Astros' Yordan Alvarez unanimous MVP winners - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQaEFydXdWWlM2RlVKTk1CT0lVaHhubDFNdldWcmNGMHB4ellXb0lSSFZPd3VxRnlFc2RrbklJN3BsUVZxU0x1NGVKTnlYR2xvQldQNFpmZEtOcWpzcHpKZVhKOHFURFdnMXB2SFpDWW9rS1hvT1k4ZDNPd3AycHExX3RGVUdUMlVKU1FhSnJLXzd5VVZGbEVqdUNGaVNRWXl2MEJrYWhBQi1qQQ?oc=5",
+     "date": "Fri, 13 Nov 2026 00:55:00 GMT",
+     "summary": "Cubs' Pete Crow-Armstrong, Astros' Yordan Alvarez unanimous MVP winners ESPN First-time MVP winners (both unanimous!) usher in new era of superstars MLB.com Shohei Ohtani denied MVP history as Pete Crow-Armstrong wins in landslide Yahoo Sports Pete Crow-Armstrong, the Cubs star who lit up Wrigley Field, unanimously wins NL MVP The New York Times Astros’ Yordan Alvarez unanimously wins AL MVP BBWAA"
+    },
+    {
+     "title": "Mauricio Pochettino to sign two-and-a-half year contract at Manchester United - The Athletic - The New York Times",
+     "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNWWM3dDFyQjM0YnhlNld6d1Vfd05wclh3SHJEOUlHOW9EOE5oWll3NmlMTG5MMUtnb1Z4ZDNZSkVnRU9HcHNDZ0hqMjl5MkFmM083ejRJWkJpMldwMGVpWHFJMl9Bck9MbnVwckZBNXNZRHdHdndlR1lUQnA5cWtIeU1Jb2Zhd2ZmVFdGVzd3V2JsejhrU1RhSmcwZVZhczU3RGhsQlhWYzZnQQ?oc=5",
+     "date": "Thu, 12 Nov 2026 22:57:43 GMT",
+     "summary": "Mauricio Pochettino to sign two-and-a-half year contract at Manchester United - The Athletic The New York Times How Michael Carrick won the Manchester United job, then lost it 10 months later ESPN The inside story of Michael Carrick’s Manchester United sacking The New York Times Mauricio Pochettino leaving USMNT for Manchester United just months after signing new deal Yahoo Sports Manchester Unite…"
+    },
+    {
+     "title": "Rockets' Marcus Smart suspended three games for punching Warriors' Charles Bassey during in-game scuffle - CBS Sports",
+     "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOdmtHVHgyVU9sLUJkVlR4YUdrRGw4WFZHeEtObUp5bnI3VktjQm94V3ROV0h2bXpFR0x4YXpmajN0WmxXTFJUWXRJbFFlallOWUt4b29HZV9Nc25DZlBjaE5XNHE0X1Flbm9BbWUzeWxjYVMyWElVY0FveXd5azN3ZnBUdEtHMnlEMHJaYmp5R2VzckZZX2VJUkxEUzY1Zw?oc=5",
+     "date": "Thu, 12 Nov 2026 23:17:00 GMT",
+     "summary": "Rockets' Marcus Smart suspended three games for punching Warriors' Charles Bassey during in-game scuffle CBS Sports Rockets' Marcus Smart suspended three games for punch ESPN Rockets G Marcus Smart ejected after throwing punch at Warriors' Charles Bassey Yahoo Sports Smart ejected for punching Bassey as Warriors lose Curry to injury in defeat to Rockets The Guardian Marcus Smart suspended 3 games …"
+    },
+    {
+     "title": "8 people arrested after Abu Dhabi hotel brawl; Usman Nurmagomedov barred from RAF event - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPTWJ5YUZTY0dMd1ZmUXp4X3dPZFhwZ2NBTFpUeVhMM21uNTRXYjFnNzZMU2I4MDBqQXVQeW4xeG9QUHNpa29vZ3hSdzFuTVFGdE0yOVo0NGM4c0J6NDJIQjlITXp2TGExRC1ablR4d1FzNWFwMndRa19ISkdCQVgwUUx3X0ZKZ3hzZUJQOE9xdmdGQWwxdjBwMHRwRnJMMVZPMzlRdThRMDRjTndNVEJmOU96a3VIMTZ3N2tkekJpd3YzSVRsT2JfRFpiVGFYMHhNV29lTg?oc=5",
+     "date": "Thu, 12 Nov 2026 18:15:25 GMT",
+     "summary": "8 people arrested after Abu Dhabi hotel brawl; Usman Nurmagomedov barred from RAF event Yahoo Sports MMA stars Merab Dvalishvili, Usman Nurmagomedov brawl at hotel in Abu Dhabi ESPN Dana White Reacts to Usman Nurmagomedov Gang Attack Yahoo Sports RAF hopes Dvalishvili competes after hotel brawl Reuters Opinion: UFC may condemn Nurmagomedov-Dvalishvili brawl, then cash in Sherdog"
+    },
+    {
+     "title": "UFC 334: Kayla Harrison on verge of 'permanent nerve damage' before neck surgery - BBC",
+     "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE1nSWUxYXpmczZQRWtZa25hQm9wcmxSWmRkeGFJbmZUVUxacDNLbXhsZFcyYUdBUmNMS2hjUHBHV0VwWXVFbmlfNGQxOUl6cXZaMnZXNUs3cUZoNGtXYk5xYlp1TWo0M3czaG1FQUk1SC1SQzFBWWc?oc=5",
+     "date": "Thu, 12 Nov 2026 13:22:33 GMT",
+     "summary": "UFC 334: Kayla Harrison on verge of 'permanent nerve damage' before neck surgery BBC Inside the tension, suspicion and history behind Amanda Nunes vs. Kayla Harrison ESPN Kayla Harrison Is Primed And Ready For Her Dream Fight UFC.com Amanda Nunes reveals her toughest opponent and it’s not Kayla Harrison MMA Fighting ‘This Is for Me’: Kayla Harrison Returns to the Octagon on Her Own Terms Sports Il…"
     },
     {
      "title": "Kirk Cousins will wear No. 8 again for Vikings - NBC Sports",
      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNMkRUZVQ1XzF1M1d1YThfYWJaQks2MWI5c2dYcFBnVTZKUGoyXzNBMmhYYzJpMU1kNlk3TTI1ZW8yckNOYm9aUS1aUE5qaG4zeDlHSkZTbFdnSkJwM1BYNk9fR25kbVdJZFZDZVJWV0pDXzF3M1ZteHpMb1ZzZHN4a0RhdUYtNnVqZWZESEdMRkdBSHdROWl4M0dWa2dsanBEOGVFbmZRUVZiSWM?oc=5",
      "date": "Thu, 12 Nov 2026 20:28:43 GMT",
-     "summary": "Kirk Cousins will wear No. 8 again for Vikings NBC Sports Vikings won't commit to Kirk Cousins starting vs. Packers, but QB eager to play for Minnesota again NFL.com Gutierrez: Raiders long-term plan comes to fruition with insertion of Fernando Mendoza at quarterback Raiders.com Inbox: He would’ve been a much bigger story Green Bay Packers – packers.com Kirk Cousins Returns to No. 8 Vikings Jersey…"
+     "summary": "Kirk Cousins will wear No. 8 again for Vikings NBC Sports Vikings 'hyped' to welcome back 'leader' Cousins on 1st day of practice ESPN Vikings won't commit to Kirk Cousins starting vs. Packers, but QB eager to play for Minnesota again NFL.com Justin Jefferson: It’s a joy to see Kirk Cousins take over as a leader NBC Sports Kirk Cousins sees return to Vikings, following trade from Raiders, as unfin…"
     },
     {
-     "title": "NFL Thursday Night Football preview: Commanders try to put previous nightmare vs. Giants behind them - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxQSkQ1X0dFV25MQUh6Mk1tcnhyVmdiZ2pzSzY5VlNjQ2p4NEtBaUlKc0RlOEZPbXB1MkZFcHBzYkc4cWprQTRfcUY4UHB5UDN4LUMwN2gzNmtDWnRUYlljNmVYbHVrbUJkSjBKVGIxYlh2SlBzRHpOVU5BdnJlYjVkdjgwNTB2X1dObDdkT2dGcjlsbzl6eTF6RS12WHRUZEI3bmRGQ19YV2FvNXE3WWJld2xucXZUc2FaVHNTdE9XUEFkU2ltaUI4VFlMblZILWgxR2t3SlRlWEtGeVZtODVYN180NDU?oc=5",
-     "date": "Thu, 12 Nov 2026 16:28:14 GMT",
-     "summary": "NFL Thursday Night Football preview: Commanders try to put previous nightmare vs. Giants behind them Yahoo Sports NFL nightmare: How a six-win NFC East team could end up making the playoffs if Commanders beat the Giants CBS Sports How to watch TNF for free: Giants vs Commanders, live stream, TV channel Yahoo Sports Commanders-Giants odds, analysis, betting tips and recommended props ESPN Week 10 T…"
-    },
-    {
-     "title": "The coach who energized U.S. soccer at the World Cup is on the verge of leaving for a job in England - AP News",
-     "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOSVRkeS1UZDFELXJzd1phU2k2aml2NjVsLXhkdkFIZldCWHBGTUk3MmFUUWFPTURQNC0tQ2piN0hxNUVQeFZBbWozVFJkcmNMUkRLM3RCdjl4MWZjNnhLQnJuR3RCWUJiOG5kUDBGOU1RSERFSjFDeHFBNUp3Y3ZFcmJwV1BSUnhNVFUyN3psNEJnMFp1REpMMlVn?oc=5",
-     "date": "Thu, 12 Nov 2026 20:53:00 GMT",
-     "summary": "The coach who energized U.S. soccer at the World Cup is on the verge of leaving for a job in England AP News See more headlines & perspectives on Google News"
-    },
-    {
-     "title": "Man Utd's Mauricio Pochettino pursuit and Michael Carrick decisions - BBC",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5IaUFNY0pfYVNpQVVfXzR0RGNaNHlZYVBJNzV6aFBteDVFTjQ3ZG05LTRfWjBqZW00cEtaUGVyYUhXUGFSSngxY2NVdGZDMTBzMlF4ZXVIMWJwTkgyQ3dEWE90MjlDZ0NT?oc=5",
-     "date": "Thu, 12 Nov 2026 16:12:39 GMT",
-     "summary": "Man Utd's Mauricio Pochettino pursuit and Michael Carrick decisions BBC How Michael Carrick won the Manchester United job, then lost it 10 months later ESPN Mauricio Pochettino, Manchester United Reportedly Agree to Contract as Michael Carrick's Replacement Bleacher Report Manchester United fires Michael Carrick as head coach, lines up US coach Mauricio Pochettino CNN Mauricio Pochettino's looming…"
+     "title": "Curt Cignetti Trolls CFP Rankings After Indiana's Drop to No. 9 in Latest Bracket Projection - Bleacher Report",
+     "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNYm5malFmM09LSi1EU21xcGg1NW9neFdJZUgySm84T3pvY1d2U3EwaHM0UmlXb3dQLUNIWFNrMmFaQVZNSW9MVEZrQzBXQTNmUG5vX1RCdEQ3cUl2Sms1b3pRYU51ckVqWnotRmJDTUNRUW9fcWRGYWRPbkxfSk1sRGJUelJMV0I5ajY3eUJYZ09wNmVGNEtBR0gyU1Bud21CS2xvUHNYZ0hyTVFNVi0zYkZGbVRUel9PWF9zdDZGLTRxa1ZuSHgtWQ?oc=5",
+     "date": "Thu, 12 Nov 2026 19:58:06 GMT",
+     "summary": "Curt Cignetti Trolls CFP Rankings After Indiana's Drop to No. 9 in Latest Bracket Projection Bleacher Report Curt Cignetti rips CFP rankings with clown emoji as Big Ten coaches see SEC bias in Top 25 The New York Times What the CFP rankings got wrong about Indiana, Miami USA Today Curt Cignetti takes a shot at Georgia over College Football Playoff ranking DawgNation Indiana's Curt Cignetti Might B…"
     },
     {
      "title": "2027 NFL Mock Draft: Chargers land Jeremiah Smith, Dolphins find their quarterback in Drew Mestermaker - PFF",
@@ -616,119 +631,113 @@
      "summary": "2027 NFL Mock Draft: Chargers land Jeremiah Smith, Dolphins find their quarterback in Drew Mestermaker PFF After the NFL trade deadline, how will Round 1 of the draft play out? The New York Times B/R NFL Scouting Dept's 2027 NFL Updated Mock Draft After 2026 Trade Deadline Bleacher Report Renner's post-deadline 2027 NFL mock draft: How the trade deadline affected the first three rounds CBS Sports …"
     },
     {
-     "title": "Smart ejected for punching Bassey as Warriors lose Curry to injury in defeat to Rockets - The Guardian",
-     "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPcWk0VGlRdUl0LW5CdS1iSTkxNjJUdl8wUGFzemQ3NUJkdXpMSXhLbGpsZUlQQUlKcHNnMXRyLXE1WWxTRW43TmRFQVlJcnl5aE1JN1FSN3c1bFFXYmtVS3ljQnBlTGFxRE9DTkVqSEVRd3pCN2lyWUtLTngwVVZQU21yMGNQemlBSlB3aVZ5UFItV0VSTUhhRXZEQ2pWQjk5cWl5Y3BpN1NzZw?oc=5",
-     "date": "Thu, 12 Nov 2026 22:03:00 GMT",
-     "summary": "Smart ejected for punching Bassey as Warriors lose Curry to injury in defeat to Rockets The Guardian Rockets G Marcus Smart ejected after throwing punch at Warriors' Charles Bassey Yahoo Sports Rockets' Marcus Smart suspended three games for punch ESPN Warriors' Charles Bassey Rips Marcus Smart's 'Fake Toughness' After Getting Punched on Video Bleacher Report Rockets’ Smart ejected for throwing pu…"
+     "title": "Chargers' Jim Harbaugh frustrated with Broncos after nixed Daiyan Henley trade - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOcEtVazdMZy0yb3hNVFZjZ0JlQ19Sa0VKcl8yMmg2Z0JpSlBqVUlua040QXZiMGpWblBoMkpsWk9fT1BzX2ZPTjh4alVjdHZnTU03OF9KaXBfcHR6bnhQLUFXeTZYOUpTTGpjbTNoaFFiV2VKVmIwY244UGg2TkEtV3VjeHNfcW5YZXU2S2FkT2ozRGFmQjRB?oc=5",
+     "date": "Thu, 12 Nov 2026 21:42:00 GMT",
+     "summary": "Chargers' Jim Harbaugh frustrated with Broncos after nixed Daiyan Henley trade ESPN Broncos call off trade with Chargers for LB Daiyan Henley NFL.com 'It sets a bad precedent': Jim Harbaugh says Broncos used 'loophole' to base Daiyan Henley's physical on if Chargers would take less trade compensation Yahoo Sports Failed Daiyan Henley trade exposes a flaw in the NFL’s trade deadline NBC Sports Char…"
     },
     {
-     "title": "2026 NFL playoff predictions: Picking every division winner and wild-card team at midseason - NFL.com",
-     "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQYU9wc2hDRUVjT25halVZZG9XeHNsTEFHbjY4SXRVZTVSM0twMXk5QU9sWHlZMDd2TWJVYW94Vk1CNThnTk1fellPa25fLV9UWlg4UXdyZG9laGQtRGlvalRjZXRfby1QUlFFSENTSkVPSnhLVElqaFRGWlF2b01iZ3dzMF9CUEllakkyVDVBZGUwZGVvSnhuX1VGWE9mc0dCenZJcVVyRldhMEhYODJFSVJKOGRuUQ?oc=5",
-     "date": "Thu, 12 Nov 2026 16:56:00 GMT",
-     "summary": "2026 NFL playoff predictions: Picking every division winner and wild-card team at midseason NFL.com"
+     "title": "Ravens QB Brissett immersed in 'crash course' for Chargers - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNUl9namlJdmM4UC1hZjluTHVPenFyWEo1N1JEek45cUtJT3pMT2plU2hQMWdPODJNNldQV3RDRGk3c05uUzRJdFY3NDNyNm1XLVJ5WWl2eFRLUDk4OW9TTUhhTjJPNG8zT25pVmEzTzE0LVluVUhJMmNtUV9iRzFZa1p0dHNjejdsb2pPenJ6M2wydXctN1FlNDJB?oc=5",
+     "date": "Thu, 12 Nov 2026 22:24:00 GMT",
+     "summary": "Ravens QB Brissett immersed in 'crash course' for Chargers ESPN Jacoby Brissett Is Taking a ‘Crash Course’ in Ravens Offense Baltimore Ravens Jacoby Brissett trade grade: Ravens try to salvage season; Cardinals improve draft capital The New York Times Jacoby Brissett expected to start for Ravens in Week 10 Yahoo Sports Jacoby Brissett: The last week has definitely been a crash course NBC Sports"
     },
     {
-     "title": "Chargers’ Jim Harbaugh calls out Broncos for failed Daiyan Henley trade - The Athletic - The New York Times",
-     "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOaUs3cnV5Z0c1Z1dQQU9UZ1Y4LTJ0YWFPWWVuLWMtRXRnSTNwSGNlZVU4bUlHNWVSdWE5ZGJTbDBabzd0M1ZWZGxGaE9ka0pmVTlOQ2hpQXVKZHVRYWdPakNfV2V2cjBOU3BMNXdVRDZKV1JlelJ4dFdsb0VZWHMtQWRZOE1RQXROTUIzaWZSc0EzVmpuS3gzX3JLdDZqV3lUdWl4Ng?oc=5",
-     "date": "Thu, 12 Nov 2026 22:25:01 GMT",
-     "summary": "Chargers’ Jim Harbaugh calls out Broncos for failed Daiyan Henley trade - The Athletic The New York Times Chargers' Jim Harbaugh frustrated with Broncos after nixed Daiyan Henley trade ESPN Jim Harbaugh: Broncos took advantage of a loophole the NFL should not allow NBC Sports Broncos call off trade with Chargers for LB Daiyan Henley NFL.com Failed Physical, Not Talent, Sank Daiyan Henley Trade Yah…"
+     "title": "Rising UFC featherweight Tommy McMillen 'OK' after nightclub scare, says coach - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNbjV2YTR0a1hLM0RUWWUzYXozUlBhWW5uRi00bFY1QWY0RFAwSVQxNXRnal9HbW1BN1R1Q1dISlAwd0pvaDBMdUpoN25nak16UzVkb2NMQ3FvTHVQU2Y0Y1BiOVBwUnFrVFBRM3RaSk0xTWR3LTVBMWlIOHV4cG9rTG9CekhiSVFUd3hNd1c4dE82aWxmWEg5alFOeW8?oc=5",
+     "date": "Thu, 12 Nov 2026 22:42:00 GMT",
+     "summary": "Rising UFC featherweight Tommy McMillen 'OK' after nightclub scare, says coach ESPN Undefeated UFC fighter found unresponsive in nightclub bathroom, rushed to nearby hospital Yahoo Sports Report: Tommy McMillen taken to the hospital after a possible overdose MMA Fighting Undefeated UFC fighter Tommy McMillen rushed to hospital after being given Narcan at nightclub New York Post Undefeated UFC Star…"
+    },
+    {
+     "title": "Packers-Vikings Injury Report | Nov. 12, 2026 - Green Bay Packers – packers.com",
+     "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE0zak83N2t6Vy1pN3hoMVg1cVRyZ3ZuNjZTeWhKaWJVS0pFYTVWMjNEVkMwMUNZUnN3NUxRanBoelJiTG96WHZhYXhRZXVzSmY0ZVRwV2hlT0NpMFQ1SXRIelFyNHVRQnZwOE9IOEJsTHRkb3Q3NHNXYzZn?oc=5",
+     "date": "Thu, 12 Nov 2026 21:58:57 GMT",
+     "summary": "Packers-Vikings Injury Report | Nov. 12, 2026 Green Bay Packers – packers.com Commanders vs. Giants highlights | Week 10 NFL.com NFL great Barry Sanders taps beer keg in Munich, battles through the adversity of a poorly designed mallet Fox News A.J. Brown, Rhamondre Stevenson present at Thursday's Patriots practice in Munich Patriots.com Matchups to Watch: Patriots Depleted Rush Attack vs. Lions B…"
     },
     {
      "title": "Longtime NBC Sports announcer Dan Hicks dies at 64 - AP News",
      "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxOei01RDZ1ZHBmNk9zdGFRenRwaHFSdU1ZMDNfblItUUR6dGxsbEJVQmZYYkNNZzI0b09nWXNjS1VWZ1dQN1BjZlFjMnU2VE1ONF9BaTVIc0tXNW9zMXBPT0ZQak9jQ2ROcW1QZ3Z3ZjNoM0NIVzF3aGNnYkE2MllVQW5JVUE?oc=5",
      "date": "Thu, 12 Nov 2026 20:39:00 GMT",
-     "summary": "Longtime NBC Sports announcer Dan Hicks dies at 64 AP News Longtime sports broadcaster Dan Hicks dies at age 64 ESPN ‘We’ve been cheated to never hear Dan Hicks’ voice again’: Colleagues pay tribute to NBC Sports broadcaster Yahoo Sports Dan Hicks dies at 64: Legendary broadcaster, longtime voice of PGA Tour and Olympics passes away CBS Sports Craig Melvin Chokes Up Honoring NBC Sports Broadcaster…"
-    },
-    {
-     "title": "Week 10 FLEX Finder: Target vacuums for Rams, Colts, Cardinals - NBC Sports",
-     "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPX0F4UHFrQXdiTlZhM3JHbEpEWDFfd05Ma0dWZWtZb0tFSk8wVjUzdGo1SkZnYWRobVYzVFRRSEJuelRhLUpJdEh1N1BDNEh4ZDJZbTR5SzlzMUFXcFZhUDRwX2xDZFdWVUE0SDlmSWdzQ3lrSzNSUEpFZG5SU0J3M29mb3hSYmU1SzRyeG8tWGdGR01WSjY3cjNlMEhhbEFxdVpZUi1oUHpWUXM?oc=5",
-     "date": "Thu, 12 Nov 2026 14:51:11 GMT",
-     "summary": "Week 10 FLEX Finder: Target vacuums for Rams, Colts, Cardinals NBC Sports NFL Fantasy 2026 Start 'Em, Sit 'Em: Wide receivers for Week 10 NFL.com Fantasy football Week 10 PPR cheat sheet: Should you start Josh Downs in his first game with Patrick Mahomes? CBS Sports Fantasy playbook: Week 10 Shadow Reports, lineup locks and projected scores ESPN Week 10 lineup questions? Fantasy Football Live has …"
-    },
-    {
-     "title": "Warriors star Stephen Curry out 2 weeks with oblique abdominal tear - NBA.com",
-     "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5FZ2U4Nm0wdTBCTFVXeXV4Q3lHVTgwNnFVQW1XZ2plTWx1VVU5SDA3WGpoTHdGYnQ5c3AxYTZ1YnFiZWc3VVhNZFpBejlJVVMyc0huMEdhU3NSU3M0cTBNREZKV1F6d0NpZXotMTl3?oc=5",
-     "date": "Thu, 12 Nov 2026 17:55:53 GMT",
-     "summary": "Warriors star Stephen Curry out 2 weeks with oblique abdominal tear NBA.com Warriors' Stephen Curry out at least 2 weeks with oblique tear ESPN Stephen Curry Injury Update - 11/12/26 NBA.com Steph Curry is out. Why the Warriors believe they are better equipped this time The New York Times Can Warriors survive without Stephen Curry with tough stretch ahead? Yahoo Sports"
-    },
-    {
-     "title": "Michigan State’s win over Duke a warning to college basketball: ‘Just a stepping stone’ - The New York Times",
-     "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQM1lDNF93TmcwWGx1dDhOWnUyUU9yRlVJT1p4YU5MUjdpZ2Q4a05xLTRtSmNKMzRzUFdQay1TOEczV2NzMExCMkZvOTNYSlRfOXpnVEZyNy1Rc0Mxc29ybGtmRl9Wd1Vkc01IUzZ4UVhiRFVPZ1ktUkVRd1JLUkYwZ3JuQUt1SGlOTTFqaGFqZ3hvRVhjbjBrRzRnaEtHY0V0STgtSTZhelVUM09kTm9rZmtIcm8zbEdUZWJQTzlHOEVKdw?oc=5",
-     "date": "Wed, 11 Nov 2026 11:54:26 GMT",
-     "summary": "Michigan State’s win over Duke a warning to college basketball: ‘Just a stepping stone’ The New York Times Jeremy Fears Jr. pushes Michigan State past Duke in Champions Classic ESPN Tom Izzo finally has the kind piece to put Michigan State over the top Detroit Free Press College Basketball Catchup: TTU Upsets Illinois, Duke Goes Down, Halls Erupt FOX Sports Blue Devils thumped in Chicago by Michig…"
+     "summary": "Longtime NBC Sports announcer Dan Hicks dies at 64 AP News Longtime sports broadcaster Dan Hicks dies at age 64 ESPN Mike Tirico mourns death of Dan Hicks: 'He nailed every big moment' The Detroit News Dan Hicks, our host for so much Olympic greatness, always met the golden moment The New York Times Dan Hicks Celebrated Daughter’s Marathon Finish in Final Instagram Post Before His ‘Unexpected’ Dea…"
     },
     {
      "title": "Developers Unveil $10 Billion Plan For Bears Stadium, 100-Acre Project In Bronzeville - Block Club Chicago",
      "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNaEYwTzNrdHhuQjJVWnMxcmZQaF9EN0VWWGpOQWNYdUZmMUtfVUUzYTJWdHNhSDhFRFZoWEo2WkQ5eVhNcjVFQ0FQVGFyM0tTMVpqcE1fVFl4dmtPdVQyQWxHSU9CUDRiVUNpSkNjd0VDUEtRR1kzcUUyYTBlMl9kOEFOdEhnNlgyQ0hNYkt3UUZYdkkwMjlNaTROTGtNM2ZhakI0OFlrOFRBSGlfT0Myc0IyNy1sXzhhYThibXFKS1U0dw?oc=5",
-     "date": "Thu, 12 Nov 2026 20:40:01 GMT",
-     "summary": "Developers Unveil $10 Billion Plan For Bears Stadium, 100-Acre Project In Bronzeville Block Club Chicago $10B development including Chicago Bears stadium proposed for Michael Reese site in Bronveville ABC7 Chicago Congressman pushes Chicago Bears stadium in Bronzeville despite hurdles FOX 32 Chicago Michael Reese developers pitch $10 billion stadium project to lure Bears Chicago Sun-Times Develope…"
+     "date": "Thu, 12 Nov 2026 23:23:05 GMT",
+     "summary": "Developers Unveil $10 Billion Plan For Bears Stadium, 100-Acre Project In Bronzeville Block Club Chicago $10B development including new Chicago Bears stadium proposed for Michael Reese site in Bronveville ABC7 Chicago Congressman pushes Chicago Bears stadium in Bronzeville despite hurdles FOX 32 Chicago New vision for former Michael Reese Hospital site includes housing, retail and a possible Bears…"
+    },
+    {
+     "title": "NFL Week 10 picks: Upset and score predictions, matchup breakdowns for every game - NFL.com",
+     "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5PMDhOUC10R2lfejN2LWJzbmNVT0xZd2VQdzN6NFVYLUZqNnRUTFRRSmUxY1NFcUYxb0d6Yl9Tb0Rrdzg5WWE5cms4MkcwUXNBYWdDNUstZDYwYkExSjY2RElQVVo5ZW5JLUE?oc=5",
+     "date": "Thu, 12 Nov 2026 19:03:13 GMT",
+     "summary": "NFL Week 10 picks: Upset and score predictions, matchup breakdowns for every game NFL.com It wouldn't shock me if ... NFL Week 10: Fernando Mendoza struggles in first start, new Chiefs WR dominates CBS Sports NFL Week 10 ATS picks: Why the Packers will snuff out the Kirk Cousins reunion hype The New York Times PFT’s Week 10 2026 NFL picks NBC Sports Bleacher Report's Expert Week 10 2026 NFL Picks …"
+    },
+    {
+     "title": "Rams place WR Puka Nacua on IR - NBC Sports",
+     "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNalVVRGZIQmlKTS0zajNfMEl3eEVkdmNkeTVnSDVvLUM4Y2NGY2VxbG1WTC12TmduM0puSHZ2d0NOcUtwaGdaY1BQOWpBWHI5dkNIcnd5aHNaQ09SbXFTSFVBQnVKcVlxakZyU29kUmVBUnZqbWE4a2dhN1BFZXlFcVhXdERueVYzQ3AyYWJfdlk1TnZoekpz?oc=5",
+     "date": "Fri, 13 Nov 2026 00:58:37 GMT",
+     "summary": "Rams place WR Puka Nacua on IR NBC Sports Rams change course, place wide receiver Puka Nacua on injured reserve Los Angeles Times 'I trust those guys to be in the right spots': Matthew Stafford confident in next receivers up with Puka Nacua and Davante Adams sidelined Rams Rams targeting Davante Adams to return in Week 13 vs. Chiefs; Puka Nacua to miss 'significant' time Yahoo Sports Rams place WR…"
+    },
+    {
+     "title": "Week 10 Fantasy Football WR Rankings: Justin Boone's top wide receivers - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOOXp4WHVIeTNGSFVsaURveVoxNlk3TTJyak93ZEdDR1NhZjRoSnEtcWNfQ2VmcVBHa3ptTlNGangwdXpMSFg2dWR2cVZQV3EtWk85MW01MFJjd2wzQlJ3MHRZZ2FzY1BHSmpMN21oNUM5RXNic3FNVTdOUGNhZHdzcEZVNXB2R01xRzdEeXVEdDdoTzg4QmZfVXRWcTJxR0dzYmVKMEJ4MzVQQjh3eWhpNGJsdm15cU1IQ29NbUFKODF0VXpMLVI2MmV1a1FQZw?oc=5",
+     "date": "Thu, 12 Nov 2026 21:16:19 GMT",
+     "summary": "Week 10 Fantasy Football WR Rankings: Justin Boone's top wide receivers Yahoo Sports NFL Fantasy 2026 Start 'Em, Sit 'Em: Running backs for Week 10 NFL.com Fantasy Football Rankings: Hayden Winks' RB Blueprint for Week 10 Yahoo Sports Fantasy playbook: Week 10 Shadow Reports, lineup locks and projected scores ESPN Week 10 FLEX Finder: Target vacuums for Rams, Colts, Cardinals NBC Sports"
+    },
+    {
+     "title": "Cain Velasquez compares Josh Hokit to Conor McGregor, predicts UFC 334 main event - MMA Fighting",
+     "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPcUNLd3RTNHF6ZzZyRS1XWmt6QkxNeThORGwzRV90VENYUmcyQXFocERHNU1faW1iYnRVMmk1clJRLTRLaWMwUkhyWVNTN3EtRlVBeVJHTVpKN21CQWtlTG0wU05SQjB0YnB1bmFIUExGV1ZnV1l6TGpnS1NaMUI1Zjh1clpXRFYwRnJoYmVZVklleGVVRUxwbEpmLVFIYkMtallkU0lPdEw3dmN1WnE3bHo0S0VoeUxIYnRV?oc=5",
+     "date": "Thu, 12 Nov 2026 14:00:00 GMT",
+     "summary": "Cain Velasquez compares Josh Hokit to Conor McGregor, predicts UFC 334 main event MMA Fighting Josh Hokit Is Ready To Take Over UFC.com Heavyweight’s Savior? Yahoo Sports B/R Staff Predictions for UFC 334 Main Card Bleacher Report UFC 334 'Embedded,' No. 4: Josh Hokit meets Spike Lee at a Knicks game Yahoo Sports"
     },
     {
      "title": "Are bowls dead? What happens to college football’s bowl games with 24-team CFP coming? - USA Today",
      "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNZUdCVDJKTlh2aE1CX0pMSm5qeHhBSGZwazJKSkNmeG15eHVUc1gxMklUajJWcEhpNUxyUXI5cnFYSXZOYzRvZFZJdlFZMW54UGgxT0xiLTVGeFJxZ3ExMUlLSHczQ2o5ZklVTWVGdno4bDFlWUIzeUI2OXhCMG5vWmlBM1AxeVJFNGRrUV9ZcVhLLXdRdGxmcUxWOTAza3BHb0M2N3lrMEZkXzlHbVhfZFRjWkhSV3JJa1BULXlEbEdUZw?oc=5",
-     "date": "Thu, 12 Nov 2026 18:34:00 GMT",
-     "summary": "Are bowls dead? What happens to college football’s bowl games with 24-team CFP coming? USA Today The bullish case for the success of a 24-team College Football Playoff: MoneyCall The New York Times Projecting a 24-team playoff field with current CFP rankings The Atlanta Journal-Constitution With the extinction of championship games, Drinkwitz questions purpose of conferences Columbia Missourian Pa…"
+     "date": "Fri, 13 Nov 2026 01:53:00 GMT",
+     "summary": "Are bowls dead? What happens to college football’s bowl games with 24-team CFP coming? USA Today Missouri's Eli Drinkwitz questions need for conferences in 24-team CFP era ESPN Paterno: It Is Time to Act Before College Football’s Hubris Becomes Its Undoing StateCollege.com What a 24-team College Football Playoff would look like this week: LSU would visit Texas Tech, and Ohio State would go to Wake…"
     },
     {
-     "title": "Sources: Former Saint Louis star Robbie Avila finalizing deal to play for TCU - ESPN",
-     "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPcG5nNVdwZUdYd3pCQ1NJdXNacUd2VExLdkNmUU9yNHU1UnhHLTlpY3dlN2NIMVl1dDdTdkZWX0YtTzNRczRMOGllS0F4bVQta3JwX09HRmJSUm9fNWhXbWpmTDBMYzVUS2xXUEpBMVA3eHBMTXltaTJ4alFqcDAwV1UyMFJKeXhjbTlpVVc5ZWNJUVhGNWtZMlI5c2wxTUNYSG5UMl82UXZQUFRVQjlDUk9GTGtVTk0?oc=5",
-     "date": "Thu, 12 Nov 2026 16:22:00 GMT",
-     "summary": "Sources: Former Saint Louis star Robbie Avila finalizing deal to play for TCU ESPN TCU lands Saint Louis star Robbie Avila amid roster-limit kerfuffle: What it means for the Horned Frogs CBS Sports SLU standout Robbie Avila finalizing deal to play for TCU this season FOX 2 TCU men’s basketball nearing deal to add reigning Atlantic 10 Player of the Year Fort Worth Star-Telegram Robbie Avila close t…"
+     "title": "Stephen Curry Injury Update, Latest News and Timeline to Return for Warriors Star - Bleacher Report",
+     "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNRWp5d3dvNm5ldWlJanJkaWFlV2tqQ3lhNkd4a1FYN1Z4TEtZQzctbHAwVEhJaVJXY0ZnOXVrLW9rM1pmM0ExMmRqc1RQdnlDeDdQVGRHOGZoNGdza1o0cDJ4VFBTTHhvbWVTeW5wc0ZhYmtYWG8tVEJXenNrUno5UmNTNkZpaHEwR3F4NldGTGJDSXdQemNLczZlRTB5RGRBYlNNdUxDUFJzbXpsb1p5SHRLamhtN3BNUmc?oc=5",
+     "date": "Thu, 12 Nov 2026 21:26:17 GMT",
+     "summary": "Stephen Curry Injury Update, Latest News and Timeline to Return for Warriors Star Bleacher Report Warriors' Stephen Curry out at least 2 weeks with oblique tear ESPN \"How Do You Sustain Without Your Superman\": Gilbert Arenas Sounds Alarm on Draymond Green After Stephen Curry's Injury Yahoo Sports Stephen Curry Injury Update - 11/12/26 NBA.com Steph Curry is out. Why the Warriors believe they are b…"
     },
     {
-     "title": "College basketball rankings: Michigan holds firm in Top 25 And 1 after key win for Mike Boynton over Marquette - CBS Sports",
-     "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNeVdTTjRvWkEyVklEcFVEZDM2bV9VbzlpMU9hZ2ZvenNXd2lRRkF5TUUzZ1E3YXhsN0pDZ2JFTVgwMzNQWmtYWGVaWEdLSlhFZE5UbURhblJPdnV4NDBhcEI3TUdfZ0llR3N2VmZLNFI0dnVKUGVPNnRTRnktS0RXbVVfdkstanNyZWdDVHlkY0RJSWNlRkE4cU9yeE1ycEh3a2lOcUxnb3N3Rkp5SEVMeVlkNA?oc=5",
-     "date": "Thu, 12 Nov 2026 19:21:00 GMT",
-     "summary": "College basketball rankings: Michigan holds firm in Top 25 And 1 after key win for Mike Boynton over Marquette CBS Sports Marquette needs to get Nigel James Jr. going to avoid more disappointment Milwaukee Journal Sentinel Overheard outside Michigan’s locker room: Not a good look and a true rotation MLive.com Game 3: Marquette at Michigan Recap UM Hoops.com Michigan basketball blitzes Marquette to…"
+     "title": "Bulls' Caleb Wilson has successful surgery on fractured right hand - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOVnJyVGpibnY1ZDktZllpdDFhY0V6d2gxcFBIU2pzVzVrdDNmZU9CR1pmVWlQOFoySlRacW1tMDFReWNBTDNJb2ZvVmdjSkJrX082TllOOEtxWXhLNGRFcEJOY1VtekxQa05qQzIwMUthcDRaWHFFc0Vyb0QzUzZGWTcwaXNqLUFWcGZFNW9YZWJ6QQ?oc=5",
+     "date": "Thu, 12 Nov 2026 21:31:00 GMT",
+     "summary": "Bulls' Caleb Wilson has successful surgery on fractured right hand ESPN Bulls' Caleb Wilson exits game vs. Spurs with hand injury NBA.com Caleb Wilson Injured, Latest Rumors on Bulls Star's Return Timeline After Suffering Hand Fracture Bleacher Report Caleb Wilson (hand) will not return Wednesday NBC Sports Bulls rookie Caleb Wilson leaves loss to Spurs with hand injury Yahoo Sports"
     },
     {
-     "title": "Comparing the two moods: Beamer's disposition before Arkasnas - 247Sports",
-     "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPbmNSNExJLUNfakVjR2NhS05SV0tvcTNaWWRobVFiNklSTzQ0Y0ZONzhyaFMwUk93Z0o0Q2FldHVxT09FT1FzUFlVaGpUcGpkUXRMTEVYdlVPbG02Mkk5cVRtbUVUdlVyRWRGSEZtSVBwQk1HVVVQTmZfMXl3X3l6cTM4R0M1NWhIU1B2YjVTNEh4UDBMRzdnLWQtcHIyX1RqSzZlMmxGTzBYbDFVMHJlcG15VmtfZFk4bG1iNW9uNA?oc=5",
-     "date": "Thu, 12 Nov 2026 18:20:26 GMT",
-     "summary": "Comparing the two moods: Beamer's disposition before Arkasnas 247Sports South Carolina vs. Arkansas: Kickoff time, TV channel, injury report, odds The State What a Win Against South Carolina Would Mean for Ryan Silverfield, Arkansas Yahoo Sports Comparing South Carolina's roster talent to this week's opponent, the Arkansas Razorbacks On3 Hogs' Jones adjusts mindset in preparation for SC The Daily …"
+     "title": "2026 NFL midseason awards: Expert picks for Super Bowl winner, MVP, Coach of the Year, OPOY and more - CBS Sports",
+     "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNNWRhZUFURnlsc3RQQ3hrZkM4cHIwcXF2OEdHRERYQW1JUFZCQjhXTGx2UjZnam1IQjhaX0F5cXlpa25BSVJLck5ONkVjZDA5akdqRTVWRlBmTHU0NFlZWmZDbmJsYnljdmM5WkJIMlF4LVJjTmNaeHkyWUl4N29hVTFtR0lYTmJrWHgwejg4OVpyeGhlbFVKRlg5UFJPeGhwVjJNalp2Rkc3b2RwT3F6dktYZw?oc=5",
+     "date": "Thu, 12 Nov 2026 16:52:00 GMT",
+     "summary": "2026 NFL midseason awards: Expert picks for Super Bowl winner, MVP, Coach of the Year, OPOY and more CBS Sports 2026 NFL midseason award rankings: MVP picks, top rookies, OPOY, DPOY, coaches ESPN NFL midseason grades: 2 teams go from Super Bowl hopes to Fs, while overachieving Giants, Browns receive high praise Yahoo Sports NFL midseason awards: Allen’s brilliance, a Seahawks shocker and a new Sup…"
     },
     {
-     "title": "Inside the tension, suspicion and history behind Amanda Nunes vs. Kayla Harrison - ESPN",
-     "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPVkxRTGpmaTFzNkZPaGdOZ0xHUzk0eFhtUVExNVdJSzdtNnN5aUNWWFNNMU9MT2J2Y2hUM2l4dVlEYlh6ZXhjNXhCeXhrNk81VEt4SjZOaXkwVjNFbFI4X3FrMEFMMHl4eW50NXJobGdVRE91NnpWU1NmRkFyZHFpVDNhMjNRR2JkWTdN?oc=5",
-     "date": "Wed, 11 Nov 2026 12:21:00 GMT",
-     "summary": "Inside the tension, suspicion and history behind Amanda Nunes vs. Kayla Harrison ESPN Kayla Harrison Is Primed And Ready For Her Dream Fight UFC.com UFC 334: Kayla Harrison on verge of 'permanent nerve damage' before neck surgery BBC UFC 334: Kayla Harrison’s delay left Amanda Nunes with mixed emotions MMA Junkie ‘This Is for Me’: Kayla Harrison Returns to the Octagon on Her Own Terms Sports Illus…"
+     "title": "TCU lands Saint Louis star Robbie Avila amid roster-limit kerfuffle: What it means for the Horned Frogs - CBS Sports",
+     "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPal9qd0pKRk51VWVNOWlWWVdMVjA1bFQ0REpnNGdvUEJETlRIVVFfYmowX00tRVhmblRqU3BMckctV0VLZ3ZlMmg4NXhiR1F6SFIxeWFEYmJIX2dCbm1YQlhYRldXakxaam1YNEpFbHRuRkJFd3k0YVdDMWhiZDVWNzRHaHZjT1BHYXd0N2JzSQ?oc=5",
+     "date": "Thu, 12 Nov 2026 16:34:00 GMT",
+     "summary": "TCU lands Saint Louis star Robbie Avila amid roster-limit kerfuffle: What it means for the Horned Frogs CBS Sports Sources: Former Saint Louis star Robbie Avila finalizing deal to play for TCU ESPN The Eligibility Waiting Game: Live With Saint Louis’s Josh Schertz Hoops HQ How TCU Is Adding One of College Basketball’s Most Recognizable Stars Weeks Into the 2026–27 Season Sports Illustrated Robbie …"
     },
     {
-     "title": "Emptying The Notebook: Why Georgia might be in a tough spot - On3",
-     "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQcWs1cmtrYU1lSWh2SFRNbmQ4VURXOFN0MEFUa040eVhEb0ZMSVVTSzNGNlZLbDlMUmVEN2I5SjQ2cFhzdU15dFpaT0ZfQXNuSDZEbGg0RmQxWVd0dloxTVNYbUU4bG8zVWdBbHVCOUVsRldLYzVzTGtnWERqNktZQWFNbUFmWjNhbjFtZlVsTWRSTWoydzRQWTdWV3VSemdTRXdVRE1BVXZJYVk?oc=5",
-     "date": "Thu, 12 Nov 2026 15:21:40 GMT",
-     "summary": "Emptying The Notebook: Why Georgia might be in a tough spot On3 Georgia vs. Missouri prediction, pick, odds, spread: Bulldogs look to keep rolling against Tigers CBS Sports Kirby Smart's call to action: Is the Sanford Stadium crowd loud enough? 247Sports Unlike 2024, Georgia knows what it’s going up against in Austin Simmons and Cayden Lee DawgNation Georgia vs. Missouri: One fatal flaw that could…"
-    },
-    {
-     "title": "Steph Curry’s defense of Ayesha exposes the ugly double standards of sports’ manosphere | Andrew Lawrence - The Guardian",
-     "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQWGhqX0JaQk9WMl9hN1Y3c01NcEVxWUxBUkppcmpEUm5LNmZIbGRlMUtKYXpCS0J2OXp2RW1saW9GQmtZSTN1dHlRWmNwQWs1cDhKclpTcm5CaDZWbHVyNHdFVGcwSzFVWWFSUXo0a3ozUjBrdnRWU2x2TGZzQkNlejZjZ0JOdFJfVVJPVEJvQkZEaF94ckdzVTh5V0NnWHJf?oc=5",
-     "date": "Thu, 12 Nov 2026 18:05:00 GMT",
-     "summary": "Steph Curry’s defense of Ayesha exposes the ugly double standards of sports’ manosphere | Andrew Lawrence The Guardian Steph Curry defends his wife Ayesha’s role in new film during rare response to criticism The New York Times Curry confronts critics over comments about wife Ayesha ESPN Stephen Curry calls out Gilbert Arenas, Nick Young and others for criticism of wife Ayesha's new movie Yahoo Spo…"
-    },
-    {
-     "title": "UFC Star Tommy McMillen Rushed to Hospital After Suspected Overdose - TMZ",
-     "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQTUpYcnJwRU5DY2pLUEE2V01hLXEtT196UkQzSFRNSXBnT1hYSEtxcjVuT3NRN3dULUFwb2pua29NSW85UllfMFhDNmpZa012X3ljM0tHZ3hpZ2tzVkdZUmdwWVY4MkM3eUJUc0hsMmd1ekg3RGd5T2Y4TWx1Q2JWMElnZ3U?oc=5",
-     "date": "Thu, 12 Nov 2026 17:59:58 GMT",
-     "summary": "UFC Star Tommy McMillen Rushed to Hospital After Suspected Overdose TMZ Rising UFC featherweight Tommy McMillen 'ok' after nightclub scare, says coach ESPN Report: Tommy McMillen taken to the hospital after a possible overdose MMA Fighting Undefeated UFC Star Tommy McMillen Reportedly Hospitalized After Suspected Overdose Sports Illustrated Undefeated UFC fighter Tommy McMillen rushed to hospital …"
-    },
-    {
-     "title": "Expert CFB Locks, Predictions for Texas vs. LSU and Week 11 Biggest Games - Bleacher Report",
-     "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQTXl3b2hqVU1pckVrb1EtaGpoWXlYXzRxa3FnQUdwNHpmVFQzT1l5Q2pMZEpqa1pEcjJfOEQ2akk0OXA5RTZ4M1l5WTV6enN5M2RlSnVrV3NFSDBYMFVMTGJlQmU0V1FMRzkxT3Jma0ZSUXZoX0tzMml3STVZTWRDdE1lOXN1blhmcmVMVl9vcEdVamM4V3lFbmhuNHJXMmdWaWpjbjhwUTRsWDRQbnZucWZn?oc=5",
-     "date": "Thu, 12 Nov 2026 12:08:49 GMT",
-     "summary": "Expert CFB Locks, Predictions for Texas vs. LSU and Week 11 Biggest Games Bleacher Report Keys to a Texas win vs. LSU: Individual excellence, Get an early lead Yahoo Sports College football odds Week 11: LSU favored against Texas in a slate full of letdown spots - The Athletic The New York Times Arch Manning leads Texas into his bayou backyard for a key matchup with LSU AP News Horns247 Staff Pred…"
-    },
-    {
-     "title": "Dianna Russini’s Return To Sports Media Was A Bit Of A Disaster - Defector",
-     "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPX1JDOWNHS2VTUk1yMC1aYnB3N2RBNGplemZQZW10LXdXV3J0WE5tNEJ4SURhRmljUzJQZHgxVjg5LW9zYXdtelo0ekRwbkxZM1lxWUc5QUFXTEtDRTZBYkJ1azBsZ1NYX0Y0Z0w5VkY4eVVtbWhmOHQ3T2FhbllybkFrUDI0QkcxSXBr?oc=5",
-     "date": "Thu, 12 Nov 2026 15:12:00 GMT",
-     "summary": "Dianna Russini’s Return To Sports Media Was A Bit Of A Disaster Defector Dianna Russini's cringe podcast debut raises questions about the viability of her comeback Fox News Dianna Russini Details Sports Media Return 7 Months After Photo Scandal (Exclusive) People.com ‘Doesn’t Seem Remorseful at All,’ ‘Showing Way Too Many Teeth’ — Former NFL LB Criticizes Dianna Russini’s Handling of Mike Vrabel C…"
+     "title": "Here's how bad the College Football Playoff's selection committee rankings actually are | Ian Miller - Fox News",
+     "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQSWlmNnk3LWtHRVdwNkctZ2hQZW4zTnM5RlNRV3dtZy1nUzAzM2t5V3hRd05oSVJsZ05nb1VUSFhBQTZBallEcWVsMS00U2plb0JvejdMbF9BaDZZLURqZ1hoQUNIMlFaRTFIV0g1RVFwUHFOREtGZGplRTRUZ054ZVZDbHJ4ZWVTb29ZQ1ZGeVUzbmtFazVlT3dKMm5WT3Q2Z2dXZ1FVdWN3R0xNNjM5Y2RHbw?oc=5",
+     "date": "Fri, 13 Nov 2026 00:14:38 GMT",
+     "summary": "Here's how bad the College Football Playoff's selection committee rankings actually are | Ian Miller Fox News CFP Top 25: Strengths to know for every ranked team ESPN College Football Playoff rankings: Georgia takes over as top Dawg; Indiana drops 5 spots on bye Yahoo Sports Is the Big Ten only a 2-bid conference? College Football Playoff Bubble Watch The New York Times CFP Selection Committee Rel…"
     }
    ],
-   "fetched_at": "2026-11-12T23:28:35.335Z",
+   "fetched_at": "2026-11-13T05:51:04.780Z",
    "source": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en"
   },
   "native-ict": {
    "items": [
+    {
+     "title": "New Zealanders won’t know for weeks who won the election as neither side secures clear victory",
+     "link": "https://ictnews.org/news/new-zealanders-wont-know-for-weeks-who-won-the-election-as-neither-side-secures-clear-victory/",
+     "date": "Fri, 13 Nov 2026 03:00:00 +0000",
+     "summary": "New Zealand Prime Minister and National Party leader, Christopher Luxon addresses party faithful in Auckland, New Zealand, Saturday, Nov.7, 2026. (AP Photo/Alex Robertson) \" data-large-file=\"https://ictnews.org/wp-content/uploads/2026/11/AP26311421156364-1024x683.jpg\" /> Minor parties on the left saw bolstered support. The environmentally-focused Greens won 16 seats and Indigenous rights group Te …"
+    },
     {
      "title": "Too many rules is not the data center problem",
      "link": "https://ictnews.org/news/too-many-rules-is-not-the-data-center-problem/",
@@ -782,15 +791,9 @@
      "link": "https://ictnews.org/news/oklahoma-tribal-town-town-sues-kalshi-amid-prediction-market-contract-dispute/",
      "date": "Wed, 11 Nov 2026 01:50:21 +0000",
      "summary": "The Alabama-Quassarte Tribal Town’s flag flies Oct. 27, 2026 at the Indian Flag Plaza outside the state Capitol in Oklahoma City. (Photo by Emma Murphy/Oklahoma Voice) \" data-large-file=\"https://ictnews.org/wp-content/uploads/2026/10/Oklahoma-Kalshi-1024x768.jpeg\" /> The tribe and Marshall wrote in its lawsuit filed in Muscogee (Creek) Nation District Court that Yargee and Stopp did not have permi…"
-    },
-    {
-     "title": "Demanding better conversations about data centers",
-     "link": "https://ictnews.org/news/demanding-better-conversations-about-data-centers/",
-     "date": "Tue, 10 Nov 2026 22:28:32 +0000",
-     "summary": "Conversation that followed receiving a “Rural Power” award at Groundswell’s Rural Renaissance Roadshow in Decatur, Alabama. (Jourdan Bennett-Begaye/ICT) \" data-large-file=\"https://ictnews.org/wp-content/uploads/2026/11/unnamed-3-819x1024.jpg\" /> No elected official should ever sign a Non Disclosure Agreement, it runs counter to the public good and values of transparency The post Demanding better c…"
     }
    ],
-   "fetched_at": "2026-11-12T23:28:35.335Z",
+   "fetched_at": "2026-11-13T05:51:04.780Z",
    "source": "https://ictnews.org/feed"
   },
   "native-nations": {
@@ -947,7 +950,10 @@
     }
    ],
    "fetched_at": "2026-11-12T23:28:35.335Z",
-   "source": "https://news.google.com/rss/search?q=%22Navajo%20Nation%22%20OR%20%22Hopi%20Tribe%22%20OR%20%22Yavapai-Apache%22%20when%3A14d&hl=en-US&gl=US&ceid=US:en"
+   "source": "https://news.google.com/rss/search?q=%22Navajo%20Nation%22%20OR%20%22Hopi%20Tribe%22%20OR%20%22Yavapai-Apache%22%20when%3A14d&hl=en-US&gl=US&ceid=US:en",
+   "last_fetch_attempt": "2026-11-13T05:51:04.780Z",
+   "last_fetch_error": "fetch failed",
+   "stale": true
   }
  }
 }
