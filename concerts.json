@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-14T05:31:39.583Z",
+ "updated": "2026-11-14T13:10:41.599Z",
  "concerts": [
   {
    "id": "17k8v0G655xo6Vd",
@@ -18,36 +18,6 @@
     "The Hondo Rodeo Fest",
     "Parker McCollum"
    ]
-  },
-  {
-   "id": "17AYv0G62K5zcJ9",
-   "artist": "Lionel Richie",
-   "date": "2026-11-13",
-   "time": "20:00:00",
-   "venue": "Encore Theater at Wynn Las Vegas",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-11-13-2026/event/170064F4CBE2D997",
-   "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-07-31T17:00:00Z",
-   "lineup": []
-  },
-  {
-   "id": "17AYv0G65p_1As2",
-   "artist": "Eagles",
-   "date": "2026-11-13",
-   "time": "20:30:00",
-   "venue": "Sphere",
-   "city": "Las Vegas",
-   "state": "NV",
-   "url": "https://www.gofevo.com/event/EaglesSphere111326",
-   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-05-20T17:00:00Z",
-   "lineup": []
   },
   {
    "id": "17AYv0G62K5yqJh",
@@ -362,6 +332,21 @@
    "price": null,
    "status": "onsale",
    "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "1A9Zk3dGkdpXRs0",
+   "artist": "Eagles",
+   "date": "2027-01-15",
+   "time": "20:30:00",
+   "venue": "Sphere",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/eagles-live-at-sphere-las-vegas-nevada-01-15-2027/event/17006483D6FAFC64",
+   "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-08-14T17:00:00Z",
    "lineup": []
   },
   {
