@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13T23:27:32.580Z",
+ "updated": "2026-11-14T05:31:39.583Z",
  "concerts": [
   {
    "id": "17k8v0G655xo6Vd",
@@ -30,7 +30,7 @@
    "url": "https://www.ticketmaster.com/lionel-richie-king-of-hearts-las-vegas-nevada-11-13-2026/event/170064F4CBE2D997",
    "img": "https://s1.ticketm.net/dam/a/f8e/4195d6cf-435f-42e5-a4c5-529b6a222f8e_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-07-31T17:00:00Z",
    "lineup": []
   },
@@ -45,7 +45,7 @@
    "url": "https://www.gofevo.com/event/EaglesSphere111326",
    "img": "https://s1.ticketm.net/dam/a/531/e32ef1da-b869-442c-9357-428baa6f0531_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "onsale",
+   "status": "offsale",
    "saleStart": "2026-05-20T17:00:00Z",
    "lineup": []
   },
