@@ -1,24 +1,6 @@
 {
- "updated": "2026-11-16T05:28:03.127Z",
+ "updated": "2026-11-16T15:10:47.432Z",
  "concerts": [
-  {
-   "id": "17k8v0G655xo6Vd",
-   "artist": "Lynyrd Skynyrd",
-   "date": "2026-11-15",
-   "time": "18:00:00",
-   "venue": "Chase Field",
-   "city": "Phoenix",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/hondo-rodeo-fest-round-three-feat-phoenix-arizona-11-15-2026/event/190064B2E2447D03",
-   "img": "https://s1.ticketm.net/dam/a/c11/66d1c452-63a9-4833-8181-3d6173fedc11_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-06-01T19:00:00Z",
-   "lineup": [
-    "The Hondo Rodeo Fest",
-    "Parker McCollum"
-   ]
-  },
   {
    "id": "vvG1iZ_2dv3pKx",
    "artist": "Jackson Browne",
@@ -731,6 +713,21 @@
    "lineup": [
     "The Empty Pockets"
    ]
+  },
+  {
+   "id": "G5vzZ_p54FUhp",
+   "artist": "Chicago",
+   "date": "2027-06-15",
+   "time": "19:00:00",
+   "venue": "Sandy Amphitheater",
+   "city": "Sandy",
+   "state": "UT",
+   "url": "https://www.ticketmaster.com/chicago-sandy-utah-06-15-2027/event/1E006562D52366D6",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "offsale",
+   "saleStart": "2026-11-20T17:00:00Z",
+   "lineup": []
   },
   {
    "id": "vvG1IZ_49-BVD2",
