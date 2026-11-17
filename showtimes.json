@@ -1,33 +1,11 @@
 {
- "updated": "2026-11-16T15:10:13.281Z",
+ "updated": "2026-11-17T01:43:28.044Z",
  "venues": [
   "Mary D. Fisher Theatre",
   "Alice Gill-Sheldon Theatre",
   "Harkins Sedona 6"
  ],
  "showings": [
-  {
-   "source": "Sedona Film Festival",
-   "title": "Celebrating World Falconry Day",
-   "date": "2026-11-16",
-   "time": "16:00",
-   "venue": "Mary D. Fisher Theatre",
-   "city": "Sedona",
-   "url": "https://sedonafilmfestival.com/event/celebrating-world-falconry-day/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/10/World-Falconry-Day-poster.jpg",
-   "summary": "Join Dr. Michele Losee, founder of the International Raptor & Falconry Center, master falconer, raptor ecologist, and educator, as she takes audiences inside the remarkable world of falconry — a living cultural…"
-  },
-  {
-   "source": "Sedona Film Festival",
-   "title": "Cottonwood Premiere: Eddie Cochran: Don’t Forget Me",
-   "date": "2026-11-16",
-   "time": "19:00",
-   "venue": "Old Town Center for the Arts",
-   "city": "Cottonwood",
-   "url": "https://sedonafilmfestival.com/event/cottonwood-premiere-eddie-cochran-dont-forget-me/",
-   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/10/Eddie-Cochran-poster.jpg",
-   "summary": "Eddie Cochran died aged just 21, yet his influence can still be heard in generations of artists from The Beatles and The Rolling Stones to today’s contemporary artists. From BAFTA and Academy Award-winning producers…"
-  },
   {
    "source": "Sedona Film Festival",
    "title": "One Man Symphony by Fiddler on the Rock",
@@ -272,6 +250,17 @@
   },
   {
    "source": "Sedona Film Festival",
+   "title": "Long Day’s Journey Into Night",
+   "date": "2026-12-04",
+   "time": "",
+   "venue": "Alice Gill-Sheldon Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/long-days-journey-into-night/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/11/Long-Days-Journey-poster.jpg",
+   "summary": "Celebrated British theatre and opera director, Jonathan Kent, has stepped behind the camera for the first time to direct his much-anticipated screen adaptation of Eugene O’Neill’s autobiographical play, “Long Day’s…"
+  },
+  {
+   "source": "Sedona Film Festival",
    "title": "Ladies Sing the Blues",
    "date": "2026-12-04",
    "time": "19:00",
@@ -280,6 +269,28 @@
    "url": "https://sedonafilmfestival.com/event/ladies-sing-the-blues/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/11/Ladies-Sing-the-Blues-2026-poster.jpg",
    "summary": "The Northern Arizona Blues Alliance (NAZBA) is proud to partner with the Mary D. Fisher Theatre to present “Ladies Sing the Blues” on Friday, Dec. 4 at 7:00 p.m., featuring two outstanding Blues singers, both with…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Samson et Dalila: Met Live Opera",
+   "date": "2026-12-05",
+   "time": "",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/samson-et-dalila-met-live-opera/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/11/Samson-et-Dalila-poster.jpg",
+   "summary": "Saint-Saëns’s spectacular take on the biblical hero of legendary strength and the seductive Philistine whose beauty overpowers him returns in the Met’s larger-than-life production, starring mezzo-soprano Aigul…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Sedona Poetry Slam",
+   "date": "2026-12-05",
+   "time": "19:30",
+   "venue": "Mary D. Fisher Theatre",
+   "city": "Sedona",
+   "url": "https://sedonafilmfestival.com/event/sedona-poetry-slam/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/09/Sedona-Poetry-Slam-poster.jpg",
+   "summary": "A poetry slam is like a series of high-energy, three-minute one-person plays, judged by the audience. Slam poetry is an art form that allows written page poets to share their work alongside theatrical performers,…"
   },
   {
    "source": "Sedona Film Festival",
@@ -302,6 +313,17 @@
    "url": "https://sedonafilmfestival.com/event/in-the-living-room-music-series-tommy-rocks-anderson/",
    "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/10/In-the-Living-Room-Tommy-Rocks-poster.jpg",
    "summary": "Tommy “Rocks” Anderson is regarded as one of the top ukulele players in Arizona, making the cover story of Ukulele Magazine in the winter of 2018, and was named a Kala Ambassador in 2021. An acoustic rock musician…"
+  },
+  {
+   "source": "Sedona Film Festival",
+   "title": "Cottonwood Premiere: Jimi Plays Berkeley",
+   "date": "2026-12-07",
+   "time": "19:00",
+   "venue": "Old Town Center for the Arts",
+   "city": "Cottonwood",
+   "url": "https://sedonafilmfestival.com/event/cottonwood-premiere-jimi-plays-berkeley/",
+   "image": "https://sedonafilmfestival.com/wp-content/uploads/2026/11/Jimi-Plays-Berkeley-poster.jpg",
+   "summary": "The Sedona International Film Festival is proud to present “Monday Movies on Main” on Monday, Dec. 7 with the Cottonwood premiere of “Jimi Plays Berkeley” at 7 p.m. at Old Town Center for the Arts. “Jimi Plays…"
   },
   {
    "source": "Sedona Film Festival",
