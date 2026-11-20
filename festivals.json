@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-20T06:19:42.080Z",
+ "updated": "2026-11-20T19:44:57.964Z",
  "festivals": [
   {
    "name": "Innings Festival",
@@ -130,6 +130,16 @@
    "genre": "Rock",
    "start": "2027-03-06",
    "end": "2027-03-07"
+  },
+  {
+   "name": "When We Were Young Festival",
+   "city": "Las Vegas",
+   "state": "NV",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1AAAp8d",
+   "img": "https://s1.ticketm.net/dam/a/250/39eb1b42-3de7-484f-ab3b-0f5763059250_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Other",
+   "start": "2027-10-16",
+   "end": "2027-10-17"
   },
   {
    "name": "Coachella",

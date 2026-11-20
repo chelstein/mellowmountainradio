@@ -1,21 +1,6 @@
 {
- "updated": "2026-11-20T06:20:00.680Z",
+ "updated": "2026-11-20T19:45:17.334Z",
  "concerts": [
-  {
-   "id": "vvG1iZ_2dv3pKx",
-   "artist": "Jackson Browne",
-   "date": "2026-11-19",
-   "time": "20:00:00",
-   "venue": "Hollywood Pantages Theatre",
-   "city": "Los Angeles",
-   "state": "CA",
-   "url": "https://www.ticketmaster.com/jackson-browne-los-angeles-california-11-19-2026/event/0B0064F0C14964E2",
-   "img": "https://s1.ticketm.net/dam/e/308/287c3115-f709-4bad-8f38-1dcec8ffb308_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "offsale",
-   "saleStart": "2026-07-24T17:00:00Z",
-   "lineup": []
-  },
   {
    "id": "vvG1iZ_2dvKJKE",
    "artist": "Jackson Browne",
@@ -468,7 +453,7 @@
    "url": "https://www.ticketmaster.com/ambrosia-las-vegas-nevada-02-12-2027/event/1700656AE1626646",
    "img": "https://s1.ticketm.net/dam/a/6bd/98c7c94d-22d4-4fb6-9698-623379f046bd_607941_RETINA_PORTRAIT_16_9.jpg",
    "price": null,
-   "status": "offsale",
+   "status": "onsale",
    "saleStart": "2026-11-20T18:00:00Z",
    "lineup": []
   },
