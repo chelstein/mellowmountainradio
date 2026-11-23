@@ -8,6 +8,11 @@ name: KAZM Tape Recorder
 on:
   schedule:
     # 1:01, 7:01, 13:01, 19:01 UTC = 18:01, 0:01, 6:01, 12:01 Arizona (UTC-7)
+    #
+    # Stays at minute 1, on purpose. Every minute later is airtime lost off the
+    # front of the block when GitHub does start us on time, and lateness is now
+    # handled by bounding the recording to the block instead (see "remain"
+    # below). Do not move this later to dodge scheduler congestion.
     - cron: "1 1,7,13,19 * * *"
   workflow_dispatch:
     inputs:
@@ -42,10 +47,31 @@ jobs:
           BLOCK_PAD=$(printf "%02d" $BLOCK_HOUR)
           FILENAME="kazm-${YEAR}-${MONTH}-${DAY}-${BLOCK_PAD}00"
           DATE_STR="${YEAR}-${MONTH}-${DAY}"
+
+          # How much of this block is still ahead of us.
+          #
+          # GitHub does not start scheduled runs on time. Observed starts over
+          # 2026-11-19..23 ran 43 minutes to 3h41m behind the cron slot. The old
+          # code recorded a fixed 19800s from whenever it happened to start, so a
+          # late run ran past the block boundary, the next slot fired while it was
+          # still recording, hit the kazm-tape concurrency group and was dropped.
+          # The recorder was capturing two blocks a day instead of four: every
+          # late start cost the whole NEXT block, not just its own late minutes.
+          #
+          # So the recording is bounded by the block it belongs to. A late start
+          # now yields a short tape (labelled truncated) and releases the runner
+          # before the next slot fires. TAIL_MARGIN leaves room for the upload and
+          # the manifest push, which also hold the concurrency group.
+          TAIL_MARGIN=300
+          AZ_SECS=$(( AZ_EPOCH % 86400 ))
+          BLOCK_END_SECS=$(( (BLOCK_HOUR + 6) * 3600 ))
+          REMAIN=$(( BLOCK_END_SECS - AZ_SECS - TAIL_MARGIN ))
+
           echo "filename=$FILENAME" >> "$GITHUB_OUTPUT"
           echo "date=$DATE_STR"     >> "$GITHUB_OUTPUT"
           echo "start=$BLOCK_HOUR"  >> "$GITHUB_OUTPUT"
-          echo "[tape] block: $FILENAME (AZ $DATE_STR $BLOCK_HOUR:00)"
+          echo "remain=$REMAIN"     >> "$GITHUB_OUTPUT"
+          echo "[tape] block: $FILENAME (AZ $DATE_STR $BLOCK_HOUR:00), ${REMAIN}s of the block left"
 
       - name: Ensure ffmpeg
         # The runner image ships ffmpeg. Installing it unconditionally added a
@@ -90,8 +116,32 @@ jobs:
         id: recording
         run: |
           FILENAME="${{ steps.block.outputs.filename }}"
-          DURATION="${{ github.event.inputs.duration }}"
-          if [ -z "$DURATION" ]; then DURATION=19800; fi
+          FULL_BLOCK=19800
+          REMAIN="${{ steps.block.outputs.remain }}"
+
+          WANTED="${{ github.event.inputs.duration }}"
+          if [ -z "$WANTED" ]; then WANTED=$FULL_BLOCK; fi
+
+          # Never record past the end of the block we are recording. On a punctual
+          # start REMAIN is ~5h54m, so the full 19800s is unaffected and behaviour
+          # is exactly as before.
+          if [ "$REMAIN" -lt "$WANTED" ]; then
+            DURATION="$REMAIN"
+            SHORT=$(( WANTED - REMAIN ))
+            echo "::warning::Block ${FILENAME} started late: recording ${DURATION}s instead of ${WANTED}s (${SHORT}s short of a full block) so the next block's run is not blocked."
+          else
+            DURATION="$WANTED"
+          fi
+
+          # Less than two minutes of block left: the next slot is about to fire.
+          # Recording a sliver would hold the concurrency group and cost that slot
+          # too, which is the exact failure being fixed here. Stand down instead.
+          if [ "$DURATION" -lt 120 ]; then
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::Only ${DURATION}s left in block ${FILENAME} — standing down so the next block starts on time. This block is not on tape."
+            exit 0
+          fi
+
           REC_START_SECS=$(( ($(date -u +%s) - 7*3600) % 86400 ))
           echo "rec_start=$REC_START_SECS" >> "$GITHUB_OUTPUT"
           echo "[tape] recording /tmp/${FILENAME}.mp3 for ${DURATION}s (AZ offset: ${REC_START_SECS}s from midnight)"
@@ -120,14 +170,27 @@ jobs:
           # failure this guards against is a fragment being indexed as a
           # complete block and later read as evidence that nothing aired in the
           # missing hours. Absence of audio is not absence of broadcast.
-          MIN=$(( DURATION * 90 / 100 ))
-          if [ "$ACTUAL" -ge "$MIN" ]; then
+          # Two different questions, and they used to share one answer.
+          #
+          # (a) Did the capture deliver what we asked for? Short of that means the
+          #     stream or the runner misbehaved — worth a warning either way.
+          if [ "$ACTUAL" -lt $(( DURATION * 90 / 100 )) ]; then
+            echo "::warning::Tape ${FILENAME} under-delivered: ${ACTUAL}s of the ${DURATION}s requested. The stream or the runner dropped out."
+          fi
+
+          # (b) Is this tape a whole block? That is what the manifest flag means,
+          #     and it must be measured against the full block length, not against
+          #     a duration we ourselves shortened. Otherwise a 4h tape from a late
+          #     start would be indexed as complete, and a gap in the recording
+          #     would read later as a gap in the broadcast. Absence of audio is
+          #     not absence of broadcast.
+          if [ "$ACTUAL" -ge $(( FULL_BLOCK * 90 / 100 )) ]; then
             echo "complete=true" >> "$GITHUB_OUTPUT"
-            echo "[tape] done — ${ACTUAL}s / ${DURATION}s, ${BYTES} bytes"
+            echo "[tape] done — ${ACTUAL}s / ${FULL_BLOCK}s block, ${BYTES} bytes"
           else
             echo "complete=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Tape ${FILENAME} is short: ${ACTUAL}s of ${DURATION}s requested. Keeping it, marking it truncated in the manifest."
-            echo "[tape] TRUNCATED — ${ACTUAL}s / ${DURATION}s, ${BYTES} bytes"
+            echo "::warning::Tape ${FILENAME} is a partial block: ${ACTUAL}s of ${FULL_BLOCK}s. Keeping it, marking it truncated in the manifest."
+            echo "[tape] PARTIAL — ${ACTUAL}s / ${FULL_BLOCK}s block, ${BYTES} bytes"
           fi
 
           # Below a minute there is nothing worth publishing and something is
@@ -139,6 +202,7 @@ jobs:
 
       - name: Upload to GitHub Release
         id: upload
+        if: steps.recording.outputs.skipped != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -162,6 +226,7 @@ jobs:
           rm -f "/tmp/${FILENAME}.mp3"
 
       - name: Commit and push manifest
+        if: steps.recording.outputs.skipped != 'true'
         run: |
           git config user.name "mmr-tape-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

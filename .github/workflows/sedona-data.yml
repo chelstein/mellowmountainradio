@@ -6,7 +6,11 @@ name: Update Sedona data
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # every 6 hours
+    # Every 6 hours, deliberately NOT on the hour. At minute 0 this fetch was
+    # landing 10-12 hours apart instead of 6: GitHub defers scheduled runs under
+    # load, and the top of the hour is where every cron in the world piles up.
+    # Minute 23 is clear of :00/:15/:30/:45.
+    - cron: "23 */6 * * *"
   workflow_dispatch:
 
 permissions:
