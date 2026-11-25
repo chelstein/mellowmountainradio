@@ -1437,6 +1437,10 @@ body.is-playing .nowcard-art { animation: now-pulse 3.2s ease-in-out infinite; }
   -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
 .sr-spec-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ee38a; box-shadow: 0 0 9px #4ee38a; animation: srLive 1.6s ease-in-out infinite; }
 @keyframes srLive { 0%,100% { opacity: 1; } 50% { opacity: .28; } }
+/* Feed not reporting: amber, and no pulse — a blinking green dot reads as a
+   live indicator whatever the label next to it says. */
+.sr-spec-live.is-unverified { color: #ffeedb; border-color: rgba(255,196,120,.42); letter-spacing: .1em; }
+.sr-spec-live.is-unverified .sr-spec-live-dot { background: #ffc478; box-shadow: 0 0 9px rgba(255,196,120,.72); animation: none; }
 .sr-spec-cap { margin-top: 11px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
 .sr-spec-cap-k { font-size: 10px; font-weight: 800; letter-spacing: .16em; color: var(--accent-strong);
   background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px solid var(--line); padding: 3px 8px; border-radius: 6px; }

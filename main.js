@@ -4636,6 +4636,16 @@
     var cls = schCls(d.activity);
     var age = srAge(d);
     var noSignal = d.signal_usable === false || d.stability === "no_signal";
+    // One condition for everything in this panel that calls itself "live". The
+    // spectrum heading, the canvas's accessible name, the spectrogram badge and
+    // its alt text are all derived from this JSON, so a stale or unusable
+    // reading has to silence all of them together. Previously the visible
+    // heading flipped to "Last" while the canvas kept aria-label="Live" and the
+    // spectrogram kept a pulsing LIVE badge, so a screen-reader user was told
+    // the opposite of a sighted one about the same element, and the strongest
+    // liveness signal on the page sat directly under a banner saying nothing
+    // here was current.
+    var notLive = age.stale || noSignal;
     var when = d.observed_at ? new Date(d.observed_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "";
     var e = d.energy_score != null ? Math.max(0, Math.min(100, d.energy_score)) : 20;
     var amp = 10 + e / 100 * 26; // calmer wave when calm, livelier when energetic
@@ -4644,14 +4654,16 @@
     var specSrc = d.spectrogram ? esc(d.spectrogram) + (d.spectrogram.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now() : "";
     box.innerHTML =
       '<div class="sr-grid">' +
-        (age.stale || noSignal
+        (notLive
           ? '<div class="sr-stale" role="status">' +
               '<b>' + (noSignal ? 'The source reports no usable signal.' : 'This reading is not current.') + '</b> ' +
               (d.observed_at
                 ? 'Last observation ' + esc(new Date(d.observed_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })) + ' &mdash; ' + esc(age.label) + '. '
                 : '') +
               'The upstream observatory feed has stopped producing new readings. ' +
-              'The numbers below are the last values it returned, not a measurement of right now.' +
+              'The numbers below are the last values it returned, not a measurement of right now. ' +
+              'The spectrogram image is fetched straight from the observatory rather than through that feed, ' +
+              'so it may be more current than these numbers.' +
             '</div>'
           : '') +
         '<div class="sr-hero sr-hero--' + cls + '">' +
@@ -4666,9 +4678,11 @@
         '<div class="sr-body">' +
           '<div class="sr-viz-panel">' +
             '<div class="sr-viz-head"><span class="sr-viz-k"><span class="sr-viz-dot" aria-hidden="true"></span>' +
-              (age.stale ? 'Last resonance spectrum' : 'Live resonance spectrum') + '</span>' +
+              (notLive ? 'Last resonance spectrum' : 'Live resonance spectrum') + '</span>' +
               '<span class="sr-viz-hz">' + (d.detected_hz != null ? d.detected_hz + ' Hz peak' : '7.83 Hz fundamental') + '</span></div>' +
-            '<canvas class="sr-viz" data-sr-viz aria-label="Live Schumann resonance spectrum"></canvas>' +
+            '<canvas class="sr-viz" data-sr-viz aria-label="' +
+              (notLive ? 'Last Schumann resonance spectrum, ' + esc(age.label) : 'Live Schumann resonance spectrum') +
+              '"></canvas>' +
           '</div>' +
           '<div class="sr-stats">' +
             srStat("Peaks", d.peaks != null ? d.peaks : "—") +
@@ -4679,12 +4693,19 @@
           (d.spectrogram ?
           '<figure class="sr-spec">' +
             '<div class="sr-spec-frame">' +
-              '<img class="sr-spec-img" src="' + specSrc + '" alt="Live Schumann resonance spectrogram from the Tomsk observatory" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" />' +
+              '<img class="sr-spec-img" src="' + specSrc + '" alt="Schumann resonance spectrogram from the Tomsk observatory" onerror="this.closest(\'.sr-spec\').style.display=\'none\'" />' +
               '<span class="sr-spec-tint" aria-hidden="true"></span>' +
               '<span class="sr-spec-vignette" aria-hidden="true"></span>' +
               '<span class="sr-spec-scan" aria-hidden="true"></span>' +
               '<i class="sr-corner sr-corner--tl" aria-hidden="true"></i><i class="sr-corner sr-corner--tr" aria-hidden="true"></i><i class="sr-corner sr-corner--bl" aria-hidden="true"></i><i class="sr-corner sr-corner--br" aria-hidden="true"></i>' +
-              '<span class="sr-spec-live"><span class="sr-spec-live-dot" aria-hidden="true"></span>LIVE</span>' +
+              // "LIVE" is a claim about the feed, not a caption for the image, so it
+              // only stands while the feed is actually reporting. When it is not, the
+              // badge names the image's source instead: this JPEG comes direct from
+              // Tomsk, not through the stalled feed, so calling it stale would be just
+              // as wrong as calling it live.
+              '<span class="sr-spec-live' + (notLive ? ' is-unverified' : '') + '">' +
+                '<span class="sr-spec-live-dot" aria-hidden="true"></span>' +
+                (notLive ? 'OBSERVATORY' : 'LIVE') + '</span>' +
             '</div>' +
             '<figcaption class="sr-spec-cap"><span class="sr-spec-cap-k">SIGNAL</span>Schumann resonance spectrogram<span class="sr-spec-cap-src">Tomsk Space Observing System &middot; 56&deg;N</span></figcaption>' +
           '</figure>' : "") +
