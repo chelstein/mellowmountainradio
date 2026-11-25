@@ -31,9 +31,45 @@ concurrency:
 jobs:
   record:
     runs-on: [self-hosted, Linux, X64, mmr-ci]
-    timeout-minutes: 380
+    # Worst case is now the wait plus a full tape: SKIP_AHEAD_BELOW (90 min) of
+    # waiting for the next block, then 19800s (330 min) of recording, plus the
+    # prune, upload and manifest push. 380 was sized for the recording alone and
+    # would kill a waiting run mid-tape.
+    timeout-minutes: 450
     steps:
       - uses: actions/checkout@v5
+
+      - name: Wait for the next block if this one is nearly over
+        run: |
+          # Measured 2026-11-20..24, GitHub delivered these triggers between
+          # 43 minutes and 5h32m behind their cron slot. A trigger landing near
+          # the end of a 6-hour block can only capture the stub that is left:
+          # run 485 arrived 5h32m late and banked 21 minutes.
+          #
+          # The runner is ours and idle time on it costs nothing, so when there
+          # is little of this block left it is worth waiting it out and recording
+          # the NEXT block whole — one full 5h30m tape instead of a stub. The
+          # trigger that fires at that boundary queues behind us (the kazm-tape
+          # group is cancel-in-progress: false) and starts the moment we finish,
+          # which keeps the chain going without depending on the next trigger
+          # being punctual.
+          #
+          # Above the threshold we still record the remainder: two or three hours
+          # of a block is worth having, and waiting for the next one would cost
+          # more airtime than it saves.
+          SKIP_AHEAD_BELOW=5400          # 1h30m
+          AZ_EPOCH=$(( $(date -u +%s) - 7*3600 ))
+          AZ_SECS=$(( AZ_EPOCH % 86400 ))
+          HOUR=$(date -u -d "@$AZ_EPOCH" +%H)
+          BLOCK_END=$(( ((10#$HOUR / 6) * 6 + 6) * 3600 ))
+          LEFT=$(( BLOCK_END - AZ_SECS ))
+          if [ "$LEFT" -lt "$SKIP_AHEAD_BELOW" ]; then
+            echo "[tape] only ${LEFT}s left in this block — waiting it out and taking the next block whole"
+            sleep $(( LEFT + 5 ))
+            echo "[tape] next block has started"
+          else
+            echo "[tape] ${LEFT}s left in this block — recording the remainder"
+          fi
 
       - name: Compute block identity (Arizona time, UTC-7 fixed offset)
         id: block
@@ -72,6 +108,39 @@ jobs:
           echo "start=$BLOCK_HOUR"  >> "$GITHUB_OUTPUT"
           echo "remain=$REMAIN"     >> "$GITHUB_OUTPUT"
           echo "[tape] block: $FILENAME (AZ $DATE_STR $BLOCK_HOUR:00), ${REMAIN}s of the block left"
+
+      - name: What this block already has on tape
+        id: existing
+        run: |
+          # The upload step deletes the release for this block's tag before
+          # recreating it, and the manifest replaces the entry for
+          # (date, start). So a second run inside the same block would replace a
+          # good tape with a shorter one. Nothing in the schedule should cause
+          # that, but a manual dispatch can, and the archive is the one thing
+          # here that cannot be re-made.
+          #
+          # Read from origin/main, not the checkout: the checkout is pinned to
+          # the SHA that triggered this run, which can predate the previous
+          # run's manifest push.
+          git fetch -q origin main 2>/dev/null || true
+          git show origin/main:rewind-manifest.json > /tmp/manifest-check.json 2>/dev/null || echo '{}' > /tmp/manifest-check.json
+          SECS=$(python3 - "${{ steps.block.outputs.date }}" "${{ steps.block.outputs.start }}" <<'PYEOF'
+          import json, sys
+
+          date_str, start_h = sys.argv[1], int(sys.argv[2])
+          try:
+              with open("/tmp/manifest-check.json") as f:
+                  blocks = json.load(f).get("blocks", [])
+          except Exception:
+              blocks = []
+          same = [b.get("durationSec", 0) for b in blocks
+                  if b.get("date") == date_str and b.get("start") == start_h]
+          print(max(same) if same else 0)
+          PYEOF
+          )
+          case "$SECS" in ''|*[!0-9]*) SECS=0 ;; esac
+          echo "secs=$SECS" >> "$GITHUB_OUTPUT"
+          echo "[tape] block already on tape: ${SECS}s"
 
       - name: Ensure ffmpeg
         # The runner image ships ffmpeg. Installing it unconditionally added a
@@ -131,6 +200,16 @@ jobs:
             echo "::warning::Block ${FILENAME} started late: recording ${DURATION}s instead of ${WANTED}s (${SHORT}s short of a full block) so the next block's run is not blocked."
           else
             DURATION="$WANTED"
+          fi
+
+          # Never trade a longer tape for a shorter one. See the note in the
+          # block-identity step: re-recording a block replaces its release and
+          # its manifest entry.
+          EXISTING="${{ steps.existing.outputs.secs }}"
+          if [ "$EXISTING" -ge "$DURATION" ] && [ "$EXISTING" -gt 0 ]; then
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::Block ${FILENAME} already holds ${EXISTING}s on tape, which is at least the ${DURATION}s available now — standing down rather than replacing it with a shorter one."
+            exit 0
           fi
 
           # Less than two minutes of block left: the next slot is about to fire.
