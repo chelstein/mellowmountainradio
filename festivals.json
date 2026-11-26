@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T17:19:37.795Z",
+ "updated": "2026-11-26T01:49:04.468Z",
  "festivals": [
   {
    "name": "Innings Festival",
@@ -10,16 +10,6 @@
    "genre": "Undefined",
    "start": "2027-02-26",
    "end": "2027-02-28"
-  },
-  {
-   "name": "Reggae Rise Up Arizona Festival (Children 12 & younger FREE with a paid guardian)",
-   "city": "Tempe",
-   "state": "AZ",
-   "url": "https://www.ticketmaster.com/event/Z7r9jZ1A70d8U",
-   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
-   "genre": "Other",
-   "start": "2027-04-02",
-   "end": "2027-04-02"
   },
   {
    "name": "Still Thankful Jazz Festival",
@@ -40,6 +30,16 @@
    "genre": "Metal",
    "start": "2026-12-03",
    "end": "2026-12-05"
+  },
+  {
+   "name": "Taylor Fest - Ages 16+",
+   "city": "Denver",
+   "state": "CO",
+   "url": "https://www.ticketmaster.com/event/Z7r9jZ1AAA916",
+   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
+   "genre": "Other",
+   "start": "2026-12-12",
+   "end": "2026-12-12"
   },
   {
    "name": "Totally Tubular Festival",
