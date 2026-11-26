@@ -10,9 +10,9 @@ on:
     # 1:01, 7:01, 13:01, 19:01 UTC = 18:01, 0:01, 6:01, 12:01 Arizona (UTC-7)
     #
     # Stays at minute 1, on purpose. Every minute later is airtime lost off the
-    # front of the block when GitHub does start us on time, and lateness is now
-    # handled by bounding the recording to the block instead (see "remain"
-    # below). Do not move this later to dodge scheduler congestion.
+    # front of the block when GitHub does start us on time. Do not move this
+    # later to dodge scheduler congestion: minute 23 was tried on sedona-data
+    # for exactly that reason and changed nothing.
     - cron: "1 1,7,13,19 * * *"
   workflow_dispatch:
     inputs:
@@ -31,45 +31,11 @@ concurrency:
 jobs:
   record:
     runs-on: [self-hosted, Linux, X64, mmr-ci]
-    # Worst case is now the wait plus a full tape: SKIP_AHEAD_BELOW (90 min) of
-    # waiting for the next block, then 19800s (330 min) of recording, plus the
-    # prune, upload and manifest push. 380 was sized for the recording alone and
-    # would kill a waiting run mid-tape.
-    timeout-minutes: 450
+    # A full tape (19800s = 330 min) plus the prune, upload and manifest push.
+    # No run waits any more, so the 450 that covered a 90-minute wait is gone.
+    timeout-minutes: 380
     steps:
       - uses: actions/checkout@v5
-
-      - name: Wait for the next block if this one is nearly over
-        run: |
-          # Measured 2026-11-20..24, GitHub delivered these triggers between
-          # 43 minutes and 5h32m behind their cron slot. A trigger landing near
-          # the end of a 6-hour block can only capture the stub that is left:
-          # run 485 arrived 5h32m late and banked 21 minutes.
-          #
-          # The runner is ours and idle time on it costs nothing, so when there
-          # is little of this block left it is worth waiting it out and recording
-          # the NEXT block whole — one full 5h30m tape instead of a stub. The
-          # trigger that fires at that boundary queues behind us (the kazm-tape
-          # group is cancel-in-progress: false) and starts the moment we finish,
-          # which keeps the chain going without depending on the next trigger
-          # being punctual.
-          #
-          # Above the threshold we still record the remainder: two or three hours
-          # of a block is worth having, and waiting for the next one would cost
-          # more airtime than it saves.
-          SKIP_AHEAD_BELOW=5400          # 1h30m
-          AZ_EPOCH=$(( $(date -u +%s) - 7*3600 ))
-          AZ_SECS=$(( AZ_EPOCH % 86400 ))
-          HOUR=$(date -u -d "@$AZ_EPOCH" +%H)
-          BLOCK_END=$(( ((10#$HOUR / 6) * 6 + 6) * 3600 ))
-          LEFT=$(( BLOCK_END - AZ_SECS ))
-          if [ "$LEFT" -lt "$SKIP_AHEAD_BELOW" ]; then
-            echo "[tape] only ${LEFT}s left in this block — waiting it out and taking the next block whole"
-            sleep $(( LEFT + 5 ))
-            echo "[tape] next block has started"
-          else
-            echo "[tape] ${LEFT}s left in this block — recording the remainder"
-          fi
 
       - name: Compute block identity (Arizona time, UTC-7 fixed offset)
         id: block
@@ -84,30 +50,37 @@ jobs:
           FILENAME="kazm-${YEAR}-${MONTH}-${DAY}-${BLOCK_PAD}00"
           DATE_STR="${YEAR}-${MONTH}-${DAY}"
 
-          # How much of this block is still ahead of us.
+          # BLOCK_HOUR is an INDEX, not a claim about what the audio covers.
           #
-          # GitHub does not start scheduled runs on time. Observed starts over
-          # 2026-11-19..23 ran 43 minutes to 3h41m behind the cron slot. The old
-          # code recorded a fixed 19800s from whenever it happened to start, so a
-          # late run ran past the block boundary, the next slot fired while it was
-          # still recording, hit the kazm-tape concurrency group and was dropped.
-          # The recorder was capturing two blocks a day instead of four: every
-          # late start cost the whole NEXT block, not just its own late minutes.
+          # #199 bounded each recording to the end of its nominal block so a late
+          # start could not run past the boundary and cost the next slot. That
+          # reasoning assumed the next slot would arrive. Measured over 2026-11-20
+          # to 11-26, it usually does not: GitHub delivers only the 07:01 and
+          # 19:01 slots, drops 01:01 and 13:01 outright every single day, and runs
+          # the two survivors about three hours late. So the cap was not protecting
+          # a following run; it was shortening every tape for nothing.
           #
-          # So the recording is bounded by the block it belongs to. A late start
-          # now yields a short tape (labelled truncated) and releases the runner
-          # before the next slot fires. TAIL_MARGIN leaves room for the upload and
-          # the manifest push, which also hold the concurrency group.
-          TAIL_MARGIN=300
-          AZ_SECS=$(( AZ_EPOCH % 86400 ))
-          BLOCK_END_SECS=$(( (BLOCK_HOUR + 6) * 3600 ))
-          REMAIN=$(( BLOCK_END_SECS - AZ_SECS - TAIL_MARGIN ))
-
+          #   2026-11-20..22   11.00 h/day   0 truncated   (before the cap)
+          #   2026-11-23        5.85 h/day   1 truncated   (#199 merged)
+          #   2026-11-24        4.28 h/day   2 truncated
+          #   2026-11-25        6.22 h/day   2 truncated
+          #
+          # Two delivered triggers x 5h30m is the 11.00 h/day this used to get.
+          # Two delivered triggers x "whatever was left of the block" is 4-6.
+          # The cap cost about five hours of archive a day, so it is gone: we
+          # record a full tape from wherever the trigger lands.
+          #
+          # If a slot does fire mid-recording it queues behind us (the kazm-tape
+          # group is cancel-in-progress: false) and starts when we finish, so the
+          # chain re-paces itself to real start times instead of being dropped.
+          #
+          # The honest coverage of the audio is recStart + durationSec in the
+          # manifest, which the player already uses as its time base. BLOCK_HOUR
+          # only keys the entry and labels the button.
           echo "filename=$FILENAME" >> "$GITHUB_OUTPUT"
           echo "date=$DATE_STR"     >> "$GITHUB_OUTPUT"
           echo "start=$BLOCK_HOUR"  >> "$GITHUB_OUTPUT"
-          echo "remain=$REMAIN"     >> "$GITHUB_OUTPUT"
-          echo "[tape] block: $FILENAME (AZ $DATE_STR $BLOCK_HOUR:00), ${REMAIN}s of the block left"
+          echo "[tape] block: $FILENAME (AZ $DATE_STR $BLOCK_HOUR:00)"
 
       - name: What this block already has on tape
         id: existing
@@ -202,21 +175,14 @@ jobs:
         run: |
           FILENAME="${{ steps.block.outputs.filename }}"
           FULL_BLOCK=19800
-          REMAIN="${{ steps.block.outputs.remain }}"
 
           WANTED="${{ github.event.inputs.duration }}"
           if [ -z "$WANTED" ]; then WANTED=$FULL_BLOCK; fi
 
-          # Never record past the end of the block we are recording. On a punctual
-          # start REMAIN is ~5h54m, so the full 19800s is unaffected and behaviour
-          # is exactly as before.
-          if [ "$REMAIN" -lt "$WANTED" ]; then
-            DURATION="$REMAIN"
-            SHORT=$(( WANTED - REMAIN ))
-            echo "::warning::Block ${FILENAME} started late: recording ${DURATION}s instead of ${WANTED}s (${SHORT}s short of a full block) so the next block's run is not blocked."
-          else
-            DURATION="$WANTED"
-          fi
+          # A full tape, however late we started. See the block-identity step for
+          # why the old block cap is gone: it was trading roughly five hours of
+          # archive a day to protect a following run that mostly never arrives.
+          DURATION="$WANTED"
 
           # Never trade a longer tape for a shorter one. See the note in the
           # block-identity step: re-recording a block replaces its release and
@@ -231,12 +197,11 @@ jobs:
             exit 0
           fi
 
-          # Less than two minutes of block left: the next slot is about to fire.
-          # Recording a sliver would hold the concurrency group and cost that slot
-          # too, which is the exact failure being fixed here. Stand down instead.
+          # Only reachable from a workflow_dispatch asking for a sliver. Nothing
+          # under two minutes is worth a release and a manifest entry.
           if [ "$DURATION" -lt 120 ]; then
             echo "skipped=true" >> "$GITHUB_OUTPUT"
-            echo "::warning::Only ${DURATION}s left in block ${FILENAME} — standing down so the next block starts on time. This block is not on tape."
+            echo "::warning::Requested duration ${DURATION}s is too short to be worth publishing — standing down. Block ${FILENAME} is not on tape."
             exit 0
           fi
 
@@ -276,12 +241,12 @@ jobs:
             echo "::warning::Tape ${FILENAME} under-delivered: ${ACTUAL}s of the ${DURATION}s requested. The stream or the runner dropped out."
           fi
 
-          # (b) Is this tape a whole block? That is what the manifest flag means,
-          #     and it must be measured against the full block length, not against
-          #     a duration we ourselves shortened. Otherwise a 4h tape from a late
-          #     start would be indexed as complete, and a gap in the recording
-          #     would read later as a gap in the broadcast. Absence of audio is
-          #     not absence of broadcast.
+          # (b) Is this tape a full block's worth of audio? That is what the
+          #     manifest flag means, and it is measured against the full block
+          #     length so it stays comparable across tapes. Now that nothing
+          #     shortens DURATION on purpose, a tape short of this means the
+          #     stream or the runner dropped out — the flag marks a gap in the
+          #     RECORDING, which is never evidence of a gap in the broadcast.
           if [ "$ACTUAL" -ge $(( FULL_BLOCK * 90 / 100 )) ]; then
             echo "complete=true" >> "$GITHUB_OUTPUT"
             echo "[tape] done — ${ACTUAL}s / ${FULL_BLOCK}s block, ${BYTES} bytes"
@@ -357,6 +322,12 @@ jobs:
           actual    = int(sys.argv[5]) if len(sys.argv) > 5 and sys.argv[5].isdigit() else 0
           complete  = (len(sys.argv) > 6 and sys.argv[6] == "true")
 
+          # start is the 6-hour grid slot this tape is FILED under. recStart is
+          # the Arizona second-of-day the audio actually begins, and with
+          # durationSec it is the only honest statement of what the tape covers:
+          # a trigger three hours late files under start=0 and covers 03:00-08:30.
+          # The player already treats recStart as its time base and falls back to
+          # start * 3600 only when it is absent, so do not read start as coverage.
           new_block = {"url": url, "date": date_str, "start": start_h, "recStart": rec_start}
           # Extra keys only; the player reads url/date/start/recStart and ignores
           # the rest. A truncated block says so in the index itself, so anyone
