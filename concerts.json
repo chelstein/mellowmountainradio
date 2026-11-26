@@ -1,21 +1,6 @@
 {
- "updated": "2026-11-26T01:49:28.519Z",
+ "updated": "2026-11-26T16:59:55.447Z",
  "concerts": [
-  {
-   "id": "rZ7HnEZ1AfGtq7",
-   "artist": "America",
-   "date": "2026-11-25",
-   "time": "19:00:00",
-   "venue": "El Cid",
-   "city": "Los Angeles",
-   "state": "CA",
-   "url": "https://www.ticketweb.com/event/ezcodylee-make-america-stunt-4-el-cid-tickets/14329744",
-   "img": "https://s1.ticketm.net/dam/c/797/5e693c26-2881-4776-8f0c-3aa94bfa3797_106511_RETINA_PORTRAIT_16_9.jpg",
-   "price": null,
-   "status": "onsale",
-   "saleStart": "2026-09-25T17:00:00Z",
-   "lineup": []
-  },
   {
    "id": "17AYv0G6CxsoGYd",
    "artist": "Ambrosia",
@@ -668,6 +653,36 @@
    "lineup": [
     "The Empty Pockets"
    ]
+  },
+  {
+   "id": "G5vzZ_p54FUhp",
+   "artist": "Chicago",
+   "date": "2027-06-15",
+   "time": "19:00:00",
+   "venue": "Sandy Amphitheater",
+   "city": "Sandy",
+   "state": "UT",
+   "url": "https://www.ticketmaster.com/chicago-sandy-utah-06-15-2027/event/1E006562D52366D6",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-11-20T17:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "vvG1IZ_49-BVD2",
+   "artist": "Chicago",
+   "date": "2027-06-27",
+   "time": "20:00:00",
+   "venue": "Humphreys Concerts By the Bay",
+   "city": "San Diego",
+   "state": "CA",
+   "url": "https://www.ticketmaster.com/chicago-san-diego-california-06-27-2027/event/0A006555E1EB4ECF",
+   "img": "https://s1.ticketm.net/dam/a/6ff/7d04b884-0a9f-4f74-a8e0-2f688c1536ff_RETINA_PORTRAIT_16_9.jpg",
+   "price": null,
+   "status": "onsale",
+   "saleStart": "2026-10-30T17:00:00Z",
+   "lineup": []
   },
   {
    "id": "rZ7HnEZ1AfuYaf",
