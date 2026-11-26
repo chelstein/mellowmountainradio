@@ -111,6 +111,12 @@ jobs:
 
       - name: What this block already has on tape
         id: existing
+        # This guard exists to protect the archive, so it must never itself be
+        # the reason a recording does not happen. If anything in it goes wrong
+        # we fall through to secs=0 and record: replacing a tape is a risk,
+        # failing to make one is a certain loss. Run 490 proved the point by
+        # dying here and taking a whole block with it.
+        continue-on-error: true
         run: |
           # The upload step deletes the release for this block's tag before
           # recreating it, and the manifest replaces the entry for
@@ -122,22 +128,32 @@ jobs:
           # Read from origin/main, not the checkout: the checkout is pinned to
           # the SHA that triggered this run, which can predate the previous
           # run's manifest push.
+          #
+          # Write under RUNNER_TEMP, never a fixed path in /tmp. A fixed name is
+          # not reliably writable across these runners: run 490 died with
+          # "/tmp/manifest-check.json: Permission denied" on mmr-ci-02 while the
+          # identical path had worked on mmr-ci-04 the run before. RUNNER_TEMP is
+          # per-job and guaranteed writable, so it cannot collide with another
+          # runner, another user, or a leftover file.
+          WORK="${RUNNER_TEMP:-.}/manifest-check.json"
           git fetch -q origin main 2>/dev/null || true
-          git show origin/main:rewind-manifest.json > /tmp/manifest-check.json 2>/dev/null || echo '{}' > /tmp/manifest-check.json
-          SECS=$(python3 - "${{ steps.block.outputs.date }}" "${{ steps.block.outputs.start }}" <<'PYEOF'
+          git show origin/main:rewind-manifest.json > "$WORK" 2>/dev/null || echo '{}' > "$WORK" 2>/dev/null || true
+          SECS=$(python3 - "${{ steps.block.outputs.date }}" "${{ steps.block.outputs.start }}" "$WORK" <<'PYEOF'
           import json, sys
 
-          date_str, start_h = sys.argv[1], int(sys.argv[2])
+          date_str, start_h, path = sys.argv[1], int(sys.argv[2]), sys.argv[3]
           try:
-              with open("/tmp/manifest-check.json") as f:
+              with open(path) as f:
                   blocks = json.load(f).get("blocks", [])
           except Exception:
+              # No manifest, unreadable, or malformed: report nothing on tape so
+              # the run records. Never let this read decide against recording.
               blocks = []
           same = [b.get("durationSec", 0) for b in blocks
                   if b.get("date") == date_str and b.get("start") == start_h]
           print(max(same) if same else 0)
           PYEOF
-          )
+          ) || SECS=0
           case "$SECS" in ''|*[!0-9]*) SECS=0 ;; esac
           echo "secs=$SECS" >> "$GITHUB_OUTPUT"
           echo "[tape] block already on tape: ${SECS}s"
@@ -205,7 +221,10 @@ jobs:
           # Never trade a longer tape for a shorter one. See the note in the
           # block-identity step: re-recording a block replaces its release and
           # its manifest entry.
+          # Empty when the guard step errored out (it is continue-on-error, so a
+          # failure there leaves no output). Unknown means record, not stand down.
           EXISTING="${{ steps.existing.outputs.secs }}"
+          case "$EXISTING" in ''|*[!0-9]*) EXISTING=0 ;; esac
           if [ "$EXISTING" -ge "$DURATION" ] && [ "$EXISTING" -gt 0 ]; then
             echo "skipped=true" >> "$GITHUB_OUTPUT"
             echo "::warning::Block ${FILENAME} already holds ${EXISTING}s on tape, which is at least the ${DURATION}s available now — standing down rather than replacing it with a shorter one."
