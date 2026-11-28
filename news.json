@@ -1,8 +1,14 @@
 {
- "updated": "2026-11-28T01:29:51.072Z",
+ "updated": "2026-11-28T15:38:21.239Z",
  "feeds": {
   "news-local": {
    "items": [
+    {
+     "title": "Sedona Fire District breaks ground on No. 4",
+     "link": "https://www.redrocknews.com/2026/11/28/sedona-fire-district-breaks-ground-on-no-4/",
+     "date": "Sat, 28 Nov 2026 13:00:00 +0000",
+     "summary": "Sedona Fire District held its ground breaking ceremony at the site of the new Uptown Station 4 on Thursday, ursday, Nov. 19, ahead of the start of the major construction effort over the next year. SFD officials anticipate construction on the Jordan Road Station will be completed by November 2027. “Buildings are buildings, and the […] The post Sedona Fire District breaks ground on No. 4 appeared fi…"
+    },
     {
      "title": "Flood victim: ‘We did not get a warning’",
      "link": "https://www.redrocknews.com/2026/11/27/flood-victim-we-did-not-get-a-warning/",
@@ -26,15 +32,9 @@
      "link": "https://www.redrocknews.com/2026/11/26/city-concrete-in-new-garage-is-up-to-spec/",
      "date": "Thu, 26 Nov 2026 13:00:00 +0000",
      "summary": "Aims for January opening; work continues on Uptown water main The city of Sedona stands by the safety of the Uptown Parking Garage’s concrete, Interim City Manager Kevin Phelps wrote in a Nov. 18 memo to the Sedona City Council. “The UPG was built to the technical specifications called for by the project architect,” he […] The post City: Concrete in new garage is up to spec appeared first on Sedon…"
-    },
-    {
-     "title": "Scorpions ready to rock 2A like a hurricane",
-     "link": "https://www.redrocknews.com/2026/11/25/scorpions-ready-to-rock-2a-like-a-hurricane/",
-     "date": "Wed, 25 Nov 2026 23:00:00 +0000",
-     "summary": "The Sedona Red Rock High School Boys varsity soccer preseason is underway after they took on the Mingus Union High School Marauders in the inaugural “Verde Valley Friendly” exhibition game on Nov. 19. “We’ve got at least 13 returning players from the team last year, and funny enough, I think there’s only three or four […] The post Scorpions ready to rock 2A like a hurricane appeared first on Sedon…"
     }
    ],
-   "fetched_at": "2026-11-28T01:29:51.072Z",
+   "fetched_at": "2026-11-28T15:38:21.239Z",
    "source": "https://www.redrocknews.com/feed/"
   },
   "news-regional": {
@@ -192,12 +192,42 @@
    ],
    "fetched_at": "2026-11-24T03:59:29.866Z",
    "source": "https://azdailysun.com/search/?f=rss&t=article&c=news&l=25",
-   "last_fetch_attempt": "2026-11-28T01:29:51.072Z",
+   "last_fetch_attempt": "2026-11-28T15:38:21.239Z",
    "last_fetch_error": "HTTP 429",
    "stale": true
   },
   "news-national": {
    "items": [
+    {
+     "title": "COP31 climate talks fail to reach an agreement on fossil fuel language",
+     "link": "https://www.npr.org/2026/11/28/nx-s1-6050187/cop31-talks-fall-apart",
+     "date": "Sat, 28 Nov 2026 09:28:45 -0500",
+     "summary": "U.N. climate talks collapsed over whether to mention fossil fuels that cause global warning. Several countries and the E.U. would not accept a final proposal without this."
+    },
+    {
+     "title": "Perspective: A hero's name lives on",
+     "link": "https://www.npr.org/2026/11/28/nx-s1-6045586/perspective-a-heros-name-lives-on",
+     "date": "Sat, 28 Nov 2026 08:00:00 -0500",
+     "summary": "During Pearl Harbor, sailor Doris Miller carried the wounded to safety and fired a machine gun at Japanese planes. Next week, construction of a new aircraft carrier, the USS Doris Miller, begins."
+    },
+    {
+     "title": "An explosion at a school in eastern Afghanistan kills 10, wounds 110",
+     "link": "https://www.npr.org/2026/11/28/nx-s1-6056284/explosion-school-eastern-afghanistan",
+     "date": "Sat, 28 Nov 2026 06:32:37 -0500",
+     "summary": "Local officials said the blast appeared to have originated in a neighboring depot for mining explosives."
+    },
+    {
+     "title": "New wave of Democratic attorneys general may reshape the justice system",
+     "link": "https://www.npr.org/2026/11/28/g-s1-155837/democratic-attorneys-general-justice-system-texas",
+     "date": "Sat, 28 Nov 2026 05:00:00 -0500",
+     "summary": "The Democratic victories could have major effects for what alleged crimes are investigated, lawsuits filed and court cases heard across the U.S."
+    },
+    {
+     "title": "Sudan's lost generation: War is stealing the childhood of millions",
+     "link": "https://www.npr.org/2026/11/27/nx-s1-6053049/sudans-lost-generation-war-is-stealing-a-generation-of-childhood",
+     "date": "Fri, 27 Nov 2026 17:54:53 -0500",
+     "summary": "Three years of war have stolen childhood from millions of children in Sudan, leaving them displaced, hungry and fighting for survival instead of learning in a classroom."
+    },
     {
      "title": "Thanksgiving storm batters East Coast. And, Black Friday sales to hit record levels",
      "link": "https://www.npr.org/2026/11/27/g-s1-156004/up-first-newsletter-thanksgiving-storm-black-friday-shopping-asylum-supreme-court",
@@ -223,47 +253,35 @@
      "summary": "This week's celebration of Macy's 100th Thanksgiving parade finds the department store at a turning point. After years of losing sales, the retailer is reimagining itself — as a higher-end destination."
     },
     {
-     "title": "Trump effectively ended asylum. Advocates look to the Supreme Court to restore it",
-     "link": "https://www.npr.org/2026/11/27/nx-s1-6037854/trump-effectively-ended-asylum-supreme-court",
-     "date": "Fri, 27 Nov 2026 05:00:00 -0500",
-     "summary": "Trump's sweeping immigration changes — an asylum ban, mass firings and new legal maneuvers — have all but ended asylum. The high court will soon consider whether some shifts deny people due process."
-    },
-    {
      "title": "Screen-free tweens try their hand at Dungeons & Dragons",
      "link": "https://www.npr.org/2026/11/27/nx-s1-6042445/screen-free-tweens-try-their-hand-at-dungeons-dragons",
      "date": "Fri, 27 Nov 2026 05:00:00 -0500",
      "summary": "Some parents, fed up with screens, have found an analog oasis in the role-playing game invented in the 1970s."
-    },
-    {
-     "title": "12 strategies to cut your risk of dementia. Take this quiz to start",
-     "link": "https://www.npr.org/2026/11/27/nx-s1-6050867/prevent-dementia-alzheimers-your-turn",
-     "date": "Fri, 27 Nov 2026 05:00:00 -0500",
-     "summary": "Here's something you can do as you gather with family and friends this holiday season: Take a free, five-minute quiz to assess your brain health. You'll learn simple changes to keep your mind sharp."
-    },
-    {
-     "title": "Morning news brief",
-     "link": "https://www.npr.org/2026/11/27/nx-s1-6047116/morning-news-brief",
-     "date": "Fri, 27 Nov 2026 04:47:08 -0500",
-     "summary": "Thanksgiving storm pummels the East Coast, Americans expected to spend record amount on Black Friday, Israeli rival factions consider deals in race to form a new government."
-    },
-    {
-     "title": "New balloons will fly in the postponed 100th Macy's Thanksgiving Day Parade",
-     "link": "https://www.npr.org/2026/11/27/nx-s1-6043796/new-balloons-will-fly-in-the-postponed-100th-macys-thanksgiving-day-parade",
-     "date": "Fri, 27 Nov 2026 04:45:12 -0500",
-     "summary": "Some new balloons are set to fly in the weather-delayed Macy's Thanksgiving Day Parade."
-    },
-    {
-     "title": "Eagles rally to stun Cowboys coming back from 21 points behind",
-     "link": "https://www.npr.org/2026/11/27/nx-s1-6055519/eagles-stun-cowboys",
-     "date": "Fri, 27 Nov 2026 03:23:12 -0500",
-     "summary": "Eagles QB Joe Milton threw two long touchdowns against the quarterback's former team, the Dallas Cowboys, for the the start of quite a comeback, after being down 31-10 early in the third quarter."
     }
    ],
-   "fetched_at": "2026-11-28T01:29:51.072Z",
+   "fetched_at": "2026-11-28T15:38:21.239Z",
    "source": "https://feeds.npr.org/1001/rss.xml"
   },
   "news-world": {
    "items": [
+    {
+     "title": "Argentina's bid to stop Falklands oil drilling rejected",
+     "link": "https://www.bbc.co.uk/news/articles/c84gnq3qq9rno?at_medium=RSS&at_campaign=rss",
+     "date": "Sat, 28 Nov 2026 13:36:36 GMT",
+     "summary": "A joint venture between UK-Israeli companies is set to start exploring for oil and gas, but Argentina sought to block it as part of its claim to sovereignty."
+    },
+    {
+     "title": "Two staff killed in Israeli strike on Gaza medical clinic, MSF says",
+     "link": "https://www.bbc.co.uk/news/articles/cm5y10yydln3o?at_medium=RSS&at_campaign=rss",
+     "date": "Sat, 28 Nov 2026 10:34:58 GMT",
+     "summary": "The Israeli military says it targeted \"Hamas terrorists\" in the strike which has been condemned by the World Health Organization."
+    },
+    {
+     "title": "Afghanistan explosion kills 10 students and injures more than 100, official says",
+     "link": "https://www.bbc.co.uk/news/articles/ckp80jyz6dl8o?at_medium=RSS&at_campaign=rss",
+     "date": "Sat, 28 Nov 2026 14:10:01 GMT",
+     "summary": "A spokesman for Afghanistan's interior ministry says the blast was caused by carelessness at an explosives depot nearby."
+    },
     {
      "title": "Spanish PM and rivals rally supporters in final pitch for votes",
      "link": "https://www.bbc.co.uk/news/articles/c8wy5p4gdnwvo?at_medium=RSS&at_campaign=rss",
@@ -271,28 +289,22 @@
      "summary": "Prime Minister Pedro Sánchez wants to defy the polls, and his main rivals accuse him of not telling the truth and of \"betrayal\"."
     },
     {
-     "title": "Zelensky criticises 'strange' Trump-Putin friendship in BBC interview",
-     "link": "https://www.bbc.co.uk/news/articles/c820q9wgrpyyo?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 18:00:40 GMT",
-     "summary": "Ukraine's president voices frustration with US and says it is not pushing Russia hard enough in peace talks to end the war."
+     "title": "OpenAI counter-sues Apple over alleged theft of trade secrets",
+     "link": "https://www.bbc.co.uk/news/articles/cm15ekqvlezeo?at_medium=RSS&at_campaign=rss",
+     "date": "Sat, 28 Nov 2026 11:35:34 GMT",
+     "summary": "The ChatGPT-maker alleges that tech giant Apple stole trade secrets through a former employee."
     },
     {
-     "title": "Weary of war but with no sign of backing down, Kyiv faces another punishing winter",
-     "link": "https://www.bbc.co.uk/news/articles/c3pw4yrr8kz9o?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 18:42:50 GMT",
-     "summary": "Ukraine settles in for another devastating winter as the questions persists: how will it all end?"
+     "title": "Eight killed in Peruvian military helicopter crash",
+     "link": "https://www.bbc.co.uk/news/articles/cwp9d85mlp88o?at_medium=RSS&at_campaign=rss",
+     "date": "Sat, 28 Nov 2026 04:19:16 GMT",
+     "summary": "The pilot was the sole survivor of the crash during a rescue mission in a remote area known for drug trafficking."
     },
     {
-     "title": "'We couldn't give up that easily': Marching bands scramble to cover costs after Thanksgiving parade rearranged",
-     "link": "https://www.bbc.co.uk/news/articles/ckd71ypy9e8eo?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 20:06:31 GMT",
-     "summary": "Stormy weather in New York City prompted organisers to push back the Macy's parade by two days - leaving some musicians stuck."
-    },
-    {
-     "title": "Brazil pushes back on Macron calling its meat 'doped'",
-     "link": "https://www.bbc.co.uk/news/articles/c6rrg28npvzeo?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 15:54:15 GMT",
-     "summary": "France's president made the comment while speaking to French farming representatives, months after the EU banned Brazil beef and poultry products."
+     "title": "Australian wrestler Bronson Reed dies aged 38, WWE says",
+     "link": "https://www.bbc.co.uk/news/articles/cvwy08g70ldko?at_medium=RSS&at_campaign=rss",
+     "date": "Sat, 28 Nov 2026 07:31:14 GMT",
+     "summary": "Tributes have flooded in for the 38-year-old Australian who is survived by his pregnant wife, Paige, their daughter."
     },
     {
      "title": "'Poison seller' Kenneth Law apologises in court to the families of his victims",
@@ -301,16 +313,22 @@
      "summary": "The Canadian man, who pleaded guilty to 14 counts of aiding and abetting suicide earlier this year, said he was remorseful for his actions."
     },
     {
-     "title": "Capsized tanker carrying 7,000 tonnes of diesel to be towed away from Ibiza",
-     "link": "https://www.bbc.co.uk/news/articles/cvrlgz6g0ekgo?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 20:34:45 GMT",
-     "summary": "There are fears of a major oil spillage off Ibiza but the ship's fuel tanks are so far intact."
+     "title": "Turkish officials 'destroyed' pro-opposition TV channel, owner tells BBC",
+     "link": "https://www.bbc.co.uk/news/articles/cq36gk151xkdo?at_medium=RSS&at_campaign=rss",
+     "date": "Sat, 28 Nov 2026 04:13:45 GMT",
+     "summary": "The headquarters of Halk TV were raided last month, the latest in a series of crackdowns on news sources deemed critical of the government."
     },
     {
-     "title": "Millions of wives in South Asia unprotected from marital rape - study",
-     "link": "https://www.bbc.co.uk/news/articles/cw074p95ye5do?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 08:13:43 GMT",
-     "summary": "More than 100 countries have outlawed marital rape, but a large part of South Asia has not."
+     "title": "Zelensky criticises 'strange' Trump-Putin friendship in BBC interview",
+     "link": "https://www.bbc.co.uk/news/articles/c820q9wgrpyyo?at_medium=RSS&at_campaign=rss",
+     "date": "Fri, 27 Nov 2026 18:00:40 GMT",
+     "summary": "Ukraine's president voices frustration with US and says it is not pushing Russia hard enough in peace talks to end the war."
+    },
+    {
+     "title": "'We couldn't give up that easily': Marching bands scramble to cover costs after Thanksgiving parade rearranged",
+     "link": "https://www.bbc.co.uk/news/articles/ckd71ypy9e8eo?at_medium=RSS&at_campaign=rss",
+     "date": "Fri, 27 Nov 2026 20:06:31 GMT",
+     "summary": "Stormy weather in New York City prompted organisers to push back the Macy's parade by two days - leaving some musicians stuck."
     },
     {
      "title": "Canada's top court largely upholds Quebec ban on religious symbols for public servants",
@@ -319,22 +337,16 @@
      "summary": "The law faced legal challenges from a range of groups, including female Muslim, Sikh and Catholic teachers, who argued it violated their fundamental rights."
     },
     {
-     "title": "Italy's former police chief rejected mafia inquiry allegations before death",
-     "link": "https://www.bbc.co.uk/news/articles/c69q8yjj1v0po?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 07:28:10 GMT",
-     "summary": "The contents of an eight-page letter by Gianni De Gennaro have been revealed days after his body was found at his Tuscany home."
-    },
-    {
-     "title": "Rare turtles found inside baggage at Amsterdam airport",
-     "link": "https://www.bbc.co.uk/news/articles/cm5y1380q3vgo?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 13:38:07 GMT",
-     "summary": "The endangered reptiles were bound with duct tape to prevent them moving, officials say."
-    },
-    {
      "title": "Kenyan doomsday cult leader convicted over further 123 deaths",
      "link": "https://www.bbc.co.uk/news/articles/cmy49de4xx1zo?at_medium=RSS&at_campaign=rss",
      "date": "Fri, 27 Nov 2026 17:19:31 GMT",
      "summary": "Paul Mackenzie is found guilty of killing his followers, weeks after being jailed for the mass murder of children."
+    },
+    {
+     "title": "Millions of wives in South Asia unprotected from marital rape - study",
+     "link": "https://www.bbc.co.uk/news/articles/cw074p95ye5do?at_medium=RSS&at_campaign=rss",
+     "date": "Fri, 27 Nov 2026 08:13:43 GMT",
+     "summary": "More than 100 countries have outlawed marital rape, but a large part of South Asia has not."
     },
     {
      "title": "Severe Thanksgiving storms leave roads flooded and trees fallen",
@@ -367,13 +379,19 @@
      "summary": "Hundreds of thousands have been affected by storms in the country as the Thanksgiving holiday weekend begins."
     },
     {
+     "title": "Weary of war but with no sign of backing down, Kyiv faces another punishing winter",
+     "link": "https://www.bbc.co.uk/news/articles/c3pw4yrr8kz9o?at_medium=RSS&at_campaign=rss",
+     "date": "Fri, 27 Nov 2026 18:42:50 GMT",
+     "summary": "Ukraine settles in for another devastating winter as the questions persists: how will it all end?"
+    },
+    {
      "title": "Behind China's spectacular rise, voices who defied it say they are being drowned out",
      "link": "https://www.bbc.co.uk/news/articles/cme3d4y094x7o?at_medium=RSS&at_campaign=rss",
      "date": "Fri, 27 Nov 2026 23:02:35 GMT",
      "summary": "China's immense clout now also has the flex of soft power. Critics and dissidents say their voices are being drowned out."
     },
     {
-     "title": "A clinic is reassessing people with ADHD and autism diagnoses - but critics fear it could deepen stigma",
+     "title": "A clinic is offering to reassess ADHD and autism diagnoses - and hundreds of people are interested",
      "link": "https://www.bbc.co.uk/news/articles/cr9309nyg2vno?at_medium=RSS&at_campaign=rss",
      "date": "Sat, 28 Nov 2026 00:05:17 GMT",
      "summary": "While many people find a diagnosis for ADHD or autism affirming, a government-funded clinic in Sweden is re-assessing people who feel it does not reflect them."
@@ -385,34 +403,22 @@
      "summary": "A new Bollywood flim spotlights the remarkable life of dancer and singer Vithabhai Narayangaonkar."
     },
     {
-     "title": "Inside Saudi Arabia, Houthi attacks test kingdom's image of security",
-     "link": "https://www.bbc.co.uk/news/articles/c6ly7jgv7jzdo?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 06:04:51 GMT",
-     "summary": "Despite the strikes, markets and restaurants in Riyadh remain busy as residents express trust in the government to protect them."
-    },
-    {
-     "title": "Met Police ruined my life, says Kenyan man wrongly convicted over attack on UK couple",
-     "link": "https://www.bbc.co.uk/news/articles/cqvg2nlr8kd8o?at_medium=RSS&at_campaign=rss",
-     "date": "Fri, 27 Nov 2026 00:48:11 GMT",
-     "summary": "Evidence from a British police officer helped convict Ali Kololo over a 2011 attack in the Kenyan resort of Lamu."
+     "title": "Nigeria's acting legend who was loved across Africa and beyond",
+     "link": "https://www.bbc.co.uk/news/articles/cm3vg3lkrk03o?at_medium=RSS&at_campaign=rss",
+     "date": "Sat, 28 Nov 2026 01:20:35 GMT",
+     "summary": "Before becoming a household name in the Nigerian film industry, Edochie built a career in broadcasting."
     }
    ],
-   "fetched_at": "2026-11-28T01:29:51.072Z",
+   "fetched_at": "2026-11-28T15:38:21.239Z",
    "source": "https://feeds.bbci.co.uk/news/world/rss.xml"
   },
   "sports-az": {
    "items": [
     {
-     "title": "You’ll talk about it forever’: 100th Territorial Cup carries major implications for Arizona, ASU - Cronkite News",
-     "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPRmYtREdubkx1VDdqUUJwTWZFNFNTY0ljMExjSFdjTXo4dEliY2I2MXIyd3doenpEQklkYUxsSmhEbElsbjktSkl0OEctX2VvYTBmdURvcko5MWI1QmdDeHkwNDVGX0pScTBydnl1WHdSVmx6a2F5RDZuenhJb21aRzJ3?oc=5",
-     "date": "Fri, 27 Nov 2026 15:00:00 GMT",
-     "summary": "You’ll talk about it forever’: 100th Territorial Cup carries major implications for Arizona, ASU Cronkite News"
-    },
-    {
-     "title": "Arizona State to wear Roses & Devils uniforms against Oklahoma State - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOUmplOExpT3ppNnRpUXB4TzIxWENQT1ExUHRsdXVfYWFLSjJ5dVNkTXJzZVJHenNVWDhwYnQ3QTMwOEhnSFZXWE4xanRma21obl9BcmpJMDlZeXlJdTJfQ2lyQnB6MHVyaHBvamx4SGRGSjlfeWw2YVpJNlk0OGNEazVsbFIzR3FnY1dHQW53?oc=5",
-     "date": "Sat, 21 Nov 2026 16:56:22 GMT",
-     "summary": "Arizona State to wear Roses & Devils uniforms against Oklahoma State Arizona Sports"
+     "title": "Arizona overcomes 11-point deficit to complete comeback OT win over Kansas State - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQLVFVTmtMYkdGeE5mUTJPN1pQVUxVem1abng2cS0tRFc1RXFQVkxPR1pPNlJkM2RJNVR5eGZWdEV1UkRuSlZqSE1fcG1oU2tsNGNzQUVXcXFWOTVxNXlNMHpiYkJHR1h6SEtlYVpEWkdRSTh1RHZyUWItX3ltdnZyNF80TktNbUkzYk94aTdrX1AwR1BycXlvMmZDZ1FkVWViVGZUWXF0ZzVpTFhVbDRfdFRuWDRkam0zWlVyUEtFbUtVbkdYeHNjWnphTGh3d0psR2lRNFVkQU5DUQ?oc=5",
+     "date": "Sun, 22 Nov 2026 04:56:23 GMT",
+     "summary": "Arizona overcomes 11-point deficit to complete comeback OT win over Kansas State Arizona Sports"
     },
     {
      "title": "Arizona State vs Arizona picks, predictions, odds for Territorial Cup - azcentral.com and The Arizona Republic",
@@ -421,34 +427,22 @@
      "summary": "Arizona State vs Arizona picks, predictions, odds for Territorial Cup azcentral.com and The Arizona Republic"
     },
     {
-     "title": "What to watch for when Arizona football and ASU battle for Territorial Cup - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNRktYUXd3TEJqS0hfbUtjSWRiNjltb2RDeDRrTDk1OVJzSnd3R3JmcGpiaFF2V08xR1hrWUE0UWZieUpTd1JVU2xnLWJtcUwzWHBVNzEweUU0Um1SNXplZHpNWDY3ejhlRlUybW9DVFVCb0ZGUlY4LVN5TldZNWw0UlNNcE1nS2V2UzFvc0JuUlAxcmJYQ19qNEF3ZjlPcVBC?oc=5",
-     "date": "Fri, 27 Nov 2026 00:00:00 GMT",
-     "summary": "What to watch for when Arizona football and ASU battle for Territorial Cup Yahoo Sports"
-    },
-    {
      "title": "Oklahoma State Cowboys vs. Arizona State Sun Devils: Full Highlights - ESPN",
      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1hN210TEJVQ0JHUW1GVkQxQTkxQ0dfdlNGTzZTelN4cExjUzE0VWZQNHlPaWhXZEd1Y2s0QjFjaUdVWUo0a291SVdWekR5dDhHU1BXTVJTblZ3RmdCOVBQUzZYY0F2ZmNmUTNmMA?oc=5",
      "date": "Sun, 22 Nov 2026 07:31:28 GMT",
      "summary": "Oklahoma State Cowboys vs. Arizona State Sun Devils: Full Highlights ESPN"
     },
     {
-     "title": "Jake Fette throws costly interception as ASU falls to Oklahoma State in OT - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQZ24yaEZjbE03ZEd0WFlKMDRaR0YxaDRnV1V0LXJ6V2lReGZMNjRuMS1DUndlX1AxSnpoSjZnZUt0b1dETk5pNF9QNGlBeklzdzBjeXFGaTZMalg4MC15QndFZ0Frdi1ORG0yaFQyN21ZM0VLeTgtVHFXM191aDlCU1FEMEpvaTJ6NlJQVWFaVDNXbS1VNDltbWtvWVFaTjZOZ0FybFZCbU45MGR1ZF83YlBCaXFRSk9EUnAyMnRSazhLSlFQTEtUQUNuNzk?oc=5",
-     "date": "Sun, 22 Nov 2026 07:45:06 GMT",
-     "summary": "Jake Fette throws costly interception as ASU falls to Oklahoma State in OT Arizona Sports"
+     "title": "What to watch for when Arizona football and ASU battle for Territorial Cup - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNRktYUXd3TEJqS0hfbUtjSWRiNjltb2RDeDRrTDk1OVJzSnd3R3JmcGpiaFF2V08xR1hrWUE0UWZieUpTd1JVU2xnLWJtcUwzWHBVNzEweUU0Um1SNXplZHpNWDY3ejhlRlUybW9DVFVCb0ZGUlY4LVN5TldZNWw0UlNNcE1nS2V2UzFvc0JuUlAxcmJYQ19qNEF3ZjlPcVBC?oc=5",
+     "date": "Fri, 27 Nov 2026 00:00:00 GMT",
+     "summary": "What to watch for when Arizona football and ASU battle for Territorial Cup Yahoo Sports"
     },
     {
-     "title": "Arizona football favored in Territorial Cup - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOa1NWajRYSW91X25JNFlvNHVBeXhXSGRTWEd5bzh0N3RtS3RCMEcxMDJkd0EyX1Z5ay1ncXh3VHhabTVjMUJrZlFjWS1fV1pLdlRHVzM2aUtEdzJ3RGFROHRkdTFsVjRuMHFneUJvdG9vSXJDRzM3clVyTzdMa19LWlFteGZ6dk9uZjNlRHo5TmJGVFk?oc=5",
-     "date": "Sun, 22 Nov 2026 17:10:27 GMT",
-     "summary": "Arizona football favored in Territorial Cup Yahoo Sports"
-    },
-    {
-     "title": "Former No. 1 ranked junior college prospect Jarmaine Mitchell reportedly departs from ASU - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPZnZVOFNpcEgyWkFuTE9oYlFiSzRFdEtySC1lSWxHUFY1WjNWTk9NWURYYjdtdGJXR2VxaXZFd0Z3YXVlWWNxclNldzIxcjRUSXRPd2F1aHB1RTJPdUlwSGtjdkZ5RldVY0loLWo3cW5YRGVia05PU2lvUjhnN1FpbEY2VlhTQVNBSkg3TXpBY2dicnBhMmFnajY4eEpMeFN5WGRUNEVkZ0FwVDJoOG1ZUUNMTzYwZTJJc2xEWlZDb09jMDBZYXRJc3ZJWS1oY3RmUzdVU2xPYmZGMXZnanVn?oc=5",
-     "date": "Tue, 24 Nov 2026 15:08:46 GMT",
-     "summary": "Former No. 1 ranked junior college prospect Jarmaine Mitchell reportedly departs from ASU Arizona Sports"
+     "title": "Arizona State to wear Roses & Devils uniforms against Oklahoma State - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOUmplOExpT3ppNnRpUXB4TzIxWENQT1ExUHRsdXVfYWFLSjJ5dVNkTXJzZVJHenNVWDhwYnQ3QTMwOEhnSFZXWE4xanRma21obl9BcmpJMDlZeXlJdTJfQ2lyQnB6MHVyaHBvamx4SGRGSjlfeWw2YVpJNlk0OGNEazVsbFIzR3FnY1dHQW53?oc=5",
+     "date": "Sat, 21 Nov 2026 16:56:22 GMT",
+     "summary": "Arizona State to wear Roses & Devils uniforms against Oklahoma State Arizona Sports"
     },
     {
      "title": "What channel is Arizona State vs Oklahoma State on? TV schedule today - azcentral.com and The Arizona Republic",
@@ -457,16 +451,28 @@
      "summary": "What channel is Arizona State vs Oklahoma State on? TV schedule today azcentral.com and The Arizona Republic"
     },
     {
-     "title": "Oklahoma State QB Drew Mestemaker Remains Questionable for Arizona State Game - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxQZmp4Y2tWOW9vVHZsVGVhbUpWbVpKQnkyR1Q3QmJYUlVHTUphTWhldnFhM3BtaUR2OGM1NU9jQUVKSElHMGhCNzJVXzBIaGQ5Z2FIb2tFQ1RSdURhMGVLSzdRUnBzYk15ZTR6NFZhZEVDbnduRENkbTR1Z0ljUTNyNWJ3QmcxUkd0NFE?oc=5",
-     "date": "Sat, 21 Nov 2026 03:17:00 GMT",
-     "summary": "Oklahoma State QB Drew Mestemaker Remains Questionable for Arizona State Game Yahoo Sports"
+     "title": "Arizona football favored in Territorial Cup - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOa1NWajRYSW91X25JNFlvNHVBeXhXSGRTWEd5bzh0N3RtS3RCMEcxMDJkd0EyX1Z5ay1ncXh3VHhabTVjMUJrZlFjWS1fV1pLdlRHVzM2aUtEdzJ3RGFROHRkdTFsVjRuMHFneUJvdG9vSXJDRzM3clVyTzdMa19LWlFteGZ6dk9uZjNlRHo5TmJGVFk?oc=5",
+     "date": "Sun, 22 Nov 2026 17:10:27 GMT",
+     "summary": "Arizona football favored in Territorial Cup Yahoo Sports"
     },
     {
-     "title": "In Arizona, we're thankful for the Suns and loyal college coaches - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOb3Q3TVNQNjQzMDBIWFFoc0U3YW5KV3NEZVZlN2tUY3FmbkZ0bURpRWlPV2Vpc3hhY3dvSDlYYWFORnBrTVV5LWpNSU8xNTFiMVVta3M4VkowX1Nlc0VJUGVzRm9sNDJ4S1ZlWTVUNVJmMFhrX3hhNGx0eG9fZ2RaeTVTUWhTeF9yNmtrdjdkRW4wRkZtNHQ0dFRyM1Q?oc=5",
-     "date": "Thu, 26 Nov 2026 14:00:38 GMT",
-     "summary": "In Arizona, we're thankful for the Suns and loyal college coaches Arizona Sports"
+     "title": "Jake Fette throws costly interception as ASU falls to Oklahoma State in OT - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQZ24yaEZjbE03ZEd0WFlKMDRaR0YxaDRnV1V0LXJ6V2lReGZMNjRuMS1DUndlX1AxSnpoSjZnZUt0b1dETk5pNF9QNGlBeklzdzBjeXFGaTZMalg4MC15QndFZ0Frdi1ORG0yaFQyN21ZM0VLeTgtVHFXM191aDlCU1FEMEpvaTJ6NlJQVWFaVDNXbS1VNDltbWtvWVFaTjZOZ0FybFZCbU45MGR1ZF83YlBCaXFRSk9EUnAyMnRSazhLSlFQTEtUQUNuNzk?oc=5",
+     "date": "Sun, 22 Nov 2026 07:45:06 GMT",
+     "summary": "Jake Fette throws costly interception as ASU falls to Oklahoma State in OT Arizona Sports"
+    },
+    {
+     "title": "No. 16 Arizona's Noah Fifita heads into home finale with his legacy secured - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNekFTVldqRG1hUlhCZ3V4SnJ6ejJMVGxRcXFQNndMVVM2Vmdya051XzJjN1Z0LWJ1UG9mcG1IQ2ltMXo3TVJwTGlOSEpqR3dfWHVNSTBNV1hkeThxM3VGNDdOUE9WV3hVV05kSUc4U1FhSUJwejh6NnpEWE5yOFg3cmZ3SFlVQ09WMnZhbk9oLUZ1NnlmZEdJ?oc=5",
+     "date": "Thu, 26 Nov 2026 17:08:47 GMT",
+     "summary": "No. 16 Arizona's Noah Fifita heads into home finale with his legacy secured Yahoo Sports"
+    },
+    {
+     "title": "It's Territorial Cup time for Arizona State, Arizona football teams - azcentral.com and The Arizona Republic",
+     "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOQU9hZE5lNllvT20tOHBpOTUxbF9Pc0dRal9DbFlORlhRYmJUSENPVV9WejJzUXJDNkdqMEdPdXgwTlRYLW1NSnVjbXRBa0wwWV9UU2E1TS1qbmdGOFpodTdkYnAxWFBmbTVIMHdEcGRlT2RrUGh2bDBpTjhUOTR5Z0xybzhWSDVpU1c2YVBObjVuRXl1ZWRJVlpoVEdPVEdOd0JzWGl2OHZZbU5yNG9xQi1OeHM2NFllV284?oc=5",
+     "date": "Wed, 25 Nov 2026 17:19:00 GMT",
+     "summary": "It's Territorial Cup time for Arizona State, Arizona football teams azcentral.com and The Arizona Republic"
     },
     {
      "title": "No. 16 Arizona refuses to overlook resurgent Sun Devils in 100th Territorial Cup - Arizona Sports",
@@ -475,16 +481,16 @@
      "summary": "No. 16 Arizona refuses to overlook resurgent Sun Devils in 100th Territorial Cup Arizona Sports"
     },
     {
-     "title": "8 players with Arizona connections included in cut of 52 for Pro Football Hall of Fame - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNLVJiN3E2bHdxRWQtb0xyS25RM2Y3S04zU2JDYjRjSG5DX3U4cC1KY0g3V094TVdtZm9mcFJsZXdrRk1NTGFlRFRoWm5DR3pfa3hqVkMtS3NSa0FjS1lEQ1pvMk9RT2E1NEtPSWZXakhDOFBjWTBPNzY2MGk3SDZUbA?oc=5",
-     "date": "Wed, 25 Nov 2026 00:05:29 GMT",
-     "summary": "8 players with Arizona connections included in cut of 52 for Pro Football Hall of Fame Arizona Sports"
+     "title": "Former No. 1 ranked junior college prospect Jarmaine Mitchell reportedly departs from ASU - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPZnZVOFNpcEgyWkFuTE9oYlFiSzRFdEtySC1lSWxHUFY1WjNWTk9NWURYYjdtdGJXR2VxaXZFd0Z3YXVlWWNxclNldzIxcjRUSXRPd2F1aHB1RTJPdUlwSGtjdkZ5RldVY0loLWo3cW5YRGVia05PU2lvUjhnN1FpbEY2VlhTQVNBSkg3TXpBY2dicnBhMmFnajY4eEpMeFN5WGRUNEVkZ0FwVDJoOG1ZUUNMTzYwZTJJc2xEWlZDb09jMDBZYXRJc3ZJWS1oY3RmUzdVU2xPYmZGMXZnanVn?oc=5",
+     "date": "Tue, 24 Nov 2026 15:08:46 GMT",
+     "summary": "Former No. 1 ranked junior college prospect Jarmaine Mitchell reportedly departs from ASU Arizona Sports"
     },
     {
-     "title": "Arizona overcomes 11-point deficit to complete comeback OT win over Kansas State - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQLVFVTmtMYkdGeE5mUTJPN1pQVUxVem1abng2cS0tRFc1RXFQVkxPR1pPNlJkM2RJNVR5eGZWdEV1UkRuSlZqSE1fcG1oU2tsNGNzQUVXcXFWOTVxNXlNMHpiYkJHR1h6SEtlYVpEWkdRSTh1RHZyUWItX3ltdnZyNF80TktNbUkzYk94aTdrX1AwR1BycXlvMmZDZ1FkVWViVGZUWXF0ZzVpTFhVbDRfdFRuWDRkam0zWlVyUEtFbUtVbkdYeHNjWnphTGh3d0psR2lRNFVkQU5DUQ?oc=5",
-     "date": "Sun, 22 Nov 2026 04:56:23 GMT",
-     "summary": "Arizona overcomes 11-point deficit to complete comeback OT win over Kansas State Arizona Sports"
+     "title": "In Arizona, we're thankful for the Suns and loyal college coaches - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOb3Q3TVNQNjQzMDBIWFFoc0U3YW5KV3NEZVZlN2tUY3FmbkZ0bURpRWlPV2Vpc3hhY3dvSDlYYWFORnBrTVV5LWpNSU8xNTFiMVVta3M4VkowX1Nlc0VJUGVzRm9sNDJ4S1ZlWTVUNVJmMFhrX3hhNGx0eG9fZ2RaeTVTUWhTeF9yNmtrdjdkRW4wRkZtNHQ0dFRyM1Q?oc=5",
+     "date": "Thu, 26 Nov 2026 14:00:38 GMT",
+     "summary": "In Arizona, we're thankful for the Suns and loyal college coaches Arizona Sports"
     },
     {
      "title": "Territorial Cup 101 before 100th matchup: ASU, Arizona coaches teaching history in transfer portal era - Arizona Sports",
@@ -499,10 +505,10 @@
      "summary": "Sun Devils vs. Wildcats: A look back at Territorial Cup history Arizona Sports"
     },
     {
-     "title": "Jake Fette trained with Noah Fifita before getting to ASU and is a fan of how the Wildcat prepares - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPc25oYkQ3Q0RlN0J3a2J6aHByMFVXcldSOGotMVJNeC1IejB2MGFhTEZVZVVtdDNpenZ2Y0JLcU9heEJnODc3X1ZKaHljQ05BekpJZDMzLVdxTi0yN1ZaandoTUtvRUp4QXdDY3FSSGFsaWdoaTZaLVpVT1NzZ2s1Y2J1V1RMX3FDUU1oa0pnWEhwSk13SFJRaXFzUTE?oc=5",
-     "date": "Wed, 25 Nov 2026 20:42:28 GMT",
-     "summary": "Jake Fette trained with Noah Fifita before getting to ASU and is a fan of how the Wildcat prepares Arizona Sports"
+     "title": "Big 12 title matchup will be Utah-Texas Tech, conference could send 3 to CFP - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNVkZybFNyUm5sbE9GaEFSVWFubHJ6NU9WSmhlV2NKMExlU2l4bzN0M2xPTndFLWkteTlwbS1kT0lfUUN6S180czhvdWFzVUprZGVOZnE2Wmw0Q0VpbDNuSld5WlVHNWZjS3EzREc5R0dvdTN6MWNOZ2NBbFlxUjN4MGw1OVJCdUk?oc=5",
+     "date": "Sat, 28 Nov 2026 00:51:03 GMT",
+     "summary": "Big 12 title matchup will be Utah-Texas Tech, conference could send 3 to CFP Arizona Sports"
     },
     {
      "title": "ASU’s Boogie Wilson ejected for targeting in 2nd half vs. Oklahoma State - Arizona Sports",
@@ -517,28 +523,10 @@
      "summary": "Kenny Dillingham praises Noah Fifita’s loyalty, clarifies comments weren’t about Sam Leavitt Arizona Sports"
     },
     {
-     "title": "Arizona survives Kansas State scare in overtime win as major concerns emerge - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOYVdmcGd4VUl0QU9PTzQ1eDBRUmJWLXg1a3UwbmNDTkFaRUpiblpGQ3VvRGVBUGpoUll6YTFMT3N4V0NpSllLWmpTbkhqMmY1Skg0aHNpRGNsdE9leXRIUTlmNkNLMTNqQVJYUklHWDNMQlVvbm1Hc29pN3VHakZIQVpaeXBTNTA4LTJyZw?oc=5",
-     "date": "Sun, 22 Nov 2026 04:14:00 GMT",
-     "summary": "Arizona survives Kansas State scare in overtime win as major concerns emerge Yahoo Sports"
-    },
-    {
-     "title": "Big 12 title matchup will be Utah-Texas Tech, conference could send 3 to CFP - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNVkZybFNyUm5sbE9GaEFSVWFubHJ6NU9WSmhlV2NKMExlU2l4bzN0M2xPTndFLWkteTlwbS1kT0lfUUN6S180czhvdWFzVUprZGVOZnE2Wmw0Q0VpbDNuSld5WlVHNWZjS3EzREc5R0dvdTN6MWNOZ2NBbFlxUjN4MGw1OVJCdUk?oc=5",
-     "date": "Sat, 28 Nov 2026 00:51:03 GMT",
-     "summary": "Big 12 title matchup will be Utah-Texas Tech, conference could send 3 to CFP Arizona Sports"
-    },
-    {
-     "title": "ASU suffers biggest blown lead of Kenny Dillingham era, Jake Fette bears the brunt - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPMUczNklXRFZFMGNpdkNoZW1tV0xJVW5kOFhlT1BuTnNyakVveHF3SXJhYlh3NVREYXFnOXZianJsSXdEU0htLWlYaWZaaTV0aWJVcG1USk5TQk9aX1UzTHJhSWhVNzQxNzVQcUl6Vnd6SF9ZdTJlRThzTGdTZDUwVUtLY2J4RGdUc0ZYQTVna0tfUGxMakhsdVdyS3NIM25zV3N1a2Y5NUZEVEM0djREMlVaVkpGOWZ2dVBYSG9Wc1QwampXUlJVYW9GemFrX0NvREtCZ0pB?oc=5",
-     "date": "Sun, 22 Nov 2026 14:51:07 GMT",
-     "summary": "ASU suffers biggest blown lead of Kenny Dillingham era, Jake Fette bears the brunt Arizona Sports"
-    },
-    {
-     "title": "What Brent Brennan said in his press conference to open Territorial Cup week - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOYTJHOE50WG0xVVlfRFN1NW5fLWZOYUVMLXg5amVGQTlkT2VOXzJhNlNVeG5STDIzcVQ3aVhXZTJGNnFMQjViRTY5Y3d5SGpZMnF6akFabTJWVjR5bjBiTHROUVo0bmRoc1VBOXAxZmVmUVowWDhUVm1rNXAtcE5ObDNac256X1h1ajN3Zw?oc=5",
-     "date": "Mon, 23 Nov 2026 22:00:00 GMT",
-     "summary": "What Brent Brennan said in his press conference to open Territorial Cup week Yahoo Sports"
+     "title": "Full Show: Why did the Arizona Cardinals fire Nick Rallis, the Phoenix Suns come away with an overtime victory against the New Orleans Pelicans and will the Cardinals' defense be better with Teryl Austin - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMigwNBVV95cUxPM25wOGg1TGNUdUdYRWxkSHBENHExMnRIbWhhWHNRWWFLZ3FGcGI0Qi1zTnlRZWZVWHVWYkZvTE9yZm9HR1BtLXJFNHNadVlkTnFVVFlYTGdGSDlKOEh5RGhRU2FSTi1XMmxBN1B5QXhpaFlwVWVqTl9UWG5BQW1rRnBKQkVtdzVuemtweVU0UnNwZUpqR096Q21xU0hRSG5VZjlQNWpHcjVNTDlJczBvSEEya2tJSDhBVy1rQVQzZmltOG5xWmhqcWF6R3lNaGtjWmloME1ZamVydmFaZTFOOFJ5ZTJ3WWlzN3NmTTRHbldlUnhGdzVvcUpVdU15TUhCazJ0NFJGTmhnTllVUExNZXFDNXhFSG9Ub0pFLXJvQVV3UHBvYVpSeXB5OWJnZkI0elNIYm1FeFpsQzJEd3pyNE1VTkNzWG9NdjhvRFRFc1lqc1dPdksybTBvTVgyNEwwenpCV3A2eDI0VGtFZlRQc2hDNDJ1TXlrbmxjQkZFaVJfSWc?oc=5",
+     "date": "Tue, 24 Nov 2026 20:50:02 GMT",
+     "summary": "Full Show: Why did the Arizona Cardinals fire Nick Rallis, the Phoenix Suns come away with an overtime victory against the New Orleans Pelicans and will the Cardinals' defense be better with Teryl Austin Arizona Sports"
     },
     {
      "title": "Oklahoma State’s Drew Mestemaker starting vs. ASU - Arizona Sports",
@@ -547,173 +535,203 @@
      "summary": "Oklahoma State’s Drew Mestemaker starting vs. ASU Arizona Sports"
     },
     {
-     "title": "Full Show: Why did the Arizona Cardinals fire Nick Rallis, the Phoenix Suns come away with an overtime victory against the New Orleans Pelicans and will the Cardinals' defense be better with Teryl Austin - Arizona Sports",
-     "link": "https://news.google.com/rss/articles/CBMigwNBVV95cUxPM25wOGg1TGNUdUdYRWxkSHBENHExMnRIbWhhWHNRWWFLZ3FGcGI0Qi1zTnlRZWZVWHVWYkZvTE9yZm9HR1BtLXJFNHNadVlkTnFVVFlYTGdGSDlKOEh5RGhRU2FSTi1XMmxBN1B5QXhpaFlwVWVqTl9UWG5BQW1rRnBKQkVtdzVuemtweVU0UnNwZUpqR096Q21xU0hRSG5VZjlQNWpHcjVNTDlJczBvSEEya2tJSDhBVy1rQVQzZmltOG5xWmhqcWF6R3lNaGtjWmloME1ZamVydmFaZTFOOFJ5ZTJ3WWlzN3NmTTRHbldlUnhGdzVvcUpVdU15TUhCazJ0NFJGTmhnTllVUExNZXFDNXhFSG9Ub0pFLXJvQVV3UHBvYVpSeXB5OWJnZkI0elNIYm1FeFpsQzJEd3pyNE1VTkNzWG9NdjhvRFRFc1lqc1dPdksybTBvTVgyNEwwenpCV3A2eDI0VGtFZlRQc2hDNDJ1TXlrbmxjQkZFaVJfSWc?oc=5",
-     "date": "Tue, 24 Nov 2026 20:50:02 GMT",
-     "summary": "Full Show: Why did the Arizona Cardinals fire Nick Rallis, the Phoenix Suns come away with an overtime victory against the New Orleans Pelicans and will the Cardinals' defense be better with Teryl Austin Arizona Sports"
+     "title": "Reed Harris questionable for Territorial Cup with Omarion Miller already ruled out - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPUGJyaXItOHNXRGdPemNuMUU2bEl5U0lNanJNSzAyTGhjT2dNbHA1LWVhUXRQZ1hSYXJWMExJeWRtZndDcVl0ZVMxTHZCbWZWMTBHZ2doX1hPVGduX19QX2dEd2lOa1hCYzA1SS1yc1U3ZEFCdmdObmhWY25RZXNZRnptYVF0LVUzVDRWc2N2aHIyeUh1ZF8zdFlxTURLQVk?oc=5",
+     "date": "Sat, 28 Nov 2026 04:00:14 GMT",
+     "summary": "Reed Harris questionable for Territorial Cup with Omarion Miller already ruled out Arizona Sports"
+    },
+    {
+     "title": "Reed Harris, Jake Fette connect on 2 deep shots amid dominant half for ASU - Arizona Sports",
+     "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQbWM0dnU2OGlOakFDUERTV0F1Rnh5LXFYVkQ2RjYxaEpKLTRWTjZqb0kxcDhVNlY4YkpHTnBYVGF1bDBQU3Y2UUo0dHFGREZRcjBWRXdVM01Mb0xmNGRCNnQtdlJ0cWlvQ3NHTnJNYWJKZ0s1dkhob0ZYNDZfYkN1NGpJV1JmZk1nMlItdVVoeXgzaUtNcUNTR0VFcw?oc=5",
+     "date": "Sun, 22 Nov 2026 05:29:27 GMT",
+     "summary": "Reed Harris, Jake Fette connect on 2 deep shots amid dominant half for ASU Arizona Sports"
+    },
+    {
+     "title": "Good, bad and ugly of Arizona State's OT loss to Oklahoma State - azcentral.com and The Arizona Republic",
+     "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOajhpdEJZLTNRWWVERHQ1a2RBcEFwZVpCWFBMNjdxWkRaOXRuVGQ5Z21UNHVvb0hNaUFnN1JvbE56dkNwNlNiazRqeGk3RVo4WjVCd0FBOHFRZ1A5VldhUGU4MGlqZ1l0bTlJOTJJd0FNWWlHblFxbktxREZxWW1KOGJMRDRWbmpGLWlXWGI2eERtVEJmYnRMTzdRSU1VeGZnMy1UYkJJYlhaY0dGVHJ6YW5zZFo0UVpNOURQeVh6eDZxcDdMVnRaMjhhUEo?oc=5",
+     "date": "Sun, 22 Nov 2026 16:25:00 GMT",
+     "summary": "Good, bad and ugly of Arizona State's OT loss to Oklahoma State azcentral.com and The Arizona Republic"
+    },
+    {
+     "title": "100th Territorial Cup Carries Major Implications For Arizona, ASU - Arizona Daily Independent",
+     "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQOExlWjFmbVowWGFEX3E5NkF3MWVXM2wxNWFxekd3MnNUdnpZbzVnNmZNdGltY3hBUkxxU0oxdTliTkdLZy1PV1d1SlEyVE0tZi1jTkRURGFjUzlUU2JoUldmbjdQallIcUxuTUtsZjNzdWFBT0pQNlhtSFBHT2YtQWM5M1Vocm9Uc1hnR091Z1ZNbFBpZmNKYUdZMks2WHNkYjF2VkhTY0thZjJad0d2RmxB?oc=5",
+     "date": "Sat, 28 Nov 2026 01:08:01 GMT",
+     "summary": "100th Territorial Cup Carries Major Implications For Arizona, ASU Arizona Daily Independent"
+    },
+    {
+     "title": "What Brent Brennan said in his press conference to open Territorial Cup week - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOYTJHOE50WG0xVVlfRFN1NW5fLWZOYUVMLXg5amVGQTlkT2VOXzJhNlNVeG5STDIzcVQ3aVhXZTJGNnFMQjViRTY5Y3d5SGpZMnF6akFabTJWVjR5bjBiTHROUVo0bmRoc1VBOXAxZmVmUVowWDhUVm1rNXAtcE5ObDNac256X1h1ajN3Zw?oc=5",
+     "date": "Mon, 23 Nov 2026 22:00:00 GMT",
+     "summary": "What Brent Brennan said in his press conference to open Territorial Cup week Yahoo Sports"
     }
    ],
-   "fetched_at": "2026-11-28T01:29:51.072Z",
+   "fetched_at": "2026-11-28T15:38:21.239Z",
    "source": "https://news.google.com/rss/search?q=%28Arizona%20Diamondbacks%29%20OR%20%28Arizona%20Cardinals%29%20OR%20%28Phoenix%20Suns%29%20OR%20%28Arizona%20Wildcats%29%20OR%20%28Arizona%20State%20Sun%20Devils%29%20when%3A7d&hl=en-US&gl=US&ceid=US:en"
   },
   "sports-national": {
    "items": [
     {
-     "title": "No Aaron Rodgers? No problem. Steelers crush Broncos with dominant defense - NBC Sports",
-     "link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxOUjcxZUkwNTJhUXUwRmVNMzV1US1zcEV1TUs2RTRTQS0xLWZEMlZvRWRRekJIOXhGaTFVNlE3dlBvN2laRUVCQ3h5c1d2ZUJXcy1EYWtacG9JNFJjdXZia29temxFeFE3RXZIY2sya1cxX3kxMk8wT0lHbGJCU1RydFlvT3NDQ0M0cWozbUdiZTdMT05WOFVTSDY1bDdOY2ZNeE1KYy1HbURmbU81ZVdqMjhLNUNJZUNkY0FmOXk0bENROGNWMzNZUVpkSUQ4TkU?oc=5",
-     "date": "Fri, 27 Nov 2026 22:54:47 GMT",
-     "summary": "No Aaron Rodgers? No problem. Steelers crush Broncos with dominant defense NBC Sports Steelers rally after tumultuous week to grab key Black Friday win over Broncos ESPN Steelers dominate Broncos to quiet chaos after Aaron Rodgers' exit CBS Sports How to watch today's Pittsburgh Steelers vs. Denver Broncos game in Week 12 of the NFL schedule CBS News 5 More Best NFL Bets and NFL Player Props Today…"
+     "title": "Mason Rudolph: Aftermath of Aaron Rodgers on Pat McAfee was challenging for Steelers - NBC Sports",
+     "link": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxPTThJc2oyVTg5b205TUVUR0g1R3R4MGk4dlBISUJTU3dVdm1SQXM5SENKZld3SEt5anU4amlDeHpMdzRYeFNPOVVFR3o1UUp0bDNKZUx3THUtalR0eGxIVlY4VkdSQUN5ODRFb3FiUjBzc3RUekJwYTBPMEIzZVJ1ZXE0UTlpTE5kYnJ0M1lnZGhaNXVnVU1CUmJldkRaU0lHUHB3X3pBelEweGt0YnlhcmJJa1ZxWDhzVzIxMDFIbFB6U0U2bnA4Z2hlYUdxMzNpU0ZaZldvU2I5VVpnY1E?oc=5",
+     "date": "Sat, 28 Nov 2026 11:16:27 GMT",
+     "summary": "Mason Rudolph: Aftermath of Aaron Rodgers on Pat McAfee was challenging for Steelers NBC Sports While Aaron Rodgers defends himself by texting Al Michaels, the Steelers press on without him AP News Steelers Icon Ben Roethlisberger Talks Aaron Rodgers, Mike McCarthy Drama in Video, 'Hard to Watch' Bleacher Report Mason Rudolph proud of way Steelers 'rallied around' Mike McCarthy to cap 'challenging…"
     },
     {
-     "title": "How Eagles QB Joe Milton rocketed into ‘rock star’ status on Thanksgiving vs. Cowboys - The Athletic - The New York Times",
-     "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNSUQyNVhtNy04RU4xNWNJdDVfNElWZTVVOWdSTnctb01Ga0V5bXBtQU5ZSkNUNmhDcXNNYjRJX3F3WTBMemlhX1ZuNXJKVThCN0NkNVQzN1hibndqbDdieUltSXUxYVFfUG9QZmJ6YkxCLVlXOHpaaUF6U2NCUjRRRlI4YUx0WS10YjRMclNaU2xlcHpjMnRXRWx1ZjV3TUNMY3c?oc=5",
-     "date": "Fri, 27 Nov 2026 22:51:36 GMT",
-     "summary": "How Eagles QB Joe Milton rocketed into ‘rock star’ status on Thanksgiving vs. Cowboys - The Athletic The New York Times Schottenheimer defends 4th-down call before Eagles' 59-yard FG in 39-38 stunner over Cowboys AP News Eagles at Cowboys snap counts: Ty Robinson came up big despite limited playing time Bleeding Green Nation Zach Ertz: People don’t understand how good DeVonta Smith is NBC Sports W…"
+     "title": "Texas 'not perfect' but finds way again at Texas A&M, earns SEC title shot - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNOG5jZWlKQ2FhRnVqYjFlV1ZsZko1a1FtQmMwODl5aGtvdmFPOWs5eVRrMWdHb1F1cGF5T29aR204MEZWT0Jxc3pwTFQxYmktMUhpNllGcUhEaHBUVk92TEFKdmZUY3NtTE9FQk5RSEFMamFCZHkwWXdpcEVHamRTN2FUWk5lbllILWkzNTgxdzZFTXFzNmdXaVZ4MXVFZzhXNWdVR3ByZw?oc=5",
+     "date": "Sat, 28 Nov 2026 06:23:00 GMT",
+     "summary": "Texas 'not perfect' but finds way again at Texas A&M, earns SEC title shot ESPN Texas QB Arch Manning celebrates win over Texas A&M with Longhorns band Yahoo Sports No. 5/6/3 clinches SEC Championship berth with 16-6 win at Texas A&M University of Texas Athletics Mike Elko is out of goodwill at Texas A&M. A listless loss to Texas makes it harder to win back The New York Times Texas vs Texas A&M re…"
     },
     {
-     "title": "Texas vs. Texas A&M live updates: Longhorns, Aggies clash in annual rivalry showdown - CBS Sports",
-     "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPa1QwWW96Vkh3YzJOaXpFWjltaUt2MXJsRGh0NDlfdURSb2pXYjFhZk1Ua3NIUlBsdy1sdDZBbS1aenRDYlFfa1g2QWhkalRURWN1a21IZUx1TDRHc2hRcmFHTlR3ZDVmN2tZbFk3bUxaYmE1Mk43LXYyWUdKQzdsSGtvN202M1BRdExwTGsycmVmeTQ5VWpvYnBDLUg2cVJXNjhwR09uVGdiM2tuTjdVUG44ejdIa2taR1E?oc=5",
-     "date": "Sat, 28 Nov 2026 01:20:49 GMT",
-     "summary": "Texas vs. Texas A&M live updates: Longhorns, Aggies clash in annual rivalry showdown CBS Sports Film Room: How the Longhorns Can Prepare For Both Marcel Reed and Brady Hart Yahoo Sports Texas A&M Pulls the Season’s Last Shocker? Four Bold Predictions for College Football Week 13 Sports Illustrated Marcel Reed, Brady Hart both expected to see time at quarterback vs. Texas On3 Texas Longhorns at Tex…"
+     "title": "2026 SEC Championship Game: Texas gets one last shot at Georgia in contest's final edition - CBS Sports",
+     "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPNFFNS2tPZEFCVGgyM2RFYWQ1UFloMTdZaF83d0otMDhQaDNtZUg1ZDk5YmNVN3BSekZsOHVDY2hWTERUXzNNcThIQThPajBFbmtYMzAzYlQ0bnI5R0ZqVjlaNE9XY3EwdVN6d1Blbm9oVlNVRFdqVmdwZ0RydmxRLWh2bTNmd0Z0djNqcGhsX2FaZTQ?oc=5",
+     "date": "Sat, 28 Nov 2026 04:23:47 GMT",
+     "summary": "2026 SEC Championship Game: Texas gets one last shot at Georgia in contest's final edition CBS Sports These Friday results eliminated Alabama from SEC championship race AL.com SEC championship scenarios, explained: How Texas clinched spot opposite Georgia Yahoo Sports 2026 SEC Championship Game: Date, time, TV channel, history NCAA.com Breaking down Tennessee’s SEC Championship Game scenarios with…"
+    },
+    {
+     "title": "Official Bama247 Game Predictions: Discussing 91st Iron Bowl in Bryant-Denny Stadium - 247Sports",
+     "link": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPbTRyUDY1VW9CSF9MWFZ1TEkxRElPZzhJUHhUc0ZxcjUxTFFaNlJMd1Z4N1dySmNUWHIzVXBWODZ5VHJCSzVEbWl0MFp2M0g3eDN2T20wMmt4TEVCQmVvdEhIam5iU2t6YkI5TzdEVXJYUl9TNDZBbVdBTmZQX1RLdTJBb3VKSXJ3dXc2M3FIUmx1YVJFMzBvVTVocldoNTlESmRXQlEzUC1VMHRsODY1TmgxVTI2b2VKMnhFNmFudnhLbU9BbktHWkZJUVFhaDFhQW9QLXRkOA?oc=5",
+     "date": "Fri, 27 Nov 2026 15:32:25 GMT",
+     "summary": "Official Bama247 Game Predictions: Discussing 91st Iron Bowl in Bryant-Denny Stadium 247Sports Alabama vs. Auburn prediction, odds: 2026 Iron Bowl picks from 10,000 computer simulations CBS Sports Jumbo Package: Iron Bowl previews, Black Friday open thread Yahoo Sports What did Alex Golesh learn from his last experience at Bryant-Denny Stadium? AL.com Gameday HQ: The Iron Bowl 247Sports"
+    },
+    {
+     "title": "How Mark Pope's inexplicable overtime coaching blunders doomed Kentucky in rock-bottom loss to Wichita State - CBS Sports",
+     "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNa3JTejdCeXpsTkU5enlEa216T2o0eDgxOWJuZVlBSnk5U3pOUy1MS1NSdDM4SVdPTGItbFhWSnpmVEdwR3gzVWtaWmZ2ZWppekcwajkzckEtYUlRTTlhQ3hGMnRaZmR3UlZRSE5OaURuUUNLeVJDX3NRcXgycEZLaDE3MzR1dGdRMHRhWElZeE10Zm1OUEd0enBkdUpXQzBlWlR4UXphZm9JTnUzU0ZN?oc=5",
+     "date": "Sat, 28 Nov 2026 05:58:00 GMT",
+     "summary": "How Mark Pope's inexplicable overtime coaching blunders doomed Kentucky in rock-bottom loss to Wichita State CBS Sports Mark Pope booed off floor at Rupp as Wichita State shocks 4-3 Kentucky ESPN Pat Kelsey's superb Players Era run in Vegas makes Mark Pope's rocky Kentucky tenure look that much worse CBS Sports Big Blue Preview: Kentucky vs. Wichita State UKAthletics Kentucky basketball continues …"
+    },
+    {
+     "title": "Player Grades: Lakers vs. Spurs - Silver Screen and Roll",
+     "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNWmk2bzhlYlJJMmEtNm9OMldvUWhxWEl2eFVlQWd2bDVjU3Y2UDZGbXZIQXlITV9obGJOYXpUOURSUUJmak9VcFJlQUF0ZGg2TFpSclNzcFIyVmFRUGhiTER0dWpVekVGZHVIczFMNk9ocDRtNTV3dHk1WTBDeE4wanc3b2s1NUd4eWNkY056RTlINDNPQXJ1STlEUUYwalFhelhZUmEtSDJWOTdRbWc0aXpzVUY0RUtNX0h5VW1jcDNkSXhlNmp0N1p3Q0ppdw?oc=5",
+     "date": "Sat, 28 Nov 2026 06:35:00 GMT",
+     "summary": "Player Grades: Lakers vs. Spurs Silver Screen and Roll Spurs 99-96 Lakers (Nov 27, 2026) Game Recap ESPN Spurs erase 20-point deficit to eliminate Lakers in NBA Cup action, advance to knockout round as wild card Yahoo Sports Lakers blow 20-point lead, lose to Spurs and miss NBA Cup quarterfinals Los Angeles Times Victor Wembanyama makes MVP statement in Spurs' comeback win over Lakers USA Today"
+    },
+    {
+     "title": "Inside Michigan AD debacle, what's next and Kyle Whittingham's future - Detroit Free Press",
+     "link": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxQM2xNMFNQQnA3d3hRd1QzbzlLNkdfTEJ3YnpfXzR4NXFUa3BhX0NGb3dJOTExOENzeFlZNk1VRXozRGZ6dkZlYm52c2VzV0NkUzg5eGhfU3pEWDFVTzRoZ2dmbExGRWZfd0dUdzZSWHJ4UmtZeTNfbmRKLVN6c1Y2OERkS2FJU0RJc3FHR3lYYVVjX3lCenNMZktmOWE4RXk1OVBSM3hIRjhVRG5FNXF5RDYxZ2pLMUhMU0g5WnFlcVRzZTVhYi1hMWY4dW5xOUJaek5Pcnd5SC16MFppNnFJVTc4NHdfS0ltbW9KT1B6WVRET3c?oc=5",
+     "date": "Fri, 27 Nov 2026 10:09:00 GMT",
+     "summary": "Inside Michigan AD debacle, what's next and Kyle Whittingham's future Detroit Free Press Wetzel: Michigan tailspin continues as payouts pile up ESPN 2026 College Football Odds: Will Head Coach Kyle Whittingham Leave Michigan? FOX Sports Michigan, Trev Alberts and protecting college sports from the adults in the room Andscape Michigan's latest self-inflicted disaster proves yet again the Wolverines…"
+    },
+    {
+     "title": "Steelers, fueled by jabs over Aaron Rodgers drama, 'come together' to rout Broncos - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOY2JHNlVXUWhuTWtPSTF6bEVqSVE5YUl0WjlzZHV5elNBSENFUXljTnJHR19wdUU3TE5mTkIzUFg0dkE0QWtlNkdvbUdLWDFPMk51VWJ4bWRydjlOSE9HNGpxdkt4dFZxamEzenZPaE1CNEpkemFqWnRpaGhpZ3paWW9SZ1RMR01ZU0dlUjREU1lLTVlHTUlXWlo1VDU5UHM?oc=5",
+     "date": "Sat, 28 Nov 2026 03:30:00 GMT",
+     "summary": "Steelers, fueled by jabs over Aaron Rodgers drama, 'come together' to rout Broncos ESPN From the Press Room: Steelers vs. Broncos Steelers.com Bo Nix: I saw Jalen Ramsey, just didn’t throw it high enough over his head on interception NBC Sports How to watch today's Pittsburgh Steelers vs. Denver Broncos game in Week 12 of the NFL schedule CBS News Keeler: Aaron Rodgers was the Steelers’ problem af…"
+    },
+    {
+     "title": "Xabi Alonso reflects on the predictably tragic consequences of his own decisions - We Ain't Got No History",
+     "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPcTJ0LVlHaWczdC1UU3hzT0RNcVlVeE8wYUpIX3NsQmdqdUl5SEh2Z2dqdDRhb1JqM3c3dlB1YWFBUXBUZFFBYS1qVVZ0TWNmZWxJUXpucU5qNUxfNEVEUzV2TGhBSTdGNzY1aVBkZlAtSHgzdkM2YTUtWFRGZVZZTlp6WHdlNXBOcW5rSUxXbmhzRmhldVlRbXJVc2NrSzRiVlF1am1Kb2pWX3NFSDJjRWZ4S2syX1ZuUV96a2VBUDROVXotLXg0R3AzdzRIaUg1V05pRU1Nb1pGdw?oc=5",
+     "date": "Sat, 28 Nov 2026 07:06:00 GMT",
+     "summary": "Xabi Alonso reflects on the predictably tragic consequences of his own decisions We Ain't Got No History Nottingham Forest 3-2 Chelsea: Morgan Gibbs-White scores twice in Forest win BBC Nottingham Forest 3 Chelsea 2: Where does this desperate defeat leave Xabi Alonso? - The Athletic The New York Times Alonso urges Chelsea to 'stick together' amid run of three losses ESPN Confirmed Chelsea line up …"
+    },
+    {
+     "title": "From the other side: What Kirk Ferentz said after Iowa beat the Huskers - 247Sports",
+     "link": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPOWR4WjdfSUdDU1o2MHN4RWVCenVLRkFmazAxbHBHVTQtNWRTWnA4NndKN1dVYmFpVjNIYXJXMWw5dHFlOWhudjBpcnd6QXZIWG1kem51UlFuRXcyd1V3SmRjLUNXY3ZBWG0zelBsbEE4amVDUFd6dmJfeUhrV0ItVXVHUy1kTkVkU1hBWU00ZGotREZaNVFSU0lDdmw0V29ubklhWi12WloySE93SmJzbk9nTlIwc09lX1p2TnNZT3I?oc=5",
+     "date": "Fri, 27 Nov 2026 23:50:15 GMT",
+     "summary": "From the other side: What Kirk Ferentz said after Iowa beat the Huskers 247Sports No. 13 Iowa waits for Big Ten, CFP fates after cruising by Nebraska ESPN Another Black Friday Beatdown by the Black and Gold Sports Illustrated Nebraska Cornhuskers vs. Iowa Hawkeyes Live Score and Stats - November 27, 2026 Gametracker CBS Sports Just: Until Nebraska gets out of its own way, Heroes Trophy has a perma…"
+    },
+    {
+     "title": "Heat 108, Knicks 105: “Really tough to win a poorly coached, corruptly reffed, half rotation injured game.” - Posting and Toasting",
+     "link": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxQcU9QNlNremRXVU1XcGxkSDRkMzJXcmNYRjhkMlYtSHpZbVpncjJwSlhUVF9kc2IwQTNjTXlzTzZNZ2U0WkJaLXJZelpTZWJnaDF6WTJJamlneGlBNVdWVVhxY2djVUx4X2drVktKNFNsN05fVnoyejhINmlwOFlrbHM1dTNJc3ZvcFlUZVBVUksxYTNKMmxKNVVLaUUtYlp3dUdlUjQ2azdPOGFDUm04ZVJyOVRZODNLVElMY01UX1lZWmdQMHVBeXhhUGR4MVZ1RThJNjdRSXlWN2Yza3lVdVlyUUF1MUhSVjF5UkNwSlFlWDJxbWc?oc=5",
+     "date": "Sat, 28 Nov 2026 03:20:20 GMT",
+     "summary": "Heat 108, Knicks 105: “Really tough to win a poorly coached, corruptly reffed, half rotation injured game.” Posting and Toasting Knicks' NBA Cup title reign is a short one after they are eliminated in the group stage ABC News - Breaking News, Latest News and Videos Heat 108-105 Knicks (Nov 27, 2026) Game Recap ESPN Heat hold on for harrowing 108-105 victory over Knicks but eliminated from NBA Cup …"
+    },
+    {
+     "title": "Gophers-Wisconsin reaction: Embarrassing rivalry loss raises more questions about P.J. Fleck - Bring Me The News",
+     "link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPdlRVN3pWM2pGMUNPRmY4aXVVdDhqMjNtcVpXbmR4ZFpkekRuOXBtUEE4SWowOXJmcUY5MjJiUHNaaFJuRURiUVZqY2d5aTkzVFVXakZEOFFvWDB3RmdRTGw2cS1fcjBNU2F2anpVZTlmSlVwd1B3WTlZblZUdk5FWTdkVDZ3WkxBajktUFhuSkJHdGhQZE9XTDlLNTUxNi1fcUloc0hSRHYtZHZsQXpnYlpVNjdtYjVVdFdfWUJRcGo0OVd6OWQ3aHdCMDBweGs?oc=5",
+     "date": "Sat, 28 Nov 2026 04:05:47 GMT",
+     "summary": "Gophers-Wisconsin reaction: Embarrassing rivalry loss raises more questions about P.J. Fleck Bring Me The News Andrew is engulfed by Badgers as they celebrate with Paul Bunyan's Axe Channel 3000 Wisconsin trounces Minnesota 28-5 to regain possession of Paul Bunyan's Axe MPR News Battle for the Axe: Wisconsin hosts Minnesota on Friday Wisconsin Badgers Gophers chopped down and lose Axe in blowout l…"
+    },
+    {
+     "title": "Joel Embiid returns, Sixers win NBA Cup group with first blowout win - PhillyVoice",
+     "link": "https://news.google.com/rss/articles/CBMiywFBVV95cUxQT2lVRUthSUV5Tm92T0xGOW44RzNodWNIcm4yQWg3ejlNVkFfYXVwM1BmSDBxYWRGT3ZqZGZZQVltV2c4aXlRMmI1NHN4THBRVmtUSXZLd0FDTk5BYkU4WlJPeV9MaWxYVTNuRXJqU0FtTFZtUTZZNWo3VGpqV29PN0NiYnRrbFJpSk1NcjB2a0xFUTN3YVdaMDNMRFRFLTFpb1QtQmszQzJwaWVoWmdrMDQ0UEhXQ1dPTFVTcW1JcWtQU2RyTXdJV2ttQQ?oc=5",
+     "date": "Sat, 28 Nov 2026 02:58:54 GMT",
+     "summary": "Joel Embiid returns, Sixers win NBA Cup group with first blowout win PhillyVoice LeBron stays in groove, scores 21 as 76ers cruise into NBA Cup knockout round ESPN Sixers advance to knockout round of NBA Cup for the first time with win over Indiana Pacers Inquirer.com After 14-point quarter against Philly, Pacers should expect more zone: 'We can compete a lot better' Yahoo Sports Sixers Bell Ringe…"
+    },
+    {
+     "title": "NFC Playoff Picture: Dare to dream about the Eagles in the postseason?! - Bleeding Green Nation",
+     "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxOQVNLZFhudjMySWszZnlmaVBxLWlfQUFwYzVZWVlxY19mYUI3cEdOejR2TlZzeU9mMWg2NmxxLU5NeXVETjA4bnd1Q204Y2hoaXVQeGxqUmk1eWh5MWhOQ1k5RGQ4ckE1SGtVOWQ0cDJnMjN0NTZWaGtQVkZOMk5remdYMkRVRUpFTUNhbUhjZnFsd2xBZnlrdXBBUWRmSUtqaHVQSkxpNzNUOFlRS1ZEc2JvWkdDUEltbzV2X2hXdVJjZWstTXNSMnRtZWdmZ3hmc1hZNGNFSVd5eG9Y?oc=5",
+     "date": "Fri, 27 Nov 2026 21:32:37 GMT",
+     "summary": "NFC Playoff Picture: Dare to dream about the Eagles in the postseason?! Bleeding Green Nation They Call Him Bazooka Joe—and He Just Blew Up the Dallas Cowboys’ Season WSJ Historic comebacks and much more in this week's Roob's Eagles Stats NBC Sports Philadelphia Zach Ertz: People don’t understand how good DeVonta Smith is NBC Sports Joe Milton, Eagles stun Cowboys with biggest comeback on Thanksgi…"
+    },
+    {
+     "title": "Luka Dončić shoved by fan in bizarre wristband-tossing incident after Lakers' loss to Spurs - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxOSGRJTWV6NFpKNDJNNW1HNEF0V0J1elFUSlMyQzQzenNCWGNWbm5JNVBjNy15UGMtNTMwc3JOcUNkZmtHdlVaZFZFQkt2aGJCTHZTdlEzRHlIYTJRdVZnMFdVTHdnU2RvVkttbkZCUGZzRmJLZXVIcG45cXFpSHlHYkt3QV8tSzlfWjBwaHVxSEw5MzF1WUx5QlJNdzRtNFlMTjFrcVN0OFgwdTk3bDltT3pTTU1qMG4zdWN6TkJZYnhRZkl5elJPQUZBbGh1LThpbVJ1RHhTQURqd2JxTWl2T3RvVlhseTluU3h2Vw?oc=5",
+     "date": "Sat, 28 Nov 2026 05:58:00 GMT",
+     "summary": "Luka Dončić shoved by fan in bizarre wristband-tossing incident after Lakers' loss to Spurs Yahoo Sports Lakers' Luka Doncic has altercation with fan after NBA Cup loss to Spurs ESPN Fan Gets Physical with Dončić After He Throws Wristband Yahoo Sports Fan shoves Luka Dončić after Spurs eliminate Lakers from NBA Cup The Guardian Fan shoves Luka Dončić after he flings his wristband at a woman in cro…"
+    },
+    {
+     "title": "NFC Playoff picture: There’s a new No. 2 behind the 49ers - Niners Nation",
+     "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNUG9IS1hBelFqcVNQc1ZyWXNJYk96UldEamh3ZW43VnhaUi03UF9yTE9XTVZYc2Q0aVRxc2JsM0tJVDBuS24yb21LYjVoN1Q0OVZZc0lKMHFSVEJObHZ5UnhnYW1fbVhWTG5Ccng4TDFxemZWV2dSM0taTHRvZHduZUpUTHBEXzd0WlNKYUczREFhQlQ2dFJBVVd3WC1jM3BTWTlyVTRvUHJrbGFINjRuZnd0V1FCa0hEWDdB?oc=5",
+     "date": "Fri, 27 Nov 2026 19:09:45 GMT",
+     "summary": "NFC Playoff picture: There’s a new No. 2 behind the 49ers Niners Nation 2026 NFL playoff picture, standings: 49ers reign over NFC, Jaguars slip in AFC, wild-card battles heat up CBS Sports NFL Playoff Picture 2026: Updated AFC and NFC standings, bracket, tiebreakers for Week 12 NBC Sports 2026 NFL Playoff Picture, Week 12: Aaron Rodgers–less Steelers Climb in AFC Wild-Card Standings Sports Illustr…"
+    },
+    {
+     "title": "Tyler Bass hits walk-off 57-yard field goal, Bills beat Chiefs 13-10 - NBC Sports",
+     "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNWjd1ZVhxUDc3YllGcDh3SXJCUU9YdGt4clhmeENueXlkTW1GeC1HeXRTR1NGZHJSS2VJUloyQjVlVEg5QllZQTdDUGNFbXZuZ21ja2pEcHdvSEZPaVl0MFB1NlNKaEVEcDhYSkJodUxGMDE2SXFBTW9aRUNBSjJpcVBaa0c3bHhlWEd6ZEtZVHYtWEFpZ3VuRnV1anhObGpRRjYyTEZnaXJMN0trbFVBLWl2VFh1TnJ2X1JYQ1JjeF9acXFzb1R0Xw?oc=5",
+     "date": "Fri, 27 Nov 2026 04:53:41 GMT",
+     "summary": "Tyler Bass hits walk-off 57-yard field goal, Bills beat Chiefs 13-10 NBC Sports What They're Saying | NFL media reacts to the Bills' walkoff Thanksgiving Night victory over the Kansas City Chiefs Buffalo Bills Chiefs' special teams cost them the game vs. the Bills. What should they do now? NFL.com Bills QB Josh Allen struggles vs. Chiefs in 'grossest' conditions ESPN The Bills defense is legit. So…"
+    },
+    {
+     "title": "Jazz, Blue Jays agree to one-year deal with player option for '28 (source) - MLB.com",
+     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE44dzlyQUtvSmdiS3ZFNTNFNGxCUHJ5Qks5UFRpMnlYcDJFQmZ6amo0SXN3aFVXWE05YmE4eE84NGlER09nU0xabjhsMVRZZkZhRWdONmNQYVQtYXBrajJSNjlkamFaRzhG?oc=5",
+     "date": "Sat, 28 Nov 2026 03:23:18 GMT",
+     "summary": "Jazz, Blue Jays agree to one-year deal with player option for '28 (source) MLB.com Report: Jazz Chisholm Jr. agrees to join the Blue Jays after leaving the Yankees Yahoo Sports Sources: Blue Jays, Jazz Chisholm Jr. reach agreement on 1-year deal ESPN MLB rumors: Jazz Chisholm Jr. getting interest out West, Yankees looking for catching depth CBS Sports The Opener: Chisholm, Cubs, Diamondbacks MLB T…"
+    },
+    {
+     "title": "CRAWFORD | Louisville makes history in Las Vegas with 84-64 rout of No. 9 Tennessee - WDRB",
+     "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNODZfUjBjcVF0RVJQU0RuU0JPV01acHJBbUwzOHZLYlpnUE92TUxrbklxaTJpcTJxMjlLNTNvUmZJZDRrdmw1NjR2OHRuZWg2SUxiUl9yTTM5U1JoMXB5c2g3ZGIyd283VDJKSF9UUWtMQ1EyNWtkd3dPVXZJUVRlQnRhdTRKcnZkamtHR295QjdscFBON3pPMnN5ZWk3YW5kUnNYakRFUG1hNzJhMEVmaA?oc=5",
+     "date": "Sat, 28 Nov 2026 04:46:00 GMT",
+     "summary": "CRAWFORD | Louisville makes history in Las Vegas with 84-64 rout of No. 9 Tennessee WDRB Louisville 84-64 Tennessee (Nov 27, 2026) Game Recap ESPN Seedy K’s GameCap: Tennessee Card Chronicle Louisville Cardinals 84 - Tennessee Volunteers 64: Final score, results, recap, box score, stats Yahoo Sports Everything Rick Barnes, Jalen Haralson said after Tennessee's loss to Louisville 247Sports"
+    },
+    {
+     "title": "Player Grades: Illini guards dominate in 116-76 rout of Western Kentucky - 247Sports",
+     "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOblFLQXktVUZvRVJXbTNHc3o1SzM1bk9YRkhtRE1ybzcyTE9mb2otdzcyYkdBaUs5bkVJUjRvM0pfYTY4dlFxX1lFSjRrckdnNnVkUzQtWXVVdW1uYUZrUU10bVdoTGtKNzVueGk1UW96dW1VR2k0WHE3REFUc0dVV2hiME03RS1NdTlYZmdJamc4S2l6cmVpVjJ5UjhPd1NOaHhUZG8yc1JCR0dmOHhkWlZfTWJIV1poeVdpbG0xdEpHWlhyVThoVDh6WkE?oc=5",
+     "date": "Sat, 28 Nov 2026 13:18:47 GMT",
+     "summary": "Player Grades: Illini guards dominate in 116-76 rout of Western Kentucky 247Sports No. 4 Illini Host Western Kentucky on Black Friday - University of Illinois Athletics University of Illinois Athletics Game 8 preview | Western Kentucky at No. 4 Illinois; 5 p.m., Friday (FS1) The News-Gazette Illinois' Brad Underwood Reflects on 200th Win, \"Best Fans in America\" Yahoo Sports WKU suffers 40-point lo…"
+    },
+    {
+     "title": "Guide to The Game 2026: 5 things to know about Ohio State vs. Michigan football - Cleveland.com",
+     "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOTW0wbjBnWEoxZ2xXenNjUDg5VGVmbDExLTVhcGdBYU9jSHo1WXl3ZHFPNDlWWl9nbkhmU0NobTlEaFgwZEVyOXFRQlNFRWNCbkJPM3JES1VFMXlFTXhMVnA0NXUwaXNIeldzOGtTdEw2a1NZemthQ002bmZZejhLUzU4WGlTWHU5WnVLS1ZhQ3c5UVRmT2JKTHVrdGtLMFFWYy1xZ2NwQnVscHNJSzFaaHBjMG9qU1ZhblUyMg?oc=5",
+     "date": "Fri, 27 Nov 2026 16:16:00 GMT",
+     "summary": "Guide to The Game 2026: 5 things to know about Ohio State vs. Michigan football Cleveland.com In a rivalry built on titles, Michigan-Ohio State turns into a battle for only bragging rights 10tv.com DeWine, Whitmer make wager on Ohio State-Michigan game The Columbus Dispatch Can selling tickets to The Game pay off season ticket costs? NBC4 WCMH-TV Michigan vs. Ohio State prediction, odds, time: Col…"
+    },
+    {
+     "title": "DJ Uiagalelei to start for Chargers with Justin Herbert in concussion protocol - ESPN",
+     "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNVTk5Y3JGMEY4d1Q2TTY5dkF0aEJEVnpRNDByb0pGZG85Z1FnZmNYYWMxd2pvU0F6dS1Zdkg0R19XOTJUUXZsb2k0RGpld3hET2xKRkxFamlZT1BrT1F3cjVad0tmand3X09hcjEwcG9LLXV6aXZLZ1EyR3ctZU5naWNuNkFiUzFiOXFQU1kwRGtTMnVoWHYtOFU3Sk8ybndqM1oyOXZZSnl3bVFvUl9YVA?oc=5",
+     "date": "Fri, 27 Nov 2026 23:21:00 GMT",
+     "summary": "DJ Uiagalelei to start for Chargers with Justin Herbert in concussion protocol ESPN Chargers' Justin Herbert (concussion) ruled out; DJ Uiagalelei to make first career start vs. Pats NFL.com How Chargers QB DJ Uiagalelei is Preparing for 1st Career NFL Start Against the Patriots Los Angeles Chargers Justin Herbert ruled out, DJ Uiagalelei to make first start vs. Patriots NBC Sports Chargers poised…"
     },
     {
      "title": "Chicago Bears are in 1st place and ‘just getting hungrier’: Brad Biggs’ 10 thoughts on a dramatic Week 12 win - Chicago Tribune",
      "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQSFJ4amMzamk1SVFzdlU2dGFob0dvTEJhZTI5NmRnREhHamZzVThCR2dfbEtjSEpDS19yQXdQa3VYMERoVzdLQ3NMd1BILWZCeV9LeFdsZFA1Q0ZQa28yUXk5N0lHWGE5VDk1Zm52R2s3a0xJbWFKaXpRRmRCMlNmNXBxc3hPcW90ald4aXNrWEdnS0pnTWpR?oc=5",
      "date": "Fri, 27 Nov 2026 12:00:10 GMT",
-     "summary": "Chicago Bears are in 1st place and ‘just getting hungrier’: Brad Biggs’ 10 thoughts on a dramatic Week 12 win Chicago Tribune Lions to 'move forward' after latest Thanksgiving heartbreak ESPN Caleb Williams-to-Rome Odunze TD pass gives Bears unforgettable Thanksgiving win - The Athletic The New York Times Dan Campbell on calling late timeouts: I was hoping for a \"chance for rebuttal\" NBC Sports Ca…"
+     "summary": "Chicago Bears are in 1st place and ‘just getting hungrier’: Brad Biggs’ 10 thoughts on a dramatic Week 12 win Chicago Tribune Lions to 'move forward' after latest Thanksgiving heartbreak ESPN Bears report card: How we graded Chicago in Week 12 win vs. Lions Yahoo Sports 'Jaw-dropping': Inside Rome Odunze's game-winning touchdown catch in Detroit Chicago Bears Stock up, stock down: Bears shock Lion…"
     },
     {
-     "title": "Cody Garbrandt announces retirement bout to take place at UFC Cleveland - MMA Fighting",
-     "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQODNuUWR4QkFqdUJsME5lamN3WFNwSXJLcE9qdEZ2dzFNMUdRYVJhZ0FEdEoxZVQyU3dncWFwWTYzQW9abWIwYW95XzBLY1RpdGhQU2djdUJjRzFwbTIxOThrUVl3R0hJSnVlZHl1dUxBbWEySVRqTHdyOEJGV19Sd294S3JrUjlqWFpTODc3em55bkFWY2Y3ZmQtRHJIUEFTVlRuUGFYcTVWY041S1FJ?oc=5",
-     "date": "Fri, 27 Nov 2026 19:00:26 GMT",
-     "summary": "Cody Garbrandt announces retirement bout to take place at UFC Cleveland MMA Fighting Cody Garbrandt confirms UFC 'farewell' fight planned for Cleveland MMA Junkie Cody Garbrandt Makes Announcement About UFC Cleveland Card Yahoo Sports ‘No (more) Love’ — Former UFC champ announces ‘farewell fight’ for Feb. 13 in Cleveland MMA Mania Cody Garbrandt Preparing for Final Fight of His MMA Career MyMMANew…"
-    },
-    {
-     "title": "SEC Coordinated Media Campaign Against LSU, Emails Show - Front Office Sports",
-     "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPMUUyTlRTdXRPQTZvYUNDWXNNLXZLc3RSamVPNUd3a3ZJREVpaURsWWdlUkFEX043T0FkNnVGRVd2aHJiVC1USllRVV9pbUxNank3dE9WaWZ2Zmt6ZVY0OHlTaGhhZFlBSHlDX19ramh4eWhQd2dsdXNpSkNMZGhBUjR1T3hFQWpKX3FRWXBaQjBnRnU0bGd1QQ?oc=5",
-     "date": "Fri, 27 Nov 2026 15:11:15 GMT",
-     "summary": "SEC Coordinated Media Campaign Against LSU, Emails Show Front Office Sports See more headlines & perspectives on Google News"
-    },
-    {
-     "title": "F1 Qatar GP: Kimi Antonelli leads Mercedes charge in twice red-flagged FP2 - Motorsport.com",
-     "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5JOEZCbVItdWNmaTJmNnQ3dVFUc0dhNUx4T0ZQYWpWTmc0ZVRUVzRKN0xOTGFXcjRNVTczYmJlbDFjcUJhdWJsOXhQR2xWVWZiMDlqcm5aS1VtOWlhVEVRNVJ2WXVQQXlDWDU5R0FDbXB5blBnMGc?oc=5",
-     "date": "Fri, 27 Nov 2026 18:28:28 GMT",
-     "summary": "F1 Qatar GP: Kimi Antonelli leads Mercedes charge in twice red-flagged FP2 Motorsport.com Antonelli leads Russell in Qatar as Mercedes control FP1 Formula 1 Mercedes' early advantage is even scarier than it looks The Race What we learned from Friday practice at the 2026 F1 Qatar GP Autosport Mercedes flex muscles in Qatar as FIA brings Audi saga to an end - F1 Today Yahoo Sports"
-    },
-    {
-     "title": "Week 12 bold predictions: Vikings set season sack record, J.J. McCarthy has best game of career - CBS Sports",
-     "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNdG9MOVhvYUppbURSUUFJcDBTQ081MWZncU1IREVuV1RZTFcyNS1odXNkU1Z5dHVXc19wcXlRaE56VHpHNGd2SG1IT3hYaXdKREJJYTljMDlCZFZfdXN1enRibE1YV20zQzFxN1VVMU10V0tyNVp5Rlphc25ncG9qZUxsVEh5TEc3Uy1YdmRIaXg4emJiSnk1eXpCblVLTmFFb1p5SWxxcw?oc=5",
-     "date": "Fri, 27 Nov 2026 15:19:49 GMT",
-     "summary": "Week 12 bold predictions: Vikings set season sack record, J.J. McCarthy has best game of career CBS Sports NFL Week 12 preview: Picks, predictions, schedule, betting odds, fantasy tips ESPN NFL Week 12 bold predictions: Giants' Abdul Carter, Cam Skattebo go OFF; Tommy DeVito cooks Chargers NFL.com Week 12 NFL odds, picks, predictions: Our best bets for Sunday's games Yahoo Sports Thanksgiving NFL …"
-    },
-    {
-     "title": "Brock Purdy not practicing on Friday, putting Mac Jones in line to start - NBC Sports",
-     "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOdlQ2U1JHNUk0MnVlMml6TnFOd2Q3NnA4RmlPWUFQcEZEYWdWTVpmQ3RWSU9IZDYwUGdEUkh3eTQyeFVMeHN2dHRQMUNKRjd4YjlqQ3A1c0E2Tk41LWppOU15ZEhsbElDNE1OS3hXd0hHZ1A2V1R6MXJOZHJRX3NNOW4xX3BnRnFOOHdqeDBFQlpoV0ZRUzhvMWVBeHVBYzhrY0NNNENUNGZrUDdMUGxzTFF1OVcyMWI3d2EzbUszMXJobUxYS0Z1ZlN0N3N6UQ?oc=5",
-     "date": "Fri, 27 Nov 2026 21:29:33 GMT",
-     "summary": "Brock Purdy not practicing on Friday, putting Mac Jones in line to start NBC Sports Brock Purdy (ankle) ruled out for 49ers' game vs. Seahawks; Mac Jones to start at QB NFL.com Kyle Shanahan: Brock Purdy's ankle sprain is \"more mid than low\" Yahoo Sports 49ers QB Brock Purdy in jeopardy of missing Seahawks game with ankle injury - The Athletic The New York Times Mac Jones starts for 49ers vs. Seah…"
-    },
-    {
-     "title": "Nebraska-Iowa final availability report - On3",
-     "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOdURTN3FWQl8xU3N2ZkpMUjJhVUltVHJHa0swY0pxTjdKemZfSlZDQW5hb1Uxai1zYVZHaEJVNjFpZW5INTRwVXJtQXFQUTRwTG53S1Vwd1FQWFNEUlhiYWJybUJ6V3VSWDVmU1NGY3hPSFpDMVRRcEVWT0hRbkN4WU5mOWowbE16QWttTmt2dkNHMUp1Q2h3?oc=5",
-     "date": "Fri, 27 Nov 2026 15:03:23 GMT",
-     "summary": "Nebraska-Iowa final availability report On3 Iowa 31-7 Nebraska (Nov 27, 2026) Game Recap ESPN Iowa fans chant ‘CFP’ as dominant win over Nebraska keeps Hawkeyes in mix for Playoff The New York Times Iowa keeps playoff and Big Ten Title chances alive with win over Nebraska KWQC No. 25 Nebraska and No. 13 Iowa meet for first time ever as ranked opponents KETV"
-    },
-    {
-     "title": "100% wear in 15 laps - Qatar tyre issue has got even worse - The Race",
-     "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNM00yN1RzMzFPTXdyX2lHSjR6bkZMV1d4dUd2TnA5NVM4ZDJMaC15aUt5ZE03S1JHNGtBWW52V3Z1OXlGc3poYmJocEtiUWV5X3FYbFR5UTVoZlhvMmluZUE3RlVOZXpIQ2s4Y1Vubks0bGdYTmlUeGhQc2RhZ3NUbEE3Q1gzSWU4RTRHTGtCblN5alpXOEE?oc=5",
-     "date": "Fri, 27 Nov 2026 23:02:03 GMT",
-     "summary": "100% wear in 15 laps - Qatar tyre issue has got even worse The Race Qatar Grand Prix 2026: Race start time, how to watch, full schedule, predictions ESPN All the stories that got the Qatar paddock talking Formula 1 F1 Qatar Grand Prix: The Four Favorites to Win in Lusail Yahoo Sports Ferrari tension and Verstappen-Russell rivalry shape F1’s Middle East return in Qatar AP News"
-    },
-    {
-     "title": "Nottm Forest 3-2 Chelsea: How the players rated - BBC",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9Ub09wU0UyZXJvYjUzUHlKNzRCdzJFam9JcW5QWElWR2ctck8waVhvTXpNZmtuMXpaN1ZSVFF6alVWVkx3V2NORGJQbmlsNVBLby01MXY3Q3YyaVhjb1FxNWZjM2NKeDFN?oc=5",
-     "date": "Fri, 27 Nov 2026 21:59:48 GMT",
-     "summary": "Nottm Forest 3-2 Chelsea: How the players rated BBC Nottm Forest 3-2 Chelsea (Nov 27, 2026) Game Analysis ESPN Nottingham Forest 3 Chelsea 2: Where does this desperate defeat leave Xabi Alonso? The New York Times Xabi Alonso reaction: What did Chelsea boss say after Forest loss, Wesley Fofana booed by own fans? NBC Sports Nottingham Forest 3-2 Chelsea highlights & rate the players Sky Sports"
-    },
-    {
-     "title": "Georgia football injury report vs. Georgia Tech - 247Sports",
-     "link": "https://news.google.com/rss/articles/CBMihwJBVV95cUxOV2lJYXdVakJZQXlaMXVOSHJmZ2NCMXVQYnRFcXhkSHZOcTJadV90UTJaSkl1VVJvYnItVUR5d2JfeVozVGZTREZ3QU9GRURRMmNJUmh2ZXNSampYckZld1MzUjF1eEtqWFY0SHpBdWJjZTRacUNxR0ZGM2VlcUpqa3pyVUhuTm5Zd3lKTzI5TjVCTUNlQmF6YUJGTVJjRDlQbFNvSjY0SlZINFo0alBacGVIMzFkWll0UEJiLVYzWFpKVHFpbGhodlFWYjNlbXd2WGlqVkI2cnQ3a21lcUpZWmZlVHp2Yk9TTVRpd3I1ODcwRU8zMFZzbndxWWtsSmE0SHlPMVBJNA?oc=5",
-     "date": "Fri, 27 Nov 2026 21:00:39 GMT",
-     "summary": "Georgia football injury report vs. Georgia Tech 247Sports Cocktail Friday: Georgia Tech Edition Yahoo Sports Three Players Georgia Tech Must Slow Down To Have Any Chance Of Defeating Georgia Sports Illustrated Georgia football-Georgia Tech Game Time, TV Channel, how to watch online, odds for Week 13 game (Nov. 28, 2026) DawgNation Emptying the Notebook: Georgia practice, injury intel ahead of Tech…"
-    },
-    {
-     "title": "Aaron Rodgers releases new statement via Al Michaels, says he went on 'Pat McAfee Show' after Steelers barred him from team facility - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMioAJBVV95cUxOY2JORS1rTUdxdDloSjFjYjFzSTZwWnJjZ3pQU1M1UnBILVFOOWtydGl4SkpKWjluVW4xeDJCVWdaOFEyZDQ4T045aVdqcHZPeEFiMEV6di0tNlJHZEhRcjl3UXFrbWFvZ254Tkk2WlNQRUVDZDM5VHBScVJONldOc0FXSnZjX2JmTmNlbWJGYmNQV1lqMjg4LTF0MjZqUWI4ZDg5SnpPcnEzMnVFREgzQ2UtTk9zbVpzcVV0WHZaSkpTeUdkR0RtaHNRUUJEd1VKaTBMZzhRc2o0SkI2X2Nmd3FDcnlOV255YXFKQU9TLTBuNk80bW1zdFJpcnJNVGdqNDZUZkV0WEtrMkdjTWNlU1hJODF4eGFUMW53QTEtVms?oc=5",
-     "date": "Fri, 27 Nov 2026 23:08:18 GMT",
-     "summary": "Aaron Rodgers releases new statement via Al Michaels, says he went on 'Pat McAfee Show' after Steelers barred him from team facility Yahoo Sports The Aaron Rodgers-Steelers marriage was always bound to end this way ESPN Aaron Rodgers, Mike McCarthy and how Steve Harvey tried to warn the Steelers Andscape Aaron Rodgers: Sanctity of the locker room doesn’t protect the coach from accountability NBC S…"
-    },
-    {
-     "title": "Pedro Acosta sends defiant Ducati message as Marc Marquez retires - Crash.net",
-     "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNYmZWSWJLWXJwU3hseXlmX1VKZ0lTT3dzaTBZX0pNOEF6UHpFbGVqQkNMMXJXc0VfaUFnT0w4OXAxMEdLZzNNVFJXdFdzVUUzekZCRFgtV1JrdXZ1MGN2c0ZwTXJ1Q2p3VVY0cU4xOWdHQnp5bnNBY21zVnJWZkN0ZXRfRmNsMnRsdzBGRFdwVnBtaFgtM1NjNVFBNmdXZU5qbGFFaXpid0o1dw?oc=5",
-     "date": "Fri, 27 Nov 2026 19:52:33 GMT",
-     "summary": "Pedro Acosta sends defiant Ducati message as Marc Marquez retires Crash.net Marc Marquez announces retirement from MotoGP motogp.com Who will replace Marc Marquez at Ducati? Motorsport.com MotoGP: Marc Marquez Retires – “What Is The Price Of Happiness?” Roadracing World Marc Marquez reveals “promise” to his body after MotoGP Legend advice Crash.net"
-    },
-    {
-     "title": "Jerry Jones: We’ve had damning setbacks, but we won’t make a coaching change - NBC Sports",
-     "link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxQc1hrb2M1dm9SMVdyMXBYaGtQT2R1VGdSemZpc1R3WWJBU3JadFJxZ2RySEdBVVNuMm54TUtUUEdCa0FlM0lfUEtHcE5GODBOVXRHT0pwLV9ZcFBrZXdFNUh0NVJtSlhldlhCMTJNQVBMQXVZUHRZMVMxZkpfWGNIRkhlS3NYbHJLb1pkUnd3Rk9rV09YRzFZQktUOTVGaURfbzhuWlpXME1rR0JRNHFwTEdHMkRDdklrdlNabnVWODFzMWl3d0tFMVhEN1NkZzQ?oc=5",
-     "date": "Fri, 27 Nov 2026 12:31:58 GMT",
-     "summary": "Jerry Jones: We’ve had damning setbacks, but we won’t make a coaching change NBC Sports Jerry Jones backs Schottenheimer despite 'damning setbacks' in loss ESPN Dak Prescott Admits Feelings On Stunning Cowboys Loss vs Eagles Yahoo Sports A premature, unauthorized, tiered ranking of every possible Dallas Cowboys coach -- should Jerry Jones need it CBS Sports Brian Schottenheimer on failed fourth-do…"
-    },
-    {
-     "title": "NFL Playoff Picture 2026-27, Standings, Bracket Scenarios After Thanksgiving - Bleacher Report",
-     "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQWkIwelFmQTAwUWo2VHFtdGVDTklYOTJfTkZuWGZMQTNUcElHREdVbXFjV1dEeDNWMzNKRHBYT2hhbXg1S25pYU4tQ1YwRmt4TG1rdGczSEtzcHg2RnJfNnFIRGsxVXF3bjFrTHVQZzZFOGVReFEwMzVlMjBaQjh2VDV1d3ktMjRIQnlWUHN2eDFKU1lyVEdaRERDMjV1N1YyLW9qZTVfN1FmcDM1LURURW5KcWVpaFJ4Q3Br?oc=5",
-     "date": "Fri, 27 Nov 2026 04:52:05 GMT",
-     "summary": "NFL Playoff Picture 2026-27, Standings, Bracket Scenarios After Thanksgiving Bleacher Report NFL Playoff Picture 2026: Updated AFC and NFC standings, bracket, tiebreakers for Week 12 NBC Sports NFL Playoff Picture entering Week 12: Thanksgiving games could shake up postseason seeding Yahoo Sports Predicting full 14-team NFL playoff bracket for NFL Week 12: How Aaron Rodgers' benching impacts AFC r…"
-    },
-    {
-     "title": "Jackson Koivun Beats Koepka, Thomas and Clark to Win Historic $4M Skins Game on Black Friday - Bleacher Report",
-     "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOZXhlb2JVdVUzVGlhM25LUk5UOWRzUWdhM0lET2s0R1RDNzY0ZTNWTXRJOE4zSGYxWmE0ZUFHbng1eDl1OEJVSk9jdVhFT0JzQjZoNEdCTWpfWm1qZUNoSWpPYW5EWmtSRWpubi1XUjdlWkYyVjI4NlZRSE1oNEItUjJqWXVtclJGSWJzN3NCYkpuTHVLQ0pVU3oxcW04djNiaTlIOVdtaENsTERIYzhKVGZmcWhmSE51d1FNSGdBVWhyNEhuZWVRZg?oc=5",
-     "date": "Fri, 27 Nov 2026 20:19:09 GMT",
-     "summary": "Jackson Koivun Beats Koepka, Thomas and Clark to Win Historic $4M Skins Game on Black Friday Bleacher Report 'The Farmers Insurance Skins Game': How to watch, format, info for Black Friday special event PGA Tour Money-happy Skins Game results in $2 million game of inches GOLF.com Brooks Koepka’s The Skins Game 2026 WITB GolfWRX Jackson Koivun edges Brooks Koepka in playoff thriller to claim 2026 S…"
-    },
-    {
-     "title": "T.J. Edwards: Fourth down pass to Jahmyr Gibbs a look we saw all week - NBC Sports",
-     "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPcWZjbmljT3luT2pQVjV6aEF2R295UnBFMG5ES3Jra19JcHo5b2FWTlpERGk2cTk4c1ZIN2NCbnZRNzlpbzFFdjlPZFNWZ1lKWWN0cE1OS01hNVhXc0lRRzI4Y0ltX1dVZmN6WWN5a3lLTTJ1ZFhvUzdCSjhnMDlUX0kwdFpsbFpBZUdsUmhQYVpqdjNwRE5lODZlWHIzWnpZUWhva3hFVjZWUS1ZR2F0dUc0ZE15YXVDbHJSTFlKVWpuX3k1cE44Qg?oc=5",
-     "date": "Fri, 27 Nov 2026 15:30:29 GMT",
-     "summary": "T.J. Edwards: Fourth down pass to Jahmyr Gibbs a look we saw all week NBC Sports The Third-and-One Call That Turned Gibbs' Big Day Yahoo Sports The Bears hadn’t stopped Jahmyr Gibbs all day. Then T.J. Edwards did on fourth down - The Athletic The New York Times Detroit Lions running back Jahmyr Gibbs puts up historic numbers in Thanksgiving Day classic AL.com Detroit Lions grades: Jahmyr Gibbs on …"
-    },
-    {
-     "title": "Pirates Trade Henry Davis To Diamondbacks - MLB Trade Rumors",
-     "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNbHowdHNoR2h4cWozM056WXdKVWx0Mk5IWTlYcWJtdE1HUGgtekZvNlRFaDkzVS1ZUlgydzBZb3hQcThNeFpIMW9NeDhXd21WUE5xc1l5OGNIbk90M2ZucDlLbWVWdVBRR0dSU191U1VfN3d5bXBKWi1kSkdIY1plUmtsT3l5Vjd4RnIycV9n?oc=5",
-     "date": "Fri, 27 Nov 2026 21:29:05 GMT",
-     "summary": "Pirates Trade Henry Davis To Diamondbacks MLB Trade Rumors Pirates trade C Henry Davis to Diamondbacks, sources say ESPN D-backs trade for 2021's No. 1 overall Draft pick, send utility man to Pirates MLB.com Diamondbacks trading Tim Tawa to Pirates for Henry Davis Arizona Sports Henry Davis trade grades: Pirates cut ties with former No. 1 pick, add utilityman Tim Tawa from Diamondbacks CBS Sports"
-    },
-    {
-     "title": "The Winners and Losers of Thanksgiving Football - The Ringer",
-     "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxQYi1qbG44OW9peDlqaW9mLWJ2cDI0WkFfbXRQNW03TkxWX2N4RGNxeTh5aGx5Qk5TNWdTeVkyelFBbGVqaVh0ek9uYy1BM3dSR1ByNTBBenNkVHFEU1VxR2l4VUkwYll5UnVjWVN5ck9VRVNwV0FwdjRGb202TW14TmxReENVVzdVVXlJZlpXUDhDV1lrR3JHc094VlJHTUlHYkVZMGhHSmtDTV9UZ2FrcEJ6VV9XcnEtemtjMEhlVGZlNXlid2tpcEhnQS1Oa0YxN0p5ZVlTbmhJeFJrdEhuYmtNTnVYMDBJQkpmaWNFcWJJYV8yYU10N2ZzcEx5VHVHYjJJN09LRGM?oc=5",
-     "date": "Fri, 27 Nov 2026 15:09:17 GMT",
-     "summary": "The Winners and Losers of Thanksgiving Football The Ringer Thanksgiving NFL football had it all: Comebacks, walk-offs and plenty of points ESPN Thanksgiving tripleheader: What We Learned from Bears-Lions, Eagles-Cowboys, Chiefs-Bills NFL.com NFL Week 12 grades for Black Friday and Thanksgiving: Steelers ace post Aaron Rodgers test CBS Sports Bills, Eagles and Bears pull off last-gasp wins in trio …"
-    },
-    {
-     "title": "Jazz, Blue Jays agree to one-year deal with player option for '28 (source) - MLB.com",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE44dzlyQUtvSmdiS3ZFNTNFNGxCUHJ5Qks5UFRpMnlYcDJFQmZ6amo0SXN3aFVXWE05YmE4eE84NGlER09nU0xabjhsMVRZZkZhRWdONmNQYVQtYXBrajJSNjlkamFaRzhG?oc=5",
-     "date": "Fri, 27 Nov 2026 22:04:00 GMT",
-     "summary": "Jazz, Blue Jays agree to one-year deal with player option for '28 (source) MLB.com Sources: Blue Jays, Jazz Chisholm Jr. reach agreement on 1-year deal ESPN Here's how Chisholm can find the sweet spot in Toronto MLB.com Ex-Yankees Star Jazz Chisholm Jr. Suddenly Signs With Divisional Rival Yahoo Sports Blue Jays To Sign Jazz Chisholm Jr. MLB Trade Rumors"
-    },
-    {
-     "title": "Bills beat Chiefs with last-second field goal in Thanksgiving classic - Democrat and Chronicle",
-     "link": "https://news.google.com/rss/articles/CBMi6wFBVV95cUxOcVlKeXBkV2gyMmVySUZZMmxVX3hTNks4d3NMVUVqVmw2X0VoUGZNTEJMYS1LTXlSMjJOY1VScUxqaENORG1rRWkxRjJ0LWRTZVlmM3UtTjhEeUlWUDlFeXZNUDlkLUp3d1MxMlZRZlBrdXR0cXl6d3FsVkJNMjlrYW9LNUxGSWVmMHY2TjdJUnhsMVFBelZjazVNMzNER3o5ZkR5RXFUc05JQnltOG9sZmNlOXFqTE85aTMtNENqbHpWWERQd0ZfV25EN2ZPaUVWcEdTU2xTc2tkR1dYZFZxLTUtOUxNSlR3M09j?oc=5",
-     "date": "Fri, 27 Nov 2026 06:14:23 GMT",
-     "summary": "Bills beat Chiefs with last-second field goal in Thanksgiving classic Democrat and Chronicle Bills 13-10 Chiefs (Nov 26, 2026) Game Recap ESPN Bills beat Chiefs on deflected punt, Tyler Bass' 57-yard field goal at the buzzer Yahoo Sports Bills 13, Chiefs 10 | Final Score, recap + highlights Buffalo Bills Chiefs’ special teams cost them the game vs. the Bills. What should they do now? - The Athleti…"
+     "title": "College football live updates, scores: Texas vs. Texas A&M, West Virginia vs. Utah and more on Black Friday - Yahoo Sports",
+     "link": "https://news.google.com/rss/articles/CBMi9gFBVV95cUxONVNaY3ZKRVhmem9MdGF6TlNIa0dNTTk2d1BTcUpDOG96SHZZQU9OVmV2WmtIZzdvUVB4SEVIb0tWQ1Q2OENOc2FlVWZiaS1ST2hLcEc3WWYzNHJzX2ZqUHNoLWpnS2JLYXZVRV9lRDBiYjJBMExDSEpZQUx5cF9OcDBJaDBWV255bndoQzJBNzlwLWxmeVVVVzlBdDhIaFVFamlkRUdTNU5uWFFZZmFTay02YTY4Qmk5OGdHM2Z5YVAzQ043b3NtNHVna0hzdFJ6SlBJM0dNcWp6eUVCZmFWdkUtSzNVRzd0TEMzb19XY1V6SmItS0E?oc=5",
+     "date": "Sat, 28 Nov 2026 15:21:18 GMT",
+     "summary": "College football live updates, scores: Texas vs. Texas A&M, West Virginia vs. Utah and more on Black Friday Yahoo Sports Utah 52-28 West Virginia (Nov 27, 2026) Game Recap ESPN Undefeated season: No. 2 Utah blows past West Virginia to stay unbeaten in Morgan Scalley's first season KSL Heisman chants, 52 points and a 12-0 season: 3 takeaways from Utah football’s blowout win over West Virginia The S…"
     },
     {
      "title": "NFL scouts grade USC, UCLA players entering high-stakes rivalry showdown - Los Angeles Times",
      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPek1RUHAzZERJWGM4Mlg0Wkc3cDFoSC1HM1VYaWtldVJtd2NpNFNNY21aR2FzZ1Z6Z1psX25KUHhjNHhKWVhpdVE2eDhmRWZKNW5jbTJ5bGVtSTZfSVFGTGt2QWQzN0tkZjZDOXoxQTVQTmdabTVEY3hEcnY5VVZ6TkNBMDVyN0ZuLTFyWk1Dcjhna0t2bjV3NzRpVlZHZ1pUTVJLdm52N1RwRHM?oc=5",
      "date": "Fri, 27 Nov 2026 12:00:00 GMT",
-     "summary": "NFL scouts grade USC, UCLA players entering high-stakes rivalry showdown Los Angeles Times Everything Dean Kennedy and Colin Hitschler said Wednesday ahead of UCLA's game against USC 247Sports USC can't stand UCLA football winning. Lincoln Riley has to beat Bruins USA Today USC Trojans Injury Report vs. UCLA Bruins Sees No Changes Sports Illustrated USC set to end regular season on the road for fi…"
-    },
-    {
-     "title": "Week 12 Fantasy Football Start 'Em, Sit 'Em: Justin Boone's lineup advice - Yahoo Sports",
-     "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOWEFEeWNfU2tQQTl3eXh2d0oyNVROYlhBNFRjbXRPQ25nY2J2bGhtbjdaRGxIX1ZDOVN0YU55X2Nyc3VPd010dDJUd0E1NmdRcmNwOW53amEtQlQ5bktONHNqSm1fZGVxaEt0M19VMW9JcDRGZmhLZW9OaC1YN1NFdndMbXgyeDdSUjJ5Yk1PWXd3cVpBZm54S0VVYktqTW5TdGdTLVQ0dlZVOHA4OE1sUS0tM0l4bl95RHFqb1JFRFp3UQ?oc=5",
-     "date": "Fri, 27 Nov 2026 16:12:55 GMT",
-     "summary": "Week 12 Fantasy Football Start 'Em, Sit 'Em: Justin Boone's lineup advice Yahoo Sports Fantasy playbook: Week 12 Shadow Reports, lineup locks and projected scores ESPN NFL 2026 Week 12 Start ‘Em Sit ‘Em: Fire up Quinshon Judkins and Caleb Douglas NBC Sports Fantasy football Week 12 Start 'Em & Sit 'Em: Cam Skattebo gets the green light, DK Metcalf hits a red light CBS Sports 10 Fantasy Football St…"
+     "summary": "NFL scouts grade USC, UCLA players entering high-stakes rivalry showdown Los Angeles Times Breaking down notable USC-UCLA football matchups through the years ESPN UCLA and USC set to clash at Rose Bowl in rivalry showdown; Bruins QB Dieffenbach questionable ABC7 Los Angeles Fanatics Sportsbook Promo Code FOXNEWS: Get $1000 in FanCash for USC vs UCLA Fox News USC vs. UCLA prediction, odds, time: Ri…"
     }
    ],
-   "fetched_at": "2026-11-28T01:29:51.072Z",
+   "fetched_at": "2026-11-28T15:38:21.239Z",
    "source": "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en"
   },
   "native-ict": {
    "items": [
+    {
+     "title": "Feds approve New Mexico’s petition over uranium mining proposal in Church Rock",
+     "link": "https://ictnews.org/news/feds-approve-new-mexicos-petition-over-uranium-mining-proposal-in-church-rock/",
+     "date": "Sat, 28 Nov 2026 15:00:00 +0000",
+     "summary": "NuFuels, Inc., a company seeking to mine uranium in the Church Rock area, will hold a public hearing regarding its license renewal, following a Nov. 19, 2026, decision from the Atomic Safety and Licensing Board. Above: Indigenous advocates speak out against the company during an August 2026 public meeting. (Photo by Patrick Lohmann/Source NM) \" data-large-file=\"https://ictnews.org/wp-content/uploa…"
+    },
     {
      "title": "The end of Boss Trump",
      "link": "https://ictnews.org/news/the-end-of-boss-trump/",
@@ -767,15 +785,9 @@
      "link": "https://ictnews.org/news/mary-peltola-taps-alaska-native-woman-as-chief-of-staff/",
      "date": "Tue, 24 Nov 2026 22:54:43 +0000",
      "summary": "Former Obama administration official brings nearly two decades of federal policy experience to the Senator-elect’s office The post Mary Peltola taps Alaska Native woman as chief of staff appeared first on ICT ."
-    },
-    {
-     "title": "Native opposition grows to Army’s Iowa detonation plan",
-     "link": "https://ictnews.org/news/native-opposition-grows-to-armys-iowa-detonation-plan/",
-     "date": "Tue, 24 Nov 2026 22:01:15 +0000",
-     "summary": "Larry Lockwood, Northern Cheyenee and Arikara, says a prayer while standing before a U.S. Army ammunitions plant in Middletown, Iowa, where the Army plans to detonate 68 barrels of degraded lead azide on Wednesday morning. (Kevin Abourezk / ICT) \" data-large-file=\"https://ictnews.org/wp-content/uploads/2026/11/DSC02056-1024x683.jpg\" /> Explosion scheduled for Wednesday could release toxic cloud do…"
     }
    ],
-   "fetched_at": "2026-11-28T01:29:51.072Z",
+   "fetched_at": "2026-11-28T15:38:21.239Z",
    "source": "https://ictnews.org/feed"
   },
   "native-nations": {
@@ -787,9 +799,15 @@
      "summary": "25th Navajo Nation Council celebrates $246 million Navajo Gaming loan repayment CHURCH ROCK, N.M. — Members of the 25th Navajo Nation Council celebrated the Navajo Nation Gaming Enterprise’s (NNGE) repayment of more than $246 million in fina Facebook"
     },
     {
+     "title": "Navajo Nation Council to weigh data center in San Juan County - Searchlight New Mexico",
+     "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOcTVGQTVuek42VWpsTHdITXo2X0Z1M0x3TlQ1TWZ2aFBqR056SkFjMmNhUDkzVC1xRThwaHRXb1k2cWl1Zk5MQmVRMEhtZ3dfVWJCaHZ4dDlHYkZTYTNwa19SV1loeFE2LXlvNzdabWkxbmh0ZUxOS0JRdWRjTnRHWkNkMW4yMDVPbHNSaDJPd0E3QQ?oc=5",
+     "date": "Thu, 19 Nov 2026 08:00:00 GMT",
+     "summary": "Navajo Nation Council to weigh data center in San Juan County Searchlight New Mexico"
+    },
+    {
      "title": "Rep. Crane Urges Swift Approval of Navajo Nation's Disaster Declaration Request After Severe Floods - House.gov",
      "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOcEU2MHhCbnRYR1F0dy1qTzdTcGlTdlJtQmxPUnRvWGJXMUhlRVVuODNJQjRRRmhpZkt1ZG1oNTdtM2JBM3VKUHhqLVNPQkRSOFU1aWFMWFJEQ3NScVZSeWNGdEJpbmdrMVQ3TUU4WEFTaTQ2TXZWTFpqaVFzejBjcHNBU1FiR3FiVUZ0ejBMa1VVQkhSUmZWdWp0eXZxQ3NWUE5QYWIzSU93dDNrZC1RTVh3eXlCOUYwVmF0OFcyQmZKZUQ4WFZRcVZfT0lUUQ?oc=5",
-     "date": "Thu, 19 Nov 2026 21:19:28 GMT",
+     "date": "Thu, 19 Nov 2026 08:00:00 GMT",
      "summary": "Rep. Crane Urges Swift Approval of Navajo Nation's Disaster Declaration Request After Severe Floods House.gov"
     },
     {
@@ -801,38 +819,8 @@
     {
      "title": "Navajo Gaming Pays Off More Than $246 Million Loan to Navajo Nation - Native News Online",
      "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQRHJ2NzJVdDFvUF9IZUNtWTNMVHpXUXFkdDVobEZNNlRaTG8ya0xfbDdkczhlUGhSQ09TVXBIMGRyMHhLWHVNaUtKLVFLbS1yTlNmaVJiMFBpOWNMRkp2VThISlR2M0hwR3ZLbGdrWlNmeEdPQzgzRlNSdnpCUnZ3QW13U0xydVFHTGZHT0htTnRRQVk4cmV6TGlWNzlFdXNKMUZSRmZNdmg?oc=5",
-     "date": "Thu, 19 Nov 2026 17:37:30 GMT",
+     "date": "Thu, 19 Nov 2026 08:00:00 GMT",
      "summary": "Navajo Gaming Pays Off More Than $246 Million Loan to Navajo Nation Native News Online"
-    },
-    {
-     "title": "Happy Thanksgiving from the 25th Navajo Nation Council On Thanksgiving Day, the 25th Navajo Nation Council extends its gratitude to the Navajo people, Legislative Branch staff, and Navajo Nation employees for their continued dedication and service to our - Facebook",
-     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxNQ3Jwd0hIbVJqREk2cVhNSTJmQTNpNkZhYmlHM0g2SmF1eDhiOUtFTzJ1X3BzRFc5aERuNHYyb3NHUFl0WFJhVmQxTkRiaXFYZ2o4YVFSSjRYRGhaVE4ycFdrWWJyeUlieDdvTE0zNmRPQUdHeVpUMnVwY052WU5qTDZoQ09pWC1mV19HZDF2czFVS3pqQlpiSXNsTzREYU1GNWpmYzV6U2FHU3ZUQzJsQmpldGZweC16Zkl4R3h5dHUzU2NrcVRBMENHZGItcVJ0eUlvSGdfWm5QRkE5MjVyc2d4NA?oc=5",
-     "date": "Thu, 26 Nov 2026 14:51:09 GMT",
-     "summary": "Happy Thanksgiving from the 25th Navajo Nation Council On Thanksgiving Day, the 25th Navajo Nation Council extends its gratitude to the Navajo people, Legislative Branch staff, and Navajo Nation employees for their continued dedication and service to our Facebook"
-    },
-    {
-     "title": "25th Navajo Nation Council honors Fort McDowell Yavapai Nation’s Orme Dam victory FORT MCDOWELL, Ariz. — On Saturday, members of the 25th Navajo Nation Council joined the Fort McDowell Yavapai Nation for its 45th annual Orme Dam Victory Days - Facebook",
-     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxOUVdaemNkd3pKMTJhOHpvZEhLNm9zNEh0aHpGckd2Tmh6U1hMd2VCT0tVOXp0SUFJSFFHbkZZbGZrV3VKZDFETUZES19WYjhWVkluWGxiRGdkSjhBUjRVZ1Zmd3B3VndOUXFTM0ZrMHQxQTNjblQtN1Y5ZE4zX1YxUXhtVmFsbDBpRUpWSU1Wd2xPdms2TnN2NENiNzQ1Zm5LWVhBRTlFODEyMDBGWEtvY0ZMamkwTlhoT0tqd1J5Uks5SE9mQ1ZXaWxOZ09GN0RhM0RfN0pqRWI4Um9LRDJSTUs2TQ?oc=5",
-     "date": "Tue, 24 Nov 2026 22:26:30 GMT",
-     "summary": "25th Navajo Nation Council honors Fort McDowell Yavapai Nation’s Orme Dam victory FORT MCDOWELL, Ariz. — On Saturday, members of the 25th Navajo Nation Council joined the Fort McDowell Yavapai Nation for its 45th annual Orme Dam Victory Days Facebook"
-    },
-    {
-     "title": "25th Navajo Nation Council honors Veterans and their Families at 59th San Carlos Veterans Day Parade SAN CARLOS, Ariz. — On Saturday, the 25th Navajo Nation Council participated in the 59th San Carlos Veterans Day Parade to honor veterans and their - Facebook",
-     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxNWDhpallpdHlDMGcwa0RHM1ZuNUl4Y1VTaDNhYnJRNWVLRnJHZFdUT2xzbFZ6aXZPZXhLZkRyX0xiY3hyRG9sM3hMNnl4ZVl4d3ZZSFpiNi1QSlZvQjlRdE1lV0M0WWdSdzhoMVV1eFN3THVmQnNpV0IzLXNhZW9uVS0wWi1GSHhicWNnRVJmeEJKOTlKci0zc0RlWWRMT0lFN3RlYmZMRGZtdERlMWFlcngyWm1wVHRmSXp2WDBEN2ZSSXhsX3lRWjVEdmxzNU1JZGFTcmdnelVUdTdSV0psckVDNA?oc=5",
-     "date": "Mon, 16 Nov 2026 08:00:00 GMT",
-     "summary": "25th Navajo Nation Council honors Veterans and their Families at 59th San Carlos Veterans Day Parade SAN CARLOS, Ariz. — On Saturday, the 25th Navajo Nation Council participated in the 59th San Carlos Veterans Day Parade to honor veterans and their Facebook"
-    },
-    {
-     "title": "25th Navajo Nation Council joins community for N9073 Blue Canyon Road groundbreaking BLUE CANYON, Ariz. — On Thursday, Council Delegate Dr. Andy Nez and Resources and Development Committee Chairwoman Brenda Jesus joined Navajo Nation - Facebook",
-     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxNNUJmUFVkNVNZV1lMS2JDODZ5Y0JDOU9QMmNrdm5ndjdIMmhhUzNXSnVCd29zZlBoekt5Z0MxM294OF9GWWFnTlpKRlFXakZBM25EQ2Rvb2lvNjVxclNfRVh0MU1sR09CRE4xT2RpWnJ4QU5XdzB3R1pOWXhUdVFTdmwtTkJWN3BmRlJwWVpqbWs3WVpZbjEtMzVzN3c5WmJwSGt4YmxNcExCb1pkRG1qeHA3THkwMDNkQjhRdXdyaVp1UGg3RzU4SzVMSG9Ya2JNTlJmN0QxdGpPVXZQNG02Z3BPSQ?oc=5",
-     "date": "Wed, 18 Nov 2026 08:00:00 GMT",
-     "summary": "25th Navajo Nation Council joins community for N9073 Blue Canyon Road groundbreaking BLUE CANYON, Ariz. — On Thursday, Council Delegate Dr. Andy Nez and Resources and Development Committee Chairwoman Brenda Jesus joined Navajo Nation Facebook"
-    },
-    {
-     "title": "Navajo Nation Council to weigh data center in San Juan County - Searchlight New Mexico",
-     "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOcTVGQTVuek42VWpsTHdITXo2X0Z1M0x3TlQ1TWZ2aFBqR056SkFjMmNhUDkzVC1xRThwaHRXb1k2cWl1Zk5MQmVRMEhtZ3dfVWJCaHZ4dDlHYkZTYTNwa19SV1loeFE2LXlvNzdabWkxbmh0ZUxOS0JRdWRjTnRHWkNkMW4yMDVPbHNSaDJPd0E3QQ?oc=5",
-     "date": "Thu, 19 Nov 2026 16:17:33 GMT",
-     "summary": "Navajo Nation Council to weigh data center in San Juan County Searchlight New Mexico"
     },
     {
      "title": "The Navajo Nation is set to have its first woman president - Tucson Sentinel",
@@ -859,6 +847,30 @@
      "summary": "Navajo Nation gifts blue spruce for Arizona Capitol Christmas tree Navajo-Hopi Observer"
     },
     {
+     "title": "Happy Thanksgiving from the 25th Navajo Nation Council On Thanksgiving Day, the 25th Navajo Nation Council extends its gratitude to the Navajo people, Legislative Branch staff, and Navajo Nation employees for their continued dedication and service to our - Facebook",
+     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxNQ3Jwd0hIbVJqREk2cVhNSTJmQTNpNkZhYmlHM0g2SmF1eDhiOUtFTzJ1X3BzRFc5aERuNHYyb3NHUFl0WFJhVmQxTkRiaXFYZ2o4YVFSSjRYRGhaVE4ycFdrWWJyeUlieDdvTE0zNmRPQUdHeVpUMnVwY052WU5qTDZoQ09pWC1mV19HZDF2czFVS3pqQlpiSXNsTzREYU1GNWpmYzV6U2FHU3ZUQzJsQmpldGZweC16Zkl4R3h5dHUzU2NrcVRBMENHZGItcVJ0eUlvSGdfWm5QRkE5MjVyc2d4NA?oc=5",
+     "date": "Thu, 26 Nov 2026 14:51:09 GMT",
+     "summary": "Happy Thanksgiving from the 25th Navajo Nation Council On Thanksgiving Day, the 25th Navajo Nation Council extends its gratitude to the Navajo people, Legislative Branch staff, and Navajo Nation employees for their continued dedication and service to our Facebook"
+    },
+    {
+     "title": "25th Navajo Nation Council honors Fort McDowell Yavapai Nation’s Orme Dam victory FORT MCDOWELL, Ariz. — On Saturday, members of the 25th Navajo Nation Council joined the Fort McDowell Yavapai Nation for its 45th annual Orme Dam Victory Days - Facebook",
+     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxOUVdaemNkd3pKMTJhOHpvZEhLNm9zNEh0aHpGckd2Tmh6U1hMd2VCT0tVOXp0SUFJSFFHbkZZbGZrV3VKZDFETUZES19WYjhWVkluWGxiRGdkSjhBUjRVZ1Zmd3B3VndOUXFTM0ZrMHQxQTNjblQtN1Y5ZE4zX1YxUXhtVmFsbDBpRUpWSU1Wd2xPdms2TnN2NENiNzQ1Zm5LWVhBRTlFODEyMDBGWEtvY0ZMamkwTlhoT0tqd1J5Uks5SE9mQ1ZXaWxOZ09GN0RhM0RfN0pqRWI4Um9LRDJSTUs2TQ?oc=5",
+     "date": "Tue, 24 Nov 2026 22:26:30 GMT",
+     "summary": "25th Navajo Nation Council honors Fort McDowell Yavapai Nation’s Orme Dam victory FORT MCDOWELL, Ariz. — On Saturday, members of the 25th Navajo Nation Council joined the Fort McDowell Yavapai Nation for its 45th annual Orme Dam Victory Days Facebook"
+    },
+    {
+     "title": "25th Navajo Nation Council honors Veterans and their Families at 59th San Carlos Veterans Day Parade SAN CARLOS, Ariz. — On Saturday, the 25th Navajo Nation Council participated in the 59th San Carlos Veterans Day Parade to honor veterans and their - Facebook",
+     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxNWDhpallpdHlDMGcwa0RHM1ZuNUl4Y1VTaDNhYnJRNWVLRnJHZFdUT2xzbFZ6aXZPZXhLZkRyX0xiY3hyRG9sM3hMNnl4ZVl4d3ZZSFpiNi1QSlZvQjlRdE1lV0M0WWdSdzhoMVV1eFN3THVmQnNpV0IzLXNhZW9uVS0wWi1GSHhicWNnRVJmeEJKOTlKci0zc0RlWWRMT0lFN3RlYmZMRGZtdERlMWFlcngyWm1wVHRmSXp2WDBEN2ZSSXhsX3lRWjVEdmxzNU1JZGFTcmdnelVUdTdSV0psckVDNA?oc=5",
+     "date": "Mon, 16 Nov 2026 08:00:00 GMT",
+     "summary": "25th Navajo Nation Council honors Veterans and their Families at 59th San Carlos Veterans Day Parade SAN CARLOS, Ariz. — On Saturday, the 25th Navajo Nation Council participated in the 59th San Carlos Veterans Day Parade to honor veterans and their Facebook"
+    },
+    {
+     "title": "25th Navajo Nation Council joins community for N9073 Blue Canyon Road groundbreaking BLUE CANYON, Ariz. — On Thursday, Council Delegate Dr. Andy Nez and Resources and Development Committee Chairwoman Brenda Jesus joined Navajo Nation - Facebook",
+     "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxNNUJmUFVkNVNZV1lMS2JDODZ5Y0JDOU9QMmNrdm5ndjdIMmhhUzNXSnVCd29zZlBoekt5Z0MxM294OF9GWWFnTlpKRlFXakZBM25EQ2Rvb2lvNjVxclNfRVh0MU1sR09CRE4xT2RpWnJ4QU5XdzB3R1pOWXhUdVFTdmwtTkJWN3BmRlJwWVpqbWs3WVpZbjEtMzVzN3c5WmJwSGt4YmxNcExCb1pkRG1qeHA3THkwMDNkQjhRdXdyaVp1UGg3RzU4SzVMSG9Ya2JNTlJmN0QxdGpPVXZQNG02Z3BPSQ?oc=5",
+     "date": "Wed, 18 Nov 2026 08:00:00 GMT",
+     "summary": "25th Navajo Nation Council joins community for N9073 Blue Canyon Road groundbreaking BLUE CANYON, Ariz. — On Thursday, Council Delegate Dr. Andy Nez and Resources and Development Committee Chairwoman Brenda Jesus joined Navajo Nation Facebook"
+    },
+    {
      "title": "Navajo Gaming pays off Navajo Nation loan early - Navajo-Hopi Observer",
      "link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxPWk1ETncwNEVTZE5UVW54bmpDVjdPNHdvLVJKQ1F4REUyYXlpMDBGbGJLSW1LSXNFRjBwS1hudDc2Tmo4RW1xY3BtSEhQVGVONHBsdEw1aWZ4d3hSZ2UtRE1OTEdxYTI2d1N5bEtGb204bFlvamRaMlJkdFNRQXFXQ1o2VzNSYmVqcjJjcm1mTU5KRmRERFdLTDVveU9qeU9EZUx4Y0lZcmhja0p5UEU5bnk0VDZud3Q5cnV4R2gxMEp0eHdw?oc=5",
      "date": "Tue, 24 Nov 2026 16:00:00 GMT",
@@ -871,22 +883,16 @@
      "summary": "Navajo Nation prosecutors warn against threats to election officials KOAT"
     },
     {
-     "title": "Navajo Nation gifts 25-foot Christmas tree to stand in Capitol building - 12News",
-     "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxPbVkxWDA4UzVrSmI3aFNqOHF0VGdCX1pBcVhSR2V4MUVaZTZrQllMMmFsYjczbmdVS25SR0s2cjMzMU1nc3ZRVV9kUGtNUE44OHlaVC04SXJQOEREcFo3X3lCVVBEQkxEYUN4RWwzeTVqTWhWUVR0T0JEeWJSU2M2UE1rVkp5aGc0LThHNXNYaXNJWktlbTI4U2RQQXhsLXhGcFQwcVNYY3JqbzJYUHh1RFJrV01oQzhmTnRYUzctSnFCU2hDd0JITTlfWWhXc21TS0dyWlNOTENGZ2l1em9pRW11T1VOUGFXSktzUE1HeWVlaW1GcWNhamdGX2g2eVZJeGpBS0dhUnM?oc=5",
-     "date": "Fri, 20 Nov 2026 17:01:00 GMT",
-     "summary": "Navajo Nation gifts 25-foot Christmas tree to stand in Capitol building 12News"
-    },
-    {
      "title": "Trailing candidate files grievance over Navajo Nation presidential election - Searchlight New Mexico",
      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQbUdRbVJBUnZJQi1QOHp3dzR6VzJHZXBMdjJqa1Z1Z3otRFJhcmE0cVBWLVFNRUJWX2pTQ3l2aWg4NExUSkswUDNnMjlVYzB6UlcwRHpidGIzSVZzYnJNYlJ1UlNOXzFZSUozQTZDcXZobVhCamVkU1laV0ZSanRWeG9YSU0wZktoNjNPSkc1SGtjTTRNZVRPTWFueFNEeE1CUmJrWg?oc=5",
      "date": "Wed, 18 Nov 2026 15:58:39 GMT",
      "summary": "Trailing candidate files grievance over Navajo Nation presidential election Searchlight New Mexico"
     },
     {
-     "title": "Army Reserve power distribution specialists light up Navajo Nation - U.S. Army Reserve (.mil)",
-     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5XcWV6LU1tRFhPSHNPYkF2dkJiQUdReTl2bGVvMVpnSElRbFNPWENEZTFiX1RLamZvbjVDRG55OF9qLVhjZjE2RHhSQjBiLXM3MlVydHVwcGRtRmc4dzNodlNJQXNwM29s?oc=5",
-     "date": "Mon, 16 Nov 2026 16:41:19 GMT",
-     "summary": "Army Reserve power distribution specialists light up Navajo Nation U.S. Army Reserve (.mil)"
+     "title": "Navajo Nation gifts 25-foot Christmas tree to stand in Capitol building - 12News",
+     "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxPbVkxWDA4UzVrSmI3aFNqOHF0VGdCX1pBcVhSR2V4MUVaZTZrQllMMmFsYjczbmdVS25SR0s2cjMzMU1nc3ZRVV9kUGtNUE44OHlaVC04SXJQOEREcFo3X3lCVVBEQkxEYUN4RWwzeTVqTWhWUVR0T0JEeWJSU2M2UE1rVkp5aGc0LThHNXNYaXNJWktlbTI4U2RQQXhsLXhGcFQwcVNYY3JqbzJYUHh1RFJrV01oQzhmTnRYUzctSnFCU2hDd0JITTlfWWhXc21TS0dyWlNOTENGZ2l1em9pRW11T1VOUGFXSktzUE1HeWVlaW1GcWNhamdGX2g2eVZJeGpBS0dhUnM?oc=5",
+     "date": "Fri, 20 Nov 2026 17:01:00 GMT",
+     "summary": "Navajo Nation gifts 25-foot Christmas tree to stand in Capitol building 12News"
     },
     {
      "title": "Navajo Gaming repays $246.9M in loans to Navajo Nation - Navajo Times",
@@ -895,10 +901,16 @@
      "summary": "Navajo Gaming repays $246.9M in loans to Navajo Nation Navajo Times"
     },
     {
-     "title": "Navajo Nation man sentenced to prison for shooting, killing man in 2025 - ABC4 Utah",
-     "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTFAxd3ZxMDdFQnJ6Rmh1QkZhUENWLUhVdl9qdVAxWjRoZTFYdWI4X0dfdU04dnROSzg5bVU0ZG45bjdkRnd6SUExY1JhSHR6Z2ZydllfT2tTUS1IS1k0SHUweVB0SW9mREI4RklKblhsYVRmOFlzaVp6UlhhMFbSAYIBQVVfeXFMTnpJMUF6NzR2VzhYdTlWT0xuN3N2U0NYVVBiVzBPQUlsVXZ0MnJQS2NhMUJqRWhIX2hTNFVGMWxjaER2TDR1ZG1Sa2hQdWJyYlFoQ21JM0RHSVE3bHBZQlFQZENJSklWeU5HOHNfbmJDc3pXdkZpVDNjNXlDSHlXRFZDUQ?oc=5",
-     "date": "Wed, 25 Nov 2026 16:14:04 GMT",
-     "summary": "Navajo Nation man sentenced to prison for shooting, killing man in 2025 ABC4 Utah"
+     "title": "Army Reserve power distribution specialists light up Navajo Nation - U.S. Army Reserve (.mil)",
+     "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5XcWV6LU1tRFhPSHNPYkF2dkJiQUdReTl2bGVvMVpnSElRbFNPWENEZTFiX1RLamZvbjVDRG55OF9qLVhjZjE2RHhSQjBiLXM3MlVydHVwcGRtRmc4dzNodlNJQXNwM29s?oc=5",
+     "date": "Mon, 16 Nov 2026 16:41:19 GMT",
+     "summary": "Army Reserve power distribution specialists light up Navajo Nation U.S. Army Reserve (.mil)"
+    },
+    {
+     "title": "March of Dimes Unveils Mom & Baby Mobile Health Center on Navajo Nation - Navajo-Hopi Observer",
+     "link": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxPbkpsLWUwaXpLdjdBN0syQlA4bHVySjZ5Tk9Fb0VlWGVmMGFWem9wS2gtVGtESjVNS2VpYjJlMTREeVhsZmtfZXZXSUk1Vk9JemFmUU5qaVRqVGFFcmgyb21HcHhxaktnWlozSmNwOVE1bDloRFVlck5CUEU4eldzNEc4MDFQVzNQMmN2SG44TERzcF9qT0FNMXVTdHF6eTVCaDU0Q0RTSlQ5OEVsN015Zmd4TFVNVVdGTHo0VDQ2cTJwV01IQlZVai1ESU5LYTNPd3dsYUdZcmVMTmpMVVVCTU1B?oc=5",
+     "date": "Tue, 17 Nov 2026 08:00:00 GMT",
+     "summary": "March of Dimes Unveils Mom & Baby Mobile Health Center on Navajo Nation Navajo-Hopi Observer"
     },
     {
      "title": "Navajo Nation requests federal aid following intense flooding this fall - KOAT",
@@ -913,10 +925,10 @@
      "summary": "25-foot Christmas tree from Navajo Nation arrives at Arizona State Capitol KTAR News 92.3 FM"
     },
     {
-     "title": "Suspect pleads not guilty in violent attack on Navajo Nation officer - KOLD",
-     "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPN1A0TkF0aGVUMTIzLUVMMjdOeGx1Rk00ZV80R2pyYW4xOVBiX1NNbk1CU0ZVQmdHRUhGUkhYQVgydTVUQVlEUjRoM2JuUW9Qc1pkekthX0hpUG44b1dBbm5EdjZsYnhTakVqeVdqUW92WmxVVC1HNnRuclNuLVBxQi02WVQ2ekVsNGVzNXVVUTdjSk9HWGZaaGlkWQ?oc=5",
+     "title": "Trailing candidate files grievance over Navajo Nation presidential election - Santa Fe New Mexican",
+     "link": "https://news.google.com/rss/articles/CBMihgJBVV95cUxORGJhLUQwaERCcjBDbXlyWGh0X0tEVVdrNG9qbXZTN3o1Sy1yVUtHOXplaXcxak5GNEJCS0VKbm96M0NrcThpOE5QSVd4NkJfaDVOZ3RNX2Jodk8tUi1pT0xrQ1pGS1pXc0tDc2VkSk9RZllhSlN5MDFsQzduN0FHbzZyLWZpRHYxdEZOWVBkVllOai1rSG1MeTF5aFdwRGtIcVQ4M19DZkxadS1WTk5xMUo4eXZscERZdEI4bEVJQm5MLWFSd0ZtZXExeXNzZnFTYklaYU8tWjJ1aFAycUlaZHJWTTVILWs4RjdMYVIyamU0TGtOemplLUpiUGdjS19vdVhyWUVR?oc=5",
      "date": "Tue, 17 Nov 2026 08:00:00 GMT",
-     "summary": "Suspect pleads not guilty in violent attack on Navajo Nation officer KOLD"
+     "summary": "Trailing candidate files grievance over Navajo Nation presidential election Santa Fe New Mexican"
     },
     {
      "title": "Army Reserve power distribution specialists light up Navajo Nation - U.S. Army Reserve (.mil)",
@@ -925,13 +937,13 @@
      "summary": "Army Reserve power distribution specialists light up Navajo Nation U.S. Army Reserve (.mil)"
     },
     {
-     "title": "Navajo Nation water supply project expanding - KOAT",
-     "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNV2VwVFpxSVZzbE03dEZweFRrb01QVmFjTVNaOG5pZHU0akJ2SDRIM2FlcU9URTFHc1RXc3BDV1JJZl8wLUpRZWVEb1JKVHJNZE9saTNOU00tTUM3YVFsMVVRUFlXd2M2LVF0RnZ4ZDVrOWpHS214MDctSWduczFrV2R6QzlORUhkSWc?oc=5",
-     "date": "Wed, 18 Nov 2026 08:00:00 GMT",
-     "summary": "Navajo Nation water supply project expanding KOAT"
+     "title": "Suspect pleads not guilty in violent attack on Navajo Nation officer - KOLD",
+     "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPN1A0TkF0aGVUMTIzLUVMMjdOeGx1Rk00ZV80R2pyYW4xOVBiX1NNbk1CU0ZVQmdHRUhGUkhYQVgydTVUQVlEUjRoM2JuUW9Qc1pkekthX0hpUG44b1dBbm5EdjZsYnhTakVqeVdqUW92WmxVVC1HNnRuclNuLVBxQi02WVQ2ekVsNGVzNXVVUTdjSk9HWGZaaGlkWQ?oc=5",
+     "date": "Tue, 17 Nov 2026 08:00:00 GMT",
+     "summary": "Suspect pleads not guilty in violent attack on Navajo Nation officer KOLD"
     }
    ],
-   "fetched_at": "2026-11-28T01:29:51.072Z",
+   "fetched_at": "2026-11-28T15:38:21.239Z",
    "source": "https://news.google.com/rss/search?q=%22Navajo%20Nation%22%20OR%20%22Hopi%20Tribe%22%20OR%20%22Yavapai-Apache%22%20when%3A14d&hl=en-US&gl=US&ceid=US:en"
   }
  }
