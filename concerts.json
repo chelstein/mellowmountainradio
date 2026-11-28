@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-27T16:46:23.518Z",
+ "updated": "2026-11-28T01:29:42.577Z",
  "concerts": [
   {
    "id": "17AYv0G6CxsoGYd",
@@ -149,6 +149,21 @@
    "price": 83,
    "status": "onsale",
    "saleStart": "2026-10-12T00:00:00Z",
+   "lineup": []
+  },
+  {
+   "id": "rZ7HnEZ1A4vgfS",
+   "artist": "America",
+   "date": "2027-01-01",
+   "time": "21:00:00",
+   "venue": "Strummer's",
+   "city": "Fresno",
+   "state": "CA",
+   "url": "https://www.ticketweb.com/event/wort-brat-in-america-strummers-tickets/15075533",
+   "img": "https://s1.ticketm.net/dam/c/060/c5c08e7a-9912-456c-a060-2758be94e060_105881_RETINA_PORTRAIT_16_9.jpg",
+   "price": 8,
+   "status": "onsale",
+   "saleStart": "2026-11-27T09:00:00Z",
    "lineup": []
   },
   {
